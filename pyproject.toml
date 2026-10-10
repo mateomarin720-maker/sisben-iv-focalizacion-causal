@@ -43,6 +43,7 @@ graphviz = "^0.20"
 #
 # Entorno exploratorio
 jupyterlab = "^4.1"
+azure-storage-blob = "^12.30.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
