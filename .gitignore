@@ -72,3 +72,7 @@ ver_*.py
 validar_sisben.py
 comparar_meses.py
 diagnostico_env*.py
+
+.env.*
+!.env.example
+*.env.txt
