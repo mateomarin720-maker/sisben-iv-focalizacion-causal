@@ -36,6 +36,9 @@ Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 Eliminados de la raíz (scripts temporales, ya cubiertos): `hotdeck_geih_sisben_VALIDADO.py` (primera versión, reemplazada), `diagnostico_env*.py` (depuración de la conexión Azure).
 Los nombres de los parquets en `data/2_models/` **no cambiaron**, para no volver a subir el banco de datos.
 
+### Documentación unificada
+Todos los `.md` (raíz, `data/`, `docs/`, `src/`, `notebooks/`) y `data/catalogo.yaml` se alinearon al mismo momento del proyecto (2026-10-09): objetivos vigentes P1/OE1, P2/OE2, P3/OE3; fuentes obtenidas (GEIH 2024, IPM 2024, Sisbén nacional y Bogotá); Azure como banco de datos; etapas del código `ingesta → armonizacion → emparejamiento → validacion`. Se retiraron referencias a OE4/OE5, al "puntaje continuo" del Sisbén y a fuentes "por solicitar" que ya se obtuvieron.
+
 ### Pendiente
 - [ ] Verificar en ANDA (`PER002`, V926) la tabla de códigos de ciclo de vida: **hoy es una hipótesis** (3=12–17, 4=18–28, 5=29–59, 6=60+).
 - [ ] Agregar variables de vivienda a la celda y medir sensibilidad de la distribución de grupos.

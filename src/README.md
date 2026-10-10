@@ -61,17 +61,19 @@ documentado y preferiblemente cubierto por pruebas.
 
 - **`3_preprocesamiento.py`**
   - Construcción de variables: define explícitamente **tratamiento**
-    (puntaje/grupo Sisbén IV), **outcomes** de bienestar, **pobreza
-    latente** (GEIH+IPM+RUI) y **confusores**; codificación, escalado e
-    imputación.
+    (elegibilidad A/B del Sisbén IV y participación en programas DPS),
+    **outcomes** de bienestar (IPM/GEIH; nunca `I1`–`I15` ni `H_5` del
+    Sisbén) y **confusores**; codificación, escalado e imputación.
 
 - **`4_dag_identificacion.py`**
   - Especificación del DAG causal y análisis de identificabilidad
-    (backdoor, RDD en torno a los umbrales del puntaje).
+    (cadena elegibilidad → participación → bienestar; backdoor;
+    discontinuidad sobre la frontera ordinal B/C, pues el extracto no trae
+    puntaje continuo).
 
 - **`5_estimacion.py`**
-  - Estimación de efectos causales: DML (ATE/LATE) y Causal Forest
-    (CATE), test BLP de heterogeneidad (OE3).
+  - Estimación de efectos causales: DML (ATE/ATT) y Causal Forest
+    (CATE), test BLP de heterogeneidad (OE2).
 
 - **`6_refutacion.py`**
   - Pruebas de refutación y sensibilidad: placebo, random common cause,
@@ -79,7 +81,7 @@ documentado y preferiblemente cubierto por pruebas.
 
 - **`7_reporte/`**
   - Generación de reportes y visualizaciones reproducibles para
-    `docs/reports/`, incluyendo la comparación FGT1 (OE5).
+    `docs/reports/`, incluyendo la comparación FGT1 (OE3).
 
 ## Estándares de código
 

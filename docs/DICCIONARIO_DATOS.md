@@ -6,6 +6,14 @@ completo del IPM (146 variables originales del DDI de DANE), ver
 [`data/diccionario_ipm_2025.md`](../data/diccionario_ipm_2025.md).
 
 Estado general de fuentes: ver [`data/catalogo.yaml`](../data/catalogo.yaml).
+Variables y llaves del emparejamiento GEIH ↔ Sisbén (incluida Bogotá):
+[`DICCIONARIO_HOTDECK.md`](DICCIONARIO_HOTDECK.md).
+
+> **Nota de vigencia (2026-10-09).** Las cifras de las secciones 1.b a 3 se
+> calcularon con la primera descarga del IPM (publicación 2025). El proyecto
+> trabaja ahora con el **IPM 2024** (77.568 hogares nacional / 85.387
+> departamental) por consistencia con la GEIH 2024; las distribuciones deben
+> recalcularse con `src/2_limpieza.py` antes de citarlas.
 
 ---
 
@@ -61,7 +69,14 @@ de ANDA. Mientras tanto, cada tabla se usa por separado.
 
 ---
 
-## 3. Variables predictoras — las 15 privaciones del IPM (Alkire-Foster)
+## 3. Componentes del IPM — las 15 privaciones (Alkire-Foster)
+
+> ⚠️ Son los componentes con los que se construye `IPM`/`POBRE`; **no deben
+> usarse como predictoras del propio IPM** (circularidad). Se usan para
+> descomponer el outcome de bienestar por dimensión. `aseguramiento_salud`
+> se excluye del outcome de bienestar porque el régimen subsidiado depende
+> mecánicamente de la clasificación Sisbén. Nunca se usan como outcome las
+> variables propias del Sisbén (`I1`–`I15`, `H_5`).
 
 Todas son binarias (`Int8`, 0=no privado / 1=privado), 0% de faltantes.
 
@@ -150,12 +165,13 @@ ver justificación completa en
 
 ---
 
-## 5. Variable de tratamiento — pendiente
+## 5. Variable de tratamiento
 
 | Variable | Tipo esperado | Fuente | Estado |
 |---|---|---|---|
-| `puntaje_sisben` | float (0-100) | Sisbén IV (DNP) | ⏳ Solicitud enviada, pendiente de respuesta |
-| `grupo_elegibilidad` | categórica (A/B/C/D) | Sisbén IV (DNP) | ⏳ Solicitud enviada, pendiente de respuesta |
+| `Grupo` | categórica (A/B/C/D) | Sisbén IV (DNP y SDP) | ✅ Disponible (nacional mayo 2024; Bogotá agosto 2026) |
+| `Nivel`, `Clasificacion` | ordinal / categórica (ej. "B3") | Sisbén IV (DNP y SDP) | ✅ Disponible |
+| `puntaje_sisben` | float (0-100) | — | ❌ El extracto **no trae puntaje continuo**: la frontera de elegibilidad es ordinal (B/C) |
 
 ---
 
@@ -163,12 +179,12 @@ ver justificación completa en
 
 | Fuente | Variables previstas | Estado |
 |---|---|---|
-| GEIH (DANE) | ingreso per cápita, condición de ocupación, informalidad laboral, composición del hogar | ⏳ Registro ANDA en trámite |
-| DPS | beneficiario Familias en Acción, beneficiario Ingreso Solidario | ⏳ Solicitud no enviada aún |
-| RUI (UARIV) | condición de víctima del conflicto armado | ⏳ Solicitud no enviada aún |
+| GEIH (DANE) | ingreso per cápita, condición de ocupación, informalidad laboral, composición del hogar | ✅ Integrada (12 meses 2024, 8 módulos); armonizada a nivel hogar |
+| DPS | participación en Familias en Acción, Ingreso Solidario | ⏳ Por gestionar — condiciona el escenario de primera etapa (OE2) |
+| RUI (UARIV) | condición de víctima del conflicto armado | ⏳ Fuera del alcance replanteado; por confirmar con el tutor |
 
 ---
 
-*Última actualización: procesamiento de IPM Hogares Nacional 2025
-(`src/2_limpieza.py`). Actualizar esta tabla cada vez que se integre una
+*Última actualización: 2026-10-09 (fuentes integradas: IPM, GEIH, Sisbén
+nacional y Bogotá). Actualizar este documento cada vez que se integre una
 fuente nueva o se agregue una variable al análisis.*

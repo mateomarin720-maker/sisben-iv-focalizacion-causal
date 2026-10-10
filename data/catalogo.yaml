@@ -92,17 +92,20 @@ fuentes:
     entidad: DNP
     portal: "sisben.gov.co (solicitud académica ante DNP)"
     catalogo_ref: null
-    periodo: "2020-2026 (registro continuo)"
+    periodo: "Nacional: corte mayo 2024 (ANDA-DNP). Bogotá: corte 03/08/2026 (SDP)"
     unidad_analisis: hogar
     acceso: solicitud_institucional
-    estado: pendiente
+    estado: disponible
     notas: >
-      Microdato para investigación académica solicitado directamente al
-      DNP. Variable de tratamiento del estudio: puntaje continuo (0-100)
-      y grupo de elegibilidad (A/B/C/D).
+      Microdato anonimizado obtenido vía ANDA-DNP (nacional, 1.833.166
+      hogares) y por solicitud a la SDP (Bogotá, 1.458.468 hogares; el
+      Distrito administra su Sisbén aparte). Variable de tratamiento: grupo
+      (A/B/C/D), nivel y clasificación; el extracto no trae puntaje
+      continuo. La edad del jefe viene como código de ciclo de vida
+      (ver docs/DICCIONARIO_HOTDECK.md).
     variables_clave:
-      - puntaje_sisben
       - grupo_elegibilidad
+      - clasificacion
       - zona
       - departamento
 
@@ -208,11 +211,14 @@ fuentes:
     acceso: solicitud_institucional
     estado: pendiente
     notas: >
-      Utilizado como covariable de control (condición de víctima del
-      conflicto armado). Requiere convenio o solicitud institucional.
+      Fuera del alcance replanteado (por confirmar con el tutor). Si se
+      incorpora, se usaría como covariable de control (condición de víctima
+      del conflicto armado); requiere convenio o solicitud institucional.
     variables_clave:
       - condicion_victima
 
-# Estrategia de vinculación (OE4): statistical matching a nivel municipal
-# usando el Registro Social de Hogares como puente de integración entre
-# GEIH y Sisbén IV. Ver docs/Anteproyecto_Sisben_IV.docx, sección 4.3.
+# Estrategia de vinculación: no existe llave común entre GEIH y Sisbén IV,
+# por lo que se usa emparejamiento estadístico (Hot-Deck) por celdas de
+# departamento + ciclo de vida del jefe de hogar (la GEIH no desagrega a
+# nivel municipal). Ver docs/DICCIONARIO_HOTDECK.md y
+# src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py.

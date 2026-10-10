@@ -84,9 +84,22 @@ def subir_archivo(ruta_local: str | Path, ruta_azure: str, sobrescribir: bool = 
         "Subiendo %s -> azure://%s/%s (%.2f MB)",
         ruta_local, CONTAINER_NAME, ruta_azure, ruta_local.stat().st_size / (1024**2),
     )
-    with open(ruta_local, "rb") as f:
-        blob_client.upload_blob(f, overwrite=sobrescribir)
-    logger.info("Subida completa: %s", ruta_azure)
+    # Reintentos y timeouts amplios: con conexiones domésticas, archivos de
+    # decenas de MB pueden agotar el timeout de escritura por defecto.
+    ultimo_error: Exception | None = None
+    for intento in range(1, 4):
+        try:
+            with open(ruta_local, "rb") as f:
+                blob_client.upload_blob(
+                    f, overwrite=sobrescribir,
+                    timeout=900, connection_timeout=900, max_concurrency=2,
+                )
+            logger.info("Subida completa: %s", ruta_azure)
+            return
+        except Exception as exc:  # noqa: BLE001 - se reintenta y se relanza al final
+            ultimo_error = exc
+            logger.warning("Intento %s/3 falló para %s: %s", intento, ruta_azure, type(exc).__name__)
+    raise ultimo_error
 
 
 def descargar_archivo(ruta_azure: str, ruta_local: str | Path) -> Path:
@@ -140,12 +153,22 @@ def sincronizar_carpeta_local_a_azure(
     logger.info("Sincronizando %s archivos de %s hacia azure://%s/%s",
                 len(archivos), carpeta_local, CONTAINER_NAME, prefijo_azure)
 
+    # Reanudable: se omiten los archivos que ya están en Azure con el mismo tamaño.
+    existentes = {
+        b.name: b.size
+        for b in _cliente_contenedor().list_blobs(name_starts_with=f"{prefijo_azure}/")
+    }
+    subidos = omitidos_ya = 0
     for archivo in archivos:
         ruta_relativa = archivo.relative_to(carpeta_local)
         ruta_azure = f"{prefijo_azure}/{ruta_relativa.as_posix()}"
+        if existentes.get(ruta_azure) == archivo.stat().st_size:
+            omitidos_ya += 1
+            continue
         subir_archivo(archivo, ruta_azure)
+        subidos += 1
 
-    logger.info("Sincronización completa: %s archivos subidos", len(archivos))
+    logger.info("Sincronización completa: %s subidos, %s ya estaban en Azure", subidos, omitidos_ya)
 
 
 def descargar_carpeta_de_azure(prefijo_azure: str, carpeta_local: str | Path) -> int:
