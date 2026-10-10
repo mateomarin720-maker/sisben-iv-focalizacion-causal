@@ -46,6 +46,7 @@ from dotenv import load_dotenv
 load_dotenv()  # carga .env explícitamente, sin depender de que el editor lo inyecte a la terminal
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logging.getLogger("azure").setLevel(logging.WARNING)  # oculta el detalle de cada petición HTTP
 logger = logging.getLogger(__name__)
 
 CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME", "datos-inferencia-causal")
@@ -115,13 +116,26 @@ def listar_archivos(prefijo: str = "") -> list[str]:
     return [b.name for b in container.list_blobs(name_starts_with=prefijo)]
 
 
-def sincronizar_carpeta_local_a_azure(carpeta_local: str | Path, prefijo_azure: str) -> None:
+def sincronizar_carpeta_local_a_azure(
+    carpeta_local: str | Path,
+    prefijo_azure: str,
+    excluir_extensiones: tuple[str, ...] = (),
+) -> None:
     """Sube TODOS los archivos de una carpeta local (recursivo) a Azure,
-    preservando la estructura de subcarpetas. Útil para subir de una
-    vez todo data/1_processed/ tras correr los loaders."""
+    preservando la estructura de subcarpetas.
+
+    excluir_extensiones: extensiones a saltar (ej. (".DTA", ".SAV") —
+    formatos duplicados de GEIH que el pipeline nunca usa, solo CSV).
+    """
     carpeta_local = Path(carpeta_local)
     archivos = list(carpeta_local.rglob("*"))
     archivos = [a for a in archivos if a.is_file()]
+    if excluir_extensiones:
+        antes = len(archivos)
+        archivos = [a for a in archivos if a.suffix.upper() not in [e.upper() for e in excluir_extensiones]]
+        omitidos = antes - len(archivos)
+        if omitidos:
+            logger.info("Omitiendo %s archivos con extensión en %s", omitidos, excluir_extensiones)
 
     logger.info("Sincronizando %s archivos de %s hacia azure://%s/%s",
                 len(archivos), carpeta_local, CONTAINER_NAME, prefijo_azure)
@@ -132,6 +146,31 @@ def sincronizar_carpeta_local_a_azure(carpeta_local: str | Path, prefijo_azure: 
         subir_archivo(archivo, ruta_azure)
 
     logger.info("Sincronización completa: %s archivos subidos", len(archivos))
+
+
+def descargar_carpeta_de_azure(prefijo_azure: str, carpeta_local: str | Path) -> int:
+    """Descarga TODOS los archivos bajo un prefijo de Azure hacia una
+    carpeta local, preservando la estructura. Es el reverso de
+    sincronizar_carpeta_local_a_azure — para que cualquiera del equipo
+    (o una máquina nueva) pueda reconstruir data/ sin tener que
+    regenerar todo desde los CSV/TXT crudos ni correr los loaders."""
+    carpeta_local = Path(carpeta_local)
+    archivos_azure = listar_archivos(prefijo_azure)
+
+    if not archivos_azure:
+        logger.warning("No se encontró ningún archivo en azure://%s/%s", CONTAINER_NAME, prefijo_azure)
+        return 0
+
+    logger.info("Descargando %s archivos de azure://%s/%s hacia %s",
+                len(archivos_azure), CONTAINER_NAME, prefijo_azure, carpeta_local)
+
+    for ruta_azure in archivos_azure:
+        ruta_relativa = ruta_azure[len(prefijo_azure):].lstrip("/")
+        ruta_local_destino = carpeta_local / ruta_relativa
+        descargar_archivo(ruta_azure, ruta_local_destino)
+
+    logger.info("Descarga completa: %s archivos", len(archivos_azure))
+    return len(archivos_azure)
 
 
 if __name__ == "__main__":
