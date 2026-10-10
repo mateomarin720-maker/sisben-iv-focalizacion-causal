@@ -1,11 +1,14 @@
 # data/1_processed
 
-Datos limpios, armonizados y preparados para el análisis causal, producto
-de `src/2_limpieza.py` y `src/3_preprocesamiento.py`.
+Datos limpios y tipados, en Parquet, producto de la ingesta
+(`src/1_integracion.py`, `src/ingesta/`) y la limpieza (`src/2_limpieza.py`):
 
-Artefacto principal esperado: tabla unificada a nivel hogar con la
-variable de tratamiento (puntaje/grupo Sisbén IV), los outcomes de
-bienestar multidimensional, las covariables de control y la variable de
-pobreza latente construida con fuentes externas (GEIH, IPM, RUI).
+- `geih/2024/<mes>/<modulo>.parquet` — 12 meses × 8 módulos.
+- `sisben_iv/2024/{hogares,viviendas,personas}.parquet`.
+- IPM Hogares/Personas/Viviendas limpios.
 
-Contenido no versionado por `.gitignore` (excepto este archivo).
+La armonización entre fuentes y el emparejamiento se guardan en
+`data/2_models/` (ver su README). Pendiente: tabla unificada a nivel hogar
+con tratamiento, outcomes y covariables (`src/3_preprocesamiento.py`).
+
+Contenido no versionado (`.gitignore`); respaldo en Azure Blob Storage.

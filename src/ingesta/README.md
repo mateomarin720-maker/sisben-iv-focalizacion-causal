@@ -28,14 +28,21 @@ Módulos de conexión a fuentes de datos.
   ese archivo/carpeta, (4) documentar la fecha y el canal de obtención en
   `data/catalogo.yaml` (campo `estado` → `disponible`).
 
-## Próximos pasos (Fase 2 del cronograma, jun–ago 2026)
+- **`geih_loader.py`** y **`sisben_loader.py`**: cargadores específicos.
+  El de GEIH recorre `data/0_raw/geih/2024/<mes>/CSV/` y convierte los 8
+  módulos de cada mes a Parquet (lectura `latin1`); el de Sisbén convierte
+  los TXT (separador tab) de Hogares, Viviendas y Personas por lotes de
+  200.000 filas.
 
-1. Tramitar registro GEIH (ANDA-DANE) y solicitud Sisbén IV (DNP).
-2. Identificar el `dataset_id` Socrata exacto del IPM agregado en
-   datos.gov.co y añadirlo a `data/catalogo.yaml` (`catalogo_ref`) — ya
-   hecho para 2024/2025, ver catálogo.
-3. Cuando llegue el microdato de GEIH o Sisbén IV, correr
-   `local_csv_parser.py` sobre él desde `1_integracion.py`.
-4. Escribir el conector de DPS/RUI en cuanto se defina el canal de
-   entrega (API propia, SFTP o archivo plano).
+## Estado (2026-10-09)
 
+| Fuente | Estado |
+|---|---|
+| GEIH 2024 (12 meses) | ✅ Ingestada |
+| IPM 2024 | ✅ Ingestado |
+| Sisbén IV nacional (ANDA-DNP) | ✅ Ingestado |
+| Sisbén IV Bogotá (SDP, CSV) | ✅ Armonizado directamente desde el CSV (`src/armonizacion/armonizar_sisben_bogota_sdp.py`) |
+| DPS | ⏳ Por gestionar; escribir el conector cuando se defina el canal de entrega |
+
+La armonización entre fuentes y el emparejamiento no pertenecen a esta
+carpeta: ver `src/armonizacion/` y `src/emparejamiento/`.

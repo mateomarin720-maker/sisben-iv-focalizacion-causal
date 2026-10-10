@@ -6,6 +6,11 @@ Extraído automáticamente del DDI XML oficial
 
 Total de variables descritas en el DDI: 146
 
+> **Alcance temporal:** este DDI corresponde a la publicación 2025 del IPM.
+> El proyecto trabaja con el **IPM 2024** para ser consistente con la GEIH
+> 2024; se asume la misma estructura de variables, pero debe confirmarse
+> contra el DDI de la publicación 2024 antes de citarla en la tesis.
+
 > **Nota:** este DDI describe varias bases relacionadas (nivel hogar
 > y nivel persona, base nacional y base departamental) bajo el mismo
 > `<dataDscr>`, por eso hay nombres repetidos con distinta capitalización

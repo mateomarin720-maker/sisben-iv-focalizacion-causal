@@ -54,3 +54,25 @@ data/2_models/*
 *.key
 *.secret
 config.ini
+
+# Microdatos IPM descargados (el banco de datos es Azure Blob Storage)
+# ----------------------------------------------------------------
+NACIONAL/
+DEPARTAMENTAL/
+*.csv
+*.dta
+*.sav
+!docs/reports/*.csv
+!data/*.csv
+
+# Logs y scripts temporales de diagnostico
+# ----------------------------------------------------------------
+salida_*.txt
+ver_*.py
+validar_sisben.py
+comparar_meses.py
+diagnostico_env*.py
+
+.env.*
+!.env.example
+*.env.txt
