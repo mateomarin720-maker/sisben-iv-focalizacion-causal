@@ -27,7 +27,6 @@ SISBEN_DIR = Path("data/1_processed/sisben_iv/2024")
 OUT_PATH = Path("data/2_models/sisben_estandarizado_2024.parquet")
 
 MAPA_HOGAR = {
-    "cod_mpio": "_cod_mpio",  # se deriva geo_depto de aquí, no se usa directo
     "ZONA": "geo_zona",
     "HOG027": "hog_num_personas",
     "FEX": "fex",
@@ -55,9 +54,14 @@ def estandarizar_sisben() -> pd.DataFrame:
     cols_hog = list(dict.fromkeys(cols_hog))  # sin duplicados, conserva orden
     hog = pd.read_parquet(SISBEN_DIR / "hogares.parquet", columns=cols_hog).replace("", pd.NA)
 
-    cols_viv = [*LLAVE, *MAPA_VIVIENDA.keys()]
-    cols_viv = list(dict.fromkeys(cols_viv))
+    cols_disp = pd.read_parquet(SISBEN_DIR / "viviendas.parquet").columns
+    llave_viv = [*LLAVE, "HOGAR"] if "HOGAR" in cols_disp else list(LLAVE)
+    cols_viv = list(dict.fromkeys([*llave_viv, *MAPA_VIVIENDA.keys()]))
     viv = pd.read_parquet(SISBEN_DIR / "viviendas.parquet", columns=cols_viv).replace("", pd.NA)
+    n_dup_viv = viv.duplicated(subset=llave_viv).sum()
+    if n_dup_viv:
+        logger.warning("Viviendas: %s filas duplicadas por %s; se conserva la primera", f"{n_dup_viv:,}", llave_viv)
+        viv = viv.drop_duplicates(subset=llave_viv, keep="first")
 
     cols_pers = [*LLAVE, "HOGAR", FILTRO_JEFE_COL, *MAPA_JEFE.keys(), "Grupo", "Nivel", "Clasificacion"]
     cols_pers = list(dict.fromkeys(cols_pers))
@@ -80,12 +84,20 @@ def estandarizar_sisben() -> pd.DataFrame:
     )
     del pers
 
-    df = hog.merge(viv, on=LLAVE, how="left")
+    # Una fila por HOGAR: Personas aporta solo al jefe; el resto de miembros
+    # (PER001..) son del MISMO hogar y no generan filas nuevas.
+    hog = hog.drop_duplicates(subset=[*LLAVE, "HOGAR"], keep="first")
+    df = hog.merge(viv, on=llave_viv, how="left")
     df = df.merge(jefes, on=[*LLAVE, "HOGAR"], how="left")
+    assert not df.duplicated(subset=[*LLAVE, "HOGAR"]).any(), "Hay hogares duplicados tras los merges"
 
     df = df.rename(columns={**MAPA_HOGAR, **MAPA_VIVIENDA, **MAPA_JEFE})
-    df["geo_depto"] = df["_cod_mpio"].astype(str).str[:2]
-    df = df.drop(columns=["_cod_mpio"], errors="ignore")
+    df["geo_depto"] = df["cod_mpio"].astype(str).str[:2]
+    # Se CONSERVAN cod_mpio, geo_zona(ZONA), llave y CORTE: son la llave completa del hogar
+    df["llave_hogar_sisben"] = (df["cod_mpio"].astype(str) + "|" + df["geo_zona"].astype(str) + "|"
+                                + df["llave"].astype(str) + "|" + df["CORTE"].astype(str) + "|"
+                                + df["HOGAR"].astype(str))
+    assert df["llave_hogar_sisben"].is_unique, "llave_hogar_sisben no es unica"
     df["fuente"] = "sisben_iv"
 
     return df

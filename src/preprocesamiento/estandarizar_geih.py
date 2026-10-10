@@ -62,6 +62,12 @@ FILTRO_JEFE_COL = "P6050"
 FILTRO_JEFE_VAL = "1"
 
 
+def _norm_llave(serie: pd.Series) -> pd.Series:
+    """Normaliza identificadores a texto de entero ('7893865.0', ' 01 ', 1 -> '7893865', '1', '1'),
+    para que hogar_vivienda y caracteristicas_generales crucen igual en todos los meses."""
+    return pd.to_numeric(serie, errors="coerce").astype("Int64").astype("string")
+
+
 def _cargar_mes(mes: str) -> pd.DataFrame | None:
     path_hv = GEIH_DIR / mes / "hogar_vivienda.parquet"
     path_cg = GEIH_DIR / mes / "caracteristicas_generales.parquet"
@@ -74,10 +80,14 @@ def _cargar_mes(mes: str) -> pd.DataFrame | None:
     columnas_hv = [c for c in MAPA_HOGAR_VIVIENDA if c in hv.columns]
     hv = hv[["DIRECTORIO", "SECUENCIA_P", "HOGAR", *[c for c in columnas_hv if c not in ("DIRECTORIO", "SECUENCIA_P", "HOGAR")]]]
     hv = hv.rename(columns=MAPA_HOGAR_VIVIENDA)
+    for c in ("llave_directorio", "llave_secuencia_p", "llave_hogar"):
+        hv[c] = _norm_llave(hv[c])
 
     if path_cg.exists():
         cg = pd.read_parquet(path_cg).replace("", pd.NA)
-        jefes = cg[cg[FILTRO_JEFE_COL] == FILTRO_JEFE_VAL].copy()
+        for c in ("DIRECTORIO", "SECUENCIA_P", "HOGAR"):
+            cg[c] = _norm_llave(cg[c])
+        jefes = cg[_norm_llave(cg[FILTRO_JEFE_COL]).astype("string") == FILTRO_JEFE_VAL].copy()
         columnas_jefe = [c for c in MAPA_JEFE if c in jefes.columns]
         jefes = jefes[["DIRECTORIO", "SECUENCIA_P", "HOGAR", *columnas_jefe]].rename(columns=MAPA_JEFE)
         hv = hv.merge(
@@ -86,6 +96,9 @@ def _cargar_mes(mes: str) -> pd.DataFrame | None:
             right_on=["DIRECTORIO", "SECUENCIA_P", "HOGAR"],
             how="left",
         ).drop(columns=["DIRECTORIO", "SECUENCIA_P", "HOGAR"], errors="ignore")
+        n_sin = int(hv["jefe_edad"].isna().sum()) if "jefe_edad" in hv.columns else len(hv)
+        if n_sin > 0.02 * len(hv):
+            logger.warning("GEIH %s: %s de %s hogares SIN jefe cruzado — revisar llaves", mes, f"{n_sin:,}", f"{len(hv):,}")
     else:
         logger.warning("GEIH %s: caracteristicas_generales.parquet no encontrado — sin datos de jefe", mes)
 
