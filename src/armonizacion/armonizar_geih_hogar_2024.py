@@ -4,7 +4,7 @@ Combina el módulo hogar_vivienda (nivel hogar) con las características
 del jefe de hogar extraídas de caracteristicas_generales (nivel
 persona, filtrado a P6050=="1"), y renombra todo a nombres canónicos
 compartidos con el estandarizador de Sisbén (ver
-estandarizar_sisben.py), para que el Hot-Deck opere sobre columnas ya
+armonizar_sisben_hogar_2024.py), para que el Hot-Deck opere sobre columnas ya
 homologadas en vez de tener que mapear nombres cada vez.
 
 ⚠️ Verificado con datos reales (2026-09-15), pendiente de confirmar
@@ -21,7 +21,7 @@ oficialmente:
     verificada oficialmente todavía.
 
 Uso:
-    poetry run python -m src.preprocesamiento.estandarizar_geih
+    poetry run python -m src.armonizacion.armonizar_geih_hogar_2024
 """
 
 from __future__ import annotations
@@ -107,7 +107,7 @@ def _cargar_mes(mes: str) -> pd.DataFrame | None:
     return hv
 
 
-def estandarizar_geih() -> pd.DataFrame:
+def armonizar_geih_hogar() -> pd.DataFrame:
     """Apila los 12 meses de GEIH ya estandarizados. Procesa los meses
     disponibles — no requiere tener los 12 para funcionar."""
     tablas = []
@@ -126,7 +126,7 @@ def estandarizar_geih() -> pd.DataFrame:
 
 def main() -> None:
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    df = estandarizar_geih()
+    df = armonizar_geih_hogar()
     df.to_parquet(OUT_PATH, index=False)
     print(f"\n=== GEIH estandarizado ===")
     print(f"Total hogares (todos los meses apilados): {len(df):,}")

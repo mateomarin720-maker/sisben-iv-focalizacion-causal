@@ -5,7 +5,7 @@ Estructura de la fuente: una fila por persona, separador ';', UTF-8 con BOM.
 Llave de hogar: ide_ficha_origen + ide_hogar. Jefe: tip_parentesco == 1.
 
 Uso:
-    poetry run python -m src.preprocesamiento.estandarizar_sisben_bogota RUTA_CSV
+    poetry run python -m src.armonizacion.armonizar_sisben_bogota_sdp RUTA_CSV
 Salida: data/2_models/sisben_bogota_estandarizado.parquet
         (+ opcional fusión con nacional sustituyendo cod_mpio 11001)
 """
@@ -24,7 +24,7 @@ COLS = ["ide_ficha_origen", "ide_hogar", "ide_persona", "Cod_clase", "Cod_comuna
         "ind_tiene_acueducto", "ind_tiene_alcantarillado"]
 
 
-def estandarizar(csv: str) -> pd.DataFrame:
+def armonizar_sisben_bogota(csv: str) -> pd.DataFrame:
     df = pd.read_csv(csv, sep=";", usecols=COLS, dtype=str, encoding="utf-8-sig")
     k = ["ide_ficha_origen", "ide_hogar"]
     n_pers = df.groupby(k).size().rename("hog_num_personas").reset_index()
@@ -70,7 +70,7 @@ def main() -> None:
     if arg.lower().endswith(".parquet"):   # ya estandarizado: solo fusionar con el nacional
         b = pd.read_parquet(arg)
     else:
-        b = estandarizar(arg)
+        b = armonizar_sisben_bogota(arg)
         b.to_parquet(OUT, index=False)
     print(f"Bogotá: {len(b):,} hogares -> {OUT}")
     if NACIONAL.exists():

@@ -3,14 +3,14 @@
 Combina Hogares + Viviendas + características del jefe de hogar y
 tratamiento (Grupo/Nivel/Clasificacion) desde Personas (filtrado a
 PER003=="1"), renombrado a los MISMOS nombres canónicos que usa
-estandarizar_geih.py, para que el Hot-Deck compare columnas ya
+armonizar_geih_hogar_2024.py, para que el Hot-Deck compare columnas ya
 homologadas.
 
 Ver advertencias de codificación pendientes de verificar oficialmente
-en el docstring de estandarizar_geih.py — aplican igual aquí.
+en el docstring de armonizar_geih_hogar_2024.py — aplican igual aquí.
 
 Uso:
-    poetry run python -m src.preprocesamiento.estandarizar_sisben
+    poetry run python -m src.armonizacion.armonizar_sisben_hogar_2024
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ FILTRO_JEFE_VAL = "1"
 LLAVE = ["cod_mpio", "ZONA", "llave", "CORTE"]
 
 
-def estandarizar_sisben() -> pd.DataFrame:
+def armonizar_sisben_hogar() -> pd.DataFrame:
     cols_hog = [*LLAVE, "HOGAR", *MAPA_HOGAR.keys()]
     cols_hog = list(dict.fromkeys(cols_hog))  # sin duplicados, conserva orden
     hog = pd.read_parquet(SISBEN_DIR / "hogares.parquet", columns=cols_hog).replace("", pd.NA)
@@ -105,7 +105,7 @@ def estandarizar_sisben() -> pd.DataFrame:
 
 def main() -> None:
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    df = estandarizar_sisben()
+    df = armonizar_sisben_hogar()
     df.to_parquet(OUT_PATH, index=False)
     print("\n=== Sisbén estandarizado ===")
     print(f"Total hogares: {len(df):,}")

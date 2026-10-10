@@ -1,13 +1,13 @@
 """Descarga TODO data/ desde Azure — reconstruye data/ sin reprocesar.
 
-Contraparte de subir_todo_a_azure.py. Cualquier integrante del equipo,
+Contraparte de publicar_banco_datos_azure.py. Cualquier integrante del equipo,
 o una máquina nueva con el repo recién clonado, corre esto UNA VEZ para
 tener toda la data ya procesada (GEIH, Sisbén, IPM, estandarizados,
 Hot-Deck) sin tener que volver a correr los loaders ni esperar los
 minutos que toma procesar los archivos crudos.
 
 Uso:
-    poetry run python -m src.utils.descargar_todo_desde_azure
+    poetry run python -m src.utils.restaurar_banco_datos_azure
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ def main() -> None:
     print(f"\n=== Descarga desde Azure completa: {total} archivos ===")
     if total == 0:
         print("No se encontró nada en Azure todavía — alguien del equipo debe correr "
-              "primero subir_todo_a_azure.py")
+              "primero publicar_banco_datos_azure.py")
 
 
 if __name__ == "__main__":

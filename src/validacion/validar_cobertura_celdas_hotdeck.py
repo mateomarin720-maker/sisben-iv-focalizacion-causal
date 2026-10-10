@@ -1,7 +1,7 @@
 """Por que solo ~11% cae en celda_exacta? (solo lectura)
-Uso: poetry run python diagnostico_celdas.py"""
+Uso: poetry run python -m src.validacion.validar_cobertura_celdas_hotdeck"""
 import pandas as pd
-from src.hotdeck.hotdeck_estandarizado import construir_celda
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celda
 r = pd.read_parquet("data/2_models/geih_estandarizado_2024.parquet", columns=["geo_depto", "jefe_edad"])
 d = pd.read_parquet("data/2_models/sisben_estandarizado_2024.parquet", columns=["geo_depto", "jefe_edad", "Clasificacion"])
 for n, x in (("GEIH", r), ("SISBEN", d)):

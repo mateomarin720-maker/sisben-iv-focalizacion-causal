@@ -11,7 +11,7 @@ Valido solo a nivel poblacional: no identifica el mismo hogar (supuesto de
 independencia condicional del matching estadístico).
 
 Uso:
-    poetry run python -m src.hotdeck.hotdeck_estandarizado
+    poetry run python -m src.emparejamiento.emparejamiento_hotdeck_geih_sisben
 """
 from __future__ import annotations
 
@@ -91,7 +91,7 @@ def hotdeck(receptor: pd.DataFrame, donante: pd.DataFrame, seed: int = 42) -> pd
 
 def main() -> None:
     if not GEIH.exists():
-        raise SystemExit(f"Falta {GEIH}: corra src.preprocesamiento.estandarizar_geih")
+        raise SystemExit(f"Falta {GEIH}: corra src.armonizacion.armonizar_geih_hogar_2024")
     sb = SISBEN_BOG if SISBEN_BOG.exists() else SISBEN
     logger.info("Donante: %s", sb)
     rec = pd.read_parquet(GEIH)

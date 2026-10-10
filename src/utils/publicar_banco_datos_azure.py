@@ -3,19 +3,19 @@
 Azure Blob Storage es el banco de datos principal del equipo — GitHub
 NUNCA guarda datos (ver .gitignore), solo código. Este script es el
 punto único para subir todo lo que tengan localmente procesado, y su
-contraparte (descargar_todo_desde_azure.py) para que cualquier
+contraparte (restaurar_banco_datos_azure.py) para que cualquier
 integrante del equipo (o una máquina nueva) reconstruya data/ sin
 tener que volver a correr todos los loaders desde los CSV/TXT crudos.
 
 Flujo recomendado del equipo:
     1. Alguien corre los loaders localmente (geih_loader, sisben_loader,
-       estandarizar_*, hotdeck_*) — esto puede tardar minutos.
-    2. Esa persona corre subir_todo_a_azure.py UNA VEZ.
-    3. El resto del equipo corre descargar_todo_desde_azure.py y ya
+       armonizar_*, emparejamiento_*) — esto puede tardar minutos.
+    2. Esa persona corre publicar_banco_datos_azure.py UNA VEZ.
+    3. El resto del equipo corre restaurar_banco_datos_azure.py y ya
        tiene todo sin tener que reprocesar nada.
 
 Uso:
-    poetry run python -m src.utils.subir_todo_a_azure
+    poetry run python -m src.utils.publicar_banco_datos_azure
 """
 
 from __future__ import annotations

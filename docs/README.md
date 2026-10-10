@@ -11,6 +11,12 @@ legibles tanto para audiencias técnicas como no técnicas.
     (identificadores, outcome, predictoras, tratamiento pendiente),
     tipo, distribución real y estado por fuente. Se actualiza cada vez
     que se integra una fuente nueva.
+- **[`DICCIONARIO_HOTDECK.md`](DICCIONARIO_HOTDECK.md)**
+  - Variables, llaves de hogar y limitaciones del emparejamiento
+    GEIH ↔ Sisbén (incluye Bogotá y los códigos de edad `PER002`).
+- **[`RESUMEN_AVANCES.md`](RESUMEN_AVANCES.md)** y
+  **[`CHANGELOG_PENDIENTES.md`](CHANGELOG_PENDIENTES.md)**
+  - Estado general del proyecto e historial de cambios y pendientes.
 - **[`Anteproyecto_Sisben_IV.docx`](Anteproyecto_Sisben_IV.docx)**
   - Documento formal de anteproyecto (abril 2026): introducción, marco
     teórico, revisión de literatura, objetivos general y específicos

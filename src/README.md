@@ -24,7 +24,28 @@ documentado y preferiblemente cubierto por pruebas.
     `solicitud_institucional` y se ingieren manualmente en `0_raw/` una
     vez obtenido el microdato.
 
+- **`armonizacion/`**
+  - Lleva cada fuente a un esquema canónico por hogar (jefe de hogar):
+    `armonizar_geih_hogar_2024.py` (12 meses GEIH),
+    `armonizar_sisben_hogar_2024.py` (Sisbén nacional) y
+    `armonizar_sisben_bogota_sdp.py` (Sisbén Bogotá, entrega SDP; también
+    fusiona con el nacional reemplazando el municipio 11001). Salidas en
+    `data/2_models/`.
+
+- **`emparejamiento/`**
+  - `emparejamiento_hotdeck_geih_sisben.py`: Hot-Deck por celdas
+    (departamento + ciclo de vida del jefe) con degradación jerárquica.
+    Asigna `Grupo`/`Nivel`/`Clasificacion` del Sisbén a los hogares GEIH.
+    Válido solo a nivel poblacional (no identifica el mismo hogar).
+
+- **`validacion/`**
+  - Chequeos de calidad: `validar_cobertura_celdas_hotdeck.py`,
+    `verificar_esquema_armonizado.py`, `revisar_faltantes_modulos_geih.py`.
+
 - **`utils/`**
+  - `azure_storage.py`, `publicar_banco_datos_azure.py` y
+    `restaurar_banco_datos_azure.py`: banco de datos en Azure Blob Storage
+    (los datos no se versionan en git).
   - `config.py`: carga `data/catalogo.yaml` y variables de entorno
     (`.env`) de forma centralizada para todos los scripts.
 
