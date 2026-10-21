@@ -40,7 +40,7 @@ import logging
 import os
 from pathlib import Path
 
-from azure.storage.blob import BlobServiceClient, ContentSettings
+from azure.storage.blob import BlobServiceClient, ContainerClient, ContentSettings
 from dotenv import load_dotenv
 
 load_dotenv()  # carga .env explícitamente, sin depender de que el editor lo inyecte a la terminal
@@ -53,17 +53,29 @@ CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME", "datos-inferencia-causal")
 
 
 def _cliente_contenedor():
-    """Crea el cliente del contenedor, leyendo la cadena de conexión
-    desde la variable de entorno (nunca hardcodeada en el código)."""
+    """Crea el cliente del contenedor.
+
+    Dos formas de acceso, en este orden:
+      1. AZURE_STORAGE_CONNECTION_STRING: acceso completo (lectura y escritura);
+         es para el equipo. Nunca va en el código.
+      2. AZURE_CONTAINER_SAS_URL: URL con token SAS de solo lectura y vencimiento
+         (ver generar_acceso_lectura_azure.py); es para quien solo necesita
+         consultar los datos, por ejemplo el profesor.
+    """
     connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-    if not connection_string:
-        raise ValueError(
-            "AZURE_STORAGE_CONNECTION_STRING no está configurada. "
-            "Agréguenla a su archivo .env (no se versiona en git) o "
-            "expórtenla como variable de entorno del sistema."
-        )
-    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-    return blob_service_client.get_container_client(CONTAINER_NAME)
+    if connection_string:
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        return blob_service_client.get_container_client(CONTAINER_NAME)
+
+    sas_url = os.getenv("AZURE_CONTAINER_SAS_URL")
+    if sas_url:
+        return ContainerClient.from_container_url(sas_url)
+
+    raise ValueError(
+        "No hay credenciales de Azure. Configure en su archivo .env (no se versiona "
+        "en git) AZURE_STORAGE_CONNECTION_STRING (equipo) o AZURE_CONTAINER_SAS_URL "
+        "(solo lectura)."
+    )
 
 
 def subir_archivo(ruta_local: str | Path, ruta_azure: str, sobrescribir: bool = True) -> None:

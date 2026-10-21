@@ -8,10 +8,12 @@ minutos que toma procesar los archivos crudos.
 
 Uso:
     poetry run python -m src.utils.restaurar_banco_datos_azure
+    poetry run python -m src.utils.restaurar_banco_datos_azure --solo 2_models
 """
 
 from __future__ import annotations
 
+import argparse
 import logging
 from pathlib import Path
 
@@ -24,9 +26,12 @@ CARPETAS = ["0_raw", "1_processed", "2_models"]
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--solo", choices=CARPETAS, help="descargar solo esta carpeta (ej. 2_models)")
+    args = ap.parse_args()
     base = Path("data")
     total = 0
-    for carpeta in CARPETAS:
+    for carpeta in ([args.solo] if args.solo else CARPETAS):
         n = descargar_carpeta_de_azure(carpeta, base / carpeta)
         total += n
 
