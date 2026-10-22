@@ -5,7 +5,7 @@ Adaptado de `scripts/validar_proveedores.py` del repo de referencia
 `desarrollo_social_y_economico` (rama `develop`), que detecta doble conteo
 al combinar SECOP I y SECOP II por NIT de proveedor. Aquí el mismo
 principio aplica a hogares: tras el statistical matching entre GEIH y
-Sisbén IV (ver docs/Anteproyecto_Sisben_IV.docx, sección 4.3), un mismo
+Sisbén IV (ver docs/institucional/Anteproyecto_Sisben_IV.docx, sección 4.3), un mismo
 hogar puede quedar representado más de una vez si el linkage no es
 estrictamente 1:1 a nivel de `hogar_id` (o del identificador puente que
 se use del Registro Social de Hogares).
