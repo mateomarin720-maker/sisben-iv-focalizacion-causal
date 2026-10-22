@@ -76,3 +76,5 @@ diagnostico_env*.py
 .env.*
 !.env.example
 *.env.txt
+
+docs/reports/top10_sisben_bogota_sdp.csv
