@@ -19,22 +19,49 @@
 | Ingesta | `src/1_integracion.py`, `src/ingesta/` | CSV/TXT crudos → Parquet con trazabilidad |
 | Limpieza | `src/2_limpieza.py` | Tipado, deduplicación y faltantes estructurales (no imputados) |
 | **Armonización** | `src/armonizacion/` | Lleva GEIH, Sisbén nacional y Sisbén Bogotá a un esquema canónico por hogar (jefe de hogar) |
-| **Emparejamiento estadístico** | `src/emparejamiento/` | Hot-Deck GEIH ← Sisbén por celdas (departamento + ciclo de vida del jefe) |
+| **Emparejamiento estadístico** | `src/emparejamiento/` | Hot-Deck GEIH ← Sisbén por celdas (departamento + ciclo de vida del jefe + tramo de `viv_cuartos`, desde 2026-10-21) |
 | **Validación** | `src/validacion/` | Cobertura de celdas, esquema armonizado, faltantes por módulo |
 | Banco de datos | `src/utils/azure_storage.py` + publicar/restaurar | Sincronización con Azure |
-| **Identificación causal** | `src/4_dag_identificacion.py` | Los dos DAG del pipeline (principal y de una sola tabla) + chequeo formal de d-separación — ver `docs/resultados/IDENTIFICACION_CAUSAL.md` |
-| **Prueba exploratoria** | `src/estimacion/` | ATE/ATT/CATE de prueba (no es la Fase 4) — ver `src/estimacion/README.md` |
-| Causal (oficial) | `src/3_preprocesamiento.py`, `src/5_estimacion.py`, `src/6_refutacion.py` | Outcome oficial (IPM desde GEIH), DML/Causal Forest formal, refutación — **no iniciado** |
+| **Identificación causal** | `src/4_dag_identificacion.py` ✅ | Los dos DAG del pipeline (principal y de una sola tabla) + chequeo formal de d-separación — ver `docs/resultados/IDENTIFICACION_CAUSAL.md` |
+| **Preprocesamiento** | `src/3_preprocesamiento.py` ✅ | Outcome real: IPM-GEIH reducido (4 de 15 privaciones) — ver `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` |
+| **Estimación causal** | `src/5_estimacion.py` ✅ | DML (ATE/ATT/ATU) + Causal Forest (CATE), primera corrida real — ver §3b |
+| Refutación | `src/6_refutacion.py` | Placebo, random common cause, sensibilidad a confusores — **no iniciado** |
 
-## 3. Resultado del Hot-Deck (datos reales, 12 meses, Bogotá filtrada por vigencia a 2024)
+## 3. Resultado del Hot-Deck (datos reales, 12 meses, Bogotá filtrada por vigencia a 2024, vivienda en la celda)
 
 - 290.968 hogares GEIH receptores; **3.106.489** hogares Sisbén donantes (nacional + 1.274.578 de Bogotá vigentes al 31-dic-2024 — ver §1).
-- **Celda exacta: 100 %** (departamento + ciclo de vida del jefe), también 100 % dentro de Bogotá.
-- Grupo asignado, ponderado por factor de expansión: **A 28,0 % · B 34,4 % · C 24,9 % · D 12,7 %** — prácticamente igual al resultado sin filtrar por fecha (A 28,0/B 34,4/C 25,0/D 12,5), lo que confirma que el filtro de vigencia no distorsiona el agregado nacional.
-- Dentro de Bogotá (depto 11, 10.016 hogares GEIH): **A 4,0 % · B 20,9 % · C 47,3 % · D 27,8 %** — aquí el filtro sí importa: con año exacto de encuesta (descartado, ver §8 de `DICCIONARIO_HOTDECK.md`) D salía en 17,6 %, 10 p.p. menos.
+- **Celda exacta: 100 %** (departamento + ciclo de vida del jefe + tramo de `viv_cuartos`), también 100 % dentro de Bogotá.
+- Grupo asignado, ponderado por factor de expansión: **A 31,2 % · B 35,2 % · C 23,2 % · D 10,3 %** (antes de sumar vivienda a la celda: A 28,0/B 34,4/C 24,9/D 12,7) — sumar `viv_cuartos` corrió la distribución hacia A y en contra de D, 2-3 p.p. en cada extremo.
+- Dentro de Bogotá (depto 11, 10.016 hogares GEIH): **A 4,0 % · B 20,9 % · C 47,3 % · D 27,8 %** (con el filtro de vigencia del SDP; con año exacto de encuesta, descartado, D salía en 17,6 %).
 - Crosswalk geográfico confirmado: `DPTO` (GEIH) = primeros 2 dígitos de `cod_mpio` (Sisbén).
 
-**Cómo leerlo.** La celda es gruesa (≈130 celdas), por eso el 100 % no demuestra por sí solo un buen emparejamiento: falta la sensibilidad con variables de vivienda. La distribución de grupos refleja a los hogares *registrados* en el Sisbén, no a toda la población; no debe reportarse como prevalencia nacional. El emparejamiento solo es válido a nivel poblacional (no identifica el mismo hogar).
+**Cómo leerlo.** La celda ahora incluye vivienda (`viv_cuartos`), pero sigue sin incluir `viv_paredes`/`viv_pisos` (categorías sin verificar entre fuentes — ver §4). El 100 % de celda exacta no demuestra por sí solo un buen emparejamiento: el chequeo real de validez está en §3b, con DML/Causal Forest. La distribución de grupos refleja a los hogares *registrados* en el Sisbén, no a toda la población; no debe reportarse como prevalencia nacional. El emparejamiento solo es válido a nivel poblacional (no identifica el mismo hogar).
+
+## 3b. Resultado de la estimación (primera corrida real, 2026-10-21)
+
+Outcome: `ipm_geih_score` (IPM-GEIH reducido, 4 de 15 privaciones, 0-4) y
+`POBRE_GEIH` (binario, score≥2, 23,5 % de los hogares). Tratamiento:
+`T=1` si `Grupo_hotdeck ∈ {A,B}`. `W` = celda completa del Hot-Deck
+(depto+edad+cuartos); `X` = `geo_zona`, `jefe_sexo`, `viv_paredes`, `viv_pisos`.
+
+| Modelo | `ipm_geih_score` | `POBRE_GEIH` |
+|---|---|---|
+| ATE (`LinearDML`) | +0,0137 [IC95% +0,008;+0,019] | +0,0074 [IC95% +0,004;+0,011] |
+| ATT | +0,0136 [+0,008;+0,019] | +0,0074 [+0,004;+0,011] |
+| ATU | +0,0139 [+0,009;+0,019] | +0,0073 [+0,004;+0,011] |
+| CATE medio (`CausalForestDML`) | +0,0149 (jefa mujer +0,029 vs. jefe hombre +0,001) | +0,0031 (jefa mujer +0,014 vs. jefe hombre -0,007) |
+
+**Cómo leerlo:** ambos IC95% excluyen 0 — hay una asociación pequeña pero
+estadísticamente distinta de cero entre el grupo asignado y las
+privaciones, incluso controlando por la celda completa del Hot-Deck. Según
+el chequeo formal de d-separación (`IDENTIFICACION_CAUSAL.md`) esto no
+debería pasar si `W` capturara todo lo relevante — la pista más fuerte es
+que `viv_paredes` es la segunda variable más importante del Causal Forest
+en ambos outcomes: la vivienda sigue colándose por fuera de la celda. **No
+se puede leer como efecto causal del Sisbén todavía** — ver
+`docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
+`RESULTADOS_CAUSALFOREST_CATE.md` para el detalle y las limitaciones
+completas.
 
 ### Errores encontrados y corregidos durante la ejecución
 1. **Doble jefe en Sisbén:** 65 hogares con dos jefes marcados → se conserva el primero.
@@ -44,13 +71,16 @@
 
 ## 4. Pendientes técnicos
 - [x] **Verificar los códigos de `PER002`** (hipótesis: 3=12–17, 4=18–28, 5=29–59, 6=60+) — corroborada indirectamente el 2026-10-10 cruzando contra escolaridad/estado civil/pensión en la base completa de Personas; falta la ficha oficial de ANDA. Ver `docs/DICCIONARIO_HOTDECK.md` §5.
-- [ ] Sumar variables de vivienda a la celda y medir sensibilidad (celda exacta vs. todos los niveles).
-- [ ] Verificar categorías de `geo_zona`, `jefe_sexo`, `viv_paredes`, `viv_pisos` entre fuentes.
+- [x] **Sumar variables de vivienda a la celda** — hecho parcialmente el 2026-10-21: se sumó `viv_cuartos` (conteo, seguro de usar sin homologar categorías). `viv_paredes`/`viv_pisos` siguen fuera — ver el punto siguiente.
+- [ ] Verificar categorías de `geo_zona`, `jefe_sexo`, `viv_paredes`, `viv_pisos` entre fuentes — **ahora es el bloqueador principal**: el ATE/ATT/ATU/CATE real (§3b) no colapsa a 0 y la pista más fuerte apunta a `viv_paredes` sin resolver.
 - [ ] Ubicar en GEIH los equivalentes de `HOG027`, `VIV005`, `VIV008`.
 - [ ] Documentar como limitación la diferencia de corte (Bogotá 2026 vs. resto 2024).
 - [ ] 6 hogares de Bogotá con doble jefe y 227 con `Clasificacion` distinta entre miembros: confirmar con SDP cuál es la oficial.
 - [ ] Robustez: NND por distancia de Gower.
-- [ ] Fase 2 (oficial): DML y Causal Forest sobre el outcome real (IPM desde GEIH) — la prueba exploratoria (2026-10-21, `src/estimacion/`) ya corrió sobre un outcome provisional (empleo/ingreso del jefe) y encontró que el residuo no explicado por depto+edad se concentra en vivienda, consistente con el punto de arriba. Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
+- [x] **Fase 2 (oficial): DML y Causal Forest** — primera corrida real completa el 2026-10-21 (ver §3b). Pendiente: resolver vivienda (punto de arriba) antes de interpretar el resultado como efecto causal.
+- [ ] Completar las 11 privaciones restantes del IPM-GEIH (`ipm_geih_score` solo usa 4 de 15) si se consigue el diccionario oficial de GEIH.
+- [ ] Refinar `sin_cotizacion_pension_jefe` (mezcla informalidad con desempleo/inactividad, ver `src/3_preprocesamiento.py`).
+- [ ] Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
 
 ## 5. ⚠️ Higiene del repositorio
 Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/SAV) están versionadas en git. Son datos públicos del DANE, pero contradicen la decisión de que Azure sea el único banco de datos. Hay que dejar de versionarlas (`git rm -r --cached`) y agregarlas a `.gitignore`; el historial seguirá conteniéndolas hasta que se reescriba (opcional).
@@ -67,5 +97,7 @@ Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/
 - `docs/insumos/CODIGOS_LOCALIDAD_BOGOTA.md` — localidades de Bogotá
 - `docs/resultados/IDENTIFICACION_CAUSAL.md` — los dos DAG y el chequeo formal de d-separación
 - `docs/resultados/COMPARACION_FILTROS_SDP.md` — vigencia vs. año exacto del SDP, lado a lado
-- `src/estimacion/README.md` — prueba exploratoria de ATE/ATT/CATE
+- `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` — primera corrida real de ATE/ATT/ATU
+- `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md` — primera corrida real de CATE
+- `src/estimacion/README.md` — prueba exploratoria que precedió a la corrida real
 - `docs/seguimiento/CHANGELOG_PENDIENTES.md` — historial de cambios y pendientes

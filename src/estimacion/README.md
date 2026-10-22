@@ -2,14 +2,21 @@
 
 ---
 
-**Esto NO es `5_estimacion.py`.** La Fase 4 del proyecto (DML + Causal
-Forest sobre el diseño causal formal, ver `docs/resultados/IDENTIFICACION_CAUSAL.md`
-y la Tabla 1 de Roncancio y Fonseca, 2026) sigue sin implementar — requiere
-primero que `3_preprocesamiento.py` construya el outcome oficial (IPM desde
-GEIH) y que el Hot-Deck sume vivienda a la celda. Esta carpeta es una
-corrida de prueba (2026-10-21) para ver si el pipeline de estimación corre
-y se comporta de forma sensata con lo que ya hay, y de paso usarse como
-chequeo de validez del propio Hot-Deck.
+**Actualización 2026-10-21 (tarde):** ya existe una corrida REAL — outcome
+construido en `src/3_preprocesamiento.py` (IPM-GEIH reducido, no el de
+prueba de esta carpeta) y modelos en `src/5_estimacion.py` (ATE/ATT/ATU vía
+`LinearDML`, CATE vía `CausalForestDML`), con el Hot-Deck recalculado
+sumando `viv_cuartos` a la celda. Resultados interpretados:
+`docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
+`docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`. Esta carpeta
+(`src/estimacion/`) queda como registro de la corrida de prueba que llevó
+hasta ahí — el outcome de empleo/ingreso de abajo SIGUE sin ser el oficial,
+y el hallazgo de que el residuo no colapsaba con depto+edad fue justamente
+lo que motivó sumar vivienda a la celda y construir el outcome real.
+
+**Esto NO es `5_estimacion.py`** (ya no aplica tal cual — ver arriba). Lo
+que sigue documenta la corrida de prueba original (mañana del 2026-10-21),
+útil para entender el razonamiento que llevó a la corrida real.
 
 ## Contenido
 

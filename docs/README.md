@@ -23,6 +23,8 @@ carpeta responde a una pregunta distinta.
 - [`RESULTADOS_HOTDECK.md`](resultados/RESULTADOS_HOTDECK.md): resultado del emparejamiento GEIH ← Sisbén, la verificación de los códigos de edad `PER002` y cómo leerlos.
 - [`COMPARACION_FILTROS_SDP.md`](resultados/COMPARACION_FILTROS_SDP.md): el SDP (Sisbén Bogotá) es un registro continuo, no un corte único — comparación lado a lado de los dos filtros posibles (vigencia vs. año exacto) y por qué se adoptó vigencia.
 - [`IDENTIFICACION_CAUSAL.md`](resultados/IDENTIFICACION_CAUSAL.md): los dos DAG del pipeline (diseño principal y diseño de una sola tabla), con el chequeo formal de d-separación — por qué el diagrama simplificado del documento de pipeline necesita distinguir elegibilidad del donante de la del receptor para sostener su propia afirmación.
+- [`RESULTADOS_DML_ATE_ATT_ATU.md`](resultados/RESULTADOS_DML_ATE_ATT_ATU.md): primera corrida real de ATE/ATT/ATU (Double Machine Learning) sobre el outcome IPM-GEIH reducido.
+- [`RESULTADOS_CAUSALFOREST_CATE.md`](resultados/RESULTADOS_CAUSALFOREST_CATE.md): primera corrida real de CATE (Causal Forest) — heterogeneidad concentrada en jefatura femenina y material de paredes.
 
 ## `seguimiento/`
 - [`RESUMEN_AVANCES.md`](seguimiento/RESUMEN_AVANCES.md): estado de fuentes, pipeline y pendientes técnicos.
@@ -33,11 +35,13 @@ carpeta responde a una pregunta distinta.
 
 ## `reports/`
 Los scripts de calidad de datos (`src/2_limpieza.py`, `src/utils/validar_geih.py`,
-`src/utils/validar_linkage.py`, `src/validacion/comparar_filtros_sdp.py`) y las
-pruebas exploratorias (`src/estimacion/`) escriben aquí sus salidas crudas
-(CSV, TXT). Esta es la única carpeta de reportes generados; los resultados
-interpretados van en `resultados/`.
+`src/utils/validar_linkage.py`, `src/validacion/comparar_filtros_sdp.py`), las
+pruebas exploratorias (`src/estimacion/`) y la estimación real (`src/5_estimacion.py`)
+escriben aquí sus salidas crudas (CSV, TXT). Esta es la única carpeta de
+reportes generados; los resultados interpretados van en `resultados/`.
 
 ## Pendiente
 - Marco teórico y metodológico completo: se redacta en un documento aparte y se agregará a `insumos/` cuando esté estable (el diagrama causal ya está en `resultados/IDENTIFICACION_CAUSAL.md`, pero falta integrarlo al marco teórico formal).
-- Resultados de determinantes y validez (P1/OE1), efectos causales (P2/OE2) y reglas contrafactuales (P3/OE3): se agregan a `resultados/` cuando se ejecuten (`5_estimacion.py` sigue sin implementar — ver `src/estimacion/README.md` para la prueba exploratoria que sí corrió).
+- Resultados de determinantes y validez (P1/OE1): LASSO/Ridge/SHAP sobre el Sisbén solo — no implementado.
+- Efectos causales (P2/OE2): primera corrida real ya en `resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md` — falta resolver `viv_paredes`/`viv_pisos` (categorías sin verificar) antes de poder interpretarlos como efecto causal, no solo asociación.
+- Reglas contrafactuales (P3/OE3): no implementado, depende de P1 y P2.

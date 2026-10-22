@@ -2,6 +2,60 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
+## 2026-10-21 (4) — Primera corrida REAL de ATE/ATT/ATU/CATE
+
+Implementa lo que quedó pendiente en la entrada (3): sumar vivienda a la
+celda del Hot-Deck y construir el outcome oficial, luego correr
+`3_preprocesamiento.py` y `5_estimacion.py` de verdad (ya no son stubs).
+
+### Añadido
+- **Hot-Deck con vivienda en la celda** (`src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py`):
+  la celda pasa de `depto+edad` a `depto+edad+viv_cuartos` (tramos 1/2/3+
+  cuartos), con degradación de 4 niveles (celda_exacta →
+  solo_depto_edad → solo_depto → pool_nacional). Se dejó fuera
+  `viv_paredes`/`viv_pisos` — categóricas sin verificar entre fuentes, ver
+  abajo. Efecto en la distribución nacional de Grupo: A 28,0%→**31,2%**,
+  B 34,4%→35,2%, C 24,9%→23,2%, D 12,7%→**10,3%** — sigue en 100% celda
+  exacta.
+- **`src/3_preprocesamiento.py` implementado** (antes vacío). Construye
+  `ipm_geih_score`/`POBRE_GEIH`, un IPM-GEIH **reducido a 4 de 15
+  privaciones**: analfabetismo (`P6160`) y sin aseguramiento de salud
+  (`P6090`) — códigos compartidos con IPM, confianza alta —, hacinamiento
+  (`P5020` + conteo de personas, umbral >3/cuarto no verificado), y
+  `sin_cotizacion_pension_jefe` (`P6920`, tasa de no cotización 56,3%
+  calza con la informalidad nacional ~55-58%, pero el indicador mezcla
+  informalidad con desempleo/inactividad — limitación explícita en el
+  docstring). Se excluyeron `viv_paredes`/`viv_pisos` del outcome (sus
+  categorías no están verificadas — ver `DICCIONARIO_HOTDECK.md` §8;
+  incluirlas habría significado adivinar qué categoría es "privación").
+  Resultado: 23,5% `POBRE_GEIH`, score medio 1,07/4.
+- **`src/5_estimacion.py` implementado** (antes vacío). `LinearDML` para
+  ATE (toda la muestra) y ATT/ATU (el mismo modelo evaluado sobre T=1 y
+  T=0 por separado); `CausalForestDML` para CATE. `W` = celda completa del
+  Hot-Deck (`geo_depto+jefe_edad+viv_cuartos`); `X` = covariables no
+  usadas en la celda (`geo_zona`, `jefe_sexo`, `viv_paredes`, `viv_pisos`).
+  Resultados: ATE≈ATT≈ATU ≈ +0,014 (score 0-4) / +0,007 (`POBRE_GEIH`),
+  IC95% excluye 0 en ambos. CATE medio +0,015, concentrado en jefatura
+  femenina (+0,029 mujer vs. +0,001 hombre) — `viv_paredes` es la segunda
+  variable más importante del forest en ambos outcomes, señal de que
+  sigue colándose información de vivienda fuera de la celda. Detalle
+  interpretado en `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
+  `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`.
+
+### Corregido (bug real, documentado para no repetirlo)
+- Primer intento de ATT/ATU con `LinearDRLearner` dio valores absurdos
+  (+56, -191 en una escala 0-4) — inestabilidad del estimador doblemente
+  robusto por poca superposición de propensión en algunas celdas
+  puntuales. Se descartó y se reutilizó el `LinearDML` ya estable,
+  evaluado sobre cada subpoblación (T=1, T=0) — ver docstring de
+  `_ate_att_atu` en `src/5_estimacion.py`.
+
+### Pendiente (nuevo)
+- [ ] Verificar `viv_paredes`/`viv_pisos` contra la ficha oficial de GEIH y, si corresponde, sumarlas a la celda del Hot-Deck y/o al outcome — es la explicación más probable del residuo que no colapsa en ATE/ATT/ATU/CATE.
+- [ ] Investigar la heterogeneidad por sexo del jefe en el CATE — ¿real o vivienda/geografía colándose por esa covariable?
+- [ ] Refinar `sin_cotizacion_pension_jefe` para separar informalidad de inactividad/desempleo, si aparece una fuente confiable para hacerlo.
+- [ ] Completar las 11 privaciones restantes del IPM-GEIH si se consigue el diccionario oficial de GEIH.
+
 ## 2026-10-21 (3) — DAG de identificación, filtro dual del SDP y documentación de modelos
 
 A partir de la revisión de *Pipeline de datos y modelos para estimar el
