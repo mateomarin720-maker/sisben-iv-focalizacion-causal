@@ -2,7 +2,6 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
-<<<<<<< Updated upstream:docs/seguimiento/CHANGELOG_PENDIENTES.md
 ## 2026-10-21 — Orden de la documentación y acceso a los datos
 
 ### Reorganizado
@@ -20,12 +19,12 @@ La carpeta `docs/` se agrupa por para qué sirve cada documento (ver [`docs/READ
 ### Añadido
 - `docs/insumos/DESCRIPCION_TABLAS.md`: qué es una fila, llave, filas y script de cada tabla de `data/2_models/`.
 - `docs/resultados/RESULTADOS_HOTDECK.md`: resultado del emparejamiento y verificación empírica de los códigos de `PER002`.
-=======
+
 ## 2026-10-10 — Re-corrida del Hot-Deck y verificación de `PER002`
 
 ### Confirmado
 - **Re-corrida del Hot-Deck** (`src.emparejamiento.emparejamiento_hotdeck_geih_sisben`) sobre el estado actual de datos: mismo resultado que el 2026-10-09 — 290.968 hogares GEIH, 3.290.379 donantes, **100 % celda exacta**, Grupo ponderado A 28,0 % · B 34,4 % · C 25,0 % · D 12,5 %.
-- **Hipótesis del ciclo de vida de `PER002` corroborada indirectamente** (`src.validacion.verificar_codigos_edad_sisben`, usa el archivo completo de Personas en Azure, 4.715.226 filas): cruzado contra escolaridad (`PER016`), estado civil (`PER004`) y cotización a pensión (`PER018`), las proporciones por código son coherentes con 3=12–17, 4=18–28, 5=29–59, 6=60+. Además, **0 de 1.820.148 jefes de hogar** tienen `PER002` en {1,2} (códigos de infancia/niñez) — confirma que el hot-deck no pierde ningún jefe al no mapear esos dos códigos. Sigue faltando la ficha oficial de ANDA para una confirmación definitiva. Detalle en `docs/DICCIONARIO_HOTDECK.md` sección 5.
+- **Hipótesis del ciclo de vida de `PER002` corroborada indirectamente** (`src.validacion.verificar_codigos_edad_sisben`, usa el archivo completo de Personas en Azure, 4.715.226 filas): cruzado contra escolaridad (`PER016`), estado civil (`PER004`) y cotización a pensión (`PER018`), las proporciones por código son coherentes con 3=12–17, 4=18–28, 5=29–59, 6=60+. Además, **0 de 1.820.148 jefes de hogar** tienen `PER002` en {1,2} (códigos de infancia/niñez) — confirma que el hot-deck no pierde ningún jefe al no mapear esos dos códigos. Sigue faltando la ficha oficial de ANDA para una confirmación definitiva. Detalle en `docs/insumos/DICCIONARIO_HOTDECK.md` sección 5.
 
 ### Ambigüedades de fondo que persisten (no resueltas por esta corrida)
 - El **100 % de celda exacta es un artefacto de una celda muy gruesa** (33 departamentos × 4 ciclos de vida = máx. 130 celdas) combinado con un donante ~11 veces más grande que el receptor — no es evidencia de que el emparejamiento sea preciso. Falta la celda con variables de vivienda para medir sensibilidad.
@@ -46,7 +45,6 @@ La carpeta `docs/` se agrupa por para qué sirve cada documento (ver [`docs/READ
 ### Pendiente (nuevo)
 - [ ] Publicar en Azure los parquets corregidos (`sisben_bogota_estandarizado.parquet`, `sisben_estandarizado_2024_con_bogota.parquet`, `geih_sisben_fusionado_2024.parquet`) — pendiente de confirmación antes de sobrescribir el banco de datos compartido.
 - [ ] El nacional no expone fecha real por hogar (`CORTE` es un literal fijo) — no se puede verificar si tiene la misma mezcla de antigüedad que Bogotá; queda como limitación no resuelta.
->>>>>>> Stashed changes:docs/CHANGELOG_PENDIENTES.md
 
 ## 2026-10-09 — Armonización, Hot-Deck con Bogotá y reorganización del código
 

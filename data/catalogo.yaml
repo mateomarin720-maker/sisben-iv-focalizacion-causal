@@ -98,18 +98,11 @@ fuentes:
     estado: disponible
     notas: >
       Microdato anonimizado obtenido vía ANDA-DNP (nacional, 1.833.166
-<<<<<<< Updated upstream
-      hogares) y por solicitud a la SDP (Bogotá, 1.458.468 hogares; el
-      Distrito administra su Sisbén aparte). Variable de tratamiento: grupo
-      (A/B/C/D), nivel y clasificación; el extracto no trae puntaje
-      continuo. La edad del jefe viene como código de ciclo de vida
-      (ver docs/insumos/DICCIONARIO_HOTDECK.md).
-=======
-      hogares) y por solicitud a la SDP (Bogotá; el Distrito administra su
+      hogares) y por solicitud a la SDP (Bogotá, 1.458.468 hogares; el Distrito administra su
       Sisbén aparte). Variable de tratamiento: grupo (A/B/C/D), nivel y
       clasificación; el extracto no trae puntaje continuo. La edad del jefe
       viene como código de ciclo de vida, corroborado indirectamente
-      2026-10-10 (ver docs/DICCIONARIO_HOTDECK.md).
+      2026-10-10 (ver docs/insumos/DICCIONARIO_HOTDECK.md).
 
       Corrección 2026-10-10: el lote del SDP (recibido 03/08/2026) NO es un
       corte único — es un registro administrativo continuo con
@@ -124,7 +117,6 @@ fuentes:
       Hot-Deck con el filtro adoptado: 3.106.489 hogares (vs. 3.290.379 sin
       filtrar). Efecto modesto a nivel nacional pero relevante dentro de
       Bogotá (Grupo D pasa de 17,6 % a 27,8 % según el filtro usado).
->>>>>>> Stashed changes
     variables_clave:
       - grupo_elegibilidad
       - clasificacion
