@@ -22,9 +22,19 @@ consistente es tratar ambas fuentes como "stock vigente a una fecha", no como
 "encuestados ese año exacto". Se conserva la fecha real de cada hogar en
 `CORTE` (no un valor fijo).
 
+Dos filtros disponibles (`modo`), para poder comparar ambos — ver
+`docs/resultados/COMPARACION_FILTROS_SDP.md` y
+`src/validacion/comparar_filtros_sdp.py`:
+  - "vigencia" (adoptado por defecto): `fec_fin_encuesta <= FECHA_CORTE`
+    (stock vigente al corte, igual que trata el nacional).
+  - "anio_exacto": `fec_fin_encuesta` año == ANIO_CORTE (solo hogares
+    re-encuestados exactamente ese año — descartado como filtro principal
+    por sesgar hacia actualizaciones recientes, pero se deja disponible
+    para comparar).
+
 Uso:
-    poetry run python -m src.armonizacion.armonizar_sisben_bogota_sdp RUTA_CSV
-Salida: data/2_models/sisben_bogota_estandarizado.parquet
+    poetry run python -m src.armonizacion.armonizar_sisben_bogota_sdp RUTA_CSV [--modo vigencia|anio_exacto]
+Salida: data/2_models/sisben_bogota_estandarizado[_<modo>].parquet
         (+ opcional fusión con nacional sustituyendo cod_mpio 11001)
 """
 from __future__ import annotations
@@ -32,34 +42,50 @@ import sys
 from pathlib import Path
 import pandas as pd
 
-OUT = Path("data/2_models/sisben_bogota_estandarizado.parquet")
-NACIONAL = Path("data/2_models/sisben_estandarizado_2024.parquet")
-OUT_FUSION = Path("data/2_models/sisben_estandarizado_2024_con_bogota.parquet")
+OUT_DIR = Path("data/2_models")
+NACIONAL = OUT_DIR / "sisben_estandarizado_2024.parquet"
 FECHA_REF_EDAD = pd.Timestamp("2024-12-31")  # misma referencia que GEIH 2024
-FECHA_CORTE = pd.Timestamp("2024-12-31")  # hogares vigentes hasta esta fecha (stock, no año exacto)
+FECHA_CORTE = pd.Timestamp("2024-12-31")  # modo "vigencia": hogares vigentes hasta esta fecha
+ANIO_CORTE = 2024  # modo "anio_exacto": año exacto de fec_fin_encuesta
 COLS = ["ide_ficha_origen", "ide_hogar", "ide_persona", "Cod_clase", "Cod_comuna",
         "tip_parentesco", "sexo_persona", "fec_nacimiento", "Grupo", "Clasificacion",
         "tip_mat_paredes", "tip_mat_pisos", "num_cuartos_vivienda",
         "ind_tiene_acueducto", "ind_tiene_alcantarillado", "fec_fin_encuesta"]
 
 
-def armonizar_sisben_bogota(csv: str, fecha_corte: pd.Timestamp = FECHA_CORTE) -> pd.DataFrame:
+def _rutas(modo: str) -> tuple[Path, Path]:
+    sufijo = "" if modo == "vigencia" else f"_{modo}"
+    return (OUT_DIR / f"sisben_bogota_estandarizado{sufijo}.parquet",
+            OUT_DIR / f"sisben_estandarizado_2024_con_bogota{sufijo}.parquet")
+
+
+def armonizar_sisben_bogota(csv: str, modo: str = "vigencia") -> pd.DataFrame:
+    if modo not in ("vigencia", "anio_exacto"):
+        raise ValueError(f"modo debe ser 'vigencia' o 'anio_exacto', no {modo!r}")
+
     df = pd.read_csv(csv, sep=";", usecols=COLS, dtype=str, encoding="utf-8-sig")
     k = ["ide_ficha_origen", "ide_hogar"]
     n_pers = df.groupby(k).size().rename("hog_num_personas").reset_index()
     jefes_todos = df[df["tip_parentesco"] == "1"].drop_duplicates(k, keep="first")
 
     fec_encuesta = pd.to_datetime(jefes_todos["fec_fin_encuesta"], errors="coerce")
-    vigente = fec_encuesta <= fecha_corte
-    n_total, n_filtrado = len(jefes_todos), int(vigente.sum())
+    if modo == "vigencia":
+        mask = fec_encuesta <= FECHA_CORTE
+        criterio = f"vigentes al {FECHA_CORTE.date()}"
+        fuente_tag = f"sdp_bogota_vigente_{FECHA_CORTE.date()}"
+    else:
+        mask = fec_encuesta.dt.year == ANIO_CORTE
+        criterio = f"con encuesta terminada en {ANIO_CORTE}"
+        fuente_tag = f"sdp_bogota_anioexacto_{ANIO_CORTE}"
+
+    n_total, n_filtrado = len(jefes_todos), int(mask.sum())
     print(
-        f"Sisbén Bogotá (SDP): {n_total:,} jefes en el archivo crudo "
+        f"Sisbén Bogotá (SDP, modo={modo}): {n_total:,} jefes en el archivo crudo "
         f"(fec_fin_encuesta {fec_encuesta.min().date()}..{fec_encuesta.max().date()}); "
-        f"{n_filtrado:,} ({n_filtrado / n_total * 100:.1f} %) vigentes al "
-        f"{fecha_corte.date()} -> estos son los que se conservan "
-        f"({int((~vigente).sum()):,} descartados por ser posteriores al corte)."
+        f"{n_filtrado:,} ({n_filtrado / n_total * 100:.1f} %) {criterio} -> "
+        f"estos son los que se conservan ({int((~mask).sum()):,} descartados)."
     )
-    jefes = jefes_todos[vigente].copy()
+    jefes = jefes_todos[mask].copy()
 
     h = jefes.merge(n_pers, on=k, how="left")
     nac = pd.to_datetime(h["fec_nacimiento"], errors="coerce")
@@ -92,7 +118,7 @@ def armonizar_sisben_bogota(csv: str, fecha_corte: pd.Timestamp = FECHA_CORTE) -
         "HOGAR": h["ide_hogar"],
         "llave": h["ide_ficha_origen"],
         "fex": 1.0,  # la entrega SDP no trae factor de expansión (censo administrativo)
-        "fuente": f"sdp_bogota_vigente_{fecha_corte.date()}",
+        "fuente": fuente_tag,
     })
     out["llave_hogar_sisben"] = "11001|" + out["geo_zona"].astype(str) + "|" + out["llave"].astype(str) + "|" + out["CORTE"] + "|" + out["HOGAR"].astype(str)
     out["jefe_sexo"] = out["jefe_sexo"].where(out["jefe_sexo"].isin(["1", "2"]))  # sexo=4 invalido -> nulo
@@ -101,14 +127,22 @@ def armonizar_sisben_bogota(csv: str, fecha_corte: pd.Timestamp = FECHA_CORTE) -
 
 
 def main() -> None:
-    arg = sys.argv[1]
-    OUT.parent.mkdir(parents=True, exist_ok=True)
+    args = sys.argv[1:]
+    modo = "vigencia"
+    if "--modo" in args:
+        i = args.index("--modo")
+        modo = args[i + 1]
+        del args[i:i + 2]
+    arg = args[0]
+
+    out, out_fusion = _rutas(modo)
+    out.parent.mkdir(parents=True, exist_ok=True)
     if arg.lower().endswith(".parquet"):   # ya estandarizado: solo fusionar con el nacional
         b = pd.read_parquet(arg)
     else:
-        b = armonizar_sisben_bogota(arg)
-        b.to_parquet(OUT, index=False)
-    print(f"Bogotá: {len(b):,} hogares -> {OUT}")
+        b = armonizar_sisben_bogota(arg, modo=modo)
+        b.to_parquet(out, index=False)
+    print(f"Bogotá ({modo}): {len(b):,} hogares -> {out}")
     if NACIONAL.exists():
         n = pd.read_parquet(NACIONAL)
         n = n[n["cod_mpio"].astype(str).str[:5] != "11001"] if "cod_mpio" in n else n[n["geo_depto"] != "11"]
@@ -118,8 +152,8 @@ def main() -> None:
         for c in f.columns:
             if f[c].dtype == object:
                 f[c] = f[c].astype("string")
-        f.to_parquet(OUT_FUSION, index=False)
-        print(f"Fusionado (Bogotá reemplaza 11001 del nacional): {len(f):,} -> {OUT_FUSION}")
+        f.to_parquet(out_fusion, index=False)
+        print(f"Fusionado ({modo}, Bogotá reemplaza 11001 del nacional): {len(f):,} -> {out_fusion}")
 
 
 if __name__ == "__main__":

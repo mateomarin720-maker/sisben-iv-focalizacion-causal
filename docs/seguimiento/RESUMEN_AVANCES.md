@@ -1,6 +1,6 @@
 # Resumen de Avances — Efecto Causal del Sisbén IV
 
-Última actualización: 2026-10-09 | Rama: `hotdeck-azure-avances`
+Última actualización: 2026-10-21 | Rama: `hotdeck-azure-avances`
 
 ## 1. Fuentes de datos — estado
 
@@ -22,7 +22,9 @@
 | **Emparejamiento estadístico** | `src/emparejamiento/` | Hot-Deck GEIH ← Sisbén por celdas (departamento + ciclo de vida del jefe) |
 | **Validación** | `src/validacion/` | Cobertura de celdas, esquema armonizado, faltantes por módulo |
 | Banco de datos | `src/utils/azure_storage.py` + publicar/restaurar | Sincronización con Azure |
-| Causal | `src/3_…` a `src/6_…` | Preprocesamiento, DAG, estimación (DML, Causal Forest), refutación — **no iniciado** |
+| **Identificación causal** | `src/4_dag_identificacion.py` | Los dos DAG del pipeline (principal y de una sola tabla) + chequeo formal de d-separación — ver `docs/resultados/IDENTIFICACION_CAUSAL.md` |
+| **Prueba exploratoria** | `src/estimacion/` | ATE/ATT/CATE de prueba (no es la Fase 4) — ver `src/estimacion/README.md` |
+| Causal (oficial) | `src/3_preprocesamiento.py`, `src/5_estimacion.py`, `src/6_refutacion.py` | Outcome oficial (IPM desde GEIH), DML/Causal Forest formal, refutación — **no iniciado** |
 
 ## 3. Resultado del Hot-Deck (datos reales, 12 meses, Bogotá filtrada por vigencia a 2024)
 
@@ -48,7 +50,7 @@
 - [ ] Documentar como limitación la diferencia de corte (Bogotá 2026 vs. resto 2024).
 - [ ] 6 hogares de Bogotá con doble jefe y 227 con `Clasificacion` distinta entre miembros: confirmar con SDP cuál es la oficial.
 - [ ] Robustez: NND por distancia de Gower.
-- [ ] Fase 2: DML y Causal Forest. Fase 3: RD en la frontera B/C.
+- [ ] Fase 2 (oficial): DML y Causal Forest sobre el outcome real (IPM desde GEIH) — la prueba exploratoria (2026-10-21, `src/estimacion/`) ya corrió sobre un outcome provisional (empleo/ingreso del jefe) y encontró que el residuo no explicado por depto+edad se concentra en vivienda, consistente con el punto de arriba. Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
 
 ## 5. ⚠️ Higiene del repositorio
 Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/SAV) están versionadas en git. Son datos públicos del DANE, pero contradicen la decisión de que Azure sea el único banco de datos. Hay que dejar de versionarlas (`git rm -r --cached`) y agregarlas a `.gitignore`; el historial seguirá conteniéndolas hasta que se reescriba (opcional).
@@ -63,4 +65,7 @@ Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/
 - `docs/insumos/DICCIONARIO_DATOS.md` — diccionario general IPM/GEIH
 - `docs/insumos/DICCIONARIO_HOTDECK.md` — variables y llaves del emparejamiento
 - `docs/insumos/CODIGOS_LOCALIDAD_BOGOTA.md` — localidades de Bogotá
+- `docs/resultados/IDENTIFICACION_CAUSAL.md` — los dos DAG y el chequeo formal de d-separación
+- `docs/resultados/COMPARACION_FILTROS_SDP.md` — vigencia vs. año exacto del SDP, lado a lado
+- `src/estimacion/README.md` — prueba exploratoria de ATE/ATT/CATE
 - `docs/seguimiento/CHANGELOG_PENDIENTES.md` — historial de cambios y pendientes
