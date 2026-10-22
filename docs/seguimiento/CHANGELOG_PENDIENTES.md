@@ -2,6 +2,24 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
+## 2026-10-21 — Orden de la documentación y acceso a los datos
+
+### Reorganizado
+La carpeta `docs/` se agrupa por para qué sirve cada documento (ver [`docs/README.md`](../README.md)):
+
+| Antes | Ahora |
+|---|---|
+| `docs/DICCIONARIO_DATOS.md`, `docs/DICCIONARIO_HOTDECK.md`, `docs/CODIGOS_LOCALIDAD_BOGOTA.md`, `docs/referencias_teoricas.md` | `docs/insumos/` |
+| `data/diccionario_ipm_2025.md` | `docs/insumos/DICCIONARIO_IPM_2025.md` |
+| `docs/RESUMEN_AVANCES.md`, `docs/CHANGELOG_PENDIENTES.md` | `docs/seguimiento/` |
+| `docs/Anteproyecto_Sisben_IV.docx` | `docs/institucional/` |
+
+`docs/reports/` no cambia: los scripts de calidad de datos escriben allí.
+
+### Añadido
+- `docs/insumos/DESCRIPCION_TABLAS.md`: qué es una fila, llave, filas y script de cada tabla de `data/2_models/`.
+- `docs/resultados/RESULTADOS_HOTDECK.md`: resultado del emparejamiento y verificación empírica de los códigos de `PER002`.
+
 ## 2026-10-09 — Armonización, Hot-Deck con Bogotá y reorganización del código
 
 ### Corregido

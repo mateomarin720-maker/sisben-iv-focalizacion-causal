@@ -59,7 +59,7 @@ Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/
 | Sisbén Bogotá (SDP) | Resuelto — base recibida (corte 03/08/2026) |
 
 ## 7. Documentación de referencia
-- `docs/DICCIONARIO_DATOS.md` — diccionario general IPM/GEIH
-- `docs/DICCIONARIO_HOTDECK.md` — variables y llaves del emparejamiento
-- `docs/CODIGOS_LOCALIDAD_BOGOTA.md` — localidades de Bogotá
-- `docs/CHANGELOG_PENDIENTES.md` — historial de cambios y pendientes
+- `docs/insumos/DICCIONARIO_DATOS.md` — diccionario general IPM/GEIH
+- `docs/insumos/DICCIONARIO_HOTDECK.md` — variables y llaves del emparejamiento
+- `docs/insumos/CODIGOS_LOCALIDAD_BOGOTA.md` — localidades de Bogotá
+- `docs/seguimiento/CHANGELOG_PENDIENTES.md` — historial de cambios y pendientes

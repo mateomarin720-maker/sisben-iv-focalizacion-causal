@@ -102,7 +102,7 @@ fuentes:
       Distrito administra su Sisbén aparte). Variable de tratamiento: grupo
       (A/B/C/D), nivel y clasificación; el extracto no trae puntaje
       continuo. La edad del jefe viene como código de ciclo de vida
-      (ver docs/DICCIONARIO_HOTDECK.md).
+      (ver docs/insumos/DICCIONARIO_HOTDECK.md).
     variables_clave:
       - grupo_elegibilidad
       - clasificacion
@@ -220,5 +220,5 @@ fuentes:
 # Estrategia de vinculación: no existe llave común entre GEIH y Sisbén IV,
 # por lo que se usa emparejamiento estadístico (Hot-Deck) por celdas de
 # departamento + ciclo de vida del jefe de hogar (la GEIH no desagrega a
-# nivel municipal). Ver docs/DICCIONARIO_HOTDECK.md y
+# nivel municipal). Ver docs/insumos/DICCIONARIO_HOTDECK.md y
 # src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py.

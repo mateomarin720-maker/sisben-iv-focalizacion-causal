@@ -29,7 +29,7 @@ existe join directo posible con GEIH/IPM — esto confirma que Hot-Deck
 la versión propia de Sisbén de las 15 privaciones Alkire-Foster / IPM
 proxy. NUNCA usar estas columnas como Outcome del análisis causal — el
 algoritmo Sisbén ya las incorpora, así que usarlas como resultado sería
-medir el algoritmo con su propia regla (ver docs/DICCIONARIO_HOTDECK.md).
+medir el algoritmo con su propia regla (ver docs/insumos/DICCIONARIO_HOTDECK.md).
 
 Uso:
     poetry run python -m src.ingesta.sisben_loader

@@ -3,7 +3,7 @@
 GEIH se descarga de microdatos.dane.gov.co como un ZIP por mes
 (Ene_2024.zip ... Dic_2024.zip), cada uno con 8 módulos en CSV/DTA/SAV.
 Este loader espera que ya se hayan descomprimido manualmente los ZIP que
-se tengan, siguiendo esta estructura uniforme (ver docs/DICCIONARIO_DATOS.md
+se tengan, siguiendo esta estructura uniforme (ver docs/insumos/DICCIONARIO_DATOS.md
 y data/catalogo.yaml para el detalle):
 
     data/0_raw/geih/{anio}/{mes_num}/CSV/*.CSV

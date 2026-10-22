@@ -64,13 +64,13 @@ y fuentes oficiales del DANE y el DPS.
   focalización informadas por los efectos heterogéneos, frente a la
   clasificación vigente.
 
-> El anteproyecto (`docs/Anteproyecto_Sisben_IV.docx`, abril 2026) aún
+> El anteproyecto (`docs/institucional/Anteproyecto_Sisben_IV.docx`, abril 2026) aún
 > contiene la versión anterior (OE1–OE5); su actualización está pendiente
 > a cargo del equipo. Esta es la formulación que rige el código y la
 > documentación del repositorio.
 
 Detalle completo de marco teórico, metodología y cronograma en
-[`docs/Anteproyecto_Sisben_IV.docx`](docs/Anteproyecto_Sisben_IV.docx).
+[`docs/institucional/Anteproyecto_Sisben_IV.docx`](docs/institucional/Anteproyecto_Sisben_IV.docx).
 
 ### 3. Stack tecnológico
 
@@ -129,10 +129,10 @@ Detalle completo de marco teórico, metodología y cronograma en
   **Los datos no se versionan**: el banco de datos principal es Azure Blob
   Storage (contenedor `datos-inferencia-causal`); ver `.gitignore`.
 - **`/docs`**: Documentación — anteproyecto, diccionarios
-  ([general](docs/DICCIONARIO_DATOS.md) y
-  [del emparejamiento](docs/DICCIONARIO_HOTDECK.md)),
-  [resumen de avances](docs/RESUMEN_AVANCES.md),
-  [changelog](docs/CHANGELOG_PENDIENTES.md), referencias y reportes.
+  ([general](docs/insumos/DICCIONARIO_DATOS.md) y
+  [del emparejamiento](docs/insumos/DICCIONARIO_HOTDECK.md)),
+  [resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md),
+  [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md), referencias y reportes.
 - **`/notebooks`**: Cuadernos de exploración y pruebas de identificación.
 - **`/src`**: Código fuente por etapa: `ingesta/`, `armonizacion/`,
   `emparejamiento/`, `validacion/`, `utils/` (incluye Azure) y los scripts
@@ -174,7 +174,7 @@ con el alcance vigente.
 | Fase 4 — OE2 (DML, Causal Forest, discontinuidad B/C) | Sep–nov 2026 | ⏳ Pendiente |
 | Fase 5 — OE3 (reglas de focalización, FGT1) y redacción final | Nov 2026–feb 2027 | ⏳ Pendiente |
 
-Detalle y pendientes técnicos en [`docs/RESUMEN_AVANCES.md`](docs/RESUMEN_AVANCES.md).
+Detalle y pendientes técnicos en [`docs/seguimiento/RESUMEN_AVANCES.md`](docs/seguimiento/RESUMEN_AVANCES.md).
 
 ### 8. Consideraciones éticas y de datos
 

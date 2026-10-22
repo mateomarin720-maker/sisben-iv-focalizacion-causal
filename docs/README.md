@@ -1,48 +1,40 @@
-# Carpeta: docs (Documentación)
----
-Este directorio consolida toda la documentación del proyecto, en formatos
-legibles tanto para audiencias técnicas como no técnicas.
+# Carpeta: docs (documentación)
 
-## Contenido y artefactos
+Toda la documentación del proyecto, agrupada por para qué sirve. Cada
+carpeta responde a una pregunta distinta.
 
-### Documentos fundamentales
-- **[`DICCIONARIO_DATOS.md`](DICCIONARIO_DATOS.md)**
-  - Diccionario de datos consolidado: variables efectivamente en uso
-    (identificadores, outcome, predictoras, tratamiento pendiente),
-    tipo, distribución real y estado por fuente. Se actualiza cada vez
-    que se integra una fuente nueva.
-- **[`DICCIONARIO_HOTDECK.md`](DICCIONARIO_HOTDECK.md)**
-  - Variables, llaves de hogar y limitaciones del emparejamiento
-    GEIH ↔ Sisbén (incluye Bogotá y los códigos de edad `PER002`).
-- **[`RESUMEN_AVANCES.md`](RESUMEN_AVANCES.md)** y
-  **[`CHANGELOG_PENDIENTES.md`](CHANGELOG_PENDIENTES.md)**
-  - Estado general del proyecto e historial de cambios y pendientes.
-- **[`Anteproyecto_Sisben_IV.docx`](Anteproyecto_Sisben_IV.docx)**
-  - Documento formal de anteproyecto (abril 2026): marco teórico, revisión
-    de literatura, metodología, cronograma y bibliografía. ⚠️ Contiene la
-    formulación anterior de objetivos (OE1–OE5); los objetivos vigentes son
-    P1/OE1, P2/OE2 y P3/OE3 (ver `README.md` de la raíz). Su actualización
-    está pendiente a cargo del equipo.
-- **`DAG_causal.md` / `.png`** *(pendiente)*
-  - Diagrama causal (DAG) propuesto: elegibilidad (grupos A/B) →
-    participación en programas DPS → bienestar multidimensional,
-    confusores y mediadores.
-  - Justificación de cada arista con literatura o razonamiento experto.
-- **`Supuestos_de_identificacion.md`** *(pendiente)*
-  - Criterios evaluados (backdoor, discontinuidad B/C) y supuestos asumidos
-    explícitamente (ignorabilidad condicional, positividad, SUTVA).
+| Carpeta | Qué hay | Para qué sirve |
+|---|---|---|
+| [`insumos/`](insumos/) | Diccionarios, descripción de tablas, códigos y referencias | Consultar qué significa cada variable y de dónde sale |
+| [`resultados/`](resultados/) | Documentos cortos con los resultados de cada paso | Revisar resultados sin correr los scripts ni los cuadernos |
+| [`seguimiento/`](seguimiento/) | Resumen de avances y changelog | Saber en qué estado está el proyecto |
+| [`institucional/`](institucional/) | Anteproyecto | Documentos formales de la maestría |
+| [`reports/`](reports/) | CSV y HTML que generan los scripts de calidad de datos | Salidas automáticas; no se editan a mano |
 
-### Subcarpeta `img/`
-- Recursos visuales: DAGs, diagramas de flujo ETL, gráficos exportados
-  desde los notebooks.
+## `insumos/`
+- [`DICCIONARIO_DATOS.md`](insumos/DICCIONARIO_DATOS.md): variables en uso del IPM y GEIH, con tipo, distribución y estado por fuente.
+- [`DICCIONARIO_HOTDECK.md`](insumos/DICCIONARIO_HOTDECK.md): variables, llaves de hogar y limitaciones del emparejamiento GEIH ↔ Sisbén (incluye Bogotá y los códigos de edad `PER002`).
+- [`DESCRIPCION_TABLAS.md`](insumos/DESCRIPCION_TABLAS.md): las tablas de `data/2_models/`: qué es una fila, cuál es la llave, cuántas filas tiene y qué script la genera.
+- [`DICCIONARIO_IPM_2025.md`](insumos/DICCIONARIO_IPM_2025.md): diccionario del IPM (nota: el proyecto trabaja con el IPM 2024).
+- [`CODIGOS_LOCALIDAD_BOGOTA.md`](insumos/CODIGOS_LOCALIDAD_BOGOTA.md): códigos de localidad del Sisbén de Bogotá.
+- [`referencias_teoricas.md`](insumos/referencias_teoricas.md): referencias metodológicas del proyecto.
 
-### Subcarpeta `reports/`
-- **`Reporte_EDA.pdf`** *(pendiente, Fase 2)*: hallazgos del análisis
-  exploratorio por fuente y subpoblación.
-- **`Reporte_Determinantes_y_Validez.pdf`** *(pendiente, OE1)*: LASSO/Ridge,
-  SHAP, AUC-ROC y matrices de error de inclusión/exclusión frente a IPM y
-  pobreza monetaria.
-- **`Reporte_Resultados_Causales.pdf`** *(pendiente, OE2)*: ATE/ATT, CATE,
-  test BLP (Causal Forest / DML) y contraste con la discontinuidad B/C.
-- **`Informe_Final_Ejecutivo.pdf`** *(pendiente, OE3)*: reglas de
-  focalización contrafactuales, brecha FGT1 y recomendaciones de política.
+## `resultados/`
+- [`RESULTADOS_HOTDECK.md`](resultados/RESULTADOS_HOTDECK.md): resultado del emparejamiento GEIH ← Sisbén, la verificación de los códigos de edad `PER002` y cómo leerlos.
+
+## `seguimiento/`
+- [`RESUMEN_AVANCES.md`](seguimiento/RESUMEN_AVANCES.md): estado de fuentes, pipeline y pendientes técnicos.
+- [`CHANGELOG_PENDIENTES.md`](seguimiento/CHANGELOG_PENDIENTES.md): historial de cambios, más reciente primero.
+
+## `institucional/`
+- [`Anteproyecto_Sisben_IV.docx`](institucional/Anteproyecto_Sisben_IV.docx): anteproyecto (abril 2026). Contiene la formulación anterior de objetivos (OE1–OE5); los vigentes son P1/OE1, P2/OE2 y P3/OE3 (ver el `README.md` de la raíz). Su actualización está a cargo del equipo.
+
+## `reports/`
+Los scripts de calidad de datos (`src/2_limpieza.py`, `src/utils/validar_geih.py` y
+`src/utils/validar_linkage.py`) escriben aquí sus salidas. Esta es la única carpeta de reportes
+generados; los resultados interpretados van en `resultados/`.
+
+## Pendiente
+- Marco teórico y metodológico: se redacta en un documento aparte y se agregará a `insumos/` cuando esté estable.
+- Diagrama causal (DAG) y supuestos de identificación: ver el marco teórico.
+- Resultados de determinantes y validez (P1/OE1), efectos causales (P2/OE2) y reglas contrafactuales (P3/OE3): se agregan a `resultados/` cuando se ejecuten.
