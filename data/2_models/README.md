@@ -20,5 +20,5 @@ Forest (OE2) y simulaciones de reglas de focalización (OE3), producidos por
 `src/4_dag_identificacion.py`, `src/5_estimacion.py` y `src/6_refutacion.py`.
 
 Los nombres de columnas y su significado están en
-[`docs/DICCIONARIO_HOTDECK.md`](../../docs/DICCIONARIO_HOTDECK.md).
+[`docs/insumos/DICCIONARIO_HOTDECK.md`](../../docs/insumos/DICCIONARIO_HOTDECK.md).
 Contenido no versionado (`.gitignore`); respaldo en Azure Blob Storage.

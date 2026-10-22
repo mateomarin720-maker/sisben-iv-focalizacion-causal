@@ -9,7 +9,7 @@ Cambridge University Press.
 Uso previsto en el proyecto: marco conceptual de fondo para la discusión
 de supuestos de identificación (mecanismo de asignación, unconfoundedness,
 SUTVA, positividad) y para el lenguaje de *potential outcomes* usado en
-`docs/Anteproyecto_Sisben_IV.docx` y en la futura sección de conclusiones.
+`docs/institucional/Anteproyecto_Sisben_IV.docx` y en la futura sección de conclusiones.
 La **estimación** del proyecto (OE2 en la formulación vigente): Double
 Machine Learning (Chernozhukov et al., 2018) y Causal Forest
 (Wager & Athey, 2018) — métodos no cubiertos en este libro, que es

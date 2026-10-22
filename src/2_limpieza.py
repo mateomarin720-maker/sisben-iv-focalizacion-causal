@@ -60,7 +60,7 @@ HOGARES_CONTINUAS = ["IPM", "FEX_C", "FEXP", "PERSONAS"]
 
 # Personas y Viviendas: todas las columnas son códigos de pregunta DANE
 # (P6020, P4005, etc.) sin re-etiquetar todavía a nombres amigables — ver
-# docs/DICCIONARIO_DATOS.md para la traducción código -> etiqueta. Se
+# docs/insumos/DICCIONARIO_DATOS.md para la traducción código -> etiqueta. Se
 # tipan como categóricas (no continuas: son códigos de respuesta, no
 # cantidades) salvo ORDEN y FEX_C.
 PERSONAS_ID = ["ORDEN"]

@@ -3,9 +3,9 @@
 Este documento consolida las variables **efectivamente en uso** en el
 proyecto (no el listado bruto de cada fuente). Para el diccionario
 completo del IPM (146 variables originales del DDI de DANE), ver
-[`data/diccionario_ipm_2025.md`](../data/diccionario_ipm_2025.md).
+[`docs/insumos/DICCIONARIO_IPM_2025.md`](DICCIONARIO_IPM_2025.md).
 
-Estado general de fuentes: ver [`data/catalogo.yaml`](../data/catalogo.yaml).
+Estado general de fuentes: ver [`data/catalogo.yaml`](../../data/catalogo.yaml).
 Variables y llaves del emparejamiento GEIH ↔ Sisbén (incluida Bogotá):
 [`DICCIONARIO_HOTDECK.md`](DICCIONARIO_HOTDECK.md).
 
@@ -104,7 +104,7 @@ Todas son binarias (`Int8`, 0=no privado / 1=privado), 0% de faltantes.
 
 Todas son categóricas (códigos de respuesta), salvo `ORDEN` y `FEX_C`.
 0% de faltantes salvo lo detallado en
-[`docs/reports/reporte_faltantes_ipm_personas.csv`](reports/reporte_faltantes_ipm_personas.csv).
+[`docs/reports/reporte_faltantes_ipm_personas.csv`](../reports/reporte_faltantes_ipm_personas.csv).
 
 | Código | Etiqueta |
 |---|---|
@@ -161,7 +161,7 @@ Todas son categóricas (códigos de respuesta), salvo `ORDEN` y `FEX_C`.
 
 Se conservan como `NaN` explícito en `data/1_processed/`, sin imputar —
 ver justificación completa en
-[`docs/reports/reporte_faltantes_ipm_hogares.csv`](reports/reporte_faltantes_ipm_hogares.csv).
+[`docs/reports/reporte_faltantes_ipm_hogares.csv`](../reports/reporte_faltantes_ipm_hogares.csv).
 
 ---
 
