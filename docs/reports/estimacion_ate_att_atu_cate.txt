@@ -1,0 +1,32 @@
+2026-10-21 21:40:16,615 INFO Cargando data\2_models\muestra_estimacion_2024.parquet
+2026-10-21 21:40:17,381 INFO n=290,968 | T=1 (Grupo A/B): 74.4%
+
+======================================================================
+Outcome: ipm_geih_score (continuo, 0-4 privaciones)
+======================================================================
+  Propensión (T=1 | W): min=0.000 p5=0.632 p95=0.819 max=0.827
+  ATE (toda la muestra): n=290,968 | +0.0137  IC95%=(+0.0084, +0.0190)
+  ATT (tratados, error de inclusión): n=216,372 | +0.0136  IC95%=(+0.0083, +0.0189)
+  ATU (no tratados, error de exclusión): n=74,596 | +0.0139  IC95%=(+0.0085, +0.0192)
+  CATE: n=80,000 | media=+0.0149  sd=0.0211  rango=(-0.0530, +0.0865)
+  Por zona (urbana=1): {0: 0.0097, 1: 0.0157}
+  Por sexo jefe (mujer=1): {0: 0.0008, 1: 0.0293}
+  Importancia de variables: {'jefe_mujer': 0.453, 'viv_paredes': 0.375, 'geo_zona_urbana': 0.17, 'viv_pisos': 0.002}
+
+======================================================================
+Outcome: POBRE_GEIH (binario, score >= 2)
+======================================================================
+  Propensión (T=1 | W): min=0.000 p5=0.632 p95=0.819 max=0.827
+  ATE (toda la muestra): n=290,968 | +0.0074  IC95%=(+0.0040, +0.0108)
+  ATT (tratados, error de inclusión): n=216,372 | +0.0074  IC95%=(+0.0040, +0.0108)
+  ATU (no tratados, error de exclusión): n=74,596 | +0.0073  IC95%=(+0.0040, +0.0106)
+  CATE: n=80,000 | media=+0.0031  sd=0.0156  rango=(-0.0474, +0.0651)
+  Por zona (urbana=1): {0: -0.0077, 1: 0.0047}
+  Por sexo jefe (mujer=1): {0: -0.0071, 1: 0.0136}
+  Importancia de variables: {'jefe_mujer': 0.424, 'viv_paredes': 0.386, 'geo_zona_urbana': 0.186, 'viv_pisos': 0.005}
+
+======================================================================
+Cómo leer esto: W = celda completa del Hot-Deck (depto+edad+cuartos).
+Si el efecto no es ~0, no se puede interpretar como causal del Sisbén
+sin antes descartar fuga por geografía/vivienda — ver IDENTIFICACION_CAUSAL.md.
+======================================================================
