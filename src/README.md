@@ -34,17 +34,19 @@ documentado y preferiblemente cubierto por pruebas.
 
 - **`emparejamiento/`**
   - `emparejamiento_hotdeck_geih_sisben.py`: Hot-Deck por celdas
-    (departamento + ciclo de vida del jefe) con degradación jerárquica.
-    Asigna `Grupo`/`Nivel`/`Clasificacion` del Sisbén a los hogares GEIH.
-    Válido solo a nivel poblacional (no identifica el mismo hogar).
+    (departamento + ciclo de vida del jefe + tramo de `viv_cuartos`, desde
+    2026-10-21) con degradación jerárquica (celda_exacta → solo_depto_edad
+    → solo_depto → pool_nacional). Asigna `Grupo`/`Nivel`/`Clasificacion`
+    del Sisbén a los hogares GEIH. Válido solo a nivel poblacional (no
+    identifica el mismo hogar). `viv_paredes`/`viv_pisos` NO están en la
+    celda — sus categorías no están verificadas entre fuentes (ver
+    `docs/insumos/DICCIONARIO_HOTDECK.md` §8).
 
 - **`estimacion/`**
-  - Pruebas exploratorias de ATE/ATT/CATE — ver
-    `src/estimacion/README.md` para el detalle. **No es la Fase 4**
-    (`5_estimacion.py` sigue sin implementar): es la corrida previa para
-    ver cómo se comportan los estimadores con las variables que ya hay, y
-    sirve de chequeo de validez del Hot-Deck (sección 1 de
-    `docs/resultados/IDENTIFICACION_CAUSAL.md`).
+  - Pruebas exploratorias de ATE/ATT/CATE que precedieron la corrida real
+    (`3_preprocesamiento.py` + `5_estimacion.py`) — ver
+    `src/estimacion/README.md`. Útil para entender el razonamiento, ya no
+    es la corrida vigente.
 
 - **`validacion/`**
   - Chequeos de calidad: `validar_cobertura_celdas_hotdeck.py`,
@@ -72,21 +74,29 @@ documentado y preferiblemente cubierto por pruebas.
   - Limpieza y armonización: manejo de nulos, corrección de tipos,
     eliminación de duplicados, armonización de categorías entre fuentes.
 
-- **`3_preprocesamiento.py`**
-  - Construcción de variables: define explícitamente **tratamiento**
-    (elegibilidad A/B del Sisbén IV y participación en programas DPS),
-    **outcomes** de bienestar (IPM/GEIH; nunca `I1`–`I15` ni `H_5` del
-    Sisbén) y **confusores**; codificación, escalado e imputación.
+- **`3_preprocesamiento.py`** ✅ implementado 2026-10-21
+  - Construye el outcome real: `ipm_geih_score`/`POBRE_GEIH`, un IPM-GEIH
+    **reducido** (4 de 15 privaciones — analfabetismo, aseguramiento de
+    salud, hacinamiento, cotización a pensión del jefe — ver docstring del
+    script para qué se incluyó, qué no, y por qué). Tratamiento:
+    `Grupo_hotdeck`/`Clasificacion_hotdeck` (ya en el parquet fusionado del
+    Hot-Deck). Salida: `data/2_models/muestra_estimacion_2024.parquet`.
 
-- **`4_dag_identificacion.py`**
-  - Especificación del DAG causal y análisis de identificabilidad
-    (cadena elegibilidad → participación → bienestar; backdoor;
-    discontinuidad sobre la frontera ordinal B/C, pues el extracto no trae
-    puntaje continuo).
+- **`4_dag_identificacion.py`** ✅ implementado 2026-10-21
+  - Los dos DAG del documento de pipeline (diseño principal, diseño de una
+    sola tabla) con `networkx` y chequeo formal de d-separación. Ver
+    `docs/resultados/IDENTIFICACION_CAUSAL.md`.
 
-- **`5_estimacion.py`**
-  - Estimación de efectos causales: DML (ATE/ATT) y Causal Forest
-    (CATE), test BLP de heterogeneidad (OE2).
+- **`5_estimacion.py`** ✅ implementado 2026-10-21
+  - DML (`LinearDML`: ATE, y ATT/ATU evaluando el mismo modelo sobre cada
+    subpoblación) y Causal Forest (`CausalForestDML`: CATE) sobre
+    `muestra_estimacion_2024.parquet`. Resultados interpretados:
+    `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
+    `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`. Sigue siendo una
+    primera corrida sobre un outcome reducido — no reemplaza el marco
+    teórico-metodológico completo pendiente (ver Tabla 1 del documento de
+    pipeline: LASSO/Ridge/SHAP, RD B/C, Fréchet-Manski, Gower, estudio de
+    eventos Sisbén III→IV siguen sin implementar).
 
 - **`6_refutacion.py`**
   - Pruebas de refutación y sensibilidad: placebo, random common cause,

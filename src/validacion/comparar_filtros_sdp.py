@@ -65,7 +65,7 @@ def main() -> None:
         if not path.exists():
             logger.warning("Falta %s — corra armonizar_sisben_bogota_sdp.py con --modo correspondiente", path)
             continue
-        don = pd.read_parquet(path, columns=["geo_depto", "jefe_edad", *TRAT])
+        don = pd.read_parquet(path, columns=["geo_depto", "jefe_edad", "viv_cuartos", *TRAT])
         logger.info("[%s] Donante: %s hogares", nombre, f"{len(don):,}")
         out = hotdeck(rec, don)
         filas.append(_resumen(nombre, out, len(don)))
