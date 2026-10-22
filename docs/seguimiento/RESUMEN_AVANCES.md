@@ -9,7 +9,7 @@
 | **IPM (DANE)** | ✅ Completo, año 2024 | 77.568 hogares nacional / 85.387 departamental. Limpieza en `src/2_limpieza.py` (Hogares, Personas, Viviendas). |
 | **GEIH (DANE)** | ✅ Completo, 12 meses | 290.968 hogares (12 meses apilados), 8 módulos por mes. Cargador: `src/ingesta/geih_loader.py`. |
 | **Sisbén IV nacional (DNP-ANDA)** | ✅ Obtenido | 1.833.166 hogares, 1.098 municipios. Corte mayo 2024. |
-| **Sisbén IV Bogotá (SDP)** | ✅ Recibido (corte 03/08/2026) | 1.458.468 hogares; Bogotá administra su Sisbén aparte, por eso el extracto nacional solo traía 1.255. Reemplaza al municipio 11001 del nacional. |
+| **Sisbén IV Bogotá (SDP)** | ✅ Recibido, lote 03/08/2026; filtrado por vigencia el 2026-10-10 | El archivo es un registro continuo (`fec_fin_encuesta` 2019-2026), no un corte único. Se filtran los hogares vigentes al 31-dic-2024 (`fec_fin_encuesta <= esa fecha`): 1.274.578 de 1.458.468 (87,4 %); se descartan 183.890 posteriores a 2024. (Se descartó filtrar por año exacto de encuesta: solo deja 75.488 hogares y sesga hacia actualizaciones recientes, no representativo del registro vigente). Reemplaza al municipio 11001 del nacional (que traía 1.255). |
 | **Banco de datos** | ✅ Azure Blob Storage (`datos-inferencia-causal`) | Publicación y restauración: `src/utils/publicar_banco_datos_azure.py` y `restaurar_banco_datos_azure.py`. Los datos no se versionan en GitHub. |
 
 ## 2. Pipeline por etapas (estructura del código)
@@ -24,11 +24,12 @@
 | Banco de datos | `src/utils/azure_storage.py` + publicar/restaurar | Sincronización con Azure |
 | Causal | `src/3_…` a `src/6_…` | Preprocesamiento, DAG, estimación (DML, Causal Forest), refutación — **no iniciado** |
 
-## 3. Resultado del Hot-Deck (datos reales, 12 meses, con Bogotá)
+## 3. Resultado del Hot-Deck (datos reales, 12 meses, Bogotá filtrada por vigencia a 2024)
 
-- 290.968 hogares GEIH receptores; 3.290.379 hogares Sisbén donantes.
-- **Celda exacta: 100 %** (departamento + ciclo de vida del jefe).
-- Grupo asignado, ponderado por factor de expansión: A 28,0 % · B 34,4 % · C 25,0 % · D 12,5 %.
+- 290.968 hogares GEIH receptores; **3.106.489** hogares Sisbén donantes (nacional + 1.274.578 de Bogotá vigentes al 31-dic-2024 — ver §1).
+- **Celda exacta: 100 %** (departamento + ciclo de vida del jefe), también 100 % dentro de Bogotá.
+- Grupo asignado, ponderado por factor de expansión: **A 28,0 % · B 34,4 % · C 24,9 % · D 12,7 %** — prácticamente igual al resultado sin filtrar por fecha (A 28,0/B 34,4/C 25,0/D 12,5), lo que confirma que el filtro de vigencia no distorsiona el agregado nacional.
+- Dentro de Bogotá (depto 11, 10.016 hogares GEIH): **A 4,0 % · B 20,9 % · C 47,3 % · D 27,8 %** — aquí el filtro sí importa: con año exacto de encuesta (descartado, ver §8 de `DICCIONARIO_HOTDECK.md`) D salía en 17,6 %, 10 p.p. menos.
 - Crosswalk geográfico confirmado: `DPTO` (GEIH) = primeros 2 dígitos de `cod_mpio` (Sisbén).
 
 **Cómo leerlo.** La celda es gruesa (≈130 celdas), por eso el 100 % no demuestra por sí solo un buen emparejamiento: falta la sensibilidad con variables de vivienda. La distribución de grupos refleja a los hogares *registrados* en el Sisbén, no a toda la población; no debe reportarse como prevalencia nacional. El emparejamiento solo es válido a nivel poblacional (no identifica el mismo hogar).
@@ -40,7 +41,7 @@
 4. **Tipos mixtos al fusionar Bogotá:** corregido convirtiendo a texto.
 
 ## 4. Pendientes técnicos
-- [ ] **Verificar en ANDA los códigos de `PER002` (hoy hipótesis: 3=12–17, 4=18–28, 5=29–59, 6=60+).**
+- [x] **Verificar los códigos de `PER002`** (hipótesis: 3=12–17, 4=18–28, 5=29–59, 6=60+) — corroborada indirectamente el 2026-10-10 cruzando contra escolaridad/estado civil/pensión en la base completa de Personas; falta la ficha oficial de ANDA. Ver `docs/DICCIONARIO_HOTDECK.md` §5.
 - [ ] Sumar variables de vivienda a la celda y medir sensibilidad (celda exacta vs. todos los niveles).
 - [ ] Verificar categorías de `geo_zona`, `jefe_sexo`, `viv_paredes`, `viv_pisos` entre fuentes.
 - [ ] Ubicar en GEIH los equivalentes de `HOG027`, `VIV005`, `VIV008`.
