@@ -16,7 +16,7 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.14"
+python = ">=3.11,<3.14"
 # Manipulación y E/S de datos
 pandas = "^2.2.0"
 numpy = "^2.0.0"
