@@ -10,7 +10,7 @@ Define explícitamente, a partir de data/1_processed/:
   educación, informalidad, servicios públicos, calidad de vivienda,
   condición de víctima (RUI).
 
-Ver docs/Anteproyecto_Sisben_IV.docx, sección 4.2 (Variables de análisis).
+Ver docs/institucional/Anteproyecto_Sisben_IV.docx, sección 4.2 (Variables de análisis).
 """
 
 # TODO: implementar en Fase 2/3 (jul-ago 2026).

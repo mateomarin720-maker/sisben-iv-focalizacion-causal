@@ -23,7 +23,7 @@ repositorio ni en chats.
 El detalle de cada fuente (portal, tipo de acceso, identificador, período
 y estado de obtención) está en [`catalogo.yaml`](catalogo.yaml). El
 diccionario de variables del IPM (DDI oficial de DANE) está en
-[`diccionario_ipm_2025.md`](diccionario_ipm_2025.md). Estado actual:
+[`DICCIONARIO_IPM_2025.md`](../docs/insumos/DICCIONARIO_IPM_2025.md). Estado actual:
 
 | Fuente | Entidad | Estado (2026-10-09) |
 |---|---|---|
