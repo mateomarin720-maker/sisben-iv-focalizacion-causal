@@ -19,8 +19,8 @@ Los cuatro efectos que pide el documento de pipeline (Roncancio y Fonseca,
   inestabilidad del estimador doblemente robusto; ver docstring de
   `_ate_att_atu`.)
 
-Cada modelo controla por `W = {geo_depto, jefe_edad, viv_cuartos}` — la
-celda COMPLETA del Hot-Deck tal como quedó implementada (ver
+Cada modelo controla por `W` = la celda del Hot-Deck (`_hotdeck_celda`, como
+variable categórica) — la celda COMPLETA tal como quedó implementada (ver
 `docs/resultados/IDENTIFICACION_CAUSAL.md`: dado W, el grupo asignado
 debería quedar d-separado del outcome). `X = {geo_zona, jefe_sexo,
 viv_paredes, viv_pisos}` son las covariables NO usadas en la celda, para
@@ -61,7 +61,7 @@ DATA = Path("data/2_models/muestra_estimacion_2024.parquet")
 SEED = 42
 N_SUB_CATE = 80_000
 
-W_COLS = ["geo_depto_cat", "jefe_edad", "viv_cuartos"]  # celda completa del Hot-Deck
+CELDA_COL = "_hotdeck_celda"  # celda REAL del Hot-Deck: depto | ciclo de vida | cuartos agrupados (1, 2, 3+)
 X_COLS = ["geo_zona_urbana", "jefe_mujer", "viv_paredes", "viv_pisos"]  # NO usadas en la celda
 
 
@@ -73,8 +73,27 @@ def _preparar(df: pd.DataFrame) -> pd.DataFrame:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     df["geo_zona_urbana"] = (df["geo_zona"] == "1").astype(int)
     df["jefe_mujer"] = (df["jefe_sexo"] == "2").astype(int)
-    df["geo_depto_cat"] = df["geo_depto"].astype("category").cat.codes
+    if CELDA_COL not in df.columns:
+        raise SystemExit(f"Falta la columna {CELDA_COL} en {DATA}: corra el Hot-Deck y src/3_preprocesamiento.py de nuevo")
     return df
+
+
+def _matriz_w(d: pd.DataFrame) -> np.ndarray:
+    """Controles W = la celda del Hot-Deck como variable CATEGÓRICA (one-hot).
+
+    Antes se usaban el código numérico del depto, la edad en años y el conteo
+    de cuartos con un logit lineal: eso no reproduce la celda con la que se
+    sorteó el donante (el código del depto no es ordinal y los cuartos se
+    agrupan en 1, 2, 3+). En una simulación con efecto verdadero 0 ese W
+    daba sesgo y IC95% que cubrían el 0 solo la mitad de las veces; con la
+    celda categórica el sesgo baja y la cobertura sube (ver
+    docs/resultados/VALIDACION_MODELOS.md).
+    """
+    return pd.get_dummies(d[CELDA_COL].astype(str), dtype=float).to_numpy()
+
+
+def _modelo_t() -> LogisticRegression:
+    return LogisticRegression(max_iter=3000, C=5.0)
 
 
 def _modelo_y() -> GradientBoostingRegressor:
@@ -94,19 +113,19 @@ def _ate_att_atu(df: pd.DataFrame, y_col: str) -> None:
     subpoblación evita ese problema y es una forma válida de reportar
     ATT/ATU bajo el mismo marco DML.
     """
-    d = df.dropna(subset=[y_col, "T", *W_COLS, *X_COLS])
-    W = d[W_COLS].to_numpy(dtype=float)
+    d = df.dropna(subset=[y_col, "T", CELDA_COL, *X_COLS])
+    W = _matriz_w(d)
     X = d[X_COLS].to_numpy(dtype=float)
     Y = d[y_col].to_numpy(dtype=float)
     T = d["T"].to_numpy(dtype=int)
 
-    modelo_t = LogisticRegression(max_iter=1000)
+    modelo_t = _modelo_t()
     modelo_t.fit(W, T)
     prop = modelo_t.predict_proba(W)[:, 1]
     print(f"  Propensión (T=1 | W): min={prop.min():.3f} p5={np.percentile(prop,5):.3f} "
           f"p95={np.percentile(prop,95):.3f} max={prop.max():.3f}")
 
-    est = LinearDML(model_y=_modelo_y(), model_t=LogisticRegression(max_iter=1000),
+    est = LinearDML(model_y=_modelo_y(), model_t=_modelo_t(),
                      discrete_treatment=True, random_state=SEED)
     est.fit(Y, T, X=X, W=W)
 
@@ -118,14 +137,14 @@ def _ate_att_atu(df: pd.DataFrame, y_col: str) -> None:
 
 
 def _cate(df: pd.DataFrame, y_col: str) -> None:
-    d = df.dropna(subset=[y_col, "T", *W_COLS, *X_COLS])
+    d = df.dropna(subset=[y_col, "T", CELDA_COL, *X_COLS])
     if len(d) > N_SUB_CATE:
         d = d.sample(N_SUB_CATE, random_state=SEED)
     X = d[X_COLS].to_numpy(dtype=float)
-    W = d[W_COLS].to_numpy(dtype=float)
+    W = _matriz_w(d)
     Y = d[y_col].to_numpy(dtype=float)
     T = d["T"].to_numpy(dtype=int)
-    est = CausalForestDML(model_y=_modelo_y(), model_t=LogisticRegression(max_iter=1000),
+    est = CausalForestDML(model_y=_modelo_y(), model_t=_modelo_t(),
                            discrete_treatment=True, n_estimators=400, min_samples_leaf=50, random_state=SEED)
     est.fit(Y, T, X=X, W=W)
     cate = est.effect(X)
