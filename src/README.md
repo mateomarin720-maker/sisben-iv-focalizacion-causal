@@ -38,9 +38,22 @@ documentado y preferiblemente cubierto por pruebas.
     Asigna `Grupo`/`Nivel`/`Clasificacion` del Sisbén a los hogares GEIH.
     Válido solo a nivel poblacional (no identifica el mismo hogar).
 
+- **`estimacion/`**
+  - Pruebas exploratorias de ATE/ATT/CATE — ver
+    `src/estimacion/README.md` para el detalle. **No es la Fase 4**
+    (`5_estimacion.py` sigue sin implementar): es la corrida previa para
+    ver cómo se comportan los estimadores con las variables que ya hay, y
+    sirve de chequeo de validez del Hot-Deck (sección 1 de
+    `docs/resultados/IDENTIFICACION_CAUSAL.md`).
+
 - **`validacion/`**
   - Chequeos de calidad: `validar_cobertura_celdas_hotdeck.py`,
-    `verificar_esquema_armonizado.py`, `revisar_faltantes_modulos_geih.py`.
+    `verificar_esquema_armonizado.py`, `revisar_faltantes_modulos_geih.py`,
+    `verificar_codigos_edad_sisben.py` (corrobora los códigos de ciclo de
+    vida de `PER002` contra variables de comportamiento), y
+    `comparar_filtros_sdp.py` (corre el Hot-Deck con los dos filtros del
+    SDP — vigencia vs. año exacto — y deja el resultado lado a lado en
+    `docs/reports/comparacion_filtros_sdp.csv`).
 
 - **`utils/`**
   - `azure_storage.py`, `publicar_banco_datos_azure.py` y

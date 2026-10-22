@@ -2,6 +2,64 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
+## 2026-10-21 (3) — DAG de identificación, filtro dual del SDP y documentación de modelos
+
+A partir de la revisión de *Pipeline de datos y modelos para estimar el
+efecto causal del Sisbén IV...* (Roncancio y Fonseca, 2026, PDF del
+seminario de grado).
+
+### Añadido
+- **`src/4_dag_identificacion.py` implementado** (antes vacío). Construye con
+  `networkx` los dos diseños del documento (Figuras 2 y 3) y corre un
+  chequeo FORMAL de d-separación (`networkx.is_d_separator`), no solo
+  narrado. Hallazgo: **el grafo tal como lo describe la Figura 2 literal
+  (un solo nodo "elegibilidad real") NO queda d-separado condicionando
+  solo en X** — hay un camino sin bloquear
+  `grupo_hotdeck <- elegibilidad_real -> participacion_dps -> resultado_y`
+  que el texto no menciona. Separando "elegibilidad del hogar receptor" de
+  "elegibilidad del hogar donante" (que es lo que el Hot-Deck real copia —
+  nunca la del receptor, que no conoce) el grafo refinado sí queda
+  d-separado condicionando solo en X, sosteniendo formalmente la
+  afirmación del documento. Salida: `docs/resultados/IDENTIFICACION_CAUSAL.md`,
+  `docs/resultados/dag_diseno_principal.png`,
+  `docs/resultados/dag_diseno_principal_refinado.png`,
+  `docs/resultados/dag_una_tabla.png`. Esto también explica, con teoría de
+  grafos, el residuo de -2,3 % en ingreso de la prueba de ATE/CATE de abajo:
+  el X de la Figura 2 incluye vivienda, pero la celda del Hot-Deck
+  implementada hoy no.
+- **Filtro dual del SDP regenerado y comparado lado a lado**
+  (`src/armonizacion/armonizar_sisben_bogota_sdp.py` ahora acepta
+  `--modo vigencia|anio_exacto`; `src/validacion/comparar_filtros_sdp.py`
+  corre el Hot-Deck con ambos donantes). Resultado completo en
+  `docs/resultados/COMPARACION_FILTROS_SDP.md` y
+  `docs/reports/comparacion_filtros_sdp.csv` — confirma que a nivel
+  nacional el filtro casi no cambia el resultado, pero dentro de Bogotá
+  el Grupo D pasa de 27,8 % (vigencia) a 17,6 % (año exacto), 10 p.p. de
+  diferencia. Se mantiene vigencia como filtro adoptado.
+- **`src/estimacion/README.md`**: documenta la carpeta de pruebas
+  exploratorias de ATE/ATT/CATE (qué es, qué no es, resultados, limitaciones).
+  Referenciado desde `src/README.md`.
+
+### Corregido
+- La entrada anterior (2026-10-21 (2)) decía "falta DAG/identificación
+  (`4_dag_identificacion.py`, sin implementar)" — ya no aplica, ver arriba.
+
+## 2026-10-21 (2) — Prueba exploratoria de ATE/ATT/CATE + fix de entorno (numpy 2 / econml)
+
+### Corregido (entorno)
+- `econml 0.15.0` no era compatible con `numpy 2.x` (los `.pyx` de `econml.tree`/`econml.grf` estaban compilados contra el ABI de numpy 1.x: `ValueError: numpy.dtype size changed`) y `shap<0.44` (dependencia interna de econml) tampoco (`np.obj2sctype` fue removido en numpy 2.0). Se subió a **`econml 0.17.0`** (que a su vez forzó `scikit-learn` de 1.4.2 a **1.9.1**) y **`shap 0.51.0`**. Actualizado en `pyproject.toml`. **`poetry.lock` queda desactualizado** — correr `poetry lock` cuando se tenga Poetry disponible; mientras tanto el entorno funciona vía `pip install` directo sobre el `.venv`.
+
+### Añadido — prueba exploratoria (no es la Fase 4 / `5_estimacion.py`, que sigue sin implementar)
+- `src/estimacion/preparar_outcome_prueba_empleo.py`: construye un outcome **provisional** (empleo e ingreso laboral del jefe de hogar, cruzando `caracteristicas_generales` + `ocupados` de GEIH por mes) porque el dataset fusionado del Hot-Deck no tiene ningún outcome todavía (`3_preprocesamiento.py` sigue sin implementar). Resultado: 290.968 hogares, 0 % sin cruce, 62,6 % de jefes ocupados, ingreso laboral mediano $1.300.000 (jefes ocupados, n=181.657) — cifras plausibles para 2024.
+- `src/estimacion/prueba_ate_att_cate.py`: corre LinearDML (ATE), LinearDRLearner (ATT) y CausalForestDML (CATE) con `T = 1{Grupo_hotdeck ∈ {A,B}}`, dos veces cada uno — (a) controlando solo por zona/sexo/vivienda, (b) agregando `geo_depto + jefe_edad` (la celda misma del Hot-Deck) — como chequeo de validez: si el "efecto" de (a) no colapsa en (b), es señal de que geografía/edad se está colando por una puerta de atrás, no de que el Hot-Deck tenga información real más allá de su celda. Salida completa en `docs/reports/prueba_ate_att_cate_salida.txt`.
+  - **Y1 = jefe ocupado (0/1):** ATE (a) +0,41 p.p. [IC95% +0,03;+0,78] → (b) +0,02 p.p. [IC95% -0,31;+0,35] — **colapsa a 0 como se esperaba**. Mismo patrón en ATT. CATE medio baja de +0,95 a +0,47 p.p. al agregar el control (no colapsa del todo).
+  - **Y2 = log(ingreso laboral), jefes ocupados:** ATE (a) -6,56 % → (b) **-2,30 %** [IC95% -3,89;-0,71] — se reduce ~65 % pero **no colapsa a 0**: queda un efecto residual estadísticamente distinto de cero.
+  - Lectura: el chequeo de validez pasa para empleo (el Hot-Deck no inventa heterogeneidad en esa variable) pero no del todo para ingreso — el residuo de -2,3 % sugiere que vivienda (`viv_cuartos`, `viv_paredes`, las de mayor importancia en el forest) correlaciona con el grupo Sisbén por una vía distinta a depto+edad (p. ej. submunicipio/estrato dentro del mismo departamento). No se puede concluir que sea un efecto causal del Sisbén — falta DAG/identificación (`4_dag_identificacion.py`, sin implementar) y el tratamiento sigue siendo imputado por Hot-Deck, no observado.
+
+### Pendiente (nuevo)
+- [ ] Investigar por qué el residuo de ingreso (-2,3 %) no colapsa con depto+edad — ¿variable de vivienda genuinamente confundida, o matching demasiado grueso a nivel geográfico?
+- [ ] Re-generar `poetry.lock` con Poetry (no disponible en este entorno) para que el bump de `econml`/`scikit-learn`/`shap` quede fijado para todo el equipo.
+
 ## 2026-10-21 — Orden de la documentación y acceso a los datos
 
 ### Reorganizado
