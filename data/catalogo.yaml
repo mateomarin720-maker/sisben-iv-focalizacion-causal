@@ -92,17 +92,31 @@ fuentes:
     entidad: DNP
     portal: "sisben.gov.co (solicitud académica ante DNP)"
     catalogo_ref: null
-    periodo: "Nacional: corte mayo 2024 (ANDA-DNP). Bogotá: corte 03/08/2026 (SDP)"
+    periodo: "Nacional: corte mayo 2024 (ANDA-DNP). Bogotá: registro continuo 2019-2026 (SDP), filtrado a hogares vigentes al 31-dic-2024"
     unidad_analisis: hogar
     acceso: solicitud_institucional
     estado: disponible
     notas: >
       Microdato anonimizado obtenido vía ANDA-DNP (nacional, 1.833.166
-      hogares) y por solicitud a la SDP (Bogotá, 1.458.468 hogares; el
-      Distrito administra su Sisbén aparte). Variable de tratamiento: grupo
-      (A/B/C/D), nivel y clasificación; el extracto no trae puntaje
-      continuo. La edad del jefe viene como código de ciclo de vida
-      (ver docs/insumos/DICCIONARIO_HOTDECK.md).
+      hogares) y por solicitud a la SDP (Bogotá, 1.458.468 hogares; el Distrito administra su
+      Sisbén aparte). Variable de tratamiento: grupo (A/B/C/D), nivel y
+      clasificación; el extracto no trae puntaje continuo. La edad del jefe
+      viene como código de ciclo de vida, corroborado indirectamente
+      2026-10-10 (ver docs/insumos/DICCIONARIO_HOTDECK.md).
+
+      Corrección 2026-10-10: el lote del SDP (recibido 03/08/2026) NO es un
+      corte único — es un registro administrativo continuo con
+      `fec_fin_encuesta` por hogar entre 2019-03-22 y 2026-07-29 (cada hogar
+      aparece una sola vez, con la fecha de su único registro). Se evaluaron
+      dos filtros: año exacto 2024 (descartado — solo 75.488 de 1.458.474
+      jefes, 5,2 %, sesga hacia actualizaciones recientes) y vigencia hasta
+      corte `fec_fin_encuesta <= 2024-12-31` (adoptado — 1.274.578 hogares,
+      87,4 %, consistente con que el nacional tampoco trae fecha real por
+      hogar). Filtro implementado en
+      src/armonizacion/armonizar_sisben_bogota_sdp.py. Donante total del
+      Hot-Deck con el filtro adoptado: 3.106.489 hogares (vs. 3.290.379 sin
+      filtrar). Efecto modesto a nivel nacional pero relevante dentro de
+      Bogotá (Grupo D pasa de 17,6 % a 27,8 % según el filtro usado).
     variables_clave:
       - grupo_elegibilidad
       - clasificacion

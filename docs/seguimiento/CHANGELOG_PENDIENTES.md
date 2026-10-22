@@ -20,6 +20,32 @@ La carpeta `docs/` se agrupa por para qué sirve cada documento (ver [`docs/READ
 - `docs/insumos/DESCRIPCION_TABLAS.md`: qué es una fila, llave, filas y script de cada tabla de `data/2_models/`.
 - `docs/resultados/RESULTADOS_HOTDECK.md`: resultado del emparejamiento y verificación empírica de los códigos de `PER002`.
 
+## 2026-10-10 — Re-corrida del Hot-Deck y verificación de `PER002`
+
+### Confirmado
+- **Re-corrida del Hot-Deck** (`src.emparejamiento.emparejamiento_hotdeck_geih_sisben`) sobre el estado actual de datos: mismo resultado que el 2026-10-09 — 290.968 hogares GEIH, 3.290.379 donantes, **100 % celda exacta**, Grupo ponderado A 28,0 % · B 34,4 % · C 25,0 % · D 12,5 %.
+- **Hipótesis del ciclo de vida de `PER002` corroborada indirectamente** (`src.validacion.verificar_codigos_edad_sisben`, usa el archivo completo de Personas en Azure, 4.715.226 filas): cruzado contra escolaridad (`PER016`), estado civil (`PER004`) y cotización a pensión (`PER018`), las proporciones por código son coherentes con 3=12–17, 4=18–28, 5=29–59, 6=60+. Además, **0 de 1.820.148 jefes de hogar** tienen `PER002` en {1,2} (códigos de infancia/niñez) — confirma que el hot-deck no pierde ningún jefe al no mapear esos dos códigos. Sigue faltando la ficha oficial de ANDA para una confirmación definitiva. Detalle en `docs/insumos/DICCIONARIO_HOTDECK.md` sección 5.
+
+### Ambigüedades de fondo que persisten (no resueltas por esta corrida)
+- El **100 % de celda exacta es un artefacto de una celda muy gruesa** (33 departamentos × 4 ciclos de vida = máx. 130 celdas) combinado con un donante ~11 veces más grande que el receptor — no es evidencia de que el emparejamiento sea preciso. Falta la celda con variables de vivienda para medir sensibilidad.
+- `geo_zona`, `jefe_sexo`, `viv_paredes`, `viv_pisos`: sin verificar contra la ficha oficial de cada fuente — no se sabe si el mismo código significa lo mismo en GEIH y en Sisbén.
+- Sesgo de selección: el Sisbén solo contiene hogares inscritos — su distribución de grupos no es la de toda la población GEIH.
+
+## 2026-10-10 (2) — Corregido: el SDP no era un corte único, era un registro continuo 2019-2026
+
+### Corregido
+- **El archivo del SDP (`sisben/bogota/Sisben_03082026_bog.zip`, 587 MB sin comprimir) trae `fec_fin_encuesta` por hogar, con fechas entre 2019-03-22 y 2026-07-29 — no es un corte único de agosto 2026 como se asumía.** Verificado que cada hogar aparece una sola vez en el archivo (no hay filas duplicadas repitiendo el mismo valor en años distintos): su fecha es la de su único registro, vigente hasta que se actualice.
+- **Primer intento — año exacto 2024 — descartado tras revisarlo con el usuario:** solo 75.488 de 1.458.474 jefes (5,2 %) tienen `fec_fin_encuesta` en 2024 exacto. Ese filtro confunde "vigente en 2024" con "re-encuestado en 2024" (el Sisbén no revisita a todos los hogares cada año) y sesga la muestra hacia actualizaciones recientes.
+- **Filtro adoptado — vigencia hasta corte (`fec_fin_encuesta <= 2024-12-31`):** consistente con el nacional, cuyo `CORTE` tampoco tiene fecha real por hogar (literal fijo `"SIV_2024"`) — se trata a ambas fuentes como "stock vigente a una fecha". `src/armonizacion/armonizar_sisben_bogota_sdp.py` ahora usa `FECHA_CORTE` (antes `ANIO_CORTE`) y guarda la fecha real de cada hogar en `CORTE`.
+- Re-corridas con el donante corregido (filtro de vigencia):
+  - **Armonización:** `sisben_bogota_estandarizado.parquet` = **1.274.578** hogares (87,4 % de los 1.458.468; se descartan 183.890 posteriores a 2024). Fusión con nacional: **3.106.489** donantes totales (antes 3.290.379 sin filtrar, 1.907.399 con el año exacto descartado).
+  - **Hot-Deck:** 100 % celda exacta. Grupo nacional ponderado: **A 28,0 · B 34,4 · C 24,9 · D 12,7** — prácticamente igual al original sin filtrar (A 28,0/B 34,4/C 25,0/D 12,5), confirma que la distorsión venía del filtro de año exacto, no de excluir los 183.890 hogares 2025-2026.
+  - **Dentro de Bogotá (depto 11, 10.016 hogares GEIH) el filtro sí cambia el resultado:** año exacto daba D=17,6 %; vigencia da **D=27,8 %** (10 p.p. de diferencia) — la muestra de "solo recién actualizados" no representa al Sisbén vigente de Bogotá.
+
+### Pendiente (nuevo)
+- [ ] Publicar en Azure los parquets corregidos (`sisben_bogota_estandarizado.parquet`, `sisben_estandarizado_2024_con_bogota.parquet`, `geih_sisben_fusionado_2024.parquet`) — pendiente de confirmación antes de sobrescribir el banco de datos compartido.
+- [ ] El nacional no expone fecha real por hogar (`CORTE` es un literal fijo) — no se puede verificar si tiene la misma mezcla de antigüedad que Bogotá; queda como limitación no resuelta.
+
 ## 2026-10-09 — Armonización, Hot-Deck con Bogotá y reorganización del código
 
 ### Corregido
@@ -58,7 +84,7 @@ Los nombres de los parquets en `data/2_models/` **no cambiaron**, para no volver
 Todos los `.md` (raíz, `data/`, `docs/`, `src/`, `notebooks/`) y `data/catalogo.yaml` se alinearon al mismo momento del proyecto (2026-10-09): objetivos vigentes P1/OE1, P2/OE2, P3/OE3; fuentes obtenidas (GEIH 2024, IPM 2024, Sisbén nacional y Bogotá); Azure como banco de datos; etapas del código `ingesta → armonizacion → emparejamiento → validacion`. Se retiraron referencias a OE4/OE5, al "puntaje continuo" del Sisbén y a fuentes "por solicitar" que ya se obtuvieron.
 
 ### Pendiente
-- [ ] Verificar en ANDA (`PER002`, V926) la tabla de códigos de ciclo de vida: **hoy es una hipótesis** (3=12–17, 4=18–28, 5=29–59, 6=60+).
+- [x] Verificar en ANDA (`PER002`, V926) la tabla de códigos de ciclo de vida: corroborada indirectamente el 2026-10-10 (ver entrada arriba); falta la ficha oficial para confirmación 100 %.
 - [ ] Agregar variables de vivienda a la celda y medir sensibilidad de la distribución de grupos.
 - [ ] Verificar categorías de `geo_zona`, `jefe_sexo`, `viv_paredes`, `viv_pisos` entre fuentes.
 - [ ] Ubicar en el GEIH equivalentes de `HOG027`, `VIV005`, `VIV008`.
