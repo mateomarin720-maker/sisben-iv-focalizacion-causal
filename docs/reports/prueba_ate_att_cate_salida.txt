@@ -1,0 +1,47 @@
+2026-10-21 20:45:32,799 INFO Cargando data\2_models\muestra_estimacion_prueba.parquet
+2026-10-21 20:45:33,595 INFO n=290,968 | T=1 (Grupo A/B): 71.0%
+
+======================================================================
+DIFERENCIA NA�VE EN MEDIAS (sin controles) � referencia
+======================================================================
+  jefe_ocupado: media T=1 -> 0.627 | media T=0 -> 0.625 | diferencia = +0.001
+  jefe_ingreso_laboral: media T=1 -> 1709368.502 | media T=0 -> 1924589.780 | diferencia = -215221.278
+
+======================================================================
+Y1 = jefe_ocupado (0/1) � muestra completa
+======================================================================
+ATE:
+  [(a) sin depto/edad] n=290,968 | ATE=+0.0041  IC95%=(+0.0003, +0.0078)
+  [(b) con depto/edad] n=290,968 | ATE=+0.0002  IC95%=(-0.0031, +0.0035)
+ATT:
+  [(a) sin depto/edad] n_tratados=206,724 | ATT=+0.0042  IC95%=(+0.0004, +0.0080)
+  [(b) con depto/edad] n_tratados=206,724 | ATT=+0.0000  IC95%=(-0.0033, +0.0033)
+CATE (Causal Forest, heterogeneidad en zona/sexo/vivienda):
+  [(a) sin depto/edad como control] n=80,000 | CATE media=+0.0095  sd=0.0179  rango=(-0.0603, +0.0935)
+  Heterogeneidad por subgrupo (media de CATE):
+    por zona (urbana=1): {0: 0.0218, 1: 0.0076}
+    por sexo jefe (mujer=1): {0: 0.0139, 1: 0.0049}
+    importancia de variables (forest): {'viv_cuartos': 0.387, 'viv_paredes': 0.261, 'jefe_mujer': 0.193, 'geo_zona_urbana': 0.155, 'viv_pisos': 0.005}
+  [(b) con depto/edad como control] n=80,000 | CATE media=+0.0047  sd=0.0153  rango=(-0.0418, +0.0946)
+  Heterogeneidad por subgrupo (media de CATE):
+    por zona (urbana=1): {0: 0.0246, 1: 0.0018}
+    por sexo jefe (mujer=1): {0: 0.0076, 1: 0.0018}
+    importancia de variables (forest): {'viv_paredes': 0.344, 'viv_cuartos': 0.293, 'geo_zona_urbana': 0.189, 'jefe_mujer': 0.169, 'viv_pisos': 0.005}
+
+======================================================================
+Y2 = log(jefe_ingreso_laboral) � solo jefes ocupados
+======================================================================
+ATE:
+  [(a) sin depto/edad] n=181,657 | ATE=-0.0656  IC95%=(-0.0820, -0.0492)
+  [(b) con depto/edad] n=181,657 | ATE=-0.0230  IC95%=(-0.0389, -0.0071)
+
+======================================================================
+Lectura esperada (chequeo de validez del Hot-Deck):
+  Si el ATE/CATE de (a) es distinto de 0 pero el de (b) colapsa hacia 0,
+  es evidencia de que el 'efecto' de (a) es geograf�a/edad col�ndose por
+  la puerta de atr�s (depto+edad correlacionan con Grupo_hotdeck por el
+  dise�o de la celda, y con el outcome por econom�a regional/ciclo de vida)
+  � NO una heterogeneidad real que el Hot-Deck est� capturando.
+======================================================================
+
+[exited with code 0]

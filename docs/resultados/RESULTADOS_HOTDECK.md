@@ -1,27 +1,34 @@
 # Resultados del Hot-Deck GEIH ← Sisbén IV
 
-*Actualizado el 2026-10-21. Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../insumos/DESCRIPCION_TABLAS.md).*
+*Actualizado el 2026-10-21 (celda con vivienda sumada). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../insumos/DESCRIPCION_TABLAS.md).*
 
 ## Resultado
 
 | Concepto | Valor |
 |---|---|
 | Hogares receptores (GEIH 2024, 12 meses) | 290.968 |
-| Hogares donantes (Sisbén nacional con Bogotá) | 3.290.379 |
-| Celda exacta (departamento + ciclo de vida del jefe) | 100 % |
-| Hogares en `solo_depto` o `pool_nacional` | 0 |
+| Hogares donantes (Sisbén nacional + Bogotá, filtro de vigencia) | 3.106.489 |
+| Celda exacta (departamento + ciclo de vida del jefe + tramo de cuartos) | 100 % |
+| Hogares en `solo_depto_edad`, `solo_depto` o `pool_nacional` | 0 |
 
 Grupo asignado, ponderado por el factor de expansión de GEIH:
 
 | Grupo | A | B | C | D |
 |---|---|---|---|---|
-| % de hogares | 28,0 | 34,4 | 25,0 | 12,5 |
+| % de hogares (celda con vivienda) | **31,2** | 35,2 | 23,2 | **10,3** |
+| % de hogares (celda sin vivienda, hasta 2026-10-21) | 28,0 | 34,4 | 24,9 | 12,7 |
+
+Sumar `viv_cuartos` a la celda corrió la distribución hacia A (+3,2 p.p.) y
+en contra de D (-2,4 p.p.) — los hogares con menos cuartos tienden a estar
+en departamentos/grupos de edad donde el Sisbén también registra más
+Grupo A, así que antes de sumar vivienda ese patrón se perdía dentro de
+celdas más gruesas.
 
 ## Cómo leerlo
 
-- **El 100 % en celda exacta no demuestra por sí solo un buen emparejamiento.** La celda es gruesa (unas 130 celdas), así que todas tienen donantes. Falta medir cuántos donantes hay por receptor en cada celda y cuántas veces se reutiliza cada donante.
+- **El 100 % en celda exacta sigue sin demostrar por sí solo un buen emparejamiento** — ahora hay más celdas (depto×edad×cuartos, no solo depto×edad), pero el donante (3,1 millones) sigue siendo ~11 veces más grande que el receptor. El chequeo real de validez está en `RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`: dado W=celda completa, el efecto estimado no colapsa del todo a 0 — señal de que falta algo (la pista más fuerte: `viv_paredes`, sin verificar y fuera de la celda).
 - **La distribución A/B/C/D no es la nacional.** El Sisbén solo cubre hogares registrados, de modo que A y B quedan sobrerrepresentados.
-- **El emparejamiento solo es válido a nivel poblacional.** No identifica al mismo hogar en las dos fuentes. Dado el departamento y el ciclo de vida del jefe, el grupo asignado no contiene información propia del hogar, por lo que los efectos estimados con esta tabla tienden a atenuarse hacia cero.
+- **El emparejamiento solo es válido a nivel poblacional.** No identifica al mismo hogar en las dos fuentes.
 
 ## Historial de la cobertura
 
@@ -51,5 +58,5 @@ Grupo asignado, ponderado por el factor de expansión de GEIH:
 ## Pendientes
 - [ ] Sensibilidad del Hot-Deck: mover los cortes de edad, sortear donantes ponderados por `FEX` y medir donantes por receptor y reutilización de donantes.
 - [ ] Validar con el IPM sin usarlo en la celda: comparar privaciones medias por grupo asignado.
-- [ ] Sumar variables de vivienda a la celda y homologar en GEIH alcantarillado, acueducto y número de personas.
+- [x] Sumar variables de vivienda a la celda — hecho con `viv_cuartos` (2026-10-21). `viv_paredes`/`viv_pisos` siguen fuera (categorías sin verificar) y alcantarillado/acueducto/número de personas siguen sin homologar en GEIH.
 - [ ] Confirmar en ANDA los códigos de `PER002`.
