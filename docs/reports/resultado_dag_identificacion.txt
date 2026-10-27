@@ -1,0 +1,11 @@
+=== Diseño principal LITERAL (un solo nodo elegibilidad_real) ===
+  d_separado_dado_X: False
+  d_separado_dado_X_mas_elegibilidad_real: True
+=== Diseño principal REFINADO (elegibilidad donante != receptor) ===
+  d_separado_dado_X: True
+  d_separado_dado_X_mas_elegibilidad_receptor_elegibilidad_donante: True
+
+Guardado: docs\resultados\IDENTIFICACION_CAUSAL.md
+Guardado: docs\resultados\dag_diseno_principal.png
+Guardado: docs\resultados\dag_diseno_principal_refinado.png
+Guardado: docs\resultados\dag_una_tabla.png

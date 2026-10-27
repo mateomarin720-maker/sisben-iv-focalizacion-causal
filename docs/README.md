@@ -20,6 +20,7 @@ carpeta responde a una pregunta distinta.
 - [`referencias_teoricas.md`](insumos/referencias_teoricas.md): referencias metodológicas del proyecto.
 
 ## `resultados/`
+- [`README.md`](resultados/README.md): **índice y hallazgos consolidados** — el hilo conductor que conecta los cinco documentos de abajo (resumen ejecutivo, no hace falta leer los cinco para entender el estado del proyecto).
 - [`RESULTADOS_HOTDECK.md`](resultados/RESULTADOS_HOTDECK.md): resultado del emparejamiento GEIH ← Sisbén, la verificación de los códigos de edad `PER002` y cómo leerlos.
 - [`COMPARACION_FILTROS_SDP.md`](resultados/COMPARACION_FILTROS_SDP.md): el SDP (Sisbén Bogotá) es un registro continuo, no un corte único — comparación lado a lado de los dos filtros posibles (vigencia vs. año exacto) y por qué se adoptó vigencia.
 - [`IDENTIFICACION_CAUSAL.md`](resultados/IDENTIFICACION_CAUSAL.md): los dos DAG del pipeline (diseño principal y diseño de una sola tabla), con el chequeo formal de d-separación — por qué el diagrama simplificado del documento de pipeline necesita distinguir elegibilidad del donante de la del receptor para sostener su propia afirmación.
