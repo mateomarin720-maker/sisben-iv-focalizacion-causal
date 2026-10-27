@@ -26,6 +26,7 @@ carpeta responde a una pregunta distinta.
 - [`IDENTIFICACION_CAUSAL.md`](resultados/IDENTIFICACION_CAUSAL.md): los dos DAG del pipeline (diseño principal y diseño de una sola tabla), con el chequeo formal de d-separación — por qué el diagrama simplificado del documento de pipeline necesita distinguir elegibilidad del donante de la del receptor para sostener su propia afirmación.
 - [`RESULTADOS_DML_ATE_ATT_ATU.md`](resultados/RESULTADOS_DML_ATE_ATT_ATU.md): primera corrida real de ATE/ATT/ATU (Double Machine Learning) sobre el outcome IPM-GEIH reducido.
 - [`RESULTADOS_CAUSALFOREST_CATE.md`](resultados/RESULTADOS_CAUSALFOREST_CATE.md): primera corrida real de CATE (Causal Forest) — heterogeneidad concentrada en jefatura femenina y material de paredes.
+- [`RESULTADOS_FRECHET_MANSKI.md`](resultados/RESULTADOS_FRECHET_MANSKI.md): cotas de Fréchet-Manski (sin suponer independencia condicional) — el rango de efectos compatible con los datos crudos es 145 veces más ancho que el IC95% del DML.
 
 ## `seguimiento/`
 - [`RESUMEN_AVANCES.md`](seguimiento/RESUMEN_AVANCES.md): estado de fuentes, pipeline y pendientes técnicos.
@@ -44,5 +45,6 @@ reportes generados; los resultados interpretados van en `resultados/`.
 ## Pendiente
 - Marco teórico y metodológico completo: se redacta en un documento aparte y se agregará a `insumos/` cuando esté estable (el diagrama causal ya está en `resultados/IDENTIFICACION_CAUSAL.md`, pero falta integrarlo al marco teórico formal).
 - Resultados de determinantes y validez (P1/OE1): LASSO/Ridge/SHAP sobre el Sisbén solo — no implementado.
-- Efectos causales (P2/OE2): primera corrida real ya en `resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md` — falta resolver `viv_paredes`/`viv_pisos` (categorías sin verificar) antes de poder interpretarlos como efecto causal, no solo asociación.
+- Efectos causales (P2/OE2): primera corrida real ya en `resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`, con robustez vía `resultados/RESULTADOS_FRECHET_MANSKI.md` — falta resolver `viv_paredes`/`viv_pisos` (categorías sin verificar) antes de poder interpretar el DML como efecto causal, no solo asociación.
 - Reglas contrafactuales (P3/OE3): no implementado, depende de P1 y P2.
+- Angostar las cotas de Fréchet-Manski con supuestos de monotonía (MTS/MTR) — ver "Próximo paso" en `resultados/RESULTADOS_FRECHET_MANSKI.md`.

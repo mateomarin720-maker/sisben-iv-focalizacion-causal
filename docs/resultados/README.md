@@ -16,14 +16,15 @@ resumen de los cinco juntos.*
 | 3 | Outcome (IPM-GEIH reducido) | `src/3_preprocesamiento.py` | — (resumen abajo, detalle en `RESULTADOS_DML_ATE_ATT_ATU.md`) | ✅ (reducido, ver limitación) |
 | 4 | Estimación: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) | ✅ |
 | 4b | Estimación: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) | ✅ |
+| 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
 
 Lo que **no** está en esta carpeta todavía porque no está implementado:
 LASSO/Ridge/SHAP sobre el Sisbén (P1/OE1), discontinuidad de regresión B/C
 (en duda — no hay puntaje continuo), diseño de una sola tabla Sisbén
-III→IV (falta el corte III), cotas de Fréchet–Manski, vecino más cercano
-con distancia de Gower, reglas contrafactuales FGT1 (P3/OE3). Ver Tabla 1
-del documento de pipeline (Roncancio y Fonseca, 2026) y la sección
-"Pendiente" de `docs/README.md`.
+III→IV (falta el corte III), vecino más cercano con distancia de Gower,
+reglas contrafactuales FGT1 (P3/OE3). Ver Tabla 1 del documento de
+pipeline (Roncancio y Fonseca, 2026) y la sección "Pendiente" de
+`docs/README.md`.
 
 ## El hilo conductor: un solo hallazgo explica casi todo lo demás
 
@@ -130,6 +131,26 @@ forest — no se puede descartar que el patrón por sexo sea en realidad
 vivienda/geografía colándose por esa covariable. Detalle en
 `RESULTADOS_CAUSALFOREST_CATE.md`.
 
+### 5. Cotas de Fréchet-Manski (robustez, sin suponer independencia condicional)
+
+El DML asume que, dentro de la celda del Hot-Deck, el grupo asignado es
+como-si-aleatorio. Las cotas de Fréchet-Manski quitan esa suposición y
+preguntan: ¿qué dicen los datos SIN ella? Resultado para `POBRE_GEIH`:
+
+| | Estimador | Rango |
+|---|---|---|
+| Fréchet-Manski (sin CIA) | Cota | **[-0,627 ; +0,360]** |
+| DML con Hot-Deck (con CIA) | Punto + IC95% | +0,0074 [+0,004 ; +0,011] |
+
+El intervalo sin CIA es **145 veces más ancho** que el IC95% del DML, y
+ni una sola de las 342 celdas individuales logra excluir el cero por su
+cuenta. No es un error — es la confirmación honesta de que **toda la
+precisión del resultado del DML viene de confiar en la suposición del
+Hot-Deck, no de los datos crudos**. Detalle en
+`RESULTADOS_FRECHET_MANSKI.md`, incluida una propuesta concreta para
+angostar la cota con supuestos más débiles que la CIA completa (monotonía
+en la selección o en la respuesta al tratamiento).
+
 ## Limitaciones que aplican a TODO lo anterior
 
 - El tratamiento (`Grupo_hotdeck`) es imputado por emparejamiento
@@ -151,6 +172,7 @@ poetry run python -m src.validacion.comparar_filtros_sdp
 poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
 poetry run python src/5_estimacion.py
+poetry run python -m src.estimacion.cotas_frechet_manski
 ```
 
 Salidas crudas de esta corrida (2026-10-27): `docs/reports/resultado_hotdeck.txt`,
