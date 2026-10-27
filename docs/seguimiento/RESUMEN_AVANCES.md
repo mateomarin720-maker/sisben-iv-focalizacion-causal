@@ -1,6 +1,6 @@
 # Resumen de Avances — Efecto Causal del Sisbén IV
 
-Última actualización: 2026-10-21 | Rama: `hotdeck-azure-avances`
+Última actualización: 2026-10-27 | Rama: `hotdeck-azure-avances`
 
 ## 1. Fuentes de datos — estado
 
@@ -63,6 +63,26 @@ se puede leer como efecto causal del Sisbén todavía** — ver
 `RESULTADOS_CAUSALFOREST_CATE.md` para el detalle y las limitaciones
 completas.
 
+## 3c. Cotas de Fréchet-Manski — robustez sin suponer independencia condicional (2026-10-27)
+
+El DML del punto anterior asume que, dentro de la celda del Hot-Deck, el
+grupo asignado es como-si-aleatorio. Para ver qué tan fuerte es esa
+suposición, se calcularon cotas de Fréchet-Manski usando `P(Y|X)` directo
+de GEIH y `P(T|X)` directo de Sisbén, sin pasar por el Hot-Deck:
+
+| | Estimador | Rango (`POBRE_GEIH`) |
+|---|---|---|
+| Fréchet-Manski (sin CIA) | Cota | **[-0,627; +0,360]** |
+| DML con Hot-Deck (con CIA) | Punto + IC95% | +0,0074 [+0,004; +0,011] |
+
+La cota sin CIA es **145 veces más ancha**, y ninguna de las 342 celdas
+individuales logra excluir el cero por su cuenta. **Confirma que toda la
+precisión del resultado del DML depende de la suposición del Hot-Deck, no
+de los datos crudos** — no es un hallazgo negativo, es la honestidad
+matemática esperable sin supuestos adicionales. Detalle y propuesta para
+angostar la cota (supuestos de monotonía) en
+`docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+
 ### Errores encontrados y corregidos durante la ejecución
 1. **Doble jefe en Sisbén:** 65 hogares con dos jefes marcados → se conserva el primero.
 2. **Edad del Sisbén en códigos, no en años:** `PER002` ∈ {3,4,5,6}. Con tramos de años, 89 % caía a `solo_depto`. Corregido comparando por ciclo de vida.
@@ -95,9 +115,11 @@ Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/
 - `docs/insumos/DICCIONARIO_DATOS.md` — diccionario general IPM/GEIH
 - `docs/insumos/DICCIONARIO_HOTDECK.md` — variables y llaves del emparejamiento
 - `docs/insumos/CODIGOS_LOCALIDAD_BOGOTA.md` — localidades de Bogotá
+- `docs/resultados/README.md` — **índice y resumen ejecutivo de todos los resultados** (empezar por aquí)
 - `docs/resultados/IDENTIFICACION_CAUSAL.md` — los dos DAG y el chequeo formal de d-separación
 - `docs/resultados/COMPARACION_FILTROS_SDP.md` — vigencia vs. año exacto del SDP, lado a lado
 - `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` — primera corrida real de ATE/ATT/ATU
 - `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md` — primera corrida real de CATE
+- `docs/resultados/RESULTADOS_FRECHET_MANSKI.md` — cotas sin suponer independencia condicional (robustez)
 - `src/estimacion/README.md` — prueba exploratoria que precedió a la corrida real
 - `docs/seguimiento/CHANGELOG_PENDIENTES.md` — historial de cambios y pendientes

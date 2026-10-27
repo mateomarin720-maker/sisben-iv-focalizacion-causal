@@ -47,6 +47,10 @@ documentado y preferiblemente cubierto por pruebas.
     (`3_preprocesamiento.py` + `5_estimacion.py`) — ver
     `src/estimacion/README.md`. Útil para entender el razonamiento, ya no
     es la corrida vigente.
+  - `cotas_frechet_manski.py` ✅: alternativa de robustez al DML — cotas
+    de Fréchet-Manski sobre `P(Y|X)` (GEIH) y `P(T|X)` (Sisbén) por
+    separado, sin suponer independencia condicional. Ver
+    `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
 
 - **`validacion/`**
   - Chequeos de calidad: `validar_cobertura_celdas_hotdeck.py`,
