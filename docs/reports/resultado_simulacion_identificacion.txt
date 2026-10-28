@@ -1,0 +1,20 @@
+Repeticiones=20, población=150,000. efecto<0 = la elegibilidad REDUCE la privación.
+
+--- Poder de la celda sobre la necesidad: sd_celda=0.3
+efecto_verdadero        -0.30  -0.15   0.00
+estimador                                  
+A Hot-Deck + celda      0.003 -0.002  0.003
+A' Hot-Deck sin celda   0.210  0.221  0.259
+B Oracle + celda (CIA)  1.108  1.256  1.412
+C Oracle + RD continuo -0.286 -0.150 -0.007
+D Oracle + RD ordinal   0.322  0.470  0.627
+
+--- Poder de la celda sobre la necesidad: sd_celda=0.8
+efecto_verdadero        -0.30  -0.15   0.00
+estimador                                  
+A Hot-Deck + celda      0.002 -0.004  0.000
+A' Hot-Deck sin celda   0.876  0.893  0.933
+B Oracle + celda (CIA)  1.159  1.312  1.459
+C Oracle + RD continuo -0.297 -0.160  0.004
+D Oracle + RD ordinal   0.516  0.662  0.806
+

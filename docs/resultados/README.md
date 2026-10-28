@@ -29,6 +29,7 @@ citar cualquier hallazgo anterior.*
 | 4c | Diagnóstico: `W` proxy vs. celda exacta | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md) | ✅ (2026-11-02) |
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
 | 6 | Representatividad del Sisbén frente a GEIH | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) | ✅ |
+| 7 | Simulación de identificación (qué diseño recupera el efecto) | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) | ✅ (datos sintéticos) |
 
 Metodología completa del indicador de pobreza (qué se incluyó, qué no, y
 por qué — incluye el historial del bloqueo, ahora resuelto):
