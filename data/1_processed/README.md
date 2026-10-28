@@ -7,8 +7,9 @@ Datos limpios y tipados, en Parquet, producto de la ingesta
 - `sisben_iv/2024/{hogares,viviendas,personas}.parquet`.
 - IPM Hogares/Personas/Viviendas limpios.
 
-La armonización entre fuentes y el emparejamiento se guardan en
-`data/2_models/` (ver su README). Pendiente: tabla unificada a nivel hogar
-con tratamiento, outcomes y covariables (`src/3_preprocesamiento.py`).
+La armonización entre fuentes, el emparejamiento y la tabla unificada a
+nivel hogar (tratamiento, outcome y covariables, construida por
+`src/3_preprocesamiento.py`) se guardan en `data/2_models/` (ver su
+README).
 
 Contenido no versionado (`.gitignore`); respaldo en Azure Blob Storage.

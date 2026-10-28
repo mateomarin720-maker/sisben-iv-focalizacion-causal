@@ -137,7 +137,7 @@ seminario de grado).
 
 ### Pendiente (nuevo)
 - [ ] Investigar por qué el residuo de ingreso (-2,3 %) no colapsa con depto+edad — ¿variable de vivienda genuinamente confundida, o matching demasiado grueso a nivel geográfico?
-- [ ] Re-generar `poetry.lock` con Poetry (no disponible en este entorno) para que el bump de `econml`/`scikit-learn`/`shap` quede fijado para todo el equipo.
+- [x] Re-generar `poetry.lock` con el bump de `econml`/`scikit-learn`/`shap` — hecho.
 
 ## 2026-10-21 — Orden de la documentación y acceso a los datos
 

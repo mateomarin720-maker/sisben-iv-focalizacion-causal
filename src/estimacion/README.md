@@ -1,22 +1,26 @@
-# Carpeta: src/estimacion (pruebas exploratorias de ATE/ATT/CATE)
+# Carpeta: src/estimacion
 
 ---
 
-**Actualización 2026-10-21 (tarde):** ya existe una corrida REAL — outcome
-construido en `src/3_preprocesamiento.py` (IPM-GEIH reducido, no el de
-prueba de esta carpeta) y modelos en `src/5_estimacion.py` (ATE/ATT/ATU vía
-`LinearDML`, CATE vía `CausalForestDML`), con el Hot-Deck recalculado
-sumando `viv_cuartos` a la celda. Resultados interpretados:
+**Estado actual:** la corrida oficial vive en `src/3_preprocesamiento.py`
+(outcome IPM-GEIH reducido) y `src/5_estimacion.py` (ATE/ATT/ATU vía
+`LinearDML`, CATE vía `CausalForestDML`), sobre el Hot-Deck con
+`viv_cuartos` sumado a la celda. Resultados interpretados:
 `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
-`docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`. Esta carpeta
-(`src/estimacion/`) queda como registro de la corrida de prueba que llevó
-hasta ahí — el outcome de empleo/ingreso de abajo SIGUE sin ser el oficial,
-y el hallazgo de que el residuo no colapsaba con depto+edad fue justamente
-lo que motivó sumar vivienda a la celda y construir el outcome real.
+`docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`.
 
-**Esto NO es `5_estimacion.py`** (ya no aplica tal cual — ver arriba). Lo
-que sigue documenta la corrida de prueba original (mañana del 2026-10-21),
-útil para entender el razonamiento que llevó a la corrida real.
+Esta carpeta (`src/estimacion/`) contiene dos cosas distintas:
+- `preparar_outcome_prueba_empleo.py` + `prueba_ate_att_cate.py`: la
+  corrida de prueba que precedió a la oficial — el outcome de
+  empleo/ingreso de abajo NO es el oficial. Queda como registro: el
+  hallazgo de que el residuo no colapsaba con depto+edad fue lo que
+  motivó sumar vivienda a la celda y construir el outcome real.
+- `cotas_frechet_manski.py`: parte vigente del pipeline — cotas de
+  robustez para el ATE que NO suponen independencia condicional (a
+  diferencia del DML). Resultado: `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+
+Lo que sigue documenta la corrida de prueba original, útil para entender
+el razonamiento que llevó a la corrida oficial.
 
 ## Contenido
 
@@ -77,6 +81,4 @@ poetry run python -m src.estimacion.prueba_ate_att_cate
 ```
 
 Requiere `econml>=0.17`, `shap>=0.51` y `scikit-learn>=1.9` (ver
-`pyproject.toml` — versiones subidas 2026-10-21 porque las anteriores no
-son compatibles con `numpy 2.x`; `poetry.lock` quedó desactualizado, correr
-`poetry lock` cuando se tenga Poetry disponible).
+`pyproject.toml`; `poetry.lock` ya está regenerado con estas versiones).

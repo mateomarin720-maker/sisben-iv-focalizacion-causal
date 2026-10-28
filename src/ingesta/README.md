@@ -34,14 +34,14 @@ Módulos de conexión a fuentes de datos.
   los TXT (separador tab) de Hogares, Viviendas y Personas por lotes de
   200.000 filas.
 
-## Estado (2026-10-09)
+## Estado
 
 | Fuente | Estado |
 |---|---|
 | GEIH 2024 (12 meses) | ✅ Ingestada |
 | IPM 2024 | ✅ Ingestado |
 | Sisbén IV nacional (ANDA-DNP) | ✅ Ingestado |
-| Sisbén IV Bogotá (SDP, CSV) | ✅ Armonizado directamente desde el CSV (`src/armonizacion/armonizar_sisben_bogota_sdp.py`) |
+| Sisbén IV Bogotá (SDP, CSV) | ✅ Armonizado directamente desde el CSV (`src/armonizacion/armonizar_sisben_bogota_sdp.py`, filtrado a hogares vigentes — el archivo es un registro continuo, no un corte único) |
 | DPS | ⏳ Por gestionar; escribir el conector cuando se defina el canal de entrega |
 
 La armonización entre fuentes y el emparejamiento no pertenecen a esta
