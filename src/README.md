@@ -59,7 +59,15 @@ documentado y preferiblemente cubierto por pruebas.
     vida de `PER002` contra variables de comportamiento), y
     `comparar_filtros_sdp.py` (corre el Hot-Deck con los dos filtros del
     SDP — vigencia vs. año exacto — y deja el resultado lado a lado en
-    `docs/reports/comparacion_filtros_sdp.csv`).
+    `docs/reports/comparacion_filtros_sdp.csv`), y
+    `verificar_representatividad_sisben.py` (cobertura del Sisbén frente a
+    la población de GEIH, por departamento — ver
+    `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`).
+
+- **`/tests`** (raíz del repo)
+  - Pruebas con `pytest` sobre las transformaciones críticas —
+    `poetry run pytest tests/`. Hoy cubre `3_preprocesamiento.py`
+    (construcción del outcome) sobre datos reales, no sintéticos.
 
 - **`utils/`**
   - `azure_storage.py`, `publicar_banco_datos_azure.py` y

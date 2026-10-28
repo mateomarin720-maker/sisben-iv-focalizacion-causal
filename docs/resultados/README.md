@@ -17,14 +17,21 @@ resumen de los cinco juntos.*
 | 4 | Estimación: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) | ✅ |
 | 4b | Estimación: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) | ✅ |
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
+| 6 | Representatividad del Sisbén frente a GEIH | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) | ✅ |
+
+Metodología completa del indicador de pobreza (qué se incluyó, qué no, y
+por qué): [`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`](../insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md).
 
 Lo que **no** está en esta carpeta todavía porque no está implementado:
 LASSO/Ridge/SHAP sobre el Sisbén (P1/OE1), discontinuidad de regresión B/C
 (en duda — no hay puntaje continuo), diseño de una sola tabla Sisbén
 III→IV (falta el corte III), vecino más cercano con distancia de Gower,
-reglas contrafactuales FGT1 (P3/OE3). Ver Tabla 1 del documento de
-pipeline (Roncancio y Fonseca, 2026) y la sección "Pendiente" de
-`docs/README.md`.
+reglas contrafactuales FGT1 (P3/OE3), e indicador de pobreza **ampliado**
+más allá de las 4 privaciones actuales (bloqueado por falta del
+diccionario oficial de GEIH — ver
+`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5). Ver también Tabla 1
+del documento de pipeline (Roncancio y Fonseca, 2026) y la sección
+"Pendiente" de `docs/README.md`.
 
 ## El hilo conductor: un solo hallazgo explica casi todo lo demás
 
@@ -101,10 +108,16 @@ las únicas con una interpretación de código razonablemente verificable:
 | Sin cotización a pensión del jefe (`P6920`) | 75,4 % | Tasa de no cotización entre ocupados (56,3 %) calza con informalidad nacional, pero el indicador final mezcla informalidad con desempleo/inactividad — ver limitación en `src/3_preprocesamiento.py` |
 
 Score medio: 1,07/4. **23,5 % de los hogares clasifican como `POBRE_GEIH`**
-(score ≥ 2 — umbral arbitrario, documentado).
-`viv_paredes`/`viv_pisos` se excluyeron del outcome por la misma razón que
-de la celda: adivinar la dirección de la privación habría sido fabricar un
-indicador, no construirlo.
+(score ≥ 2 de 4 — umbral elegido por ser el más cercano, en orden de
+magnitud, a la tasa oficial de pobreza por IPM (13,0 %) entre los 4
+cortes posibles probados por sensibilidad: K≥1=81,9 %, K≥2=23,5 %,
+K≥3=1,5 %, K≥4=0,0 %; verificación de plausibilidad ex post, no una
+calibración). `viv_paredes`/`viv_pisos` se excluyeron del outcome por la
+misma razón que de la celda: adivinar la dirección de la privación habría
+sido fabricar un indicador, no construirlo. Se intentó ampliar el índice
+con educación/vivienda/servicios adicionales — bloqueado por falta del
+diccionario oficial de GEIH, ver
+`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5.
 
 ### 4. ATE / ATT / ATU (`LinearDML`)
 
@@ -151,6 +164,19 @@ Hot-Deck, no de los datos crudos**. Detalle en
 angostar la cota con supuestos más débiles que la CIA completa (monotonía
 en la selección o en la respuesta al tratamiento).
 
+### 6. Representatividad del Sisbén frente a GEIH
+
+El Sisbén solo cubre hogares que se inscribieron — no una muestra
+aleatoria de GEIH. La razón de cobertura (hogares registrados en Sisbén ÷
+población GEIH) **varía 32,3 veces entre departamentos**: de 0,4 % en
+Valle del Cauca a 12,8 % en Putumayo. Departamentos rurales con mayor
+pobreza estructural tienden a cobertura relativa más alta; departamentos
+urbanos grandes, más baja. Confirma con datos reales el supuesto que
+hasta ahora solo estaba como advertencia narrativa, y refuerza por qué la
+cota de Fréchet-Manski (§5) sale tan ancha — no es solo una posibilidad
+teórica, es un sesgo de cobertura medido. Detalle en
+`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
+
 ## Limitaciones que aplican a TODO lo anterior
 
 - El tratamiento (`Grupo_hotdeck`) es imputado por emparejamiento
@@ -173,11 +199,14 @@ poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
+poetry run python -m src.validacion.verificar_representatividad_sisben
+poetry run pytest tests/
 ```
 
 Salidas crudas de esta corrida (2026-10-27): `docs/reports/resultado_hotdeck.txt`,
 `docs/reports/resultado_comparacion_filtros_sdp.txt`,
 `docs/reports/resultado_dag_identificacion.txt`,
 `docs/reports/resultado_preprocesamiento.txt`,
-`docs/reports/estimacion_ate_att_atu_cate.txt` — todas idénticas a la
-corrida del 2026-10-21 (semillas fijas, mismos datos de entrada).
+`docs/reports/estimacion_ate_att_atu_cate.txt`,
+`docs/reports/resultado_representatividad_sisben.txt` — todas idénticas a
+la corrida del 2026-10-21 (semillas fijas, mismos datos de entrada).

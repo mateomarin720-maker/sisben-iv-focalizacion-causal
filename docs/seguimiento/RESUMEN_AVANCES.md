@@ -26,6 +26,8 @@
 | **Preprocesamiento** | `src/3_preprocesamiento.py` ✅ | Outcome real: IPM-GEIH reducido (4 de 15 privaciones) — ver `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` |
 | **Estimación causal** | `src/5_estimacion.py` ✅ | DML (ATE/ATT/ATU) + Causal Forest (CATE), primera corrida real — ver §3b |
 | **Robustez** | `src/estimacion/cotas_frechet_manski.py` ✅ | Cotas de Fréchet-Manski, sin suponer independencia condicional — ver §3c |
+| **Representatividad** | `src/validacion/verificar_representatividad_sisben.py` ✅ | Cobertura del Sisbén vs. GEIH por departamento — ver §3d |
+| **Pruebas automatizadas** | `tests/` ✅ | `pytest tests/` — valida las transformaciones críticas de `3_preprocesamiento.py` sobre datos reales |
 | Refutación | `src/6_refutacion.py` | Placebo, random common cause, sensibilidad a confusores — **no iniciado** |
 
 ## 3. Resultado del Hot-Deck (datos reales, 12 meses, Bogotá filtrada por vigencia a 2024, vivienda en la celda)
@@ -84,6 +86,35 @@ matemática esperable sin supuestos adicionales. Detalle y propuesta para
 angostar la cota (supuestos de monotonía) en
 `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
 
+## 3d. Representatividad del Sisbén frente a GEIH (2026-10-27)
+
+La razón de cobertura (hogares registrados en el Sisbén ÷ población GEIH)
+**varía 32,3 veces entre departamentos**: de 0,4 % en Valle del Cauca a
+12,8 % en Putumayo; departamentos rurales con mayor pobreza estructural
+muestran cobertura relativa más alta que departamentos urbanos grandes.
+Confirma con datos reales (no solo como supuesto narrativo) que el
+registro del Sisbén no es una muestra uniforme de GEIH — refuerza por qué
+la cota de Fréchet-Manski (§3c) sale tan ancha. Detalle en
+`docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
+
+## 3e. Sensibilidad del indicador de pobreza e intento de ampliarlo (2026-10-27)
+
+Se agregaron variantes de umbral al outcome (`POBRE_GEIH_K1`...`K4`,
+`src/3_preprocesamiento.py`) y validaciones obligatorias automatizadas
+(`_validar()` + `tests/test_preprocesamiento.py`, 6 pruebas, todas pasan).
+La tasa de pobreza cambia de 81,9 % (K≥1) a 0,0 % (K≥4) según el corte —
+K=2 (23,5 %) se mantiene por ser el más cercano en orden de magnitud a la
+tasa oficial de IPM (13,0 %).
+
+**Se intentó ampliar el indicador** (educación más allá de alfabetismo,
+servicios de vivienda: agua, sanitario, basuras, combustible) siguiendo
+los candidatos esperados, pero la auditoría de los códigos reales de GEIH
+2024 mostró que no corresponden a lo esperado (varios resultaron ser
+preguntas de valor monetario o tenencia, no de acceso a servicio) y este
+repositorio no tiene el diccionario oficial de GEIH para confirmarlo —
+**bloqueado, no se adivinaron los códigos**. Detalle completo y
+alternativas en `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5.
+
 ### Errores encontrados y corregidos durante la ejecución
 1. **Doble jefe en Sisbén:** 65 hogares con dos jefes marcados → se conserva el primero.
 2. **Edad del Sisbén en códigos, no en años:** `PER002` ∈ {3,4,5,6}. Con tramos de años, 89 % caía a `solo_depto`. Corregido comparando por ciclo de vida.
@@ -99,7 +130,7 @@ angostar la cota (supuestos de monotonía) en
 - [ ] 6 hogares de Bogotá con doble jefe y 227 con `Clasificacion` distinta entre miembros: confirmar con SDP cuál es la oficial.
 - [ ] Robustez: NND por distancia de Gower.
 - [x] **Fase 2 (oficial): DML y Causal Forest** — primera corrida real completa el 2026-10-21 (ver §3b). Pendiente: resolver vivienda (punto de arriba) antes de interpretar el resultado como efecto causal.
-- [ ] Completar las 11 privaciones restantes del IPM-GEIH (`ipm_geih_score` solo usa 4 de 15) si se consigue el diccionario oficial de GEIH.
+- [ ] **Conseguir la ficha técnica/diccionario oficial de variables de GEIH** (DANE, portal de microdatos) — bloquea ampliar el indicador de pobreza más allá de las 4 privaciones actuales. Auditoría de candidatos ya hecha el 2026-10-27 (educación y servicios de vivienda no calzan con lo esperado); ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5.
 - [ ] Refinar `sin_cotizacion_pension_jefe` (mezcla informalidad con desempleo/inactividad, ver `src/3_preprocesamiento.py`).
 - [ ] Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
 
@@ -116,11 +147,13 @@ Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/
 - `docs/insumos/DICCIONARIO_DATOS.md` — diccionario general IPM/GEIH
 - `docs/insumos/DICCIONARIO_HOTDECK.md` — variables y llaves del emparejamiento
 - `docs/insumos/CODIGOS_LOCALIDAD_BOGOTA.md` — localidades de Bogotá
+- `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` — construcción del indicador de pobreza, sensibilidad y por qué no se pudo ampliar
 - `docs/resultados/README.md` — **índice y resumen ejecutivo de todos los resultados** (empezar por aquí)
 - `docs/resultados/IDENTIFICACION_CAUSAL.md` — los dos DAG y el chequeo formal de d-separación
 - `docs/resultados/COMPARACION_FILTROS_SDP.md` — vigencia vs. año exacto del SDP, lado a lado
 - `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` — primera corrida real de ATE/ATT/ATU
 - `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md` — primera corrida real de CATE
 - `docs/resultados/RESULTADOS_FRECHET_MANSKI.md` — cotas sin suponer independencia condicional (robustez)
+- `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md` — cobertura del Sisbén por departamento
 - `src/estimacion/README.md` — prueba exploratoria que precedió a la corrida real
 - `docs/seguimiento/CHANGELOG_PENDIENTES.md` — historial de cambios y pendientes
