@@ -18,6 +18,7 @@ resumen de los cinco juntos.*
 | 4b | Estimación: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) | ✅ |
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
 | 6 | Representatividad del Sisbén frente a GEIH | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) | ✅ |
+| 7 | Simulación de identificación (qué diseño recupera el efecto) | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) | ✅ (datos sintéticos) |
 
 Metodología completa del indicador de pobreza (qué se incluyó, qué no, y
 por qué): [`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`](../insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md).
