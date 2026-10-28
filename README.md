@@ -76,14 +76,14 @@ Detalle completo de marco teórico, metodología y cronograma en
 
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)
 
-- **Lenguaje principal**: Python ≥ 3.10 (desarrollado y probado en 3.11)
+- **Lenguaje principal**: Python ≥ 3.11
 - **Gestor de dependencias**: Poetry
 - **Librerías centrales**:
-  - Manipulación de datos: `pandas`, `numpy`, `pyarrow`
+  - Manipulación de datos: `pandas`, `numpy` (2.x), `pyarrow`
   - Banco de datos: Azure Blob Storage (`azure-storage-blob`)
-  - Modelado ML base: `scikit-learn`, `xgboost`
-  - Inferencia causal: `dowhy`, `econml`, `causal-learn`, `networkx`
-  - Interpretabilidad: `shap`
+  - Modelado ML base: `scikit-learn` (≥1.9), `xgboost`
+  - Inferencia causal: `dowhy`, `econml` (≥0.17), `causal-learn`, `networkx`
+  - Interpretabilidad: `shap` (≥0.51)
   - Visualización: `matplotlib`, `seaborn`, `graphviz`
   - Entorno exploratorio: `jupyterlab`
 
@@ -128,15 +128,18 @@ Detalle completo de marco teórico, metodología y cronograma en
   y el catálogo de fuentes ([`data/catalogo.yaml`](data/catalogo.yaml)).
   **Los datos no se versionan**: el banco de datos principal es Azure Blob
   Storage (contenedor `datos-inferencia-causal`); ver `.gitignore`.
-- **`/docs`**: Documentación — anteproyecto, diccionarios
-  ([general](docs/insumos/DICCIONARIO_DATOS.md) y
-  [del emparejamiento](docs/insumos/DICCIONARIO_HOTDECK.md)),
-  [resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md),
-  [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md), referencias y reportes.
+- **`/docs`**: Documentación, agrupada por para qué sirve (ver
+  [`docs/README.md`](docs/README.md)) — insumos (diccionarios de datos),
+  [resultados](docs/resultados/README.md) (un documento por paso del
+  pipeline, con índice y hallazgos consolidados), seguimiento
+  ([resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md) y
+  [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md)) e institucional
+  (anteproyecto).
 - **`/notebooks`**: Cuadernos de exploración y pruebas de identificación.
 - **`/src`**: Código fuente por etapa: `ingesta/`, `armonizacion/`,
-  `emparejamiento/`, `validacion/`, `utils/` (incluye Azure) y los scripts
-  numerados `1_` a `7_` del flujo metodológico.
+  `emparejamiento/`, `estimacion/` (DML/Causal Forest/Fréchet-Manski),
+  `validacion/`, `utils/` (incluye Azure) y los scripts numerados `1_` a
+  `7_` del flujo metodológico.
 - **`.gitignore`**, **`pyproject.toml`** (Poetry, `package-mode = false`) y
   este **`README.md`**.
 
@@ -144,37 +147,46 @@ Detalle completo de marco teórico, metodología y cronograma en
 
 1. **Integración / ingesta** (`1_integracion.py`, `ingesta/`): fuentes
    crudas → Parquet (GEIH 12 meses 2024, IPM 2024, Sisbén IV nacional y
-   Bogotá-SDP).
+   Bogotá-SDP). ✅
 2. **Limpieza** (`2_limpieza.py`): tipado, duplicados y faltantes
-   estructurales documentados.
+   estructurales documentados. ✅
 3. **Armonización** (`armonizacion/`): esquema canónico por hogar (jefe de
-   hogar) común a GEIH y Sisbén.
+   hogar) común a GEIH y Sisbén. ✅
 4. **Emparejamiento estadístico** (`emparejamiento/`): Hot-Deck GEIH ←
-   Sisbén por celdas (departamento + ciclo de vida del jefe). Válido solo a
-   nivel poblacional; no identifica el mismo hogar.
-5. **Preprocesamiento causal** (`3_preprocesamiento.py`): tratamiento,
-   outcomes (IPM/GEIH; nunca las variables propias del Sisbén I1–I15, H_5),
-   confusores.
-6. **Especificación causal** (`4_dag_identificacion.py`): DAG y supuestos
-   (ignorabilidad, positividad, SUTVA, exclusión); discontinuidad B/C.
-7. **Estimación** (`5_estimacion.py`): DML y Causal Forest (ATE, CATE, BLP).
+   Sisbén por celdas (departamento + ciclo de vida del jefe + tramo de
+   cuartos de la vivienda). Válido solo a nivel poblacional; no identifica
+   el mismo hogar. ✅
+5. **Preprocesamiento causal** (`3_preprocesamiento.py`): outcome IPM-GEIH
+   (reducido a 4 de 15 privaciones — analfabetismo, aseguramiento de
+   salud, hacinamiento, cotización a pensión del jefe; nunca las variables
+   propias del Sisbén `I1`–`I15`, `H_5`). ✅
+6. **Especificación causal** (`4_dag_identificacion.py`): los dos diseños
+   del proyecto (principal, y de una sola tabla) como DAG, con chequeo
+   formal de d-separación. ✅
+7. **Estimación** (`5_estimacion.py`): DML (ATE/ATT/ATU) y Causal Forest
+   (CATE); cotas de Fréchet-Manski como robustez sin suponer independencia
+   condicional (`src/estimacion/cotas_frechet_manski.py`). ✅ primera
+   corrida real — pendiente resolver `viv_paredes`/`viv_pisos` antes de
+   leer el resultado como efecto causal.
 8. **Refutación** (`6_refutacion.py`) y **reporte** (`7_reporte/`):
-   placebo, sensibilidad, comparación FGT1 (OE3).
+   placebo, sensibilidad, comparación FGT1 (OE3). ⏳ pendiente.
 
-Cronograma original en el anteproyecto (secciones 4.5 y 5); se actualizará
-con el alcance vigente.
+Resultados interpretados de cada paso en
+[`docs/resultados/`](docs/resultados/README.md) (empezar por su índice).
 
-### 7. Estado del proyecto (actualizado 2026-10-09)
+### 7. Estado del proyecto
 
-| Fase | Período previsto | Estado |
+| Objetivo | Qué cubre | Estado |
 |---|---|---|
-| Fase 1 — Marco teórico y estado del arte | Abr–jun 2026 | ✅ Anteproyecto entregado (objetivos replanteados en sep 2026; texto por actualizar) |
-| Fase 2 — Integración, armonización y emparejamiento | Jun–ago 2026 | 🔧 En cierre — fuentes obtenidas, armonizadas y Hot-Deck con Bogotá ejecutado; pendiente verificar códigos de edad (`PER002`) y sensibilidad con variables de vivienda |
-| Fase 3 — OE1 (determinantes y validez: LASSO, SHAP) | Ago–sep 2026 | ⏳ Pendiente |
-| Fase 4 — OE2 (DML, Causal Forest, discontinuidad B/C) | Sep–nov 2026 | ⏳ Pendiente |
-| Fase 5 — OE3 (reglas de focalización, FGT1) y redacción final | Nov 2026–feb 2027 | ⏳ Pendiente |
+| Fuentes de datos | GEIH, IPM, Sisbén nacional y Bogotá | ✅ Las cuatro obtenidas, armonizadas y validadas. DPS y RUI quedan fuera del alcance vigente o pendientes de gestión (ver §8 y `data/README.md`). |
+| Emparejamiento (Hot-Deck) | Asignar grupo Sisbén a GEIH | ✅ 100 % en celda exacta, celda con depto+edad+vivienda, código de edad (`PER002`) corroborado indirectamente. |
+| P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | ⏳ No iniciado. |
+| P2 / OE2 — Causalidad (DML, Causal Forest) | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Primera corrida real completa (ATE/ATT/ATU/CATE + cotas de robustez Fréchet-Manski) — el resultado todavía no se puede leer como efecto causal confirmado: falta verificar las categorías de vivienda (`viv_paredes`/`viv_pisos`) que explican el residuo observado. |
+| P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ⏳ No iniciado, depende de P1 y P2. |
 
-Detalle y pendientes técnicos en [`docs/seguimiento/RESUMEN_AVANCES.md`](docs/seguimiento/RESUMEN_AVANCES.md).
+Detalle completo, hallazgos y pendientes técnicos en
+[`docs/resultados/README.md`](docs/resultados/README.md) (resultados) y
+[`docs/seguimiento/RESUMEN_AVANCES.md`](docs/seguimiento/RESUMEN_AVANCES.md) (estado y pendientes).
 
 ### 8. Consideraciones éticas y de datos
 

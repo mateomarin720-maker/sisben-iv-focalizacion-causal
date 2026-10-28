@@ -25,13 +25,13 @@ y estado de obtención) está en [`catalogo.yaml`](catalogo.yaml). El
 diccionario de variables del IPM (DDI oficial de DANE) está en
 [`DICCIONARIO_IPM_2025.md`](../docs/insumos/DICCIONARIO_IPM_2025.md). Estado actual:
 
-| Fuente | Entidad | Estado (2026-10-09) |
+| Fuente | Entidad | Estado |
 |---|---|---|
 | GEIH 2024 | DANE | ✅ 12 meses, 8 módulos por mes; 290.968 hogares |
 | Sisbén IV nacional | DNP (ANDA) | ✅ 1.833.166 hogares, 1.098 municipios (corte mayo 2024) |
-| Sisbén IV Bogotá | SDP | ✅ 1.458.468 hogares (corte 03/08/2026); reemplaza al municipio 11001 del nacional |
-| IPM 2024 | DANE | ✅ 77.568 hogares nacional / 85.387 departamental |
-| DPS (participación en programas) | DPS | ⏳ Por gestionar — condiciona el escenario de primera etapa de OE2 |
+| Sisbén IV Bogotá | SDP | ✅ El archivo es un registro continuo (`fec_fin_encuesta` 2019-2026), no un corte único; se usan los 1.274.578 hogares vigentes al 31-dic-2024 (filtro alternativo por año exacto de encuesta disponible para comparar, ver `docs/resultados/COMPARACION_FILTROS_SDP.md`). Reemplaza al municipio 11001 del nacional. |
+| IPM 2024 | DANE | ✅ 77.568 hogares nacional / 85.387 departamental. Sin llave común con GEIH/Sisbén — no se cruza a nivel hogar. |
+| DPS (participación en programas) | DPS | ⏳ Por gestionar — condiciona el canal "elegibilidad → participación → bienestar" del diseño causal |
 | RUI | UARIV | ⏳ Fuera del alcance replanteado; por confirmar con el tutor |
 
 ## Subcarpetas y artefactos correspondientes

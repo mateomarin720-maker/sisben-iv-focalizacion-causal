@@ -99,8 +99,9 @@ documentado y preferiblemente cubierto por pruebas.
     `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`. Sigue siendo una
     primera corrida sobre un outcome reducido — no reemplaza el marco
     teórico-metodológico completo pendiente (ver Tabla 1 del documento de
-    pipeline: LASSO/Ridge/SHAP, RD B/C, Fréchet-Manski, Gower, estudio de
-    eventos Sisbén III→IV siguen sin implementar).
+    pipeline: LASSO/Ridge/SHAP, RD B/C, vecino más cercano con Gower y
+    estudio de eventos Sisbén III→IV siguen sin implementar; cotas de
+    Fréchet-Manski ya implementadas, ver `estimacion/` abajo).
 
 - **`6_refutacion.py`**
   - Pruebas de refutación y sensibilidad: placebo, random common cause,
