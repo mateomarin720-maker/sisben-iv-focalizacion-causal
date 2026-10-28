@@ -52,31 +52,50 @@ del código.
   ya maneja ambos casos (`geih_loader.py`, fallback a `.DTA` vía
   `parse_stata_a_parquet`), pero si se toca ese código, probar con los 12
   meses, no solo uno.
+- **El mapeo GEIH→esquema canónico de vivienda estuvo equivocado desde el
+  inicio del proyecto hasta el 2026-10-28** (no por adivinar, por una
+  hipótesis sin verificar): `viv_paredes` leía en realidad material de
+  PISOS (`P4020`), `viv_pisos` leía "¿tiene energía eléctrica?" (`P4030S1`),
+  `viv_cuartos` leía "cuartos para dormir" (`P5010`) en vez de cuartos en
+  total (`P5000`). El bug no daba error — los nombres de columna GEIH
+  sonaban correctos y los scripts corrían sin fallar; solo se detectó al
+  comparar contra el diccionario oficial
+  (`docs/insumos/DICCIONARIO_GEIH_2024.xlsx`). Lección: con GEIH, no
+  confiar en que un P-code "suena" al concepto esperado — verificar
+  contra el diccionario (ya disponible, ver abajo) antes de mapear una
+  columna nueva, incluso si el resultado agregado parece razonable (el
+  hacinamiento viejo daba 23,3 %, un número plausible, calculado con la
+  columna equivocada). Detalle completo:
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 
-## Bloqueo conocido: no hay diccionario oficial de variables de GEIH
+## Diccionarios oficiales de variables
 
-A diferencia de IPM (que trae su DDI completo en
-`docs/insumos/DICCIONARIO_IPM_2025.md`), este repositorio **no tiene** la
-ficha técnica/diccionario oficial de GEIH. Los pocos códigos ya
-verificados (`P6160`, `P6090`, `P5010`/`P5020`, `P6920`) se corroboraron
-por vías indirectas (código compartido con IPM, o tasa resultante
-comparada contra una cifra nacional conocida) — no hay forma de extender
-esto a variables nuevas sin la ficha real. Antes de construir una
-privación/variable nueva de GEIH, probar la hipótesis empíricamente
-(value_counts + comparación contra una cifra nacional conocida) y, si no
-calza con confianza razonable, **no usarla** — documentar el bloqueo en
-vez de adivinar (ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5
-para un ejemplo real: varios candidatos para servicios de vivienda
-resultaron ser preguntas de valor monetario/tenencia, no de acceso).
+`docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (761 filas: ID/Nombre/Etiqueta/
+Tipo/Formato/Pregunta/Módulo) y `docs/insumos/DICCIONARIO_SISBEN_2024.xlsx`
+(3 hojas: Viv/Pers/Hog, columnas Nombre/Etiqueta) — obtenidos 2026-10-28,
+resuelven el bloqueo que existía por falta de la ficha técnica oficial de
+GEIH (IPM ya tenía la suya en `docs/insumos/DICCIONARIO_IPM_2025.md`).
+**Antes de mapear o usar una columna de GEIH que no esté ya en
+`armonizar_geih_hogar_2024.py`/`3_preprocesamiento.py`, verificar su
+código contra este diccionario** — no asumir por el nombre o la posición
+en el cuestionario (ver el bug de vivienda arriba). El diccionario de
+Sisbén es solo Nombre/Etiqueta (sin lista de categorías por código), así
+que NO resuelve por sí solo la homologación de categorías entre fuentes
+(sigue pendiente para `viv_paredes`/`viv_pisos`, ver abajo).
 
 ## Variables sin verificar — no asumir su dirección/categorías
 
-- **`viv_paredes` y `viv_pisos`**: código de pregunta y categorías
-  DISTINTOS entre GEIH (`P4020`/`P4030S1`), Sisbén (`VIV002`/`VIV003` o
-  `tip_mat_paredes`/`tip_mat_pisos` en Bogotá) e IPM (`P4005`/`P4015`).
-  **No homologar categorías entre fuentes sin verificar contra la ficha
-  oficial** — es la causa más probable del residuo que no colapsa a 0 en
-  la estimación causal (ver `docs/resultados/IDENTIFICACION_CAUSAL.md` y
+- **`viv_paredes` y `viv_pisos`**: el código GEIH ya está confirmado
+  contra el diccionario oficial (`viv_paredes`=`P4010`,
+  `viv_pisos`=`P4020`, corregido 2026-10-28 — antes apuntaban a las
+  columnas equivocadas, ver arriba). Lo que SIGUE sin verificar es la
+  **correspondencia de categorías entre GEIH y Sisbén**
+  (`VIV002`/`VIV003`, o `tip_mat_paredes`/`tip_mat_pisos` en Bogotá) — el
+  diccionario de Sisbén obtenido no trae la lista de categorías por
+  código, solo Nombre/Etiqueta. **No homologar categorías entre fuentes
+  sin esa verificación** — sigue siendo la causa más probable del
+  residuo que no colapsa a 0 en la estimación causal (ver
+  `docs/resultados/IDENTIFICACION_CAUSAL.md` y
   `RESULTADOS_CAUSALFOREST_CATE.md`). Es seguro usarlas como control
   dentro de UNA sola fuente (no comparar categorías entre fuentes).
 - **`PER002`** (edad del jefe en Sisbén) es un código de ciclo de vida, no

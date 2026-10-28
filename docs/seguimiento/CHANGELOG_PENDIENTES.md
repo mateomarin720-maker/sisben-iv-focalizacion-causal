@@ -2,6 +2,82 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
+## 2026-10-28 — Diccionario oficial de GEIH: corrección de vivienda y ampliación del indicador a 10 privaciones
+
+Resuelve el bloqueo documentado el 2026-10-27 (no había diccionario
+oficial de variables de GEIH). Se obtuvo
+`docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (761 filas, portal de
+microdatos DANE) y `docs/insumos/DICCIONARIO_SISBEN_2024.xlsx` (3 hojas:
+Viv/Pers/Hog).
+
+### Corregido (bug de mapeo, no de adivinanza)
+- **`src/armonizacion/armonizar_geih_hogar_2024.py`**: `viv_paredes`,
+  `viv_pisos` y `viv_cuartos` apuntaban a columnas GEIH equivocadas desde
+  el inicio del proyecto. `viv_paredes` leía en realidad material de
+  PISOS (`P4020`), `viv_pisos` leía "¿tiene energía eléctrica? Sí/No"
+  (`P4030S1`), y `viv_cuartos` leía "cuartos para dormir" (`P5010`) en
+  vez de cuartos en total (`P5000`). Corregido: `viv_paredes`=`P4010`,
+  `viv_pisos`=`P4020`, `viv_cuartos`=`P5000`, con `viv_cuartos_dormir`
+  (`P5010`) separado como insumo de hacinamiento. También se agregaron
+  `viv_alcantarillado` (`P4030S3`), `viv_acueducto` (`P4030S5`) y
+  `hog_num_personas` (`P6008`), ubicando los equivalentes de
+  `HOG027`/`VIV005`/`VIV008` del Sisbén que estaban pendientes.
+- **`src/3_preprocesamiento.py`**: `hacinamiento` usaba `P5020` (tipo de
+  servicio sanitario, categórico 1-6) en vez de cuartos para dormir — el
+  resultado (23,3 %) parecía plausible por coincidencia de escalas, no
+  por estar bien calculado. Corregido con `P5010`/`P6008`: hacinamiento
+  real 3,1 %.
+- El lado Sisbén (`armonizar_sisben_hogar_2024.py`, `VIV002`/`VIV003`/
+  `VIV009`/`VIV005`/`VIV008`/`HOG027`) ya estaba correcto — el bug era
+  exclusivamente del lado GEIH.
+
+### Añadido — indicador de pobreza ampliado de 4 a 10 privaciones
+- Los candidatos que se habían descartado el 2026-10-27 por no calzar
+  con lo esperado (`P3038`/`P3039`, `P5100`-`P5140`) eran, al verificar
+  contra el diccionario, preguntas de orientación sexual/identidad de
+  género y de valor monetario de arriendo/compra — no los códigos
+  correctos de educación/servicios. Con los códigos verificados se
+  agregaron: `bajo_logro_educativo_jefe` (`P3042`, nivel < secundaria,
+  29,9 %), `inasistencia_escolar_menores` (`P6170`, 6-16 años, cualquier
+  miembro del hogar, 2,1 %), `material_pisos_inadecuado` (`P4020`,
+  3,5 %), `material_paredes_inadecuado` (`P4010`, 0,9 %),
+  `sin_alcantarillado` (`P4030S3`, 18,1 %), `sin_acueducto` (`P4030S5`,
+  8,1 %). El indicador pasa de 4 a 10 de las 15 privaciones oficiales del
+  IPM, cubriendo ya las 5 dimensiones (antes solo 2). `K_POBRE` se ajustó
+  de 2 a 3 (nueva escala 0-10); `POBRE_GEIH` pasa de 23,5 % a 17,2 %.
+  Quedan 5 dimensiones sin construir — ver
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2.
+
+### Recalculado (consecuencia de la corrección, no cambios de método)
+- Hot-Deck: Grupo D sube de 10,3 % a 15,6 % nacional (de 31,3 % a 19,0 %
+  en Bogotá con año exacto) al corregir `viv_cuartos` — mayor que el
+  cambio de haber sumado vivienda a la celda en primer lugar.
+- ATE (`ipm_geih_score`): +0,0137 → +0,0218. ATE (`POBRE_GEIH`): +0,0074
+  → +0,0050. Los IC95% siguen excluyendo 0 en ambos — el residuo no
+  colapsó al corregir el código, lo que ahora es evidencia más confiable
+  de que la vivienda sigue colándose fuera de la celda (antes era
+  ambiguo: podía ser el bug).
+- **CATE: el patrón de heterogeneidad cambió de foco**, no solo de
+  magnitud. Antes (código equivocado): dominado por sexo del jefe (jefa
+  mujer 36 veces jefe hombre). Ahora (código corregido): dominado por
+  zona (rural 2,8-16 veces urbana), con el patrón de sexo invertido y
+  mucho más chico. El hallazgo anterior sobre jefatura femenina ya no se
+  puede citar — ver `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`,
+  "Qué cambió y por qué".
+- Fréchet-Manski: cota pasa de [-0,627;+0,360] (342 celdas) a
+  [-0,4061;+0,3205] (365 celdas) — la celda corregida angosta la cota sin
+  cambiar la conclusión (ninguna celda individual excluye 0).
+
+### Documentación actualizada
+`docs/resultados/README.md`, `RESULTADOS_HOTDECK.md`,
+`COMPARACION_FILTROS_SDP.md`, `RESULTADOS_DML_ATE_ATT_ATU.md`,
+`RESULTADOS_CAUSALFOREST_CATE.md`, `RESULTADOS_FRECHET_MANSKI.md`,
+`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`,
+`docs/insumos/DICCIONARIO_HOTDECK.md`,
+`docs/seguimiento/RESUMEN_AVANCES.md` — todas con nota explícita de qué
+número reemplaza a cuál y por qué, para no perder la trazabilidad de la
+corrección.
+
 ## 2026-10-27 (2) — Sensibilidad del indicador, representatividad del Sisbén y pruebas automatizadas
 
 ### Añadido

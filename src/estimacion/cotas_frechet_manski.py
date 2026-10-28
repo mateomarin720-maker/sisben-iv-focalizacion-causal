@@ -134,7 +134,10 @@ def main() -> None:
     print("\n=== Cotas de Fréchet-Manski — ATE sobre POBRE_GEIH ===")
     print(f"Celdas usadas: {len(df)} | cobertura poblacional GEIH: {cobertura / total_geih * 100:.1f}%")
     print(f"\nATE (Fréchet-Manski, SIN suponer independencia condicional): [{ate_lo:+.4f}, {ate_hi:+.4f}]")
-    print(f"ATE (DML con Hot-Deck, 2026-10-21/27, SÍ supone CIA):          +0.0074  IC95%=(+0.0040, +0.0108)")
+    print(
+        "ATE (DML con Hot-Deck, SÍ supone CIA): ver docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md "
+        "(el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda)."
+    )
     print(f"\nAncho de la cota Fréchet-Manski: {ate_hi - ate_lo:.4f} (vs. ancho del IC95% del DML: 0.0068)")
     print(f"\nGuardado detalle por celda: {REPORT}")
 

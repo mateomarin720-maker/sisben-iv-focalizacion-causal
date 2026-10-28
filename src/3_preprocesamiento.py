@@ -3,50 +3,66 @@
 Construye el OUTCOME real que pide la Figura 2 del documento de pipeline
 ("Resultado Y: IPM, bienestar del hogar, GEIH") — un índice de privaciones
 multidimensionales calculado SOBRE GEIH (no sobre la encuesta IPM, que no
-comparte llave de hogar con GEIH/Sisbén). Se usa un subconjunto REDUCIDO de
-privaciones: solo las que se pueden construir con códigos cuyo significado
-está razonablemente verificado (ver sección "Qué se incluyó y qué no").
+comparte llave de hogar con GEIH/Sisbén).
 
-⚠️ No es el IPM oficial de 15 indicadores — es un proxy con 4, a nivel del
-jefe de hogar (no de todos los miembros, por simplicidad). Se documenta así
-explícitamente para no presentarlo como el IPM real.
+⚠️ CORREGIDO Y AMPLIADO 2026-10-28 con el diccionario oficial de GEIH
+(`docs/insumos/Diccionario_variables_GEIH_2024.xlsx`). Antes de esa fecha:
+- `hacinamiento` estaba MAL calculado — usaba `P5020` (que en realidad es
+  "tipo de servicio sanitario", una categórica 1-6) como si fuera "cuartos
+  para dormir". El cociente personas/P5020 producía un número con la
+  forma de una tasa de hacinamiento pero sin ese significado. Corregido:
+  ahora usa `P5010` (el código real de "cuántos cuartos se usan para
+  dormir") y `P6008` ("total de personas en el hogar", directo).
+- El índice solo tenía 4 privaciones porque no había forma de verificar
+  más códigos sin el diccionario oficial (ver intento documentado en
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5, histórico). Con el
+  diccionario ya conseguido, se amplía a **10 privaciones**, cubriendo 5
+  de las 5 dimensiones del IPM (antes solo 4 dimensiones con 1 indicador
+  cada una).
 
-## Qué se incluyó y por qué
+No es el IPM oficial de 15 indicadores — es un proxy con 10, construido
+sobre GEIH, a nivel del jefe de hogar para los indicadores de persona (no
+de todos los miembros, salvo `inasistencia_escolar_menores` que sí revisa
+a todos). Se documenta así explícitamente para no presentarlo como el IPM
+real.
 
-| Indicador | Código GEIH | Verificación |
-|---|---|---|
-| `analfabetismo` | `P6160` (jefe) | Código compartido con IPM (ver `docs/insumos/DICCIONARIO_DATOS.md`); 1=Sí sabe/2=No, proporción 8.5% analfabetismo calza con cifras nacionales. |
-| `sin_aseguramiento_salud` | `P6090` (jefe) | Código compartido con IPM; 1=Sí afiliado/2=No, proporción 4.3% sin afiliación calza con cobertura de salud ~95-96% en Colombia. |
-| `hacinamiento` | `P5020` (cuartos para dormir) + conteo de personas por hogar | Umbral >3 personas/cuarto — **umbral aproximado, no verificado contra la metodología oficial DANE del IPM**. |
-| `sin_cotizacion_pension_jefe` | `P6920` (cotiza a pensión, módulo `ocupados`) | 1=cotiza/2=no cotiza/3=pensionado. Tasa de no cotización entre ocupados: 56.3% en enero 2024 — calza con la tasa de informalidad laboral nacional reportada por DANE (~55-58% en 2024), lo que da bastante confianza en la interpretación del código aunque no esté en un diccionario oficial en el repo. |
+## Las 10 privaciones — código oficial y verificación
 
-⚠️ **`sin_cotizacion_pension_jefe` mezcla causas muy distintas y por eso da
-un 75% de privación — más alto de lo esperable para un solo indicador del
-IPM.** Un jefe puede no cotizar por ser informal (lo que sí es privación en
-el sentido del IPM), pero también por estar desempleado, ser ama de casa, o
-ser un adulto mayor que ya no trabaja — casos donde "no cotiza" no
-necesariamente implica pobreza. El indicador queda así porque no hay en el
-repo una forma confiable de separar "informal" de "inactivo por elección"
-con los datos disponibles; se deja como está, documentado, en vez de
-inventar una regla de separación sin respaldo. **Tratar `ipm_geih_score`
-con cautela mientras este indicador no se refine** — ver
-"Próximos pasos" en `docs/seguimiento/CHANGELOG_PENDIENTES.md`.
+| Privación | Dimensión | Código GEIH | Verificación |
+|---|---|---|---|
+| `analfabetismo` | Educación | `P6160` (jefe), 1=Sí sabe/2=No | Confirmado contra el diccionario oficial: "¿Sabe leer y escribir? 1 Sí 2 No". |
+| `bajo_logro_educativo_jefe` | Educación | `P3042` (jefe) | Confirmado: "¿Cuál es el mayor nivel educativo alcanzado...? 1.Ninguno 2.Preescolar 3.Básica primaria 4.Básica secundaria 5.Media académica ... 13.Doctorado". Privación si el jefe no alcanzó básica secundaria (código < 4). Umbral propio del proyecto, no necesariamente el corte exacto de la metodología Alkire-Foster oficial del DANE (que usa años de educación aprobados por cohorte de edad). |
+| `inasistencia_escolar_menores` | Niñez | `P6170` + `P6040`, TODOS los miembros | Confirmado: P6170 "¿Actualmente asiste al preescolar/escuela/colegio/universidad? 1 Sí 2 No". Privación si ALGÚN miembro del hogar entre 6 y 16 años (inclusive) tiene P6170==2. A diferencia de las demás, se calcula sobre todos los miembros, no solo el jefe — aplicar "inasistencia escolar" al jefe (normalmente adulto) no tendría sentido conceptual. |
+| `sin_aseguramiento_salud` | Salud | `P6090` (jefe), 1=Sí/2=No | Confirmado: "¿Está afiliado/cotizante/beneficiario de EPS/ARS? 1 Sí 2 No 9 No sabe". |
+| `sin_cotizacion_pension_jefe` | Trabajo | `P6920` (jefe, módulo `ocupados`), 1=Sí/2=No/3=Ya pensionado | Confirmado: "¿Está cotizando a un fondo de pensiones? 1 Sí 2 No 3 Ya es pensionado". Sigue mezclando informalidad con desempleo/inactividad del jefe — ver nota abajo. |
+| `hacinamiento` | Vivienda | `P5010` (cuartos para dormir) + `P6008` (personas) | **Corregido 2026-10-28** — antes usaba `P5020` (servicio sanitario) por error. Umbral >3 personas/cuarto, el mismo de antes, pero ahora sobre la variable correcta. |
+| `material_pisos_inadecuado` | Vivienda | `P4020` | Confirmado: "¿Material predominante de los pisos? a.Tierra/arena b.Cemento/gravilla c.Madera burda d.Baldosín/ladrillo/vinisol e.Mármol f.Madera pulida g.Alfombra". Privación = código 1 (a, Tierra/arena). |
+| `material_paredes_inadecuado` | Vivienda | `P4010` | Confirmado: "¿Material predominante de las paredes exteriores? a.Ladrillo/bloque/prefabricado/piedra b.Madera pulida c.Adobe/tapia d.Bahareque e.Madera burda f.Guadua g.Caña/esterilla/vegetal h.Zinc/tela/cartón/latas/desechos/plástico i.Sin paredes". Privación = códigos 6-9 (f,g,h,i: guadua/caña/vegetal, material de desecho, o sin paredes). No se incluye "d.Bahareque" (código 4) como privación — es un material rústico pero tradicionalmente no clasificado como inadecuado. |
+| `sin_alcantarillado` | Vivienda | `P4030S3`, 1=Sí/2=No | Confirmado: "¿Con cuáles servicios cuenta la vivienda? c.Alcantarillado 1 Sí 2 No". |
+| `sin_acueducto` | Vivienda | `P4030S5`, 1=Sí/2=No | Confirmado: "¿Con cuáles servicios cuenta la vivienda? e.Acueducto 1 Sí 2 No". |
 
-## Qué se excluyó y por qué
+Cobertura por dimensión: Educación (2), Niñez (1), Salud (1), Trabajo (1),
+Vivienda (5) — 5 de las 5 dimensiones del IPM oficial, con más de un
+indicador en Educación y Vivienda (antes solo había 1 indicador por
+dimensión, con 4 dimensiones de 5 cubiertas).
 
-`viv_paredes` (`P4020`) y `viv_pisos` (`P4030S1`) — las categorías NO están
-verificadas (ver `docs/insumos/DICCIONARIO_HOTDECK.md` §8): la distribución
-real de `P4020` no calza con lo que se esperaría de la codificación DANE
-estándar recordada de memoria, así que incluirlas como privación habría
-significado adivinar la dirección (qué categoría es "material inadecuado")
-sin poder confirmarlo — se prefirió dejarlas fuera del outcome antes que
-fabricar un indicador con la dirección equivocada. Sí se usan como
-confusores/controles (X) en la estimación, donde no hace falta saber la
-dirección de la categoría para que aporten como control.
+⚠️ **`sin_cotizacion_pension_jefe` sigue mezclando causas distintas**
+(informalidad, desempleo, inactividad) — limitación que no cambia con el
+diccionario de GEIH porque no es un problema de código, es un problema de
+qué pregunta existe en la encuesta. Sigue documentada, no resuelta.
+
+## Qué sigue sin poder construirse
+
+Las 5 privaciones restantes del IPM oficial (rezago escolar, barreras a
+atención primera infancia, trabajo infantil, desempleo de larga duración,
+barreras de acceso a salud) requerirían variables que o no están en GEIH
+con el detalle necesario, o necesitan reglas de elegibilidad más
+complejas (edades, historial laboral) que no se construyeron en este
+corte — quedan para una iteración futura, no por falta del diccionario
+esta vez sino por alcance de tiempo.
 
 Tratamiento: `Grupo_hotdeck` / `Clasificacion_hotdeck`
-(`data/2_models/geih_sisben_fusionado_2024.parquet`, ya con vivienda sumada
-a la celda del Hot-Deck).
+(`data/2_models/geih_sisben_fusionado_2024.parquet`).
 
 Uso:
     poetry run python src/3_preprocesamiento.py
@@ -67,9 +83,16 @@ FUSIONADO = Path("data/2_models/geih_sisben_fusionado_2024.parquet")
 OUT = Path("data/2_models/muestra_estimacion_2024.parquet")
 REPORT_DIR = Path("docs/reports")
 MESES = [f"{m:02d}" for m in range(1, 13)]
-UMBRAL_HACINAMIENTO = 3  # personas por cuarto para dormir — ver nota de verificación arriba
-K_POBRE = 2  # umbral adoptado (privaciones de 4). Ver sensibilidad K=1..4 en `_validar`.
-PRIVACIONES = ["analfabetismo", "sin_aseguramiento_salud", "hacinamiento", "sin_cotizacion_pension_jefe"]
+UMBRAL_HACINAMIENTO = 3  # personas por cuarto para dormir
+EDAD_MIN_ESCOLAR, EDAD_MAX_ESCOLAR = 6, 16  # universo de "inasistencia_escolar_menores"
+NIVEL_MIN_SECUNDARIA = 4  # P3042: 1=Ninguno,2=Preescolar,3=Primaria,4=Secundaria... privación si < 4
+K_POBRE = 3  # umbral adoptado (de 10 privaciones). Ver sensibilidad en `_validar`.
+PRIVACIONES = [
+    "analfabetismo", "bajo_logro_educativo_jefe", "inasistencia_escolar_menores",
+    "sin_aseguramiento_salud", "sin_cotizacion_pension_jefe",
+    "hacinamiento", "material_pisos_inadecuado", "material_paredes_inadecuado",
+    "sin_alcantarillado", "sin_acueducto",
+]
 IPM_OFICIAL_TASA_POBREZA = 0.130  # IPM Hogares Nacional 2024 (data/catalogo.yaml) — referencia de plausibilidad, no un objetivo a igualar
 
 
@@ -86,16 +109,30 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
         return None
 
     k3 = ["DIRECTORIO", "SECUENCIA_P", "HOGAR"]
-    hv = pd.read_parquet(path_hv, columns=[*k3, "P5020"]).replace("", pd.NA)
+    hv = pd.read_parquet(
+        path_hv, columns=[*k3, "P4010", "P4020", "P4030S3", "P4030S5", "P5010", "P6008"]
+    ).replace("", pd.NA)
     for c in k3:
         hv[c] = _norm_llave(hv[c])
 
-    cg = pd.read_parquet(path_cg, columns=[*k3, "ORDEN", "P6050", "P6160", "P6090"]).replace("", pd.NA)
+    cg = pd.read_parquet(
+        path_cg, columns=[*k3, "ORDEN", "P6050", "P6040", "P6160", "P6090", "P3042", "P6170"]
+    ).replace("", pd.NA)
     for c in [*k3, "ORDEN"]:
         cg[c] = _norm_llave(cg[c])
 
-    n_pers = cg.groupby(k3).size().rename("hog_num_personas").reset_index()
-    jefes = cg[_norm_llave(cg["P6050"]).astype("string") == "1"][[*k3, "ORDEN", "P6160", "P6090"]].copy()
+    # Inasistencia escolar: TODOS los miembros entre 6 y 16 años, no solo el jefe.
+    edad_num = pd.to_numeric(cg["P6040"], errors="coerce")
+    es_menor_escolar = edad_num.between(EDAD_MIN_ESCOLAR, EDAD_MAX_ESCOLAR)
+    no_asiste = cg["P6170"] == "2"
+    inasistencia = (
+        (es_menor_escolar & no_asiste).groupby([cg[c] for c in k3]).any()
+        .rename("inasistencia_escolar_menores").reset_index()
+    )
+
+    jefes = cg[_norm_llave(cg["P6050"]).astype("string") == "1"][
+        [*k3, "ORDEN", "P6160", "P6090", "P3042"]
+    ].copy()
 
     if path_oc.exists():
         oc = pd.read_parquet(path_oc, columns=[*k3, "ORDEN", "P6920"]).replace("", pd.NA)
@@ -105,14 +142,30 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
     else:
         jefes["P6920"] = pd.NA
 
-    df = jefes.merge(hv, on=k3, how="left").merge(n_pers, on=k3, how="left")
+    df = jefes.merge(hv, on=k3, how="left").merge(inasistencia, on=k3, how="left")
 
     df["analfabetismo"] = (df["P6160"] == "2").astype("Int8")
     df["sin_aseguramiento_salud"] = (df["P6090"] == "2").astype("Int8")
 
-    cuartos_dormir = pd.to_numeric(df["P5020"], errors="coerce")
-    personas_cuarto = df["hog_num_personas"] / cuartos_dormir.replace(0, pd.NA)
+    nivel_edu = pd.to_numeric(df["P3042"], errors="coerce")
+    # 99 = "no sabe/no informa" -> se trata como NO privado (conservador), no como faltante.
+    df["bajo_logro_educativo_jefe"] = ((nivel_edu < NIVEL_MIN_SECUNDARIA) & (nivel_edu != 99)).astype("Int8")
+
+    df["inasistencia_escolar_menores"] = df["inasistencia_escolar_menores"].fillna(False).astype("Int8")
+
+    personas = pd.to_numeric(df["P6008"], errors="coerce")
+    cuartos_dormir = pd.to_numeric(df["P5010"], errors="coerce")
+    personas_cuarto = personas / cuartos_dormir.replace(0, pd.NA)
     df["hacinamiento"] = (personas_cuarto > UMBRAL_HACINAMIENTO).astype("Int8")
+
+    pisos = pd.to_numeric(df["P4020"], errors="coerce")
+    df["material_pisos_inadecuado"] = (pisos == 1).astype("Int8")
+
+    paredes = pd.to_numeric(df["P4010"], errors="coerce")
+    df["material_paredes_inadecuado"] = paredes.isin([6, 7, 8, 9]).astype("Int8")
+
+    df["sin_alcantarillado"] = (df["P4030S3"] == "2").astype("Int8")
+    df["sin_acueducto"] = (df["P4030S5"] == "2").astype("Int8")
 
     # Privado si NO está ocupado y cotizando a pensión (combina informalidad +
     # desempleo/inactividad del jefe en un solo indicador de trabajo).
@@ -121,12 +174,12 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
     df["ipm_geih_score"] = df[PRIVACIONES].sum(axis=1, min_count=1)
     df["POBRE_GEIH"] = (df["ipm_geih_score"] >= K_POBRE).astype("Int8")
     # Variantes de umbral para análisis de sensibilidad (ver _validar) — el
-    # mismo score, distinto corte. K_POBRE=2 es el umbral adoptado.
-    for k in (1, 2, 3, 4):
+    # mismo score, distinto corte. K_POBRE=3 es el umbral adoptado.
+    for k in range(1, len(PRIVACIONES) + 1):
         df[f"POBRE_GEIH_K{k}"] = (df["ipm_geih_score"] >= k).astype("Int8")
 
     cols_salida = ["llave_directorio", "llave_secuencia_p", "llave_hogar", *PRIVACIONES,
-                   "ipm_geih_score", "POBRE_GEIH", *[f"POBRE_GEIH_K{k}" for k in (1, 2, 3, 4)]]
+                   "ipm_geih_score", "POBRE_GEIH", *[f"POBRE_GEIH_K{k}" for k in range(1, len(PRIVACIONES) + 1)]]
     out = df.rename(columns={
         "DIRECTORIO": "llave_directorio", "SECUENCIA_P": "llave_secuencia_p", "HOGAR": "llave_hogar",
     })[cols_salida]
@@ -153,7 +206,7 @@ def _validar(df: pd.DataFrame) -> None:
     print("\n=== Validaciones ===")
     print(f"Filas: {len(df):,} | duplicados por llave hogar+mes: {n_dup} | privaciones sin faltantes: OK")
 
-    print("\nCobertura por privación (% con valor 1, sobre el total — 0% de faltantes en las 4):")
+    print(f"\nCobertura por privación (% con valor 1, sobre el total — 0% de faltantes en las {len(PRIVACIONES)}):")
     for c in PRIVACIONES:
         print(f"  {c}: {df[c].mean()*100:.1f}%")
 
@@ -161,15 +214,15 @@ def _validar(df: pd.DataFrame) -> None:
     print((df["ipm_geih_score"].value_counts(normalize=True).sort_index() * 100).round(1).astype(str) + " %")
 
     print("\nSensibilidad al umbral K (tasa de pobreza según dónde se corte el score):")
-    for k in (1, 2, 3, 4):
+    for k in range(1, len(PRIVACIONES) + 1):
         tasa = df[f"POBRE_GEIH_K{k}"].mean() * 100
         marca = " <- adoptado (K_POBRE)" if k == K_POBRE else ""
         print(f"  K>={k}: {tasa:.1f}%{marca}")
     print(
         f"  Referencia externa: IPM oficial (Hogares Nacional 2024, 15 privaciones) = "
         f"{IPM_OFICIAL_TASA_POBREZA*100:.1f}% — K={K_POBRE} es el más cercano en orden de "
-        f"magnitud entre los 4 cortes probados; no se ajustó el umbral para igualarlo, es una "
-        f"verificación de plausibilidad ex post, no una calibración."
+        f"magnitud entre los {len(PRIVACIONES)} cortes probados; no se ajustó el umbral para "
+        f"igualarlo, es una verificación de plausibilidad ex post, no una calibración."
     )
 
 
@@ -179,7 +232,7 @@ def main() -> None:
 
     tablas = [t for mes in MESES if (t := _outcome_mes(mes)) is not None]
     outcome = pd.concat(tablas, ignore_index=True)
-    logger.info("Outcome IPM-GEIH (reducido) construido: %s hogares", f"{len(outcome):,}")
+    logger.info("Outcome IPM-GEIH (ampliado, %s privaciones) construido: %s hogares", len(PRIVACIONES), f"{len(outcome):,}")
 
     fus = pd.read_parquet(FUSIONADO)
     for c in ("llave_directorio", "llave_secuencia_p", "llave_hogar"):
@@ -193,9 +246,9 @@ def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(OUT, index=False)
 
-    print("\n=== Outcome real: IPM-GEIH (reducido, 4 privaciones de 4) ===")
+    print(f"\n=== Outcome real: IPM-GEIH ({len(PRIVACIONES)} privaciones, verificadas contra el diccionario oficial) ===")
     print(f"Hogares: {len(df):,}")
-    print(f"Score medio: {df['ipm_geih_score'].mean():.2f} (0-4)")
+    print(f"Score medio: {df['ipm_geih_score'].mean():.2f} (0-{len(PRIVACIONES)})")
 
     _validar(df)
 
