@@ -2,6 +2,37 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
+## 2026-10-27 (2) — Sensibilidad del indicador, representatividad del Sisbén y pruebas automatizadas
+
+### Añadido
+- `src/3_preprocesamiento.py`: variantes de umbral (`POBRE_GEIH_K1`...`K4`)
+  y función `_validar()` con las validaciones obligatorias (una fila por
+  hogar-mes, faltantes tratados explícitamente, cobertura por privación,
+  distribución del score, sensibilidad al umbral comparada contra la tasa
+  oficial de IPM). Reporte: `docs/reports/reporte_sensibilidad_ipm_geih.csv`.
+- `tests/test_preprocesamiento.py`: 6 pruebas con `pytest` sobre datos
+  reales (enero 2024) — unicidad de hogar, privaciones binarias sin
+  faltantes, umbrales monótonos, consistencia del score.
+- `src/validacion/verificar_representatividad_sisben.py`: compara la
+  población de GEIH contra los hogares registrados en el Sisbén por
+  departamento. Hallazgo: la razón de cobertura varía **32,3 veces** entre
+  departamentos (0,4% Valle del Cauca a 12,8% Putumayo) — el registro del
+  Sisbén no es una muestra uniforme de GEIH. Detalle en
+  `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
+- `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`: documenta la
+  construcción de las 4 privaciones, la familia de umbrales, las
+  validaciones, y el intento (bloqueado) de ampliar el indicador.
+
+### Bloqueo documentado (no resuelto con una suposición)
+- Se auditaron candidatos de GEIH 2024 reales para ampliar el indicador
+  de pobreza (asistencia/logro educativo: `P6170`, `P3038`, `P3039`,
+  `P3041`-`P3043`; servicios de vivienda: `P5070`, `P5080`, `P5090`,
+  `P5100`, `P5110`, `P5130`, `P5140`) — ninguno calza con el concepto
+  esperado (varios traen valores monetarios o de tenencia, no acceso a
+  servicio binario). Causa: el repositorio no tiene el diccionario oficial
+  de variables de GEIH. No se adivinaron los códigos — el indicador se
+  queda en 4 privaciones hasta conseguir la ficha técnica.
+
 ## 2026-10-27 — Cotas de Fréchet-Manski + reproducción completa del pipeline + índice de resultados
 
 ### Añadido

@@ -18,6 +18,7 @@ carpeta responde a una pregunta distinta.
 - [`DICCIONARIO_IPM_2025.md`](insumos/DICCIONARIO_IPM_2025.md): diccionario del IPM (nota: el proyecto trabaja con el IPM 2024).
 - [`CODIGOS_LOCALIDAD_BOGOTA.md`](insumos/CODIGOS_LOCALIDAD_BOGOTA.md): códigos de localidad del Sisbén de Bogotá.
 - [`referencias_teoricas.md`](insumos/referencias_teoricas.md): referencias metodológicas del proyecto.
+- [`METODOLOGIA_INDICADOR_IPM_GEIH.md`](insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md): cómo se construyen las 4 privaciones del indicador de pobreza, la familia de umbrales de sensibilidad, las validaciones obligatorias, y por qué el indicador ampliado está bloqueado (falta el diccionario oficial de GEIH).
 
 ## `resultados/`
 - [`README.md`](resultados/README.md): **índice y hallazgos consolidados** — el hilo conductor que conecta los cinco documentos de abajo (resumen ejecutivo, no hace falta leer los cinco para entender el estado del proyecto).
@@ -27,6 +28,7 @@ carpeta responde a una pregunta distinta.
 - [`RESULTADOS_DML_ATE_ATT_ATU.md`](resultados/RESULTADOS_DML_ATE_ATT_ATU.md): primera corrida real de ATE/ATT/ATU (Double Machine Learning) sobre el outcome IPM-GEIH reducido.
 - [`RESULTADOS_CAUSALFOREST_CATE.md`](resultados/RESULTADOS_CAUSALFOREST_CATE.md): primera corrida real de CATE (Causal Forest) — heterogeneidad concentrada en jefatura femenina y material de paredes.
 - [`RESULTADOS_FRECHET_MANSKI.md`](resultados/RESULTADOS_FRECHET_MANSKI.md): cotas de Fréchet-Manski (sin suponer independencia condicional) — el rango de efectos compatible con los datos crudos es 145 veces más ancho que el IC95% del DML.
+- [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md): la cobertura del Sisbén respecto a la población de GEIH varía 32 veces entre departamentos — el registro no es una muestra uniforme.
 
 ## `seguimiento/`
 - [`RESUMEN_AVANCES.md`](seguimiento/RESUMEN_AVANCES.md): estado de fuentes, pipeline y pendientes técnicos.
@@ -48,3 +50,4 @@ reportes generados; los resultados interpretados van en `resultados/`.
 - Efectos causales (P2/OE2): primera corrida real ya en `resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`, con robustez vía `resultados/RESULTADOS_FRECHET_MANSKI.md` — falta resolver `viv_paredes`/`viv_pisos` (categorías sin verificar) antes de poder interpretar el DML como efecto causal, no solo asociación.
 - Reglas contrafactuales (P3/OE3): no implementado, depende de P1 y P2.
 - Angostar las cotas de Fréchet-Manski con supuestos de monotonía (MTS/MTR) — ver "Próximo paso" en `resultados/RESULTADOS_FRECHET_MANSKI.md`.
+- Indicador de pobreza ampliado (más allá de las 4 privaciones actuales): bloqueado por falta del diccionario oficial de variables de GEIH — ver `insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5 para las alternativas.

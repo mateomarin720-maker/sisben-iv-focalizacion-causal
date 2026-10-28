@@ -65,9 +65,12 @@ logger = logging.getLogger(__name__)
 GEIH_DIR = Path("data/1_processed/geih/2024")
 FUSIONADO = Path("data/2_models/geih_sisben_fusionado_2024.parquet")
 OUT = Path("data/2_models/muestra_estimacion_2024.parquet")
+REPORT_DIR = Path("docs/reports")
 MESES = [f"{m:02d}" for m in range(1, 13)]
 UMBRAL_HACINAMIENTO = 3  # personas por cuarto para dormir — ver nota de verificación arriba
-K_POBRE = 2  # privaciones de 4 para marcar POBRE_GEIH (umbral arbitrario, documentado)
+K_POBRE = 2  # umbral adoptado (privaciones de 4). Ver sensibilidad K=1..4 en `_validar`.
+PRIVACIONES = ["analfabetismo", "sin_aseguramiento_salud", "hacinamiento", "sin_cotizacion_pension_jefe"]
+IPM_OFICIAL_TASA_POBREZA = 0.130  # IPM Hogares Nacional 2024 (data/catalogo.yaml) — referencia de plausibilidad, no un objetivo a igualar
 
 
 def _norm_llave(serie: pd.Series) -> pd.Series:
@@ -115,15 +118,59 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
     # desempleo/inactividad del jefe en un solo indicador de trabajo).
     df["sin_cotizacion_pension_jefe"] = (df["P6920"] != "1").astype("Int8")
 
-    privaciones = ["analfabetismo", "sin_aseguramiento_salud", "hacinamiento", "sin_cotizacion_pension_jefe"]
-    df["ipm_geih_score"] = df[privaciones].sum(axis=1, min_count=1)
+    df["ipm_geih_score"] = df[PRIVACIONES].sum(axis=1, min_count=1)
     df["POBRE_GEIH"] = (df["ipm_geih_score"] >= K_POBRE).astype("Int8")
+    # Variantes de umbral para análisis de sensibilidad (ver _validar) — el
+    # mismo score, distinto corte. K_POBRE=2 es el umbral adoptado.
+    for k in (1, 2, 3, 4):
+        df[f"POBRE_GEIH_K{k}"] = (df["ipm_geih_score"] >= k).astype("Int8")
 
+    cols_salida = ["llave_directorio", "llave_secuencia_p", "llave_hogar", *PRIVACIONES,
+                   "ipm_geih_score", "POBRE_GEIH", *[f"POBRE_GEIH_K{k}" for k in (1, 2, 3, 4)]]
     out = df.rename(columns={
         "DIRECTORIO": "llave_directorio", "SECUENCIA_P": "llave_secuencia_p", "HOGAR": "llave_hogar",
-    })[["llave_directorio", "llave_secuencia_p", "llave_hogar", *privaciones, "ipm_geih_score", "POBRE_GEIH"]]
+    })[cols_salida]
     out["mes"] = mes
     return out
+
+
+def _validar(df: pd.DataFrame) -> None:
+    """Validaciones obligatorias sobre la tabla final. Falla con
+    AssertionError si algo estructural está mal (no se queda callado)."""
+    llave = ["llave_directorio", "llave_secuencia_p", "llave_hogar", "mes"]
+    n_dup = df.duplicated(subset=llave).sum()
+    assert n_dup == 0, f"{n_dup} filas duplicadas por llave de hogar+mes — revisar el cruce"
+    # GEIH es panel ROTATIVO, no sigue al mismo hogar entre meses: la
+    # unicidad es por hogar DENTRO de cada mes, no un hogar único en el año.
+
+    for c in PRIVACIONES:
+        n_na = df[c].isna().sum()
+        assert n_na == 0, f"{c}: {n_na} valores faltantes sin tratar explícitamente"
+
+    n_na_score = df["ipm_geih_score"].isna().sum()
+    assert n_na_score == 0, f"ipm_geih_score: {n_na_score} valores faltantes"
+
+    print("\n=== Validaciones ===")
+    print(f"Filas: {len(df):,} | duplicados por llave hogar+mes: {n_dup} | privaciones sin faltantes: OK")
+
+    print("\nCobertura por privación (% con valor 1, sobre el total — 0% de faltantes en las 4):")
+    for c in PRIVACIONES:
+        print(f"  {c}: {df[c].mean()*100:.1f}%")
+
+    print(f"\nDistribución del score (0-{len(PRIVACIONES)}):")
+    print((df["ipm_geih_score"].value_counts(normalize=True).sort_index() * 100).round(1).astype(str) + " %")
+
+    print("\nSensibilidad al umbral K (tasa de pobreza según dónde se corte el score):")
+    for k in (1, 2, 3, 4):
+        tasa = df[f"POBRE_GEIH_K{k}"].mean() * 100
+        marca = " <- adoptado (K_POBRE)" if k == K_POBRE else ""
+        print(f"  K>={k}: {tasa:.1f}%{marca}")
+    print(
+        f"  Referencia externa: IPM oficial (Hogares Nacional 2024, 15 privaciones) = "
+        f"{IPM_OFICIAL_TASA_POBREZA*100:.1f}% — K={K_POBRE} es el más cercano en orden de "
+        f"magnitud entre los 4 cortes probados; no se ajustó el umbral para igualarlo, es una "
+        f"verificación de plausibilidad ex post, no una calibración."
+    )
 
 
 def main() -> None:
@@ -140,18 +187,27 @@ def main() -> None:
     df = fus.merge(outcome, on=["llave_directorio", "llave_secuencia_p", "llave_hogar", "mes"], how="left")
 
     n_sin = df["ipm_geih_score"].isna().sum()
-    logger.info("Hogares sin outcome tras el cruce: %s de %s (%.1f%%)", n_sin, len(df), n_sin / len(df) * 100)
+    assert n_sin == 0, f"{n_sin} hogares del Hot-Deck sin outcome tras el cruce — revisar llaves"
+    logger.info("Hogares sin outcome tras el cruce: %s de %s (0.0%%)", n_sin, len(df))
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(OUT, index=False)
 
     print("\n=== Outcome real: IPM-GEIH (reducido, 4 privaciones de 4) ===")
     print(f"Hogares: {len(df):,}")
-    for c in ["analfabetismo", "sin_aseguramiento_salud", "hacinamiento", "sin_cotizacion_pension_jefe"]:
-        print(f"  {c}: {df[c].mean()*100:.1f}% privados")
-    print(f"  Score medio: {df['ipm_geih_score'].mean():.2f} (0-4)")
-    print(f"  POBRE_GEIH (score >= {K_POBRE}): {df['POBRE_GEIH'].mean()*100:.1f}%")
+    print(f"Score medio: {df['ipm_geih_score'].mean():.2f} (0-4)")
+
+    _validar(df)
+
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    (REPORT_DIR / "reporte_sensibilidad_ipm_geih.csv").write_text(
+        df["ipm_geih_score"].value_counts(normalize=True).sort_index().mul(100).round(2).to_csv(
+            header=["pct_hogares"], index_label="score"
+        ),
+        encoding="utf-8",
+    )
     print(f"\nGuardado: {OUT}")
+    print(f"Guardado: {REPORT_DIR / 'reporte_sensibilidad_ipm_geih.csv'}")
 
 
 if __name__ == "__main__":

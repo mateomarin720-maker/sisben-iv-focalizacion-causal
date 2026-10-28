@@ -53,6 +53,22 @@ del código.
   `parse_stata_a_parquet`), pero si se toca ese código, probar con los 12
   meses, no solo uno.
 
+## Bloqueo conocido: no hay diccionario oficial de variables de GEIH
+
+A diferencia de IPM (que trae su DDI completo en
+`docs/insumos/DICCIONARIO_IPM_2025.md`), este repositorio **no tiene** la
+ficha técnica/diccionario oficial de GEIH. Los pocos códigos ya
+verificados (`P6160`, `P6090`, `P5010`/`P5020`, `P6920`) se corroboraron
+por vías indirectas (código compartido con IPM, o tasa resultante
+comparada contra una cifra nacional conocida) — no hay forma de extender
+esto a variables nuevas sin la ficha real. Antes de construir una
+privación/variable nueva de GEIH, probar la hipótesis empíricamente
+(value_counts + comparación contra una cifra nacional conocida) y, si no
+calza con confianza razonable, **no usarla** — documentar el bloqueo en
+vez de adivinar (ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5
+para un ejemplo real: varios candidatos para servicios de vivienda
+resultaron ser preguntas de valor monetario/tenencia, no de acceso).
+
 ## Variables sin verificar — no asumir su dirección/categorías
 
 - **`viv_paredes` y `viv_pisos`**: código de pregunta y categorías
@@ -100,6 +116,8 @@ poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
+poetry run python -m src.validacion.verificar_representatividad_sisben
+poetry run pytest tests/
 ```
 
 Cada uno debe reproducir los números ya documentados en

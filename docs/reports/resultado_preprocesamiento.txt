@@ -1,13 +1,34 @@
-2026-10-27 18:21:46,446 INFO Outcome IPM-GEIH (reducido) construido: 290,968 hogares
-2026-10-27 18:21:47,029 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
+2026-10-27 19:45:13,524 INFO Outcome IPM-GEIH (reducido) construido: 290,968 hogares
+2026-10-27 19:45:14,104 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
 
 === Outcome real: IPM-GEIH (reducido, 4 privaciones de 4) ===
 Hogares: 290,968
-  analfabetismo: 4.7% privados
-  sin_aseguramiento_salud: 3.4% privados
-  hacinamiento: 23.3% privados
-  sin_cotizacion_pension_jefe: 75.4% privados
-  Score medio: 1.07 (0-4)
-  POBRE_GEIH (score >= 2): 23.5%
+Score medio: 1.07 (0-4)
+
+=== Validaciones ===
+Filas: 290,968 | duplicados por llave hogar+mes: 0 | privaciones sin faltantes: OK
+
+Cobertura por privación (% con valor 1, sobre el total — 0% de faltantes en las 4):
+  analfabetismo: 4.7%
+  sin_aseguramiento_salud: 3.4%
+  hacinamiento: 23.3%
+  sin_cotizacion_pension_jefe: 75.4%
+
+Distribución del score (0-4):
+ipm_geih_score
+0    18.1 %
+1    58.4 %
+2    22.0 %
+3     1.5 %
+4     0.0 %
+Name: proportion, dtype: object
+
+Sensibilidad al umbral K (tasa de pobreza según dónde se corte el score):
+  K>=1: 81.9%
+  K>=2: 23.5% <- adoptado (K_POBRE)
+  K>=3: 1.5%
+  K>=4: 0.0%
+  Referencia externa: IPM oficial (Hogares Nacional 2024, 15 privaciones) = 13.0% — K=2 es el más cercano en orden de magnitud entre los 4 cortes probados; no se ajustó el umbral para igualarlo, es una verificación de plausibilidad ex post, no una calibración.
 
 Guardado: data\2_models\muestra_estimacion_2024.parquet
+Guardado: docs\reports\reporte_sensibilidad_ipm_geih.csv
