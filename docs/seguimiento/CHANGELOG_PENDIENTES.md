@@ -2,6 +2,31 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
+## 2026-10-27 — Cotas de Fréchet-Manski + reproducción completa del pipeline + índice de resultados
+
+### Añadido
+- **`src/estimacion/cotas_frechet_manski.py`**: implementa el ítem "por
+  explorar" de la Tabla 1 del documento de pipeline. Calcula `P(Y|X)`
+  directamente en GEIH y `P(T|X)` directamente en Sisbén (sin pasar por el
+  Hot-Deck) y aplica Fréchet-Hoeffding para acotar el ATE sin suponer
+  independencia condicional (CIA). Resultado sobre `POBRE_GEIH`: cota
+  **[-0,627; +0,360]** (342 celdas, 100 % de cobertura poblacional GEIH)
+  vs. el punto del DML +0,0074 [IC95% +0,004;+0,011] — la cota sin CIA es
+  **145 veces más ancha**, y ninguna de las 342 celdas individuales logra
+  excluir el cero por su cuenta. Confirma que toda la precisión del DML
+  depende de confiar en la suposición del Hot-Deck, no de los datos
+  crudos. Detalle en `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`, con
+  una propuesta concreta (supuestos de monotonía MTS/MTR) para angostar la
+  cota sin llegar a la CIA completa.
+- **`docs/resultados/README.md`**: índice y resumen ejecutivo de los 6
+  documentos de la carpeta (antes dispersos sin un hilo conductor único).
+- Se reprodujo el pipeline completo de punta a punta (Hot-Deck, filtros
+  SDP, DAG, preprocesamiento, estimación) y se confirmó que los números
+  son idénticos a los del 2026-10-21 — el pipeline es reproducible con
+  semillas fijas. Salidas crudas en `docs/reports/resultado_*.txt`
+  (corregido el problema de codificación de consola — ahora UTF-8 real,
+  no mojibake).
+
 ## 2026-10-21 (4) — Primera corrida REAL de ATE/ATT/ATU/CATE
 
 Implementa lo que quedó pendiente en la entrada (3): sumar vivienda a la
