@@ -7,18 +7,44 @@ compartidos con el estandarizador de Sisbén (ver
 armonizar_sisben_hogar_2024.py), para que el Hot-Deck opere sobre columnas ya
 homologadas en vez de tener que mapear nombres cada vez.
 
-⚠️ Verificado con datos reales (2026-09-15), pendiente de confirmar
-oficialmente:
-  - geo_depto: CONFIRMADO — DPTO (GEIH) y los 2 primeros dígitos de
-    cod_mpio (Sisbén) usan el mismo código DIVIPOLA, coincidencia
-    exacta de 33 valores.
-  - geo_zona: los códigos existen en ambas fuentes (binario 1/2) pero
-    NO se confirmó que la dirección sea la misma (¿1=urbano en las
-    dos?) — verificar contra el DDI oficial antes de usar esta
-    columna como variable de matching fuerte.
-  - jefe_sexo / viv_paredes / viv_pisos: mismo caso — código binario o
-    categórico presente en ambas fuentes, dirección/categorías no
-    verificada oficialmente todavía.
+⚠️ CORREGIDO 2026-10-28 con el diccionario oficial de variables de GEIH
+2024 (`docs/insumos/Diccionario_variables_GEIH_2024.xlsx`, conseguido
+después de documentar el bloqueo en
+`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). El mapeo de vivienda
+que tenía este script ANTES de esa fecha estaba mal — no por adivinar,
+sino por una correspondencia de códigos incorrecta que nadie había
+verificado contra la ficha real:
+
+  | Canónico | Antes (incorrecto) | Ahora (verificado contra el diccionario) |
+  |---|---|---|
+  | `viv_paredes` | `P4020` (en realidad: material de PISOS) | `P4010` — "material predominante de las paredes exteriores" |
+  | `viv_pisos` | `P4030S1` (en realidad: "¿tiene energía eléctrica? Sí/No") | `P4020` — "material predominante de los pisos" |
+  | `viv_cuartos` | `P5010` (en realidad: cuartos para DORMIR, no el total) | `P5000` — "cuántos cuartos en total dispone el hogar" (mismo concepto que `VIV009` del Sisbén) |
+
+Esto afectó la celda del Hot-Deck (que usaba `viv_cuartos` ya corregido
+aquí) y el cálculo de hacinamiento en `3_preprocesamiento.py` (que usaba
+directamente `P5020` — tipo de servicio sanitario — como si fueran
+cuartos). Toda la cadena (armonización → Hot-Deck → preprocesamiento →
+estimación) se re-corrió después de esta corrección — ver
+`docs/seguimiento/CHANGELOG_PENDIENTES.md` (2026-10-28).
+
+Confirmado con el diccionario oficial:
+  - `geo_depto`: `DPTO` (GEIH) y los 2 primeros dígitos de `cod_mpio`
+    (Sisbén) usan el mismo código DIVIPOLA — confirmado antes y ahora.
+  - `geo_zona`: `CLASE` — **1 = Urbano, 2 = Rural** (confirmado contra la
+    pregunta oficial).
+  - `jefe_sexo`: `P3271` — "¿cuál fue su sexo al nacer?" (confirmado,
+    sigue sin la tabla de códigos 1/2 explícita en el diccionario, pero
+    la pregunta en sí está confirmada).
+  - `viv_paredes` (`P4010`): a=Ladrillo/bloque/prefabricado/piedra,
+    b=Madera pulida, c=Adobe/tapia, d=Bahareque, e=Madera burda/tablón,
+    f=Guadua, g=Caña/esterilla/vegetal, h=Zinc/tela/cartón/desechos,
+    i=Sin paredes (codificadas 1-9 en ese orden, confirmado contra la
+    distribución real: código 1 = 92% de los hogares, consistente con
+    "ladrillo/bloque" siendo el material dominante en Colombia).
+  - `viv_pisos` (`P4020`): a=Tierra/arena (privación), b=Cemento/gravilla,
+    c=Madera burda, d=Baldosín/ladrillo/vinisol, e=Mármol, f=Madera
+    pulida, g=Alfombra (codificadas 1-7).
 
 Uso:
     poetry run python -m src.armonizacion.armonizar_geih_hogar_2024
@@ -39,20 +65,28 @@ OUT_PATH = Path("data/2_models/geih_estandarizado_2024.parquet")
 
 MESES = [f"{m:02d}" for m in range(1, 13)]
 
-# Columnas de hogar_vivienda -> nombre canónico
+# Columnas de hogar_vivienda -> nombre canónico (corregido 2026-10-28, ver
+# docstring del módulo)
 MAPA_HOGAR_VIVIENDA = {
     "DIRECTORIO": "llave_directorio",
     "SECUENCIA_P": "llave_secuencia_p",
     "HOGAR": "llave_hogar",
     "DPTO": "geo_depto",
     "CLASE": "geo_zona",
-    "P4020": "viv_paredes",
-    "P4030S1": "viv_pisos",
-    "P5010": "viv_cuartos",
+    "P4010": "viv_paredes",           # material predominante de paredes exteriores
+    "P4020": "viv_pisos",             # material predominante de pisos
+    "P5000": "viv_cuartos",           # cuartos en total (incl. sala-comedor) — mismo concepto que VIV009 del Sisbén
+    "P5010": "viv_cuartos_dormir",    # de esos, cuántos se usan para dormir (insumo de hacinamiento)
+    "P4030S3": "viv_alcantarillado",  # ¿tiene alcantarillado? 1=Sí/2=No
+    "P4030S5": "viv_acueducto",       # ¿tiene acueducto? 1=Sí/2=No
+    "P6008": "hog_num_personas",      # total de personas en el hogar (directo, no hay que contar filas)
     "FEX_C18": "fex",
 }
 
-# Columna de caracteristicas_generales (jefe de hogar) -> nombre canónico
+# Columna de caracteristicas_generales (jefe de hogar) -> nombre canónico.
+# Nota: este script solo alimenta el Hot-Deck (src/emparejamiento/) — las
+# privaciones del outcome (P6160, P3042, P6170, etc.) se leen aparte en
+# `3_preprocesamiento.py`, directo de los módulos crudos, no de aquí.
 MAPA_JEFE = {
     "P3271": "jefe_sexo",
     "P6040": "jefe_edad",

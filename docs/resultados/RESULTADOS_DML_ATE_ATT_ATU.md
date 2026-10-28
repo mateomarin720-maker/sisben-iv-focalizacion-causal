@@ -1,8 +1,11 @@
 # Resultados — Double Machine Learning (ATE, ATT, ATU)
 
-Generado 2026-10-21 por `src/5_estimacion.py` (`_ate_att_atu`), primera
-corrida real (no de prueba) sobre el outcome y el Hot-Deck con vivienda
-sumada a la celda. Salida completa:
+*Actualizado 2026-10-28: outcome ampliado a 10 privaciones y `viv_cuartos`
+corregido — ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`. Los
+números de esta página reemplazan la corrida anterior (4 privaciones,
+2026-10-21/27).*
+
+Generado por `src/5_estimacion.py` (`_ate_att_atu`). Salida completa:
 `docs/reports/estimacion_ate_att_atu_cate.txt`.
 
 ## Qué es
@@ -15,81 +18,79 @@ modelos de molestia `Y~W` y `T~W`), con validación cruzada (`LinearDML` de
 
 ## Cómo se usa aquí
 
-- **Tratamiento (T):** `1` si `Grupo_hotdeck ∈ {A,B}` (elegibilidad A/B del
-  Sisbén, el tratamiento del diseño principal).
-- **Outcomes:** `ipm_geih_score` (continuo, 0-4 privaciones) y
-  `POBRE_GEIH` (binario, score ≥ 2) — ver `src/3_preprocesamiento.py` para
-  qué privaciones incluye y cuáles no.
+- **Tratamiento (T):** `1` si `Grupo_hotdeck ∈ {A,B}` (elegibilidad A/B
+  del Sisbén). Con la corrección de `viv_cuartos`, el 63,7 % de los
+  hogares GEIH queda en T=1 (antes de corregir `viv_cuartos`: 74,4 %).
+- **Outcomes:** `ipm_geih_score` (continuo, 0-10 privaciones) y
+  `POBRE_GEIH` (binario, score ≥ 3) — ver
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` para las 10 privaciones.
 - **W (controles de los modelos de molestia):** `geo_depto`, `jefe_edad`,
-  `viv_cuartos` — la celda COMPLETA del Hot-Deck tal como quedó
-  implementada tras sumarle vivienda.
+  `viv_cuartos` — la celda COMPLETA del Hot-Deck, con `viv_cuartos` ya
+  corregido (cuartos en total, no "cuartos para dormir").
 - **X (heterogeneidad del efecto):** `geo_zona`, `jefe_sexo`,
-  `viv_paredes`, `viv_pisos` — covariables NO usadas en la celda.
+  `viv_paredes`, `viv_pisos` — covariables NO usadas en la celda, ahora
+  con los códigos correctos también (antes `viv_paredes`/`viv_pisos`
+  apuntaban a las columnas equivocadas).
 - **ATT y ATU** se calculan con el MISMO `LinearDML` ya ajustado,
   evaluando `effect()`/`ate()` solo sobre los hogares tratados (ATT) o no
-  tratados (ATU) — no con un estimador doblemente robusto aparte (ver
-  "Qué se descartó" abajo).
+  tratados (ATU).
 
 ## Resultado
 
 | Outcome | ATE | ATT (error de inclusión) | ATU (error de exclusión) |
 |---|---|---|---|
-| `ipm_geih_score` (0-4) | +0,0137 [+0,0084; +0,0190] | +0,0136 [+0,0083; +0,0189] | +0,0139 [+0,0085; +0,0192] |
-| `POBRE_GEIH` (0/1) | +0,0074 [+0,0040; +0,0108] | +0,0074 [+0,0040; +0,0108] | +0,0073 [+0,0040; +0,0106] |
+| `ipm_geih_score` (0-10) | +0,0218 [+0,0152; +0,0283] | +0,0226 [+0,0158; +0,0294] | +0,0204 [+0,0141; +0,0267] |
+| `POBRE_GEIH` (0/1, K≥3) | +0,0050 [+0,0028; +0,0073] | +0,0053 [+0,0030; +0,0076] | +0,0046 [+0,0025; +0,0067] |
 
-Intervalos de confianza al 95 %. Propensión `P(T=1|W)`: p5=0,632,
-p95=0,819 (mediana de cobertura razonable; mínimo observado 0,000 en
-alguna combinación puntual de depto×edad×cuartos — ver limitaciones).
+Intervalos de confianza al 95 %. Propensión `P(T=1|W)`: p5=0,536,
+p95=0,731 (mínimo observado 0,000 en alguna celda puntual — misma
+limitación de siempre, ver abajo).
 
 ## Cómo leerlo
 
-- Los tres efectos son prácticamente **iguales entre sí** — no es un error,
-  es lo esperable: con solo 4 covariables de heterogeneidad (zona, sexo,
-  paredes, pisos) el modelo lineal no encuentra mucha diferencia entre
-  cómo responden tratados y no tratados, así que ATE≈ATT≈ATU.
-- Los intervalos de confianza **excluyen 0** en los dos outcomes — hay una
-  asociación estadísticamente distinta de cero entre el grupo asignado por
-  Hot-Deck y las privaciones del jefe, **incluso controlando por la celda
-  completa del Hot-Deck** (depto+edad+cuartos).
-- **Esto NO se puede leer como "el Sisbén causa más pobreza".** Según el
-  chequeo formal de d-separación (`IDENTIFICACION_CAUSAL.md`), condicionar
-  en la celda completa del Hot-Deck debería dejar el grupo asignado
-  independiente del resultado. Que quede una asociación de +1,4 p.p. (en
-  una escala 0-4) sugiere que `viv_paredes`/`viv_pisos` — que SÍ entran
-  como X pero no como W — siguen capturando algo de la correlación
-  geográfica que no absorbe `geo_depto`. Es la misma historia que ya
-  apareció con el outcome de prueba (empleo/ingreso, 2026-10-21): falta
-  verificar y, si corresponde, sumar también paredes/pisos a la celda.
-- La magnitud es pequeña (1,4 % de una escala de 4 privaciones, 0,7 p.p.
-  en la probabilidad de ser `POBRE_GEIH`) — estadísticamente distinta de
-  cero, pero no grande.
+- Los tres efectos (ATE/ATT/ATU) siguen siendo parecidos entre sí, como
+  antes — esperable con pocas covariables de heterogeneidad en `X`.
+- Los IC95 % **siguen excluyendo 0** en los dos outcomes, incluso con el
+  outcome y la celda corregidos — la asociación entre el grupo asignado
+  por Hot-Deck y las privaciones del jefe no desaparece al arreglar el
+  error de `viv_cuartos`. Esto es informativo: si el residuo hubiera sido
+  puramente un artefacto del código equivocado, debería haber colapsado a
+  0 con la corrección. No colapsó.
+- **La importancia de variables apunta en la misma dirección que antes,
+  ahora con más confianza en el diagnóstico:** `viv_pisos` (0,305) y
+  `viv_paredes` (0,295) siguen siendo las covariables más importantes
+  para `ipm_geih_score`, y ahora SÍ son las variables correctas (antes de
+  2026-10-28 apuntaban a las columnas equivocadas, así que la señal podía
+  deberse al error de código). Con el código corregido, la vivienda
+  sigue siendo la pista más fuerte de por qué el efecto no colapsa a 0 —
+  pero ahora es una pista confiable, no una que dependía de un bug.
+- `geo_zona_urbana` también gana peso (0,232 en `ipm_geih_score`, 0,356
+  en `POBRE_GEIH`) — con la celda correcta, la geografía fina (urbano/
+  rural) parece explicar más del residuo de lo que se pensaba.
 
-## Qué se descartó: `LinearDRLearner` para ATT/ATU
+## Qué se mantiene igual
 
-El primer intento usó `LinearDRLearner` (doblemente robusto) para ATT/ATU
-por separado. Con las mismas covariables dio valores absurdos (+56, -191,
-en una escala 0-4) — inestabilidad del estimador doblemente robusto,
-probablemente por poca superposición de propensión en algunas celdas
-puntuales (algunas combinaciones de depto×edad×cuartos quedan con
-propensión muy cercana a 0 o 1). Se descartó ese camino y se reutilizó el
-`LinearDML` ya estable, evaluado sobre cada subpoblación — un caso real de
-"el modelo corrió sin error, pero el número no tenía sentido" que vale la
-pena dejar documentado para no repetirlo.
+El hallazgo metodológico sobre `LinearDRLearner` (descartado para ATT/ATU
+por dar valores absurdos con categóricas sin orden en `X`) sigue vigente
+— ver docstring de `_ate_att_atu` en `src/5_estimacion.py`. No fue
+afectado por la corrección de variables, es un problema del estimador,
+no del dato.
 
-## Limitaciones (aplican también a `RESULTADOS_CAUSALFOREST_CATE.md`)
+## Limitaciones
 
 - Tratamiento imputado por Hot-Deck, no observado.
-- `W` usa `jefe_edad` y `viv_cuartos` continuos como proxy de la celda real
-  (que es por tramos/ciclo de vida) — no es una réplica exacta de la
+- `W` usa `jefe_edad` y `viv_cuartos` continuos como proxy de la celda
+  real (que es por tramos/ciclo de vida) — no es una réplica exacta de la
   celda discreta.
-- Outcome reducido (4 de 15 privaciones), con la limitación conocida de
-  `sin_cotizacion_pension_jefe` (mezcla informalidad, desempleo e
-  inactividad) — ver `src/3_preprocesamiento.py`.
+- Outcome con 10 de 15 privaciones del IPM oficial — ver limitaciones
+  específicas (`sin_cotizacion_pension_jefe` mezcla causas distintas) en
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 - Sin ajuste por diseño muestral de GEIH ni de Sisbén.
-- Selección: el Sisbén solo cubre hogares inscritos.
-- Falta DPS/RUI como confusores — el canal `elegibilidad -> participación
-  DPS -> resultado` de la Figura 2 del documento de pipeline no tiene
-  datos todavía.
+- Selección: el Sisbén solo cubre hogares inscritos — ver
+  `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
+- Falta DPS/RUI como confusores.
+- `viv_paredes`/`viv_pisos` ahora tienen el código GEIH correcto, pero
+  sus categorías siguen sin homologar contra el Sisbén — por eso siguen
+  en `X`, no en `W` (celda del Hot-Deck).
 - Propensión mínima observada = 0,000 en al menos una celda — posible
-  violación puntual de superposición (positivity), no cuantificada a fondo
-  en esta corrida.
+  violación puntual de superposición (positivity).

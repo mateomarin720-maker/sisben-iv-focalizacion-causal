@@ -1,7 +1,9 @@
 # Resultados — Cotas de Fréchet-Manski (ATE sin suponer independencia condicional)
 
-Generado 2026-10-27 por `src/estimacion/cotas_frechet_manski.py`. Detalle
-por celda: `docs/reports/cotas_frechet_manski.csv`.
+Generado 2026-10-27 por `src/estimacion/cotas_frechet_manski.py`, refrescado
+el 2026-10-28 tras corregir `viv_cuartos` (ver
+`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Detalle por celda:
+`docs/reports/cotas_frechet_manski.csv`.
 
 ## Qué es
 
@@ -28,14 +30,20 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
 
 | | Estimador | Rango |
 |---|---|---|
-| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[-0,627 ; +0,360]** |
-| **DML con Hot-Deck** (con CIA) | Punto + IC95% | +0,0074 [+0,004 ; +0,011] |
+| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[-0,4061 ; +0,3205]** |
+| **DML con Hot-Deck** (con CIA) | Punto + IC95% | ver `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` (el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda) |
 
-- Cobertura: 342 celdas, 100 % del peso poblacional de GEIH.
-- Ancho de la cota Fréchet-Manski: **0,986** (casi todo el rango posible
-  de una diferencia de proporciones, que va de -1 a +1).
-- Ancho del IC95 % del DML: 0,0068 — **145 veces más angosto**.
-- **Ninguna de las 342 celdas individuales tiene una cota que excluya el
+- Cobertura: 365 celdas (antes de corregir `viv_cuartos`: 342 — la celda
+  correcta tiene más combinaciones distintas de tramo de cuartos), 100 %
+  del peso poblacional de GEIH.
+- Ancho de la cota Fréchet-Manski: **0,7267** (antes de corregir
+  `viv_cuartos`: 0,986 — la celda correcta angosta la cota, pero sigue
+  cubriendo la mayor parte del rango posible de una diferencia de
+  proporciones, que va de -1 a +1).
+- Ancho del IC95 % del DML (`POBRE_GEIH`, ver
+  `RESULTADOS_DML_ATE_ATT_ATU.md`): 0,0045 — **~162 veces más angosto**
+  que la cota Fréchet-Manski.
+- **Ninguna de las 365 celdas individuales tiene una cota que excluya el
   0** — ni una sola celda, por sí sola, permite descartar que el efecto
   sea cero o incluso de signo contrario.
 
@@ -46,8 +54,8 @@ preciso porque **asume** que, dentro de la celda, el grupo Sisbén
 funciona como-si-fuera-aleatorio (la CIA del Hot-Deck). Las cotas de
 Fréchet-Manski muestran qué tan fuerte es esa suposición: **sin ella, los
 datos por sí solos son compatibles con casi cualquier efecto**, desde una
-mejora grande hasta un empeoramiento grande. Toda la precisión del +0,0074
-del DML viene de la suposición, no de los datos crudos.
+mejora grande hasta un empeoramiento grande. Toda la precisión del punto
+que reporta el DML viene de la suposición, no de los datos crudos.
 
 Esto es exactamente lo que predice la teoría de cotas de partial
 identification (Manski, 2003): sin restricciones adicionales, las cotas
@@ -85,8 +93,10 @@ extensión natural de este script.
 
 ## Limitaciones
 
-Las mismas de `RESULTADOS_DML_ATE_ATT_ATU.md`: outcome reducido, selección
-del Sisbén, falta DPS/RUI, categorías de vivienda sin verificar. Además:
+Las mismas de `RESULTADOS_DML_ATE_ATT_ATU.md`: outcome con 10 de 15
+privaciones, selección del Sisbén, falta DPS/RUI, `viv_paredes`/
+`viv_pisos` con código GEIH confirmado pero categorías sin homologar
+contra el Sisbén. Además:
 `P(T|X)` del Sisbén se calcula sin ponderar (no es una encuesta con diseño
 muestral, es un registro administrativo) — `P(Y|X)` de GEIH sí se pondera
 por `FEX_C18`.

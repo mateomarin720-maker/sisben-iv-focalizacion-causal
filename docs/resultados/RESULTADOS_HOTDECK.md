@@ -1,6 +1,6 @@
 # Resultados del Hot-Deck GEIH ← Sisbén IV
 
-*Actualizado el 2026-10-21 (celda con vivienda sumada). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../insumos/DESCRIPCION_TABLAS.md).*
+*Actualizado el 2026-10-28 (corregido `viv_cuartos`, ver nota). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../insumos/DESCRIPCION_TABLAS.md).*
 
 ## Resultado
 
@@ -15,18 +15,21 @@ Grupo asignado, ponderado por el factor de expansión de GEIH:
 
 | Grupo | A | B | C | D |
 |---|---|---|---|---|
-| % de hogares (celda con vivienda) | **31,2** | 35,2 | 23,2 | **10,3** |
+| % de hogares (`viv_cuartos` corregido, 2026-10-28) | **22,0** | 33,8 | 28,7 | **15,6** |
+| % de hogares (`viv_cuartos` con el código equivocado, hasta 2026-10-27) | 31,2 | 35,2 | 23,2 | 10,3 |
 | % de hogares (celda sin vivienda, hasta 2026-10-21) | 28,0 | 34,4 | 24,9 | 12,7 |
 
-Sumar `viv_cuartos` a la celda corrió la distribución hacia A (+3,2 p.p.) y
-en contra de D (-2,4 p.p.) — los hogares con menos cuartos tienden a estar
-en departamentos/grupos de edad donde el Sisbén también registra más
-Grupo A, así que antes de sumar vivienda ese patrón se perdía dentro de
-celdas más gruesas.
+**`viv_cuartos` tenía un código equivocado hasta el 2026-10-28** (tomaba
+`P5010`, "cuartos para dormir", en vez de `P5000`, "cuartos en total" —
+ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). La celda estaba
+matcheando por número de alcobas, no por tamaño total de la vivienda. Con
+el código correcto, Grupo D sube de 10,3 % a 15,6 % — un cambio mayor que
+el de sumar vivienda a la celda en primer lugar, porque antes la variable
+ni siquiera medía lo que se pensaba que medía.
 
 ## Cómo leerlo
 
-- **El 100 % en celda exacta sigue sin demostrar por sí solo un buen emparejamiento** — ahora hay más celdas (depto×edad×cuartos, no solo depto×edad), pero el donante (3,1 millones) sigue siendo ~11 veces más grande que el receptor. El chequeo real de validez está en `RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`: dado W=celda completa, el efecto estimado no colapsa del todo a 0 — señal de que falta algo (la pista más fuerte: `viv_paredes`, sin verificar y fuera de la celda).
+- **El 100 % en celda exacta sigue sin demostrar por sí solo un buen emparejamiento** — hay más celdas (depto×edad×cuartos, no solo depto×edad), pero el donante (3,1 millones) sigue siendo ~11 veces más grande que el receptor. El chequeo real de validez está en `RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`.
 - **La distribución A/B/C/D no es la nacional.** El Sisbén solo cubre hogares registrados, de modo que A y B quedan sobrerrepresentados.
 - **El emparejamiento solo es válido a nivel poblacional.** No identifica al mismo hogar en las dos fuentes.
 
@@ -58,5 +61,7 @@ celdas más gruesas.
 ## Pendientes
 - [ ] Sensibilidad del Hot-Deck: mover los cortes de edad, sortear donantes ponderados por `FEX` y medir donantes por receptor y reutilización de donantes.
 - [ ] Validar con el IPM sin usarlo en la celda: comparar privaciones medias por grupo asignado.
-- [x] Sumar variables de vivienda a la celda — hecho con `viv_cuartos` (2026-10-21). `viv_paredes`/`viv_pisos` siguen fuera (categorías sin verificar) y alcantarillado/acueducto/número de personas siguen sin homologar en GEIH.
+- [x] Sumar variables de vivienda a la celda — hecho con `viv_cuartos` (2026-10-21), código corregido el 2026-10-28.
+- [x] Homologar alcantarillado/acueducto/número de personas en GEIH — hecho 2026-10-28 (`P4030S3`, `P4030S5`, `P6008`), ver `DICCIONARIO_HOTDECK.md` §4.
+- [ ] Sumar `viv_paredes`/`viv_pisos` a la celda — código del lado GEIH ya confirmado (2026-10-28), falta homologar las categorías del lado Sisbén.
 - [ ] Confirmar en ANDA los códigos de `PER002`.

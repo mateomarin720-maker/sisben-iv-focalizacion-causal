@@ -1,10 +1,11 @@
 """Estimación de efectos causales (P2/OE2).
 
-Primera corrida REAL (no de prueba) sobre el outcome construido en
-`3_preprocesamiento.py` (IPM-GEIH reducido, 4 privaciones) y el tratamiento
-asignado por el Hot-Deck con vivienda sumada a la celda
-(`geo_depto + jefe_edad + viv_cuartos`,
-`src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py`).
+Corrida sobre el outcome construido en `3_preprocesamiento.py` (IPM-GEIH,
+10 privaciones verificadas contra el diccionario oficial de GEIH desde
+2026-10-28) y el tratamiento asignado por el Hot-Deck con vivienda sumada
+a la celda (`geo_depto + jefe_edad + viv_cuartos`, este último también
+corregido el 2026-10-28 — antes tomaba el código equivocado,
+`docs/seguimiento/CHANGELOG_PENDIENTES.md`).
 
 Los cuatro efectos que pide el documento de pipeline (Roncancio y Fonseca,
 2026, Figura 1):
@@ -145,8 +146,8 @@ def main() -> None:
     df = _preparar(pd.read_parquet(DATA))
     logger.info("n=%s | T=1 (Grupo A/B): %.1f%%", f"{len(df):,}", df["T"].mean() * 100)
 
-    for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-4 privaciones)"),
-                             ("POBRE_GEIH", "POBRE_GEIH (binario, score >= 2)")]:
+    for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-10 privaciones)"),
+                             ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)")]:
         print("\n" + "=" * 70)
         print(f"Outcome: {etiqueta}")
         print("=" * 70)

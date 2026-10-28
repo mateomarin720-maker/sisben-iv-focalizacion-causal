@@ -24,6 +24,7 @@ pyarrow = "^16.0.0"
 requests = "^2.31.0"
 pyyaml = "^6.0"
 python-dotenv = "^1.0.0"
+openpyxl = "^3.1"  # leer los diccionarios oficiales de variables (.xlsx) en docs/insumos/
 #
 # Modelado base
 scikit-learn = ">=1.9.0,<2.0.0"
