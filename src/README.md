@@ -90,12 +90,14 @@ documentado y preferiblemente cubierto por pruebas.
 
 - **`3_preprocesamiento.py`** ✅ implementado 2026-10-21, ampliado 2026-10-28
   - Construye el outcome real: `ipm_geih_score`/`POBRE_GEIH`, un IPM-GEIH
-    que cubre **10 de 15 privaciones** oficiales (las 5 dimensiones del
+    que cubre **8 de 15 privaciones** oficiales (las 5 dimensiones del
     IPM, antes solo 2 — analfabetismo, logro educativo del jefe,
     asistencia escolar de menores, aseguramiento de salud, cotización a
-    pensión del jefe, hacinamiento, material de pisos/paredes,
-    alcantarillado, acueducto — ver docstring del script para qué se
-    incluyó, qué no, y por qué). Tratamiento:
+    pensión del jefe, hacinamiento, alcantarillado, acueducto; dos
+    privaciones de vivienda construidas y retiradas el mismo día por
+    tautología con `viv_paredes`/`viv_pisos` de `X` en
+    `5_estimacion.py` — ver docstring del script para qué se incluyó,
+    qué no, y por qué). Tratamiento:
     `Grupo_hotdeck`/`Clasificacion_hotdeck` (ya en el parquet fusionado del
     Hot-Deck). Salida: `data/2_models/muestra_estimacion_2024.parquet`.
 
@@ -110,7 +112,7 @@ documentado y preferiblemente cubierto por pruebas.
     `muestra_estimacion_2024.parquet`. Resultados interpretados:
     `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
     `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`. Sigue siendo una
-    corrida sobre un outcome que cubre 10 de 15 privaciones — no reemplaza el marco
+    corrida sobre un outcome que cubre 8 de 15 privaciones — no reemplaza el marco
     teórico-metodológico completo pendiente (ver Tabla 1 del documento de
     pipeline: LASSO/Ridge/SHAP, RD B/C, vecino más cercano con Gower y
     estudio de eventos Sisbén III→IV siguen sin implementar; cotas de

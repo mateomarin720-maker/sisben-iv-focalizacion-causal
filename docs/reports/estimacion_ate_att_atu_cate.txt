@@ -1,29 +1,29 @@
-2026-10-28 17:40:41,083 INFO Cargando data\2_models\muestra_estimacion_2024.parquet
-2026-10-28 17:40:41,979 INFO n=290,968 | T=1 (Grupo A/B): 63.7%
+2026-10-28 23:12:18,477 INFO Cargando data\2_models\muestra_estimacion_2024.parquet
+2026-10-28 23:12:19,535 INFO n=290,968 | T=1 (Grupo A/B): 63.7%
 
 ======================================================================
-Outcome: ipm_geih_score (continuo, 0-10 privaciones)
+Outcome: ipm_geih_score (continuo, 0-8 privaciones)
 ======================================================================
   Propensión (T=1 | W): min=0.000 p5=0.536 p95=0.731 max=0.783
-  ATE (toda la muestra): n=290,968 | +0.0218  IC95%=(+0.0152, +0.0283)
-  ATT (tratados, error de inclusión): n=185,256 | +0.0226  IC95%=(+0.0158, +0.0294)
-  ATU (no tratados, error de exclusión): n=105,712 | +0.0204  IC95%=(+0.0141, +0.0267)
-  CATE: n=80,000 | media=+0.0249  sd=0.0353  rango=(-0.2068, +0.1640)
-  Por zona (urbana=1): {0: 0.0563, 1: 0.0202}
-  Por sexo jefe (mujer=1): {0: 0.033, 1: 0.0166}
-  Importancia de variables: {'viv_pisos': 0.305, 'viv_paredes': 0.295, 'geo_zona_urbana': 0.232, 'jefe_mujer': 0.168}
+  ATE (toda la muestra): n=290,968 | +0.0206  IC95%=(+0.0141, +0.0272)
+  ATT (tratados, error de inclusión): n=185,256 | +0.0214  IC95%=(+0.0146, +0.0281)
+  ATU (no tratados, error de exclusión): n=105,712 | +0.0193  IC95%=(+0.0130, +0.0256)
+  CATE: n=80,000 | media=+0.0237  sd=0.0366  rango=(-0.2338, +0.1660)
+  Por zona (urbana=1): {0: 0.0538, 1: 0.0193}
+  Por sexo jefe (mujer=1): {0: 0.0321, 1: 0.0152}
+  Importancia de variables: {'viv_paredes': 0.316, 'viv_pisos': 0.301, 'geo_zona_urbana': 0.217, 'jefe_mujer': 0.167}
 
 ======================================================================
-Outcome: POBRE_GEIH (binario, score >= 2)
+Outcome: POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)
 ======================================================================
   Propensión (T=1 | W): min=0.000 p5=0.536 p95=0.731 max=0.783
-  ATE (toda la muestra): n=290,968 | +0.0050  IC95%=(+0.0028, +0.0073)
-  ATT (tratados, error de inclusión): n=185,256 | +0.0053  IC95%=(+0.0030, +0.0076)
+  ATE (toda la muestra): n=290,968 | +0.0052  IC95%=(+0.0029, +0.0075)
+  ATT (tratados, error de inclusión): n=185,256 | +0.0055  IC95%=(+0.0032, +0.0079)
   ATU (no tratados, error de exclusión): n=105,712 | +0.0046  IC95%=(+0.0025, +0.0067)
-  CATE: n=80,000 | media=+0.0041  sd=0.0136  rango=(-0.0521, +0.0820)
-  Por zona (urbana=1): {0: 0.0222, 1: 0.0014}
-  Por sexo jefe (mujer=1): {0: 0.0076, 1: 0.0005}
-  Importancia de variables: {'geo_zona_urbana': 0.356, 'viv_paredes': 0.268, 'viv_pisos': 0.213, 'jefe_mujer': 0.163}
+  CATE: n=80,000 | media=+0.0041  sd=0.0157  rango=(-0.0740, +0.0729)
+  Por zona (urbana=1): {0: 0.0203, 1: 0.0017}
+  Por sexo jefe (mujer=1): {0: 0.0076, 1: 0.0006}
+  Importancia de variables: {'viv_paredes': 0.323, 'geo_zona_urbana': 0.293, 'viv_pisos': 0.235, 'jefe_mujer': 0.149}
 
 ======================================================================
 Cómo leer esto: W = celda completa del Hot-Deck (depto+edad+cuartos).

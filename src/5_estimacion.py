@@ -1,11 +1,14 @@
 """Estimación de efectos causales (P2/OE2).
 
 Corrida sobre el outcome construido en `3_preprocesamiento.py` (IPM-GEIH,
-10 privaciones verificadas contra el diccionario oficial de GEIH desde
-2026-10-28) y el tratamiento asignado por el Hot-Deck con vivienda sumada
-a la celda (`geo_depto + jefe_edad + viv_cuartos`, este último también
-corregido el 2026-10-28 — antes tomaba el código equivocado,
-`docs/seguimiento/CHANGELOG_PENDIENTES.md`).
+8 privaciones verificadas contra el diccionario oficial de GEIH desde
+2026-10-28 — empezó en 10, pero `material_pisos_inadecuado`/
+`material_paredes_inadecuado` se retiraron el mismo día por ser los
+MISMOS códigos que `viv_pisos`/`viv_paredes` de `X` abajo, ver docstring
+de `3_preprocesamiento.py`) y el tratamiento asignado por el Hot-Deck con
+vivienda sumada a la celda (`geo_depto + jefe_edad + viv_cuartos`, este
+último también corregido el 2026-10-28 — antes tomaba el código
+equivocado, `docs/seguimiento/CHANGELOG_PENDIENTES.md`).
 
 Los cuatro efectos que pide el documento de pipeline (Roncancio y Fonseca,
 2026, Figura 1):
@@ -29,7 +32,7 @@ heterogeneidad (CATE) y como chequeo de que no quede señal espuria.
 
 ⚠️ Limitaciones — las mismas de siempre, sin excepción:
   - El tratamiento es imputado por Hot-Deck, no observado.
-  - El outcome es un proxy reducido (4 de 15 privaciones), NO el IPM
+  - El outcome es un proxy reducido (8 de 15 privaciones), NO el IPM
     oficial — ver docstring de `3_preprocesamiento.py` para qué se incluyó
     y qué no, y la limitación de `sin_cotizacion_pension_jefe`.
   - Sin ajuste por diseño muestral de GEIH ni de Sisbén.
@@ -146,7 +149,7 @@ def main() -> None:
     df = _preparar(pd.read_parquet(DATA))
     logger.info("n=%s | T=1 (Grupo A/B): %.1f%%", f"{len(df):,}", df["T"].mean() * 100)
 
-    for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-10 privaciones)"),
+    for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-8 privaciones)"),
                              ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)")]:
         print("\n" + "=" * 70)
         print(f"Outcome: {etiqueta}")

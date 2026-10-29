@@ -16,17 +16,30 @@ comparte llave de hogar con GEIH/Sisbén).
 - El índice solo tenía 4 privaciones porque no había forma de verificar
   más códigos sin el diccionario oficial (ver intento documentado en
   `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5, histórico). Con el
-  diccionario ya conseguido, se amplía a **10 privaciones**, cubriendo 5
-  de las 5 dimensiones del IPM (antes solo 4 dimensiones con 1 indicador
-  cada una).
+  diccionario ya conseguido, se amplía a **8 privaciones**, cubriendo las
+  5 dimensiones del IPM (antes solo 4 dimensiones con 1 indicador cada
+  una).
 
-No es el IPM oficial de 15 indicadores — es un proxy con 10, construido
+⚠️ **`material_pisos_inadecuado` y `material_paredes_inadecuado` se
+construyeron el 2026-10-28 y se retiraron el mismo día** — eran
+`P4020`/`P4010`, los MISMOS códigos que `viv_pisos`/`viv_paredes`, usados
+como covariables de heterogeneidad (`X`) en `5_estimacion.py`. Tenerlos
+también como componentes del outcome creaba una tautología parcial: un
+hogar con piso de tierra sumaba un punto al score por definición,
+independiente del tratamiento, y el Causal Forest podía estar
+"redescubriendo" ese hecho mecánico al reportar `viv_pisos`/`viv_paredes`
+como las covariables más importantes — no necesariamente una señal real
+de heterogeneidad. Se prefirió sacarlos del outcome y dejar la vivienda
+donde sí aporta algo no circular: como covariable de heterogeneidad en
+`X`. El índice queda en 8 privaciones en vez de 10.
+
+No es el IPM oficial de 15 indicadores — es un proxy con 8, construido
 sobre GEIH, a nivel del jefe de hogar para los indicadores de persona (no
 de todos los miembros, salvo `inasistencia_escolar_menores` que sí revisa
 a todos). Se documenta así explícitamente para no presentarlo como el IPM
 real.
 
-## Las 10 privaciones — código oficial y verificación
+## Las 8 privaciones — código oficial y verificación
 
 | Privación | Dimensión | Código GEIH | Verificación |
 |---|---|---|---|
@@ -36,15 +49,14 @@ real.
 | `sin_aseguramiento_salud` | Salud | `P6090` (jefe), 1=Sí/2=No | Confirmado: "¿Está afiliado/cotizante/beneficiario de EPS/ARS? 1 Sí 2 No 9 No sabe". |
 | `sin_cotizacion_pension_jefe` | Trabajo | `P6920` (jefe, módulo `ocupados`), 1=Sí/2=No/3=Ya pensionado | Confirmado: "¿Está cotizando a un fondo de pensiones? 1 Sí 2 No 3 Ya es pensionado". Sigue mezclando informalidad con desempleo/inactividad del jefe — ver nota abajo. |
 | `hacinamiento` | Vivienda | `P5010` (cuartos para dormir) + `P6008` (personas) | **Corregido 2026-10-28** — antes usaba `P5020` (servicio sanitario) por error. Umbral >3 personas/cuarto, el mismo de antes, pero ahora sobre la variable correcta. |
-| `material_pisos_inadecuado` | Vivienda | `P4020` | Confirmado: "¿Material predominante de los pisos? a.Tierra/arena b.Cemento/gravilla c.Madera burda d.Baldosín/ladrillo/vinisol e.Mármol f.Madera pulida g.Alfombra". Privación = código 1 (a, Tierra/arena). |
-| `material_paredes_inadecuado` | Vivienda | `P4010` | Confirmado: "¿Material predominante de las paredes exteriores? a.Ladrillo/bloque/prefabricado/piedra b.Madera pulida c.Adobe/tapia d.Bahareque e.Madera burda f.Guadua g.Caña/esterilla/vegetal h.Zinc/tela/cartón/latas/desechos/plástico i.Sin paredes". Privación = códigos 6-9 (f,g,h,i: guadua/caña/vegetal, material de desecho, o sin paredes). No se incluye "d.Bahareque" (código 4) como privación — es un material rústico pero tradicionalmente no clasificado como inadecuado. |
 | `sin_alcantarillado` | Vivienda | `P4030S3`, 1=Sí/2=No | Confirmado: "¿Con cuáles servicios cuenta la vivienda? c.Alcantarillado 1 Sí 2 No". |
 | `sin_acueducto` | Vivienda | `P4030S5`, 1=Sí/2=No | Confirmado: "¿Con cuáles servicios cuenta la vivienda? e.Acueducto 1 Sí 2 No". |
 
 Cobertura por dimensión: Educación (2), Niñez (1), Salud (1), Trabajo (1),
-Vivienda (5) — 5 de las 5 dimensiones del IPM oficial, con más de un
-indicador en Educación y Vivienda (antes solo había 1 indicador por
-dimensión, con 4 dimensiones de 5 cubiertas).
+Vivienda (3) — 5 de las 5 dimensiones del IPM oficial (antes solo 4
+dimensiones con 1 indicador cada una). `viv_paredes`/`viv_pisos`
+(`P4010`/`P4020`) NO entran aquí — quedan solo como covariable de
+heterogeneidad en `X` (`5_estimacion.py`), ver nota de tautología arriba.
 
 ⚠️ **`sin_cotizacion_pension_jefe` sigue mezclando causas distintas**
 (informalidad, desempleo, inactividad) — limitación que no cambia con el
@@ -86,12 +98,11 @@ MESES = [f"{m:02d}" for m in range(1, 13)]
 UMBRAL_HACINAMIENTO = 3  # personas por cuarto para dormir
 EDAD_MIN_ESCOLAR, EDAD_MAX_ESCOLAR = 6, 16  # universo de "inasistencia_escolar_menores"
 NIVEL_MIN_SECUNDARIA = 4  # P3042: 1=Ninguno,2=Preescolar,3=Primaria,4=Secundaria... privación si < 4
-K_POBRE = 3  # umbral adoptado (de 10 privaciones). Ver sensibilidad en `_validar`.
+K_POBRE = 3  # umbral adoptado (de 8 privaciones). Ver sensibilidad en `_validar`.
 PRIVACIONES = [
     "analfabetismo", "bajo_logro_educativo_jefe", "inasistencia_escolar_menores",
     "sin_aseguramiento_salud", "sin_cotizacion_pension_jefe",
-    "hacinamiento", "material_pisos_inadecuado", "material_paredes_inadecuado",
-    "sin_alcantarillado", "sin_acueducto",
+    "hacinamiento", "sin_alcantarillado", "sin_acueducto",
 ]
 IPM_OFICIAL_TASA_POBREZA = 0.130  # IPM Hogares Nacional 2024 (data/catalogo.yaml) — referencia de plausibilidad, no un objetivo a igualar
 
@@ -110,7 +121,7 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
 
     k3 = ["DIRECTORIO", "SECUENCIA_P", "HOGAR"]
     hv = pd.read_parquet(
-        path_hv, columns=[*k3, "P4010", "P4020", "P4030S3", "P4030S5", "P5010", "P6008"]
+        path_hv, columns=[*k3, "P4030S3", "P4030S5", "P5010", "P6008"]
     ).replace("", pd.NA)
     for c in k3:
         hv[c] = _norm_llave(hv[c])
@@ -157,12 +168,6 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
     cuartos_dormir = pd.to_numeric(df["P5010"], errors="coerce")
     personas_cuarto = personas / cuartos_dormir.replace(0, pd.NA)
     df["hacinamiento"] = (personas_cuarto > UMBRAL_HACINAMIENTO).astype("Int8")
-
-    pisos = pd.to_numeric(df["P4020"], errors="coerce")
-    df["material_pisos_inadecuado"] = (pisos == 1).astype("Int8")
-
-    paredes = pd.to_numeric(df["P4010"], errors="coerce")
-    df["material_paredes_inadecuado"] = paredes.isin([6, 7, 8, 9]).astype("Int8")
 
     df["sin_alcantarillado"] = (df["P4030S3"] == "2").astype("Int8")
     df["sin_acueducto"] = (df["P4030S5"] == "2").astype("Int8")

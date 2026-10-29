@@ -7,18 +7,24 @@ las validaciones obligatorias, y qué queda fuera y por qué.
 **No es el IPM oficial.** Es un índice alternativo construido para esta
 investigación sobre variables de GEIH, porque GEIH y la encuesta IPM del
 DANE no comparten llave de hogar (no se pueden cruzar a nivel micro). Usa
-10 de las 15 privaciones de la metodología Alkire-Foster, no las 15.
+8 de las 15 privaciones de la metodología Alkire-Foster, no las 15.
 
-**Actualizado 2026-10-28.** Hasta esa fecha el índice tenía 4 privaciones
-y una estaba mal calculada, porque el repositorio no tenía el diccionario
-oficial de variables de GEIH. Se consiguió el diccionario
-(`docs/insumos/DICCIONARIO_GEIH_2024.xlsx`) y con él: (a) se corrigió un
-error real en `hacinamiento`, y (b) se amplió el índice de 4 a 10
-privaciones. La versión anterior de este documento (con el intento
-bloqueado de ampliación) queda abajo en "Historial", para quien quiera ver
-qué llevó a conseguir el diccionario.
+**Actualizado 2026-10-28 (dos veces el mismo día).** Hasta esa fecha el
+índice tenía 4 privaciones y una estaba mal calculada, porque el
+repositorio no tenía el diccionario oficial de variables de GEIH. Se
+consiguió el diccionario (`docs/insumos/DICCIONARIO_GEIH_2024.xlsx`) y
+con él: (a) se corrigió un error real en `hacinamiento`, y (b) se amplió
+el índice de 4 a 10 privaciones. Horas después, al revisar la validez de
+`5_estimacion.py` con el outcome ampliado, se detectó que 2 de las 10
+privaciones nuevas (`material_pisos_inadecuado`, `material_paredes_
+inadecuado`) eran los MISMOS códigos GEIH (`P4020`/`P4010`) que
+`viv_pisos`/`viv_paredes`, usados como covariable de heterogeneidad (`X`)
+en el Causal Forest/DML — eso creaba una tautología parcial (ver §1.1) y
+se retiraron, dejando el índice en **8 privaciones**. La versión anterior
+de este documento (con el intento bloqueado de ampliación) queda abajo en
+"Historial", para quien quiera ver qué llevó a conseguir el diccionario.
 
-## 1. Las 10 privaciones — código oficial y verificación
+## 1. Las 8 privaciones — código oficial y verificación
 
 Todos los códigos siguientes están confirmados contra
 `docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (columna `Pregunta`, que trae el
@@ -32,15 +38,36 @@ texto exacto de la pregunta y las categorías de respuesta).
 | `sin_aseguramiento_salud` | Salud | `P6090` (jefe) | "¿Afiliado/cotizante/beneficiario de EPS/ARS? 1 Sí 2 No 9 No sabe" | `P6090 == 2` |
 | `sin_cotizacion_pension_jefe` | Trabajo | `P6920` (jefe, módulo `ocupados`) | "¿Cotizando a fondo de pensiones? 1 Sí 2 No 3 Ya pensionado" | `P6920 != 1` |
 | `hacinamiento` | Vivienda | `P5010` (cuartos para dormir) + `P6008` (personas) | — | personas/cuarto > 3 |
-| `material_pisos_inadecuado` | Vivienda | `P4020` | "a.Tierra/arena b.Cemento/gravilla c.Madera burda d.Baldosín/ladrillo/vinisol e.Mármol f.Madera pulida g.Alfombra" | código 1 (Tierra/arena) |
-| `material_paredes_inadecuado` | Vivienda | `P4010` | "a.Ladrillo/bloque/prefabricado/piedra b.Madera pulida c.Adobe/tapia d.Bahareque e.Madera burda f.Guadua g.Caña/esterilla/vegetal h.Zinc/tela/cartón/desechos i.Sin paredes" | códigos 6-9 (f,g,h,i) |
 | `sin_alcantarillado` | Vivienda | `P4030S3` | "¿Con cuáles servicios cuenta la vivienda? c.Alcantarillado 1 Sí 2 No" | `P4030S3 == 2` |
 | `sin_acueducto` | Vivienda | `P4030S5` | "...e.Acueducto 1 Sí 2 No" | `P4030S5 == 2` |
 
 Cobertura por dimensión: Educación (2), Niñez (1), Salud (1), Trabajo (1),
-Vivienda (5) — **5 de las 5 dimensiones del IPM oficial**, con más de un
-indicador en Educación y Vivienda (antes: 4 dimensiones de 5, 1
-indicador cada una).
+Vivienda (3) — **5 de las 5 dimensiones del IPM oficial** (antes: 4
+dimensiones de 5, 1 indicador cada una).
+
+### 1.1 Por qué `material_pisos_inadecuado`/`material_paredes_inadecuado` no están aquí
+
+Se construyeron el 2026-10-28 (misma fecha) con `P4020`/`P4010` y se
+retiraron horas después: esos mismos dos códigos son `viv_pisos` y
+`viv_paredes`, las covariables de heterogeneidad (`X`) en
+`5_estimacion.py`. Tenerlos también como componentes del score creaba una
+tautología parcial — un hogar con piso de tierra sumaba un punto al
+`ipm_geih_score` por definición, sin que eso fuera un efecto del
+tratamiento, y el Causal Forest podía estar "redescubriendo" ese hecho
+mecánico al reportar `viv_pisos`/`viv_paredes` como las covariables más
+importantes para la heterogeneidad del CATE.
+
+**Se verificó empíricamente si esa tautología era la explicación de la
+importancia de `viv_paredes`/`viv_pisos`: no lo era.** Al correr
+`5_estimacion.py` sin los dos componentes tautológicos, la importancia de
+`viv_paredes`/`viv_pisos` en el Causal Forest NO bajó — subió levemente
+(de 0,305+0,295=0,600 a 0,316+0,301=0,617 en `ipm_geih_score`; de
+0,268+0,213=0,481 a 0,323+0,235=0,558 en `POBRE_GEIH`). Si la importancia
+hubiera sido mecánica, debería haber caído al quitar el componente
+tautológico del outcome — no cayó. Esto es evidencia (no prueba
+definitiva) de que la señal de vivienda en el CATE es real y no un
+artefacto de la definición del score — ver
+`docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`.
 
 ### El error que tenía `hacinamiento` antes de 2026-10-28
 
@@ -85,27 +112,26 @@ a una iteración futura.
 
 ## 3. Familia de indicadores implementada
 
-- **`ipm_geih_score`**: conteo de privaciones (0-10), sin ponderar.
+- **`ipm_geih_score`**: conteo de privaciones (0-8), sin ponderar.
 - **`POBRE_GEIH`**: binario, `score >= K_POBRE` (K=3, umbral adoptado).
-- **`POBRE_GEIH_K1`...`POBRE_GEIH_K10`**: los otros nueve cortes posibles
-  — análisis de sensibilidad al umbral, no alternativas en competencia.
+- **`POBRE_GEIH_K1`...`POBRE_GEIH_K8`**: los otros siete cortes posibles —
+  análisis de sensibilidad al umbral, no alternativas en competencia.
 
 ## 4. Sensibilidad al umbral (hallazgo, no solo metodología)
 
 | Corte | % hogares clasificados pobres |
 |---|---|
 | K≥1 | 79,8 % |
-| K≥2 | 40,9 % |
-| **K≥3 (adoptado)** | **17,2 %** |
-| K≥4 | 7,4 % |
-| K≥5 | 2,8 % |
-| K≥6 | 0,9 % |
-| K≥7 | 0,2 % |
-| K≥8-10 | ~0,0 % |
+| K≥2 | 40,5 % |
+| **K≥3 (adoptado)** | **16,3 %** |
+| K≥4 | 6,3 % |
+| K≥5 | 1,7 % |
+| K≥6 | 0,3 % |
+| K≥7-8 | ~0,0 % |
 
 K=3 fue adoptado por ser el más cercano, en orden de magnitud, a la tasa
 oficial de pobreza por IPM (13,0 %, Hogares Nacional 2024,
-`data/catalogo.yaml`) entre los 10 cortes posibles — **verificación de
+`data/catalogo.yaml`) entre los 8 cortes posibles — **verificación de
 plausibilidad ex post, no una calibración**.
 
 ## 5. Validaciones obligatorias — resultado
@@ -116,13 +142,12 @@ Implementadas en `_validar()` (`src/3_preprocesamiento.py`) y en
 - ✅ Una fila por hogar dentro de cada mes (GEIH es panel rotativo).
 - ✅ 0 duplicados por llave de hogar + mes.
 - ✅ 0 hogares del Hot-Deck sin outcome tras el cruce (290.968 de 290.968).
-- ✅ 0 valores faltantes sin tratar en las 10 privaciones.
+- ✅ 0 valores faltantes sin tratar en las 8 privaciones.
 - ✅ Cobertura por variable: analfabetismo 4,7 %, bajo logro educativo
   29,9 %, inasistencia escolar (6-16 años) 2,1 %, sin aseguramiento de
-  salud 3,4 %, sin cotización a pensión 75,4 %, hacinamiento 3,1 %, pisos
-  inadecuados 3,5 %, paredes inadecuadas 0,9 %, sin alcantarillado
-  18,1 %, sin acueducto 8,1 %. Todas plausibles frente a cifras
-  nacionales conocidas.
+  salud 3,4 %, sin cotización a pensión 75,4 %, hacinamiento 3,1 %, sin
+  alcantarillado 18,1 %, sin acueducto 8,1 %. Todas plausibles frente a
+  cifras nacionales conocidas.
 - ✅ Distribución del score y umbrales monótonos verificados por prueba
   automatizada.
 
