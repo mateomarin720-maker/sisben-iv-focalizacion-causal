@@ -2,6 +2,50 @@
 
 Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
 
+## 2026-10-28 (2) — Retira 2 privaciones tautológicas con las covariables de heterogeneidad
+
+Mismo día que la entrada anterior. Al revisar la validez del Causal
+Forest/DML con el outcome recién ampliado a 10 privaciones, se encontró
+que `material_pisos_inadecuado` y `material_paredes_inadecuado` se
+calculaban con `P4020`/`P4010` — los MISMOS códigos GEIH que
+`viv_pisos`/`viv_paredes`, usadas como covariable de heterogeneidad (`X`)
+en `5_estimacion.py`. Eso creaba una tautología parcial: un hogar con
+piso de tierra sumaba un punto al outcome por definición, independiente
+del tratamiento, y la importancia reportada de `viv_pisos`/`viv_paredes`
+en el Causal Forest podía ser en parte mecánica.
+
+### Corregido
+- `src/3_preprocesamiento.py`: se retiraron `material_pisos_inadecuado` y
+  `material_paredes_inadecuado` de `PRIVACIONES` (y su cómputo). El
+  índice queda en **8 de 15** privaciones. `K_POBRE` se mantiene en 3
+  (sigue siendo el corte más cercano a la tasa oficial de IPM: 16,3 % vs.
+  13,0 %, antes 17,2 %).
+- `src/5_estimacion.py`: docstring y etiquetas actualizadas (8 en vez de
+  10 privaciones); sin cambios de lógica — `X`/`W` no se tocaron.
+
+### Verificado — la importancia de vivienda no era tautológica
+Se repitió `5_estimacion.py` y `cotas_frechet_manski.py` con el outcome
+de 8 privaciones. Si la importancia de `viv_paredes`/`viv_pisos` hubiera
+sido mecánica, debía CAER al quitar el vínculo directo con `Y`. No cayó
+— subió levemente (0,600→0,617 sumadas en `ipm_geih_score`; 0,481→0,558
+en `POBRE_GEIH`). Evidencia de que la señal de vivienda en el CATE es
+real, no un artefacto de la definición del score.
+
+### Recalculado
+- ATE (`ipm_geih_score`): +0,0218 → +0,0206. ATE (`POBRE_GEIH`): +0,0050
+  → +0,0052 (cambios menores, 2 de 10 componentes poco prevalentes).
+- CATE medio: +0,0249 → +0,0237 (`ipm_geih_score`), +0,0041 → +0,0041
+  (`POBRE_GEIH`, sin cambio relevante).
+- Fréchet-Manski: [-0,4061;+0,3205] → [-0,4083;+0,3080], ancho
+  0,7267→0,7163, 365 celdas (sin cambio de cobertura).
+
+### Documentación actualizada
+`docs/resultados/README.md`, `RESULTADOS_DML_ATE_ATT_ATU.md`,
+`RESULTADOS_CAUSALFOREST_CATE.md` (nueva sección "Chequeo de
+tautología"), `RESULTADOS_FRECHET_MANSKI.md`,
+`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` (nueva sección §1.1),
+`docs/seguimiento/RESUMEN_AVANCES.md`, `src/README.md`.
+
 ## 2026-10-28 — Diccionario oficial de GEIH: corrección de vivienda y ampliación del indicador a 10 privaciones
 
 Resuelve el bloqueo documentado el 2026-10-27 (no había diccionario

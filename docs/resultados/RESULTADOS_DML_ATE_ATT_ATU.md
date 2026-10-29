@@ -1,8 +1,11 @@
 # Resultados — Double Machine Learning (ATE, ATT, ATU)
 
-*Actualizado 2026-10-28: outcome ampliado a 10 privaciones y `viv_cuartos`
-corregido — ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`. Los
-números de esta página reemplazan la corrida anterior (4 privaciones,
+*Actualizado 2026-10-28 (dos veces el mismo día): outcome ampliado a 10
+privaciones y `viv_cuartos` corregido, y horas después reducido a **8**
+privaciones al retirar `material_pisos_inadecuado`/
+`material_paredes_inadecuado` (tautológicas con `viv_pisos`/`viv_paredes`
+de `X`, ver abajo) — ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
+Los números de esta página reemplazan la corrida anterior (4 privaciones,
 2026-10-21/27).*
 
 Generado por `src/5_estimacion.py` (`_ate_att_atu`). Salida completa:
@@ -21,9 +24,11 @@ modelos de molestia `Y~W` y `T~W`), con validación cruzada (`LinearDML` de
 - **Tratamiento (T):** `1` si `Grupo_hotdeck ∈ {A,B}` (elegibilidad A/B
   del Sisbén). Con la corrección de `viv_cuartos`, el 63,7 % de los
   hogares GEIH queda en T=1 (antes de corregir `viv_cuartos`: 74,4 %).
-- **Outcomes:** `ipm_geih_score` (continuo, 0-10 privaciones) y
+- **Outcomes:** `ipm_geih_score` (continuo, 0-8 privaciones) y
   `POBRE_GEIH` (binario, score ≥ 3) — ver
-  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` para las 10 privaciones.
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` para las 8 privaciones
+  (`material_pisos_inadecuado`/`material_paredes_inadecuado` se retiraron
+  del outcome por tautología con `X`, ver "Cómo leerlo").
 - **W (controles de los modelos de molestia):** `geo_depto`, `jefe_edad`,
   `viv_cuartos` — la celda COMPLETA del Hot-Deck, con `viv_cuartos` ya
   corregido (cuartos en total, no "cuartos para dormir").
@@ -39,8 +44,8 @@ modelos de molestia `Y~W` y `T~W`), con validación cruzada (`LinearDML` de
 
 | Outcome | ATE | ATT (error de inclusión) | ATU (error de exclusión) |
 |---|---|---|---|
-| `ipm_geih_score` (0-10) | +0,0218 [+0,0152; +0,0283] | +0,0226 [+0,0158; +0,0294] | +0,0204 [+0,0141; +0,0267] |
-| `POBRE_GEIH` (0/1, K≥3) | +0,0050 [+0,0028; +0,0073] | +0,0053 [+0,0030; +0,0076] | +0,0046 [+0,0025; +0,0067] |
+| `ipm_geih_score` (0-8) | +0,0206 [+0,0141; +0,0272] | +0,0214 [+0,0146; +0,0281] | +0,0193 [+0,0130; +0,0256] |
+| `POBRE_GEIH` (0/1, K≥3, 16,3 % de los hogares) | +0,0052 [+0,0029; +0,0075] | +0,0055 [+0,0032; +0,0079] | +0,0046 [+0,0025; +0,0067] |
 
 Intervalos de confianza al 95 %. Propensión `P(T=1|W)`: p5=0,536,
 p95=0,731 (mínimo observado 0,000 en alguna celda puntual — misma
@@ -57,16 +62,28 @@ limitación de siempre, ver abajo).
   puramente un artefacto del código equivocado, debería haber colapsado a
   0 con la corrección. No colapsó.
 - **La importancia de variables apunta en la misma dirección que antes,
-  ahora con más confianza en el diagnóstico:** `viv_pisos` (0,305) y
-  `viv_paredes` (0,295) siguen siendo las covariables más importantes
+  ahora con más confianza en el diagnóstico:** `viv_paredes` (0,316) y
+  `viv_pisos` (0,301) siguen siendo las covariables más importantes
   para `ipm_geih_score`, y ahora SÍ son las variables correctas (antes de
   2026-10-28 apuntaban a las columnas equivocadas, así que la señal podía
   deberse al error de código). Con el código corregido, la vivienda
   sigue siendo la pista más fuerte de por qué el efecto no colapsa a 0 —
   pero ahora es una pista confiable, no una que dependía de un bug.
-- `geo_zona_urbana` también gana peso (0,232 en `ipm_geih_score`, 0,356
+- `geo_zona_urbana` también gana peso (0,217 en `ipm_geih_score`, 0,293
   en `POBRE_GEIH`) — con la celda correcta, la geografía fina (urbano/
   rural) parece explicar más del residuo de lo que se pensaba.
+- **Chequeo de tautología (2026-10-28, tras retirar 2 privaciones de `Y`):**
+  el outcome llegó a tener 2 componentes (`material_pisos_inadecuado`/
+  `material_paredes_inadecuado`) calculados con los MISMOS códigos GEIH
+  que `viv_pisos`/`viv_paredes` en `X` — eso habría inflado
+  mecánicamente su importancia en el Causal Forest. Se retiraron esos dos
+  componentes del outcome y se volvió a correr todo: la importancia de
+  `viv_paredes`/`viv_pisos` NO bajó (subió levemente, de 0,600 a 0,617
+  sumadas en `ipm_geih_score`). Si la señal hubiera sido mecánica,
+  debería haber caído al quitar el componente tautológico — no cayó. Esto
+  es evidencia de que la vivienda explica heterogeneidad real, no un
+  artefacto de la definición del score — ver detalle en
+  `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`.
 
 ## Qué se mantiene igual
 
@@ -82,7 +99,7 @@ no del dato.
 - `W` usa `jefe_edad` y `viv_cuartos` continuos como proxy de la celda
   real (que es por tramos/ciclo de vida) — no es una réplica exacta de la
   celda discreta.
-- Outcome con 10 de 15 privaciones del IPM oficial — ver limitaciones
+- Outcome con 8 de 15 privaciones del IPM oficial — ver limitaciones
   específicas (`sin_cotizacion_pension_jefe` mezcla causas distintas) en
   `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 - Sin ajuste por diseño muestral de GEIH ni de Sisbén.

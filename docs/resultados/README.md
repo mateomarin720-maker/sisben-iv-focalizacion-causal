@@ -1,15 +1,18 @@
 # Resultados — índice y hallazgos consolidados
 
-*Actualizado 2026-10-28: se obtuvo el diccionario oficial de variables de
-GEIH (antes bloqueado, ver §5 de
+*Actualizado 2026-10-28 (dos veces el mismo día): se obtuvo el diccionario
+oficial de variables de GEIH (antes bloqueado, ver §5 de
 `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`) y se descubrió que
 `viv_paredes`/`viv_pisos`/`viv_cuartos` en
 `src/armonizacion/armonizar_geih_hogar_2024.py` apuntaban a columnas GEIH
 equivocadas desde el inicio del proyecto — no por adivinar, sino por una
 hipótesis sin verificar que resultó incorrecta. Con el diccionario se
-corrigieron los tres mapeos, se amplió el indicador de pobreza de 4 a 10
-privaciones (de las 15 oficiales del IPM), y se volvió a correr TODO el
-pipeline de punta a punta. Los números de este README reemplazan la
+corrigieron los tres mapeos y se amplió el indicador de pobreza de 4 a 10
+privaciones. Horas después se detectó que 2 de esas 10 (vivienda) eran
+tautológicas con las covariables `viv_paredes`/`viv_pisos` usadas en el
+Causal Forest/DML y se retiraron, dejando el indicador en **8 de 15**
+privaciones oficiales del IPM. Se volvió a correr TODO el pipeline de
+punta a punta tras cada cambio. Los números de este README reemplazan la
 corrida del 2026-10-21/27 — ver "Qué cambió y por qué" más abajo antes de
 citar cualquier hallazgo anterior.*
 
@@ -20,7 +23,7 @@ citar cualquier hallazgo anterior.*
 | 1 | Emparejamiento (Hot-Deck) | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` | [`RESULTADOS_HOTDECK.md`](RESULTADOS_HOTDECK.md) | ✅ |
 | 1b | Filtro del SDP (Bogotá) | `src/validacion/comparar_filtros_sdp.py` | [`COMPARACION_FILTROS_SDP.md`](COMPARACION_FILTROS_SDP.md) | ✅ |
 | 2 | Identificación causal (DAG) | `src/4_dag_identificacion.py` | [`IDENTIFICACION_CAUSAL.md`](IDENTIFICACION_CAUSAL.md) | ✅ |
-| 3 | Outcome (IPM-GEIH, 10 de 15 privaciones) | `src/3_preprocesamiento.py` | — (resumen abajo, detalle en `RESULTADOS_DML_ATE_ATT_ATU.md`) | ✅ (ampliado, ver limitación) |
+| 3 | Outcome (IPM-GEIH, 8 de 15 privaciones) | `src/3_preprocesamiento.py` | — (resumen abajo, detalle en `RESULTADOS_DML_ATE_ATT_ATU.md`) | ✅ (ampliado, ver limitación) |
 | 4 | Estimación: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) | ✅ |
 | 4b | Estimación: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) | ✅ |
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
@@ -76,6 +79,22 @@ hasta ahora porque los candidatos obvios (`P3038`/`P3039`, `P5100`-
 de orientación sexual/identidad de género y de valor monetario de
 arriendo/compra — no lo que sus posiciones en el cuestionario sugerían.
 El indicador pasó de 4 a 10 de las 15 privaciones oficiales del IPM.
+
+**Horas después, al revisar la validez de la estimación con el outcome
+ampliado, se encontró un segundo problema introducido por la misma
+ampliación:** 2 de las 10 privaciones nuevas
+(`material_pisos_inadecuado`, `material_paredes_inadecuado`) se
+calculaban con los MISMOS códigos GEIH (`P4020`/`P4010`) que
+`viv_pisos`/`viv_paredes`, usadas como covariable de heterogeneidad (`X`)
+en el Causal Forest/DML. Eso creaba una tautología parcial: un hogar con
+piso de tierra sumaba un punto al outcome por definición, y la
+"importancia" de `viv_pisos`/`viv_paredes` en el Causal Forest podía ser,
+en parte, el modelo redescubriendo esa relación mecánica, no
+heterogeneidad causal real. Se retiraron esos dos componentes del
+outcome (queda en **8 de 15** privaciones) y se volvió a correr la
+estimación — ver §4b para el resultado del chequeo: la importancia de
+vivienda NO bajó al quitar la tautología, lo que es evidencia de que la
+señal es real, no mecánica.
 
 ## El hilo conductor: qué explica que el efecto no colapse a 0
 
@@ -149,12 +168,14 @@ narrado:
 - El diseño de una sola tabla (transición Sisbén III→IV) queda bloqueado:
   no se tiene el corte III.
 
-### 3. Outcome: IPM-GEIH ampliado (10 de 15 privaciones)
+### 3. Outcome: IPM-GEIH ampliado (8 de 15 privaciones)
 
 Sin llave común entre GEIH e IPM, se construyó un índice de privaciones
-**sobre GEIH mismo**. Con el diccionario oficial se amplió de 4 a 10 de
+**sobre GEIH mismo**. Con el diccionario oficial se amplió de 4 a 8 de
 las 15 privaciones del IPM, cubriendo ya las 5 dimensiones oficiales
-(antes solo 2):
+(antes solo 2). `material_pisos_inadecuado`/`material_paredes_inadecuado`
+se construyeron y se retiraron el mismo día por tautología con `X` (ver
+"Qué cambió y por qué" arriba):
 
 | Privación | % de hogares privados | Verificación |
 |---|---|---|
@@ -164,15 +185,13 @@ las 15 privaciones del IPM, cubriendo ya las 5 dimensiones oficiales
 | Sin aseguramiento de salud (`P6090`) | 3,4 % | Código compartido con IPM, calza con cobertura ~95-96 % |
 | Sin cotización a pensión del jefe (`P6920`) | 75,4 % | Mezcla informalidad con desempleo/inactividad — limitación documentada, sin cambios |
 | Hacinamiento (`P6008`/`P5010`) | 3,1 % | **Corregido** — antes usaba `P5020` (tipo de servicio sanitario) por error, daba 23,3 % sin significado real |
-| Material de pisos inadecuado (`P4020`) | 3,5 % | Nuevo, código GEIH confirmado |
-| Material de paredes inadecuado (`P4010`) | 0,9 % | Nuevo, código GEIH confirmado |
 | Sin alcantarillado (`P4030S3`) | 18,1 % | Nuevo |
 | Sin acueducto (`P4030S5`) | 8,1 % | Nuevo |
 
-Score medio: 1,49/10. **17,2 % de los hogares clasifican como
-`POBRE_GEIH`** (score ≥ 3 de 10 — umbral adoptado por sensibilidad:
-K≥1=79,8 %, K≥2=40,9 %, K≥3=17,2 %, K≥4=7,4 %, K≥5=2,8 %, K≥6=0,9 %,
-K≥7=0,2 %, K≥8-10≈0 %). Quedan 5 dimensiones del IPM sin construir sobre
+Score medio: 1,45/8. **16,3 % de los hogares clasifican como
+`POBRE_GEIH`** (score ≥ 3 de 8 — umbral adoptado por sensibilidad:
+K≥1=79,8 %, K≥2=40,5 %, K≥3=16,3 %, K≥4=6,3 %, K≥5=1,7 %, K≥6=0,3 %,
+K≥7-8≈0 %). Quedan 5 dimensiones del IPM sin construir sobre
 GEIH (trabajo infantil, fuente de agua mejorada, eliminación de
 excretas, combustible de cocina, desempleo de larga duración) — ver
 `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2 para el detalle de
@@ -182,14 +201,16 @@ qué falta y por qué.
 
 | Outcome | ATE | ATT | ATU |
 |---|---|---|---|
-| `ipm_geih_score` (0-10) | +0,0218 [+0,0152; +0,0283] | +0,0226 [+0,0158; +0,0294] | +0,0204 [+0,0141; +0,0267] |
-| `POBRE_GEIH` (0/1, K≥3) | +0,0050 [+0,0028; +0,0073] | +0,0053 [+0,0030; +0,0076] | +0,0046 [+0,0025; +0,0067] |
+| `ipm_geih_score` (0-8) | +0,0206 [+0,0141; +0,0272] | +0,0214 [+0,0146; +0,0281] | +0,0193 [+0,0130; +0,0256] |
+| `POBRE_GEIH` (0/1, K≥3) | +0,0052 [+0,0029; +0,0075] | +0,0055 [+0,0032; +0,0079] | +0,0046 [+0,0025; +0,0067] |
 
 IC95 % excluye 0 en los dos outcomes, controlando por la celda completa
 del Hot-Deck (con `viv_cuartos` corregido). Los tres efectos son casi
-idénticos entre sí (esperable con pocas covariables de heterogeneidad).
-`viv_pisos` (0,305) y `viv_paredes` (0,295) siguen siendo las covariables
-más importantes para `ipm_geih_score`, y ahora SÍ son las variables
+idénticos entre sí (esperable con pocas covariables de heterogeneidad), y
+casi iguales a los de la corrida con 10 privaciones (+0,0218/+0,0050) —
+quitar 2 componentes de 10 mueve poco el score agregado. `viv_paredes`
+(0,316) y `viv_pisos` (0,301) siguen siendo las covariables más
+importantes para `ipm_geih_score`, y ahora SÍ son las variables
 correctas. **Hallazgo colateral (sin cambios):** el primer intento de
 ATT/ATU con `LinearDRLearner` dio valores absurdos (+56, -191) por
 inestabilidad del estimador doblemente robusto con categóricas sin orden
@@ -199,20 +220,24 @@ subpoblación; no fue afectado por la corrección de variables. Detalle en
 
 ### 4b. CATE (`CausalForestDML`)
 
-CATE medio +0,0249 (`ipm_geih_score`) / +0,0041 (`POBRE_GEIH`). **La
+CATE medio +0,0237 (`ipm_geih_score`) / +0,0041 (`POBRE_GEIH`). **La
 heterogeneidad ahora se concentra en zona, no en sexo del jefe:** hogares
 rurales muestran CATE 2,8 veces más grande que urbanos en
-`ipm_geih_score` (0,0563 vs. 0,0202) y 16 veces en `POBRE_GEIH` (0,0222
-vs. 0,0014). El patrón por sexo del jefe sigue presente pero mucho más
+`ipm_geih_score` (0,0538 vs. 0,0193) y 12 veces en `POBRE_GEIH` (0,0203
+vs. 0,0017). El patrón por sexo del jefe sigue presente pero mucho más
 chico y **con el sentido invertido** respecto al reporte anterior (antes:
 jefa mujer 36 veces más grande que jefe hombre; ahora: jefe hombre
 modestamente más grande que jefa mujer). Esto es evidencia de que el
 hallazgo anterior sobre jefatura femenina era probablemente un artefacto
 de las variables de vivienda mal mapeadas, no un patrón real — ver
 "Qué cambió y por qué" en `RESULTADOS_CAUSALFOREST_CATE.md` para la
-explicación completa. `viv_pisos`/`viv_paredes` siguen entre las
-variables más importantes del forest, ahora con el código correcto.
-Detalle en `RESULTADOS_CAUSALFOREST_CATE.md`.
+explicación completa. `viv_paredes`/`viv_pisos` siguen siendo las dos
+variables más importantes del forest (0,316/0,301 en `ipm_geih_score`),
+ahora con el código correcto, **y se verificó que esa importancia NO es
+tautológica**: al retirar del outcome los 2 componentes que compartían
+código con `X`, la importancia de vivienda no bajó, subió levemente — ver
+"Chequeo de tautología" en `RESULTADOS_CAUSALFOREST_CATE.md`. Detalle
+completo en `RESULTADOS_CAUSALFOREST_CATE.md`.
 
 ### 5. Cotas de Fréchet-Manski (robustez, sin suponer independencia condicional)
 
@@ -222,10 +247,10 @@ preguntan: ¿qué dicen los datos SIN ella? Resultado para `POBRE_GEIH`:
 
 | | Estimador | Rango |
 |---|---|---|
-| Fréchet-Manski (sin CIA) | Cota | **[-0,4061 ; +0,3205]** |
-| DML con Hot-Deck (con CIA) | Punto + IC95% | +0,0050 [+0,0028 ; +0,0073] |
+| Fréchet-Manski (sin CIA) | Cota | **[-0,4083 ; +0,3080]** |
+| DML con Hot-Deck (con CIA) | Punto + IC95% | +0,0052 [+0,0029 ; +0,0075] |
 
-El intervalo sin CIA es **~162 veces más ancho** que el IC95% del DML, y
+El intervalo sin CIA es **~156 veces más ancho** que el IC95% del DML, y
 ni una sola de las 365 celdas individuales (celda con `viv_cuartos`
 corregido) logra excluir el cero por su cuenta. No es un error — es la
 confirmación honesta de que **toda la precisión del resultado del DML
@@ -252,9 +277,10 @@ ancha. Detalle en `RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
 
 - El tratamiento (`Grupo_hotdeck`) es imputado por emparejamiento
   estadístico, no observado en GEIH.
-- El outcome cubre 10 de 15 privaciones del IPM oficial (antes 4) — ver
-  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2 para las 5 que
-  faltan y por qué.
+- El outcome cubre 8 de 15 privaciones del IPM oficial (antes 4) — ver
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2 para las 7 que
+  faltan y por qué (5 por alcance/tiempo, 2 retiradas por tautología con
+  `X`, ver §1.1 del mismo documento).
 - Sin ajuste por diseño muestral de GEIH ni de Sisbén.
 - Selección: el Sisbén solo cubre hogares inscritos.
 - Falta DPS/RUI como confusores (el canal "elegibilidad → participación
@@ -280,7 +306,8 @@ poetry run pytest tests/
 ```
 
 Salidas crudas de esta corrida (2026-10-28, con `viv_paredes`/`viv_pisos`/
-`viv_cuartos` corregidos y el outcome ampliado a 10 privaciones):
+`viv_cuartos` corregidos y el outcome ampliado a 8 privaciones, tras
+retirar 2 por tautología con `X`):
 `docs/reports/resultado_hotdeck.txt`,
 `docs/reports/resultado_comparacion_filtros_sdp.txt`,
 `docs/reports/resultado_preprocesamiento.txt`,

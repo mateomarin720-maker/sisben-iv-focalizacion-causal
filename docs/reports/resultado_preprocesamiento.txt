@@ -1,51 +1,46 @@
-2026-10-28 17:39:55,907 INFO Outcome IPM-GEIH (ampliado, 10 privaciones) construido: 290,968 hogares
-2026-10-28 17:39:56,689 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
+2026-10-28 23:14:34,342 INFO Outcome IPM-GEIH (ampliado, 8 privaciones) construido: 290,968 hogares
+2026-10-28 23:14:35,825 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
 
-=== Outcome real: IPM-GEIH (10 privaciones, verificadas contra el diccionario oficial) ===
+=== Outcome real: IPM-GEIH (8 privaciones, verificadas contra el diccionario oficial) ===
 Hogares: 290,968
-Score medio: 1.49 (0-10)
+Score medio: 1.45 (0-8)
 
 === Validaciones ===
 Filas: 290,968 | duplicados por llave hogar+mes: 0 | privaciones sin faltantes: OK
 
-Cobertura por privación (% con valor 1, sobre el total — 0% de faltantes en las 10):
+Cobertura por privación (% con valor 1, sobre el total — 0% de faltantes en las 8):
   analfabetismo: 4.7%
   bajo_logro_educativo_jefe: 29.9%
   inasistencia_escolar_menores: 2.1%
   sin_aseguramiento_salud: 3.4%
   sin_cotizacion_pension_jefe: 75.4%
   hacinamiento: 3.1%
-  material_pisos_inadecuado: 3.5%
-  material_paredes_inadecuado: 0.9%
   sin_alcantarillado: 18.1%
   sin_acueducto: 8.1%
 
-Distribución del score (0-10):
+Distribución del score (0-8):
 ipm_geih_score
 0    20.2 %
-1    39.0 %
-2    23.7 %
-3     9.8 %
-4     4.6 %
-5     1.9 %
-6     0.7 %
-7     0.2 %
+1    39.2 %
+2    24.2 %
+3    10.1 %
+4     4.5 %
+5     1.5 %
+6     0.2 %
+7     0.0 %
 8     0.0 %
-9     0.0 %
 Name: proportion, dtype: object
 
 Sensibilidad al umbral K (tasa de pobreza según dónde se corte el score):
   K>=1: 79.8%
-  K>=2: 40.9%
-  K>=3: 17.2% <- adoptado (K_POBRE)
-  K>=4: 7.4%
-  K>=5: 2.8%
-  K>=6: 0.9%
-  K>=7: 0.2%
+  K>=2: 40.5%
+  K>=3: 16.3% <- adoptado (K_POBRE)
+  K>=4: 6.3%
+  K>=5: 1.7%
+  K>=6: 0.3%
+  K>=7: 0.0%
   K>=8: 0.0%
-  K>=9: 0.0%
-  K>=10: 0.0%
-  Referencia externa: IPM oficial (Hogares Nacional 2024, 15 privaciones) = 13.0% — K=3 es el más cercano en orden de magnitud entre los 10 cortes probados; no se ajustó el umbral para igualarlo, es una verificación de plausibilidad ex post, no una calibración.
+  Referencia externa: IPM oficial (Hogares Nacional 2024, 15 privaciones) = 13.0% — K=3 es el más cercano en orden de magnitud entre los 8 cortes probados; no se ajustó el umbral para igualarlo, es una verificación de plausibilidad ex post, no una calibración.
 
 Guardado: data\2_models\muestra_estimacion_2024.parquet
 Guardado: docs\reports\reporte_sensibilidad_ipm_geih.csv

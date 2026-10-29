@@ -1,7 +1,8 @@
 # Resultados — Cotas de Fréchet-Manski (ATE sin suponer independencia condicional)
 
 Generado 2026-10-27 por `src/estimacion/cotas_frechet_manski.py`, refrescado
-el 2026-10-28 tras corregir `viv_cuartos` (ver
+el 2026-10-28 tras corregir `viv_cuartos` y, horas después, tras reducir
+el outcome de 10 a 8 privaciones (ver
 `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Detalle por celda:
 `docs/reports/cotas_frechet_manski.csv`.
 
@@ -30,18 +31,22 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
 
 | | Estimador | Rango |
 |---|---|---|
-| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[-0,4061 ; +0,3205]** |
+| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[-0,4083 ; +0,3080]** |
 | **DML con Hot-Deck** (con CIA) | Punto + IC95% | ver `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` (el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda) |
 
 - Cobertura: 365 celdas (antes de corregir `viv_cuartos`: 342 — la celda
   correcta tiene más combinaciones distintas de tramo de cuartos), 100 %
   del peso poblacional de GEIH.
-- Ancho de la cota Fréchet-Manski: **0,7267** (antes de corregir
+- Ancho de la cota Fréchet-Manski: **0,7163** (antes de corregir
   `viv_cuartos`: 0,986 — la celda correcta angosta la cota, pero sigue
   cubriendo la mayor parte del rango posible de una diferencia de
-  proporciones, que va de -1 a +1).
+  proporciones, que va de -1 a +1). La reducción del outcome de 10 a 8
+  privaciones (mismo día, ver `METODOLOGIA_INDICADOR_IPM_GEIH.md`) movió
+  `POBRE_GEIH` de 17,2 % a 16,3 % de hogares pobres y apenas cambió la
+  cota (0,7267→0,7163) — la tasa de pobreza binaria es poco sensible a
+  quitar 2 de 10 componentes que ya eran poco prevalentes (3,5 % y 0,9 %).
 - Ancho del IC95 % del DML (`POBRE_GEIH`, ver
-  `RESULTADOS_DML_ATE_ATT_ATU.md`): 0,0045 — **~162 veces más angosto**
+  `RESULTADOS_DML_ATE_ATT_ATU.md`): 0,0046 — **~156 veces más angosto**
   que la cota Fréchet-Manski.
 - **Ninguna de las 365 celdas individuales tiene una cota que excluya el
   0** — ni una sola celda, por sí sola, permite descartar que el efecto
@@ -93,7 +98,7 @@ extensión natural de este script.
 
 ## Limitaciones
 
-Las mismas de `RESULTADOS_DML_ATE_ATT_ATU.md`: outcome con 10 de 15
+Las mismas de `RESULTADOS_DML_ATE_ATT_ATU.md`: outcome con 8 de 15
 privaciones, selección del Sisbén, falta DPS/RUI, `viv_paredes`/
 `viv_pisos` con código GEIH confirmado pero categorías sin homologar
 contra el Sisbén. Además:
