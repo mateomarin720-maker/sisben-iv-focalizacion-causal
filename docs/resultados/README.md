@@ -31,6 +31,7 @@ citar cualquier hallazgo anterior.*
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
 | 6 | Representatividad del Sisbén frente a GEIH | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) | ✅ |
 | 7 | Selección de variables: LASSO/Ridge/SHAP sobre el Sisbén (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) | ✅ (2026-11-02) |
+| 8 | Simulación de identificación (qué diseño recupera el efecto) | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) | ✅ (datos sintéticos) |
 
 Metodología completa del indicador de pobreza (qué se incluyó, qué no, y
 por qué — incluye el historial del bloqueo, ahora resuelto):
