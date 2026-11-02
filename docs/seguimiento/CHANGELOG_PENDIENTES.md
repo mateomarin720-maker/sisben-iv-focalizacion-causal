@@ -2,6 +2,33 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (3) — Comparación de proxies del IPM: auditoría y matriz de homologación (rama `comparacion-proxies-ipm`)
+
+### Añadido
+- `src/indicadores/inventario_variables_geih.py`: inventario de las
+  columnas GEIH 2024 frente al diccionario oficial y al código del
+  proyecto (`docs/reports/inventario_variables_geih.csv`).
+- `src/indicadores/homologacion_ipm.py`: matriz GEIH ↔ Sisbén de las 15
+  privaciones con la regla oficial del DANE (met-IPM, pp. 15-26) y
+  diagnóstico de insumos por población de referencia. Genera
+  `docs/metodologia/comparacion_proxies/01_matriz_homologacion.{md,csv}`
+  y `docs/reports/diagnostico_insumos_homologacion.csv`. Resultado: 12
+  homologables, 1 parcial (trabajo infantil, solo 15-17), 2 no
+  disponibles (primera infancia, barreras de salud).
+- `docs/metodologia/comparacion_proxies/00_auditoria_variables.md`:
+  inventario, diferencias de `IPM_GEIH_BASE` frente a la regla oficial,
+  hallazgos y decisiones pendientes de revisión.
+- `tests/test_homologacion_ipm.py`: todo código GEIH/Sisbén de la matriz
+  debe existir en su diccionario oficial.
+
+### Corregido
+- `poetry.lock` regenerado: estaba desactualizado frente a
+  `pyproject.toml` (faltaba `openpyxl`); sin cambios en las demás versiones.
+
+### Pendiente (requiere revisión antes de la Fase 3)
+- Ver §6 de `00_auditoria_variables.md`. No se construyó ningún indicador
+  nuevo ni se corrió ningún modelo.
+
 ## 2026-11-02 (2) — OE1: selección de variables con LASSO, Ridge y SHAP
 
 ### Añadido

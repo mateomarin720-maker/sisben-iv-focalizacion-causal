@@ -6,6 +6,7 @@ carpeta responde a una pregunta distinta.
 | Carpeta | Qué hay | Para qué sirve |
 |---|---|---|
 | [`insumos/`](insumos/) | Diccionarios, descripción de tablas, códigos y referencias | Consultar qué significa cada variable y de dónde sale |
+| [`metodologia/`](metodologia/) | Diseño metodológico de fases nuevas (p. ej. comparación de proxies del IPM) | Revisar definiciones antes de construir variables |
 | [`resultados/`](resultados/) | Documentos cortos con los resultados de cada paso | Revisar resultados sin correr los scripts ni los cuadernos |
 | [`seguimiento/`](seguimiento/) | Resumen de avances y changelog | Saber en qué estado está el proyecto |
 | [`institucional/`](institucional/) | Anteproyecto | Documentos formales de la maestría |
