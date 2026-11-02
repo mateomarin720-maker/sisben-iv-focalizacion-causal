@@ -154,5 +154,6 @@ PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.simulacion_s
 poetry run pytest tests/test_simulacion_semisintetica.py
 ```
 
-Tarda unos 30 minutos (Causal Forest ≈55 s por repetición). Requiere
+Tarda unos 15 minutos: ≈45 s por repetición con Causal Forest y ≈8 s
+sin él. Requiere
 `muestra_estimacion_monetaria_2024.parquet` y el Sisbén estandarizado.
