@@ -68,14 +68,13 @@ del código.
   columna equivocada). Detalle completo:
   `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 
-- **Agosto 2024 de GEIH se cargó desde `.DTA`** (7 de 8 módulos) y sus
-  códigos quedaron como texto `"1.0"`/`"2.0"` en vez de `"1"`/`"2"`.
-  Cualquier comparación de texto (`== "2"`, `_si()`) falla en ese mes sin
-  dar error. Detectado 2026-11-02: en agosto `sin_alcantarillado` y
-  `sin_acueducto` dan 0 %, `POBRE_GEIH` 6,9 % (≈17 % el resto del año) y
-  `POBRE_MONETARIO` 53,3 % (≈39 %). **Sin corregir todavía** — afecta todos
-  los resultados que usan esos outcomes. Normalizar con `pd.to_numeric`
-  antes de comparar códigos.
+- **Agosto 2024 de GEIH se carga desde `.DTA`** (7 de 8 módulos).
+  Hasta el 2026-11-02, `parse_stata_a_parquet` dejaba los códigos como
+  `"1.0"` y los faltantes como `"nan"`, y toda comparación de texto
+  (`== "2"`, `_si()`) fallaba ese mes sin dar error (`POBRE_GEIH` 6,9 % en
+  agosto vs. ≈17 % el resto del año). Corregido en el parser, con prueba
+  (`tests/test_local_csv_parser.py`), y pipeline regenerado. Si se toca
+  la carga, verificar que agosto no tenga `"1.0"` ni `"nan"`.
 
 ## Diccionarios oficiales de variables
 

@@ -17,8 +17,9 @@ El loader NO requiere tener los 12 meses — procesa los que encuentre y
 avisa cuáles faltan, para que puedan ir corriendo esto progresivamente a
 medida que descomprimen cada mes.
 
-Uso:
-    poetry run python -m src.ingesta.geih_loader
+Uso (importa `ingesta.*`, igual que `1_integracion.py`, así que necesita
+`src` en el path):
+    PYTHONPATH=src poetry run python -m ingesta.geih_loader
 """
 
 from __future__ import annotations

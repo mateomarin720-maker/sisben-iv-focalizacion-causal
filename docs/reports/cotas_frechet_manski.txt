@@ -1,17 +1,17 @@
-2026-11-02 14:39:53,634 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet y data\2_models\sisben_estandarizado_2024_con_bogota.parquet
+2026-11-02 15:26:07,277 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet y data\2_models\sisben_estandarizado_2024_con_bogota.parquet
 
 === Cotas de Fréchet-Manski — ATE sobre POBRE_GEIH ===
 Celdas usadas: 365 | cobertura poblacional GEIH: 100.0%
-P(Y=1) ponderada en las celdas usadas: 0.1940
-ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.4083, +0.3080]
-Ancho de la cota: 0.7163
+P(Y=1) ponderada en las celdas usadas: 0.2044
+ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.4114, +0.3230]
+Ancho de la cota: 0.7344
 Detalle por celda: docs\reports\cotas_frechet_manski.csv
 
 === Cotas de Fréchet-Manski — ATE sobre POBRE_MONETARIO ===
 Celdas usadas: 365 | cobertura poblacional GEIH: 100.0%
-P(Y=1) ponderada en las celdas usadas: 0.3868
-ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.5886, +0.7035]
-Ancho de la cota: 1.2920
+P(Y=1) ponderada en las celdas usadas: 0.3763
+ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.5817, +0.6877]
+Ancho de la cota: 1.2694
 Detalle por celda: docs\reports\cotas_frechet_manski_pobre_monetario.csv
 
 ATE puntual del DML con Hot-Deck (SÍ supone CIA): ver docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md — no se hardcodea aquí.

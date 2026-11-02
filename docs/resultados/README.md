@@ -189,14 +189,18 @@ se construyeron y se retiraron el mismo día por tautología con `X` (ver
 | Bajo logro educativo del jefe (`P3042`) | 29,9 % | Nuevo — nivel educativo < secundaria |
 | Inasistencia escolar de menores (`P6170`, 6-16 años, cualquier miembro) | 2,1 % | Nuevo |
 | Sin aseguramiento de salud (`P6090`) | 3,4 % | Código compartido con IPM, calza con cobertura ~95-96 % |
-| Sin cotización a pensión del jefe (`P6920`) | 75,4 % | Mezcla informalidad con desempleo/inactividad — limitación documentada, sin cambios |
+| Sin cotización a pensión del jefe (`P6920`) | 73,2 % | Mezcla informalidad con desempleo/inactividad — limitación documentada, sin cambios |
 | Hacinamiento (`P6008`/`P5010`) | 3,1 % | **Corregido** — antes usaba `P5020` (tipo de servicio sanitario) por error, daba 23,3 % sin significado real |
-| Sin alcantarillado (`P4030S3`) | 18,1 % | Nuevo |
-| Sin acueducto (`P4030S5`) | 8,1 % | Nuevo |
+| Sin alcantarillado (`P4030S3`) | 19,8 % | Nuevo |
+| Sin acueducto (`P4030S5`) | 8,9 % | Nuevo |
 
-Score medio: 1,45/8. **16,3 % de los hogares clasifican como
+Cifras regeneradas el 2026-11-02 tras corregir el bug de agosto (en ese
+mes las privaciones de alcantarillado, acueducto y pensión quedaban en 0
+por los códigos `"1.0"` del `.DTA`; antes 18,1 %, 8,1 % y 75,4 %).
+
+Score medio: 1,45/8. **17,1 % de los hogares clasifican como
 `POBRE_GEIH`** (score ≥ 3 de 8 — umbral adoptado por sensibilidad:
-K≥1=79,8 %, K≥2=40,5 %, K≥3=16,3 %, K≥4=6,3 %, K≥5=1,7 %, K≥6=0,3 %,
+K≥1=77,9 %, K≥2=41,0 %, K≥3=17,1 %, K≥4=6,7 %, K≥5=1,9 %, K≥6=0,3 %,
 K≥7-8≈0 %). Quedan 5 dimensiones del IPM sin construir sobre
 GEIH (trabajo infantil, fuente de agua mejorada, eliminación de
 excretas, combustible de cocina, desempleo de larga duración) — ver
@@ -206,9 +210,10 @@ qué falta y por qué.
 ### 3b. Outcome: pobreza monetaria (ingreso per cápita, FGT0/FGT1)
 
 El nuevo outcome principal según el giro propuesto por el tutor el
-2026-10-27. Ingreso laboral desde `INGLABO` (variable ya imputada por el
-DANE — un primer intento reconstruyendo a mano desde `P6500` falló por
-47,7 % de no respuesta en esa pregunta) + ingreso no laboral
+2026-10-27. Ingreso laboral desde `INGLABO` (consolidado del DANE, **no**
+imputado — ver la corrección en
+`docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md` §8) +
+ingreso no laboral
 (`otros_ingresos`, `no_ocupados`), agregado al hogar y dividido entre
 `hog_num_personas`. Clasificado contra las líneas oficiales del DANE
 2024 (urbano $510.161/rural $291.998 mensual per cápita, boletín técnico
@@ -216,33 +221,34 @@ Pobreza Monetaria). Validación contra las cifras oficiales nacionales:
 
 | Indicador | Construido | Oficial DANE 2024 |
 |---|---|---|
-| FGT0 pobreza | 38,7 % | 31,8 % |
-| FGT1 pobreza | 19,5 % | 12,6 % |
-| FGT0 pobreza extrema | 18,8 % | 11,7 % |
-| FGT1 pobreza extrema | 10,7 % | 4,5 % |
+| FGT0 pobreza | 37,6 % | 31,8 % |
+| FGT1 pobreza | 18,3 % | 12,6 % |
+| FGT0 pobreza extrema | 17,6 % | 11,7 % |
+| FGT1 pobreza extrema | 9,5 % | 4,5 % |
 
-Sobreestimación sistemática de 6-7 puntos porcentuales en las cuatro
-métricas — consistente con no replicar la imputación de subreporte no
-laboral ni el ajuste por vivienda propia de la metodología oficial del
-DANE (ver "Qué SÍ y qué NO replica" en el detalle), no con un error de
-construcción. El patrón urbano/rural (rural más pobre) se mantiene en la
-dirección correcta. **Aún no está conectado a `5_estimacion.py`** — es
-la siguiente pieza natural del pipeline causal, pendiente. Detalle
-completo en `RESULTADOS_POBREZA_MONETARIA.md`.
+Sobreestimación sistemática de 5-6 puntos porcentuales en las cuatro
+métricas. La auditoría de la Fase 1
+(`docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md`)
+identifica siete diferencias metodológicas que la explican en parte, más
+el cruce con registros administrativos que hace el DANE y no es
+reproducible con GEIH pública. El patrón urbano/rural (rural más pobre)
+se mantiene en la dirección correcta. Conectado a `5_estimacion.py` el
+2026-11-02 (ver §4c). Detalle completo en
+`RESULTADOS_POBREZA_MONETARIA.md`.
 
 ### 4. ATE / ATT / ATU (`LinearDML`)
 
 | Outcome | ATE | ATT | ATU |
 |---|---|---|---|
-| `ipm_geih_score` (0-8) | +0,0206 [+0,0141; +0,0272] | +0,0214 [+0,0146; +0,0281] | +0,0193 [+0,0130; +0,0256] |
-| `POBRE_GEIH` (0/1, K≥3) | +0,0052 [+0,0029; +0,0075] | +0,0055 [+0,0032; +0,0079] | +0,0046 [+0,0025; +0,0067] |
+| `ipm_geih_score` (0-8) | +0,0235 [+0,0170; +0,0301] | +0,0245 [+0,0177; +0,0312] | +0,0219 [+0,0156; +0,0283] |
+| `POBRE_GEIH` (0/1, K≥3) | +0,0056 [+0,0034; +0,0079] | +0,0060 [+0,0036; +0,0083] | +0,0049 [+0,0029; +0,0070] |
 
-IC95 % excluye 0 en los dos outcomes, controlando por la celda completa
-del Hot-Deck (con `viv_cuartos` corregido). Los tres efectos son casi
-idénticos entre sí (esperable con pocas covariables de heterogeneidad), y
-casi iguales a los de la corrida con 10 privaciones (+0,0218/+0,0050) —
-quitar 2 componentes de 10 mueve poco el score agregado. `viv_paredes`
-(0,316) y `viv_pisos` (0,301) siguen siendo las covariables más
+`W` proxy continuo; regenerado 2026-11-02 tras corregir el bug de agosto
+(antes +0,0206 / +0,0052). IC95 % excluye 0 en los dos outcomes,
+controlando por la celda completa del Hot-Deck (con `viv_cuartos`
+corregido). Los tres efectos son casi idénticos entre sí (esperable con
+pocas covariables de heterogeneidad). `viv_paredes`
+(0,320) y `viv_pisos` (0,285) siguen siendo las covariables más
 importantes para `ipm_geih_score`, y ahora SÍ son las variables
 correctas. **Hallazgo colateral (sin cambios):** el primer intento de
 ATT/ATU con `LinearDRLearner` dio valores absurdos (+56, -191) por
@@ -253,10 +259,10 @@ subpoblación; no fue afectado por la corrección de variables. Detalle en
 
 ### 4b. CATE (`CausalForestDML`)
 
-CATE medio +0,0237 (`ipm_geih_score`) / +0,0041 (`POBRE_GEIH`). **La
+CATE medio +0,0228 (`ipm_geih_score`) / +0,0033 (`POBRE_GEIH`). **La
 heterogeneidad ahora se concentra en zona, no en sexo del jefe:** hogares
-rurales muestran CATE 2,8 veces más grande que urbanos en
-`ipm_geih_score` (0,0538 vs. 0,0193) y 12 veces en `POBRE_GEIH` (0,0203
+rurales muestran CATE 2,3 veces más grande que urbanos en
+`ipm_geih_score` (0,0448 vs. 0,0195) y 8 veces en `POBRE_GEIH` (0,0139
 vs. 0,0017). El patrón por sexo del jefe sigue presente pero mucho más
 chico y **con el sentido invertido** respecto al reporte anterior (antes:
 jefa mujer 36 veces más grande que jefe hombre; ahora: jefe hombre
@@ -265,7 +271,7 @@ hallazgo anterior sobre jefatura femenina era probablemente un artefacto
 de las variables de vivienda mal mapeadas, no un patrón real — ver
 "Qué cambió y por qué" en `RESULTADOS_CAUSALFOREST_CATE.md` para la
 explicación completa. `viv_paredes`/`viv_pisos` siguen siendo las dos
-variables más importantes del forest (0,316/0,301 en `ipm_geih_score`),
+variables más importantes del forest (0,320/0,285 en `ipm_geih_score`),
 ahora con el código correcto, **y se verificó que esa importancia NO es
 tautológica**: al retirar del outcome los 2 componentes que compartían
 código con `X`, la importancia de vivienda no bajó, subió levemente — ver
@@ -278,11 +284,13 @@ completo en `RESULTADOS_CAUSALFOREST_CATE.md`.
 discreta real (`geo_depto + ciclo de vida + tramo de cuartos`). Se probó
 con la celda EXACTA (columna `_hotdeck_celda`, ya guardada por el propio
 Hot-Deck, 376 celdas, 99,999 % de cobertura exacta) como `W` categórico.
-**El resultado se divide en dos historias:** el ATE de `ipm_geih_score`
-cae 63 % (+0,0206 → +0,0076) y el ATU deja de excluir 0 — el proxy SÍ
+**El resultado no es uniforme:** el ATE de `ipm_geih_score` cae 58 %
+(+0,0235 → +0,0098) y el ATU queda apenas por encima de 0 — el proxy SÍ
 inflaba el efecto para este outcome. El ATE de `POBRE_GEIH` casi no se
-mueve (+0,0052 → +0,0049) — el proxy NO explica el residuo de este
-outcome, que sobrevive usando el mecanismo exacto del sorteo real. La
+mueve (+0,0056 → +0,0058) — el proxy NO explica el residuo de este
+outcome. Los outcomes monetarios se amplían con la celda exacta
+(`log_ingreso_percapita` -0,0294 → -0,0467; `POBRE_MONETARIO` +0,0141 →
++0,0158), la evidencia de robustez más fuerte del proyecto. La
 heterogeneidad por sexo del jefe cambia de signo otra vez (tercer patrón
 distinto en tres corridas), mientras que la heterogeneidad por zona se
 mantiene y se acentúa. Detalle completo, incluida la conexión con la
@@ -297,10 +305,11 @@ preguntan: ¿qué dicen los datos SIN ella? Resultado para `POBRE_GEIH`:
 
 | | Estimador | Rango |
 |---|---|---|
-| Fréchet-Manski (sin CIA) | Cota | **[-0,4083 ; +0,3080]** |
-| DML con Hot-Deck (con CIA) | Punto + IC95% | +0,0052 [+0,0029 ; +0,0075] |
+| Fréchet-Manski (sin CIA) | Cota | **[-0,4114 ; +0,3230]** |
+| DML con Hot-Deck, celda exacta (con CIA) | Punto + IC95% | +0,0058 [+0,0035 ; +0,0081] |
 
-El intervalo sin CIA es **~156 veces más ancho** que el IC95% del DML, y
+Para `POBRE_MONETARIO` la cota es [-0,5817 ; +0,6877] frente a +0,0158
+del DML. El intervalo sin CIA es **~160 veces más ancho** que el IC95% del DML, y
 ni una sola de las 365 celdas individuales (celda con `viv_cuartos`
 corregido) logra excluir el cero por su cuenta. No es un error — es la
 confirmación honesta de que **toda la precisión del resultado del DML

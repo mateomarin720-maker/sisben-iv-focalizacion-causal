@@ -2,6 +2,40 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (8) — Corrección del bug de agosto y pipeline regenerado
+
+### Corregido
+- `src/ingesta/local_csv_parser.py` (`parse_stata_a_parquet`): los meses
+  cargados desde `.DTA` quedan con el mismo formato que los del CSV
+  (enteros sin `".0"`, faltantes como `""`). Prueba nueva en
+  `tests/test_local_csv_parser.py`.
+- `src/ingesta/geih_loader.py`: la instrucción de uso del docstring estaba
+  mal (`-m src.ingesta...` falla por el import `ingesta.*`).
+
+### Regenerado
+- Carga de GEIH, armonización, Hot-Deck, filtros SDP, `3_preprocesamiento`,
+  `3b_preprocesamiento_monetario`, `5_estimacion`, cotas de Fréchet-Manski,
+  representatividad, inventarios y matriz de homologación.
+- El Hot-Deck asigna el mismo grupo al 100 % de los hogares; los
+  resultados de representatividad tampoco cambian.
+
+### Cambios en cifras
+- Privaciones: alcantarillado 18,1 → 19,8 %, acueducto 8,1 → 8,9 %,
+  pensión del jefe 75,4 → 73,2 %. `POBRE_GEIH` 16,3 → 17,1 %.
+- Pobreza monetaria: FGT0 38,7 → 37,6 %, FGT1 19,5 → 18,3 %, extrema
+  18,8 → 17,6 % y 10,7 → 9,5 %. Sobreestimación de 5-6 pp (antes 6-7).
+- ATE con `W` proxy / celda exacta: `ipm_geih_score` +0,0235 / +0,0098
+  (-58 %); `POBRE_GEIH` +0,0056 / +0,0058; `log_ingreso_percapita`
+  -0,0294 / -0,0467; `POBRE_MONETARIO` +0,0141 / +0,0158.
+- Fréchet-Manski: `POBRE_GEIH` [-0,4114; +0,3230]; `POBRE_MONETARIO`
+  [-0,5817; +0,6877].
+- Única conclusión que cambia: el ATU de `ipm_geih_score` con celda
+  exacta ahora excluye 0 por un margen mínimo ([+0,0004; +0,0137]).
+- `01_matriz_homologacion.md` (comparación de proxies): sus filtros
+  `OCI=1`/`DSI=1` excluían agosto. Universos corregidos: `P6920` 321.444
+  → 351.164 personas, `P7250` 43.598 → 47.395; las reglas de
+  homologación no cambian.
+
 ## 2026-11-02 (7) — Homologación de paredes y pisos con la ficha del Sisbén IV; bug de agosto
 
 ### Añadido

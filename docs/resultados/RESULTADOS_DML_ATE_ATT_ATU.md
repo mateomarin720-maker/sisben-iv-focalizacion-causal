@@ -14,11 +14,15 @@ ATU son el efecto promedio del tratamiento en una subpoblación; error de
 inclusión/exclusión es un concepto de focalización que no se calcula
 aquí). No había ningún cómputo erróneo, solo una etiqueta engañosa.
 
+**Regenerado 2026-11-02 tras corregir el bug de agosto** (códigos
+`"1.0"` del `.DTA` anulaban dos privaciones en ese mes; ver CHANGELOG).
+Antes: `ipm_geih_score` +0,0206, `POBRE_GEIH` +0,0052.
+
 **Diagnóstico 2026-11-02:** los números de esta página usan `W` con
 `jefe_edad`/`viv_cuartos` CONTINUOS, un proxy de la celda discreta real
 del Hot-Deck. Se probó qué pasa con la celda EXACTA (`W` categórico,
-igual al sorteo real) — el ATE de `ipm_geih_score` cae 63 % (y el ATU deja
-de excluir 0), pero el de `POBRE_GEIH` casi no cambia. Ver
+igual al sorteo real) — el ATE de `ipm_geih_score` cae 58 % (el ATU queda
+apenas por encima de 0), pero el de `POBRE_GEIH` casi no cambia. Ver
 `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` para el detalle completo
 — no se reemplazan los números de abajo (siguen siendo la especificación
 adoptada, documentada como proxy desde el inicio), se complementan con
@@ -60,8 +64,12 @@ modelos de molestia `Y~W` y `T~W`), con validación cruzada (`LinearDML` de
 
 | Outcome | ATE | ATT (efecto en tratados) | ATU (efecto en no tratados) |
 |---|---|---|---|
-| `ipm_geih_score` (0-8) | +0,0206 [+0,0141; +0,0272] | +0,0214 [+0,0146; +0,0281] | +0,0193 [+0,0130; +0,0256] |
-| `POBRE_GEIH` (0/1, K≥3, 16,3 % de los hogares) | +0,0052 [+0,0029; +0,0075] | +0,0055 [+0,0032; +0,0079] | +0,0046 [+0,0025; +0,0067] |
+| `ipm_geih_score` (0-8) | +0,0235 [+0,0170; +0,0301] | +0,0245 [+0,0177; +0,0312] | +0,0219 [+0,0156; +0,0283] |
+| `POBRE_GEIH` (0/1, K≥3, 17,1 % de los hogares) | +0,0056 [+0,0034; +0,0079] | +0,0060 [+0,0036; +0,0083] | +0,0049 [+0,0029; +0,0070] |
+
+Los outcomes de pobreza monetaria (`log_ingreso_percapita`,
+`POBRE_MONETARIO`) se reportan en `DIAGNOSTICO_W_CELDA_EXACTA.md` y
+`RESULTADOS_POBREZA_MONETARIA.md`.
 
 Intervalos de confianza al 95 %. Propensión `P(T=1|W)`: p5=0,536,
 p95=0,731 (mínimo observado 0,000 en alguna celda puntual — misma
@@ -78,14 +86,14 @@ limitación de siempre, ver abajo).
   puramente un artefacto del código equivocado, debería haber colapsado a
   0 con la corrección. No colapsó.
 - **La importancia de variables apunta en la misma dirección que antes,
-  ahora con más confianza en el diagnóstico:** `viv_paredes` (0,316) y
-  `viv_pisos` (0,301) siguen siendo las covariables más importantes
+  ahora con más confianza en el diagnóstico:** `viv_paredes` (0,320) y
+  `viv_pisos` (0,285) siguen siendo las covariables más importantes
   para `ipm_geih_score`, y ahora SÍ son las variables correctas (antes de
   2026-10-28 apuntaban a las columnas equivocadas, así que la señal podía
   deberse al error de código). Con el código corregido, la vivienda
   sigue siendo la pista más fuerte de por qué el efecto no colapsa a 0 —
   pero ahora es una pista confiable, no una que dependía de un bug.
-- `geo_zona_urbana` también gana peso (0,217 en `ipm_geih_score`, 0,293
+- `geo_zona_urbana` también gana peso (0,222 en `ipm_geih_score`, 0,249
   en `POBRE_GEIH`) — con la celda correcta, la geografía fina (urbano/
   rural) parece explicar más del residuo de lo que se pensaba.
 - **Chequeo de tautología (2026-10-28, tras retirar 2 privaciones de `Y`):**
@@ -122,8 +130,9 @@ no del dato.
 - Selección: el Sisbén solo cubre hogares inscritos — ver
   `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
 - Falta DPS/RUI como confusores.
-- `viv_paredes`/`viv_pisos` ahora tienen el código GEIH correcto, pero
-  sus categorías siguen sin homologar contra el Sisbén — por eso siguen
-  en `X`, no en `W` (celda del Hot-Deck).
+- `viv_paredes`/`viv_pisos` ya están homologadas con el Sisbén
+  (`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`, 2026-11-02), pero
+  todavía no se han sumado a la celda del Hot-Deck: siguen en `X`, no en
+  `W`.
 - Propensión mínima observada = 0,000 en al menos una celda — posible
   violación puntual de superposición (positivity).

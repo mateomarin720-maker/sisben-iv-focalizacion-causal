@@ -121,13 +121,15 @@ a una iteración futura.
 
 | Corte | % hogares clasificados pobres |
 |---|---|
-| K≥1 | 79,8 % |
-| K≥2 | 40,5 % |
-| **K≥3 (adoptado)** | **16,3 %** |
-| K≥4 | 6,3 % |
-| K≥5 | 1,7 % |
+| K≥1 | 77,9 % |
+| K≥2 | 41,0 % |
+| **K≥3 (adoptado)** | **17,1 %** |
+| K≥4 | 6,7 % |
+| K≥5 | 1,9 % |
 | K≥6 | 0,3 % |
 | K≥7-8 | ~0,0 % |
+
+Cifras tras corregir el bug de agosto (2026-11-02; antes K≥3 = 16,3 %).
 
 K=3 fue adoptado por ser el más cercano, en orden de magnitud, a la tasa
 oficial de pobreza por IPM (13,0 %, Hogares Nacional 2024,
@@ -145,9 +147,11 @@ Implementadas en `_validar()` (`src/3_preprocesamiento.py`) y en
 - ✅ 0 valores faltantes sin tratar en las 8 privaciones.
 - ✅ Cobertura por variable: analfabetismo 4,7 %, bajo logro educativo
   29,9 %, inasistencia escolar (6-16 años) 2,1 %, sin aseguramiento de
-  salud 3,4 %, sin cotización a pensión 75,4 %, hacinamiento 3,1 %, sin
-  alcantarillado 18,1 %, sin acueducto 8,1 %. Todas plausibles frente a
-  cifras nacionales conocidas.
+  salud 3,4 %, sin cotización a pensión 73,2 %, hacinamiento 3,1 %, sin
+  alcantarillado 19,8 %, sin acueducto 8,9 %. Todas plausibles frente a
+  cifras nacionales conocidas. (Antes del 2026-11-02 pensión, alcantarillado
+  y acueducto daban 75,4 %, 18,1 % y 8,1 % porque en agosto los códigos
+  `"1.0"` del `.DTA` anulaban esas comparaciones; ver CHANGELOG.)
 - ✅ Distribución del score y umbrales monótonos verificados por prueba
   automatizada.
 

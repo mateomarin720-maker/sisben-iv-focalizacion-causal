@@ -218,6 +218,21 @@ def parse_carpeta_csv_a_parquet(
     }
 
 
+def _columna_como_texto_csv(serie: pd.Series) -> pd.Series:
+    """Texto con el mismo formato que deja `parse_csv_a_parquet`: Stata
+    guarda los códigos enteros como float, y `astype(str)` los dejaba como
+    "1.0" (y los faltantes como "nan"), lo que rompía toda comparación
+    `== "1"` en los meses cargados desde .DTA."""
+    if not pd.api.types.is_numeric_dtype(serie):
+        return serie.fillna("").astype(str)
+    no_nulos = serie.dropna()
+    if (no_nulos == no_nulos.round()).all():
+        texto = serie.astype("Int64").astype("string")
+    else:
+        texto = serie.astype("string")
+    return texto.fillna("").astype(str)
+
+
 def parse_stata_a_parquet(
     input_path: str | Path,
     output_path: str | Path,
@@ -227,11 +242,9 @@ def parse_stata_a_parquet(
 
     Fallback para módulos donde el CSV entregado está incompleto o
     corrupto pero el .DTA sí vino completo (caso GEIH agosto 2024, ver
-    `geih_loader.py`). A diferencia de `parse_csv_a_parquet`, no castea
-    todo a string: se conservan los tipos que trae Stata (categorías como
-    int/float, texto como string) y se normalizan a string después para
-    quedar en el mismo esquema "capa raw" que produce el CSV — el tipado
-    fino de cada variable se sigue haciendo en `2_limpieza.py`.
+    `geih_loader.py`). Se lee con los tipos de Stata y se pasa a texto con
+    el mismo formato que el CSV (enteros sin ".0", faltantes como ""), para
+    que los meses cargados por esta vía sean indistinguibles del resto.
     """
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -249,7 +262,7 @@ def parse_stata_a_parquet(
         logger.warning("No se escribió nada — ¿archivo vacío?: %s", input_path)
         return {"status": "warning", "error": "Archivo vacío", "archivo": str(input_path)}
 
-    df = df.astype(str)
+    df = df.apply(_columna_como_texto_csv)
     df["_ingestion_timestamp"] = datetime.now().isoformat()
     df["_source"] = fuente_id
     df["_source_file"] = input_path.name

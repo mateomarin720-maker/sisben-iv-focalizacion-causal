@@ -1,5 +1,5 @@
-2026-10-28 23:14:34,342 INFO Outcome IPM-GEIH (ampliado, 8 privaciones) construido: 290,968 hogares
-2026-10-28 23:14:35,825 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
+2026-11-02 15:25:28,182 INFO Outcome IPM-GEIH (ampliado, 8 privaciones) construido: 290,968 hogares
+2026-11-02 15:25:28,840 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
 
 === Outcome real: IPM-GEIH (8 privaciones, verificadas contra el diccionario oficial) ===
 Hogares: 290,968
@@ -13,30 +13,30 @@ Cobertura por privación (% con valor 1, sobre el total — 0% de faltantes en l
   bajo_logro_educativo_jefe: 29.9%
   inasistencia_escolar_menores: 2.1%
   sin_aseguramiento_salud: 3.4%
-  sin_cotizacion_pension_jefe: 75.4%
+  sin_cotizacion_pension_jefe: 73.2%
   hacinamiento: 3.1%
-  sin_alcantarillado: 18.1%
-  sin_acueducto: 8.1%
+  sin_alcantarillado: 19.8%
+  sin_acueducto: 8.9%
 
 Distribución del score (0-8):
 ipm_geih_score
-0    20.2 %
-1    39.2 %
-2    24.2 %
-3    10.1 %
-4     4.5 %
-5     1.5 %
-6     0.2 %
+0    22.1 %
+1    36.9 %
+2    23.9 %
+3    10.4 %
+4     4.9 %
+5     1.6 %
+6     0.3 %
 7     0.0 %
 8     0.0 %
 Name: proportion, dtype: object
 
 Sensibilidad al umbral K (tasa de pobreza según dónde se corte el score):
-  K>=1: 79.8%
-  K>=2: 40.5%
-  K>=3: 16.3% <- adoptado (K_POBRE)
-  K>=4: 6.3%
-  K>=5: 1.7%
+  K>=1: 77.9%
+  K>=2: 41.0%
+  K>=3: 17.1% <- adoptado (K_POBRE)
+  K>=4: 6.7%
+  K>=5: 1.9%
   K>=6: 0.3%
   K>=7: 0.0%
   K>=8: 0.0%

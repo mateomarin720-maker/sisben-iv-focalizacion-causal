@@ -1,5 +1,5 @@
-2026-10-28 17:41:00,910 INFO [vigencia_31dic2024] Donante: 3,106,489 hogares
-2026-10-28 17:41:17,245 INFO [anio_exacto_2024] Donante: 1,907,399 hogares
+2026-11-02 15:24:59,482 INFO [vigencia_31dic2024] Donante: 3,106,489 hogares
+2026-11-02 15:25:10,290 INFO [anio_exacto_2024] Donante: 1,907,399 hogares
 
 === Comparación de filtros del SDP (Sisbén Bogotá) ===
 
