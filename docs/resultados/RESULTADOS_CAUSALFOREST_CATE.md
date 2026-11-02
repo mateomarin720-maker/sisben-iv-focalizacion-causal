@@ -17,14 +17,17 @@ Causal Forest (Wager y Athey, 2018), `CausalForestDML` de `econml` (400
 por tipo de hogar. Misma especificación que
 `RESULTADOS_DML_ATE_ATT_ATU.md`; submuestra de 80.000 hogares.
 
-## Resultado (W = celda exacta)
+## Resultado (W = celda exacta con pisos, 2026-11-02)
 
 | Outcome | CATE medio | sd | Rural / urbana | Hombre / mujer |
 |---|---|---|---|---|
-| `ipm_geih_score` | +0,0024 | 0,031 | +0,0165 / +0,0003 | +0,0115 / −0,0070 |
-| `POBRE_GEIH` | −0,0018 | 0,011 | +0,0028 / −0,0025 | +0,0018 / −0,0055 |
-| `log_ingreso_percapita` | −0,0206 | 0,063 | −0,0621 / −0,0144 | −0,0098 / −0,0317 |
-| `POBRE_MONETARIO` | +0,0023 | 0,012 | −0,0010 / +0,0028 | +0,0029 / +0,0016 |
+| `ipm_geih_score` | −0,0045 | 0,031 | +0,0085 / −0,0064 | −0,0090 / +0,0001 |
+| `POBRE_GEIH` | −0,0002 | 0,008 | +0,0057 / −0,0011 | −0,0015 / +0,0011 |
+| `log_ingreso_percapita` | +0,0084 | 0,042 | +0,0014 / +0,0094 | +0,0015 / +0,0154 |
+| `POBRE_MONETARIO` | +0,0003 | 0,008 | −0,0020 / +0,0006 | −0,0006 / +0,0012 |
+
+`X` = zona, sexo del jefe y paredes; pisos salió de `X` al entrar a la
+celda.
 
 Con W = proxy los valores son del mismo orden (ver la salida completa).
 
@@ -36,7 +39,7 @@ Con W = proxy los valores son del mismo orden (ver la salida completa).
 - Las diferencias por zona y por sexo son del orden de la desviación
   estándar del propio bosque y cambian de signo entre outcomes: no son
   heterogeneidad interpretable.
-- La importancia de variables (paredes y pisos arriba) solo indica qué
+- La importancia de variables (paredes arriba, ≈0,5) solo indica qué
   variables usa el bosque para partir un efecto que es ≈0; no es
   evidencia de un mecanismo.
 

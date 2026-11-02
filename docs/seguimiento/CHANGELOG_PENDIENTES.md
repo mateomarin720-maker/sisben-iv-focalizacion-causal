@@ -2,6 +2,41 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (10) — Celda del Hot-Deck con pisos y base oficial de pobreza monetaria
+
+### Decidido
+- **La celda oficial del Hot-Deck incluye el nivel de pisos** homologado
+  (acabado / cemento o madera burda / tierra). Respaldo: celda sin pisos,
+  luego depto + edad, depto, nacional. La celda anterior queda como
+  sensibilidad (`incluir_pisos=False`). `viv_pisos` sale de `X` en
+  `5_estimacion.py` y el nivel de pisos entra a `W_PROXY`.
+- `hotdeck()` falla si falta `viv_pisos`: sin la columna todo caía al
+  respaldo sin pisos sin dar error (le pasó a `comparar_filtros_sdp.py`
+  en la primera corrida, corregido).
+
+### Nuevo
+- Base oficial de pobreza monetaria 2024 (catálogo 874) y marca de
+  víctimas MPMD en `data/0_raw/` y Azure (solo CSV).
+- `src/validacion/comparar_pobreza_monetaria_oficial.py`: reconstrucción
+  frente a la oficial, hogar por hogar. Guarda la base oficial limpia en
+  `data/1_processed/pobreza_monetaria/hogares_oficial_2024.parquet`.
+- `tests/test_hotdeck_celda.py`.
+
+### Cambios en cifras
+- Hot-Deck: 376 → 993 celdas, 100 → 99,98 % en celda exacta; grupos
+  A/B/C/D 22,0/33,8/28,7/15,6 → 14,2/29,4/34,4/22,0 %.
+- ATE con celda exacta: `ipm_geih_score` +0,0011 → −0,0021, `POBRE_GEIH`
+  +0,0004 → −0,0026 (IC [−0,0049; −0,0002]), `log_ingreso_percapita`
+  −0,0132 → +0,0006, `POBRE_MONETARIO` +0,0025 → −0,0002. Siguen siendo
+  siete de ocho IC con el 0.
+- Fréchet-Manski: `POBRE_GEIH` [−0,411; +0,323] → [−0,261; +0,380];
+  `POBRE_MONETARIO` [−0,538; +0,503] → [−0,418; +0,648]. 921 celdas,
+  ninguna excluye el 0.
+- Base oficial: 275.057 hogares (24 departamentos y Bogotá; no trae 81,
+  85, 86, 88, 91, 94, 95, 97, 99), tasa 31,83 %. Sobre esos hogares la
+  reconstrucción da 33,24 % y clasifica igual al 93,9 %; con las líneas
+  oficiales por área y semestre, 32,62 %.
+
 ## 2026-11-02 (9) — Saneamiento: modelos auxiliares del DML, pobreza monetaria definitiva, celdas con vivienda y documentación consolidada
 
 ### Corregido

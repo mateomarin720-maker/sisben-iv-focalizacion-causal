@@ -1,19 +1,20 @@
-2026-11-02 15:24:43,849 INFO Donante: data\2_models\sisben_estandarizado_2024_con_bogota.parquet
-2026-11-02 15:24:45,109 INFO Receptor GEIH: 290,968 hogares | Donante Sisbén: 3,106,489 hogares
+2026-11-02 16:46:58,237 INFO Donante: data\2_models\sisben_estandarizado_2024_con_bogota.parquet
+2026-11-02 16:46:59,844 INFO Receptor GEIH: 290,968 hogares | Donante Sisbén: 3,106,489 hogares
 
 === Resumen Hot-Deck ===
 Hogares GEIH fusionados: 290,968
 _hotdeck_nivel
 celda_exacta       100.0 %
+sin_pisos            0.0 %
 solo_depto_edad      0.0 %
 Name: count, dtype: object
 
 Grupo asignado (% ponderado por fex):
 Grupo_hotdeck
-A    22.0
-B    33.8
-C    28.7
-D    15.6
+A    14.2
+B    29.4
+C    34.4
+D    22.0
 Name: fex, dtype: float64
 
 Guardado: data\2_models\geih_sisben_fusionado_2024.parquet

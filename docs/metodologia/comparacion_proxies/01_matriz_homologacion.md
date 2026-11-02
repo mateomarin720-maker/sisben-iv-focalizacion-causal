@@ -249,7 +249,7 @@ Interpretación y decisiones pendientes: [`00_auditoria_variables.md`](00_audito
 | Disponibilidad y calidad | `P4020` (hogares): n = 290,968, vacío 0.00 %, no sabe 0.00 % — 12 meses de GEIH 2024 apilados. |
 | En `IPM_GEIH_BASE` (actual) | No incluida. |
 | Supuestos | — |
-| Decisiones pendientes | `viv_pisos` (P4020) es covariable X en 5_estimacion.py: si entra al outcome se repite la tautología que retiró esta privación el 2026-10-28. Decidir si se incluye en IPM_GEIH_15 o si se saca de X en los modelos que usen este outcome. |
+| Decisiones pendientes | `viv_pisos` (P4020) entra a la celda del Hot-Deck desde el 2026-11-02 (y a `W` en 5_estimacion.py): si entra al outcome, el outcome queda definido en parte por la celda que sortea el tratamiento, como la tautología que retiró esta privación el 2026-10-28. Decidir si se incluye en IPM_GEIH_15. |
 
 ### I14. Material inadecuado de paredes exteriores — *homologable*
 

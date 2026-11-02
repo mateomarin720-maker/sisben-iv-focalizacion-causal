@@ -1,6 +1,6 @@
 # Resultados del Hot-Deck GEIH ← Sisbén IV
 
-*Actualizado el 2026-10-28 (corregido `viv_cuartos`, ver nota). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../insumos/DESCRIPCION_TABLAS.md).*
+*Actualizado el 2026-11-02: la celda oficial pasa a incluir el nivel de pisos (ver "Sumar pisos y paredes"). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../insumos/DESCRIPCION_TABLAS.md).*
 
 ## Resultado
 
@@ -8,14 +8,17 @@
 |---|---|
 | Hogares receptores (GEIH 2024, 12 meses) | 290.968 |
 | Hogares donantes (Sisbén nacional + Bogotá, filtro de vigencia) | 3.106.489 |
-| Celda exacta (departamento + ciclo de vida del jefe + tramo de cuartos) | 100 % |
-| Hogares en `solo_depto_edad`, `solo_depto` o `pool_nacional` | 0 |
+| Celda exacta (departamento + ciclo de vida del jefe + tramo de cuartos + nivel de pisos) | 99,98 % (993 celdas con receptores, 977 con donantes) |
+| Hogares en `sin_pisos` (respaldo depto + edad + cuartos) | 67 |
+| Hogares en `solo_depto_edad` | 2 |
+| Hogares en `solo_depto` o `pool_nacional` | 0 |
 
 Grupo asignado, ponderado por el factor de expansión de GEIH:
 
 | Grupo | A | B | C | D |
 |---|---|---|---|---|
-| % de hogares (`viv_cuartos` corregido, 2026-10-28) | **22,0** | 33,8 | 28,7 | **15,6** |
+| % de hogares (celda con pisos, oficial desde 2026-11-02) | **14,2** | 29,4 | 34,4 | **22,0** |
+| % de hogares (sin pisos, `viv_cuartos` corregido, 2026-10-28 a 2026-11-02) | 22,0 | 33,8 | 28,7 | 15,6 |
 | % de hogares (`viv_cuartos` con el código equivocado, hasta 2026-10-27) | 31,2 | 35,2 | 23,2 | 10,3 |
 | % de hogares (celda sin vivienda, hasta 2026-10-21) | 28,0 | 34,4 | 24,9 | 12,7 |
 
@@ -37,7 +40,7 @@ ni siquiera medía lo que se pensaba que medía.
 
 Con pisos y paredes ya homologados
 (`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`) se compararon tres
-celdas sin cambiar la oficial
+celdas
 (`src/validacion/comparar_celdas_hotdeck_vivienda.py`,
 `docs/reports/comparacion_celdas_hotdeck_vivienda.csv`). Pisos y paredes
 entran en tres niveles de la escala común (pisos: acabado / cemento o
@@ -69,9 +72,12 @@ para no fragmentar las celdas.
   celda el sorteo sigue siendo al azar y el contraste del DML sigue
   siendo un placebo. Lo que mejora es la concordancia **entre celdas**
   (útil para P1/OE1 y para la simulación semisintética).
-- **Propuesta:** adoptar la celda 2 (+ pisos) como especificación de
-  sensibilidad del Hot-Deck, y decidir si pasa a ser la oficial. No se ha
-  cambiado la celda oficial.
+- **Decisión (2026-11-02): la celda 2 (+ pisos) es la oficial.** Es la
+  variable que más predice el grupo (OE1), está homologada con la ficha
+  del Sisbén y mejora la concordancia sin costo de cobertura. La celda 1
+  queda como sensibilidad (`hotdeck(..., incluir_pisos=False)`). Pisos en
+  Bogotá es coherente con la ficha pero no se pudo verificar con
+  privaciones (el SDP no las trae).
 
 ## Historial de la cobertura
 
@@ -104,5 +110,5 @@ para no fragmentar las celdas.
 - [x] Sumar variables de vivienda a la celda — hecho con `viv_cuartos` (2026-10-21), código corregido el 2026-10-28.
 - [x] Homologar alcantarillado/acueducto/número de personas en GEIH — hecho 2026-10-28 (`P4030S3`, `P4030S5`, `P6008`), ver `DICCIONARIO_HOTDECK.md` §4.
 - [x] Homologar `viv_paredes`/`viv_pisos` (2026-11-02) y comparar celdas con ellos (ver arriba).
-- [ ] Decidir si la celda con pisos pasa a ser la oficial.
+- [x] Decidir si la celda con pisos pasa a ser la oficial — sí (2026-11-02).
 - [ ] Confirmar en ANDA los códigos de `PER002`.

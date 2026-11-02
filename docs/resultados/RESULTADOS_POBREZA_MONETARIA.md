@@ -74,6 +74,48 @@ Durante la construcción apareció un error de la auditoría: `P6430` = 7 es
 remuneración. Los números de `P6430` no siguen el orden de las letras del
 diccionario, igual que pasa con `P6050`. Sin remuneración son el 6 y el 8.
 
+## Contraste con la base oficial del DANE (D1, 2026-11-02)
+
+La base anonimizada de la medición oficial (catálogo 874,
+`data/0_raw/pobreza_monetaria/`) trae por hogar el ingreso de la unidad
+de gasto, el arriendo imputado, las líneas y la clasificación, con las
+llaves de GEIH. Comparación: `src/validacion/comparar_pobreza_monetaria_oficial.py`
+→ `docs/reports/comparacion_pobreza_monetaria_oficial.{csv,txt}`.
+
+**Universo.** La base oficial tiene 275.057 hogares, todos presentes en
+la reconstrucción. Los 15.911 hogares reconstruidos que no están son de
+los 9 departamentos de la Orinoquía, la Amazonía y San Andrés (81, 85,
+86, 88, 91, 94, 95, 97, 99): la cifra oficial es de 24 departamentos y
+Bogotá. Calculada sobre la base, la tasa oficial da 31,83 %, la cifra
+publicada.
+
+| Hogares comunes, tasas por persona | Oficial | Reconstruida | Reconstruida con líneas oficiales |
+|---|---|---|---|
+| FGT0 nacional (24 deptos.) | 31,8 % | 33,2 % | 32,6 % |
+| FGT0 23 ciudades | 25,9 % | 27,4 % | 27,2 % |
+| FGT0 resto urbano | 33,7 % | 37,2 % | 35,2 % |
+| FGT0 rural | 42,5 % | 41,3 % | 41,3 % |
+| Pobreza extrema nacional | 11,7 % | 12,5 % | 12,3 % |
+
+- **Hogar por hogar, la reconstrucción clasifica igual al 93,9 %** de los
+  hogares. En personas: 3,9 % son pobres solo en la reconstrucción y 2,5 %
+  solo en la oficial.
+- **El ingreso coincide**: la razón mediana reconstruido/oficial es 1,00 y
+  el 58 % de los hogares coincide dentro del 1 % (31 % en lo rural, donde
+  pesan la ganancia de la cosecha y la imputación). La unidad de gasto
+  tiene el mismo tamaño en el 99,9 % de los hogares.
+- **Las líneas explican 0,6 de los 1,4 puntos de diferencia.** Las
+  oficiales son por área (23 ciudades, resto urbano y rural) y cambian a
+  mitad de año. Esto resuelve la versión A de D7: las líneas están en la
+  base. El resto de la diferencia está en el ingreso, sobre todo en el
+  resto urbano.
+
+**Implicación.** Para los 24 departamentos y Bogotá existe la
+clasificación oficial hogar por hogar (`hogares_oficial_2024.parquet` en
+`data/1_processed/pobreza_monetaria/`). La reconstrucción sigue siendo
+necesaria para los 9 departamentos que el DANE no mide y como método
+replicable con microdatos públicos.
+
 ## En la muestra de estimación
 
 `src/3b_preprocesamiento_monetario.py` pega el escenario base a
@@ -84,16 +126,12 @@ porque los hogares pobres son más grandes).
 
 Resultados causales con este outcome: `DIAGNOSTICO_W_CELDA_EXACTA.md`
 (ATE ≈0, placebo) y `RESULTADOS_FRECHET_MANSKI.md` (cotas
-[−0,538; +0,503]).
+[−0,418; +0,648], con la celda con pisos).
 
 ## Pendiente
 
-- **D1:** la base anonimizada oficial existe (catálogo 874,
-  `BDatos-Pobreza_Monetaria_Desigualdad-2024.zip`). Hay que descargarla a
-  mano y guardarla en `data/0_raw/pobreza_monetaria/`. Si trae las llaves
-  de GEIH, reemplaza esta reconstrucción como referencia hogar por hogar.
-- **D7, versión A:** líneas por área (23 ciudades) de los anexos
-  estadísticos del boletín.
+- **Decidir el outcome monetario de la estimación:** la clasificación
+  oficial (24 departamentos y Bogotá) o la reconstrucción (todo el país).
 - Comparación con IPM-GEIH y el grupo Sisbén imputado (Fase 5), **por
   celda** (D6): con el Hot-Deck no se pueden medir errores de inclusión o
   exclusión hogar por hogar.
@@ -103,5 +141,6 @@ Resultados causales con este outcome: `DIAGNOSTICO_W_CELDA_EXACTA.md`
 ```bash
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.indicadores.pobreza_monetaria_geih
 poetry run python src/3b_preprocesamiento_monetario.py
+poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
 poetry run pytest tests/test_preprocesamiento_monetario.py
 ```

@@ -170,13 +170,14 @@ Detalle completo de marco teórico, metodología y cronograma en
    hogar) común a GEIH y Sisbén. ✅
 4. **Emparejamiento estadístico** (`emparejamiento/`): Hot-Deck GEIH ←
    Sisbén por celdas (departamento + ciclo de vida del jefe + tramo de
-   cuartos de la vivienda). Válido solo a nivel poblacional; no identifica
+   cuartos + material de pisos homologado). Válido solo a nivel poblacional; no identifica
    el mismo hogar. ✅
 5. **Outcomes** (`3_preprocesamiento.py`, `indicadores/pobreza_monetaria_geih.py`,
    `3b_preprocesamiento_monetario.py`): IPM-GEIH con 8 de las 15
    privaciones oficiales, y pobreza monetaria reconstruida con la
    metodología del DANE (unidad de gasto, líneas por dominio, arriendo
-   imputado: 33,2 % frente a 31,8 % oficial). Nunca las variables propias
+   imputado: 33,2 % frente a 31,8 % oficial; misma clasificación que la
+   base oficial del DANE en el 93,9 % de los hogares). Nunca las variables propias
    del Sisbén `I1`–`I15`, `H_5`. ✅
 6. **Especificación causal** (`4_dag_identificacion.py`): los dos diseños
    del proyecto (principal, y de una sola tabla) como DAG, con chequeo
@@ -199,8 +200,8 @@ Resultados interpretados de cada paso en
 | Objetivo | Qué cubre | Estado |
 |---|---|---|
 | Fuentes de datos | GEIH, IPM, Sisbén nacional y Bogotá | ✅ Las cuatro obtenidas, armonizadas y validadas. DPS y RUI quedan fuera del alcance vigente o pendientes de gestión (ver §8 y `data/README.md`). |
-| Emparejamiento (Hot-Deck) | Asignar grupo Sisbén a GEIH | ✅ 100 % en celda exacta, celda con depto+edad+vivienda, código de edad (`PER002`) corroborado indirectamente. |
-| Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida (D1 pendiente: descargar la base oficial del DANE). |
+| Emparejamiento (Hot-Deck) | Asignar grupo Sisbén a GEIH | ✅ 99,98 % en celda exacta, celda con depto+edad+cuartos+pisos, código de edad (`PER002`) corroborado indirectamente. |
+| Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida, contrastada hogar por hogar con la base oficial del DANE (93,9 % de coincidencia). |
 | P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
 | P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Falta la evaluación semisintética. |
 | P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ⏳ No iniciado, depende de P1 y P2. |

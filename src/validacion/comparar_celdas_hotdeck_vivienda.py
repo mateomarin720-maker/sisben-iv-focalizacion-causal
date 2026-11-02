@@ -1,8 +1,8 @@
 """¿Conviene sumar pisos y paredes a la celda del Hot-Deck?
 
-Compara tres celdas sin cambiar la oficial:
-  1. depto + ciclo de vida del jefe + cuartos (la actual)
-  2. 1 + pisos
+Compara tres celdas:
+  1. depto + ciclo de vida del jefe + cuartos (la oficial hasta el 2026-11-02)
+  2. 1 + pisos (la oficial desde el 2026-11-02)
   3. 1 + pisos + paredes
 
 Pisos y paredes entran por la escala común de
@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import (
-    SISBEN, SISBEN_BOG, _sortear, construir_celda,
+    SISBEN, SISBEN_BOG, _sortear, construir_celda, nivel_pisos,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -40,12 +40,7 @@ REPORT = Path("docs/reports/comparacion_celdas_hotdeck_vivienda.csv")
 SEED = 42
 MIN_DONANTES = 30
 
-PISOS = {  # código crudo -> nivel común
-    "geih": {"5": "acabado", "6": "acabado", "7": "acabado", "4": "acabado",
-             "2": "cemento_madera", "3": "cemento_madera", "1": "tierra"},
-    "sisben": {"1": "acabado", "2": "acabado", "3": "cemento_madera", "4": "cemento_madera", "5": "tierra"},
-}
-PAREDES = {
+PAREDES = {  # código crudo -> nivel común (pisos: `nivel_pisos` del Hot-Deck)
     "geih": {"1": "ladrillo", "2": "ladrillo", "3": "tapia_bahareque", "4": "tapia_bahareque",
              "5": "precaria", "6": "precaria", "7": "precaria", "8": "precaria", "9": "precaria"},
     "sisben": {"1": "ladrillo", "4": "ladrillo", "2": "tapia_bahareque", "3": "tapia_bahareque",
@@ -54,8 +49,9 @@ PAREDES = {
 
 
 def _celdas(df: pd.DataFrame, fuente: str) -> dict[str, pd.Series]:
-    base = construir_celda(df, edad_en_codigos=fuente == "sisben").reset_index(drop=True)
-    pisos = df["viv_pisos"].astype(str).map(PISOS[fuente]).fillna("NA").reset_index(drop=True)
+    sisben = fuente == "sisben"
+    base = construir_celda(df, edad_en_codigos=sisben, incluir_pisos=False).reset_index(drop=True)
+    pisos = nivel_pisos(df, sisben=sisben).reset_index(drop=True)
     paredes = df["viv_paredes"].astype(str).map(PAREDES[fuente]).fillna("NA").reset_index(drop=True)
     return {
         "1_depto_edad_cuartos": base,

@@ -1,0 +1,27 @@
+=== Reconstrucción frente a la base oficial del DANE (catálogo 874) ===
+Hogares oficiales: 275,057 | reconstruidos: 290,968 | comunes: 275,057 | oficiales sin reconstruir: 0
+Reconstruidos fuera de la base oficial: 15,911 (dominio: {'otras_cabeceras': 15911})
+
+Tasas por persona (fex_c × personas de la UG), hogares comunes:
+                                                     0       1             2      3
+universo                            nacional_24_deptos  ciudad  resto_urbano  rural
+hogares                                         275057  193661         43805  37591
+fgt0_oficial                                     31.83   25.89          33.7   42.5
+fgt0_reconstruida                                33.24   27.38         37.16   41.3
+fgt0_recon_con_lineas_oficiales                  32.62   27.18         35.24  41.34
+extrema_oficial                                   11.7    6.67         12.37  21.85
+extrema_reconstruida                             12.52    7.64         14.06   21.3
+extrema_recon_con_lineas_oficiales                12.3    7.43         13.65  21.29
+pct_hogares_misma_clasificacion                  93.93   93.91         95.28  92.46
+pct_hogares_ingreso_pc_igual_1pct                57.57   63.22         55.01  31.48
+razon_ingreso_mediana                              1.0     1.0           1.0    1.0
+pct_hogares_misma_ug                             99.93   99.92         99.98  99.88
+
+Clasificación oficial (filas) × reconstruida (columnas), % de personas:
+POBRE_MONETARIA     0     1
+pobre                      
+0                64.3   3.9
+1                 2.5  29.4
+
+Guardado: docs\reports\comparacion_pobreza_monetaria_oficial.csv
+Guardado: data\1_processed\pobreza_monetaria\hogares_oficial_2024.parquet
