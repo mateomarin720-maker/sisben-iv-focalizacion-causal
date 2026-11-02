@@ -2,6 +2,30 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (5) — Pobreza monetaria conectada a DML/Causal Forest
+
+### Cambiado
+- `src/5_estimacion.py`: lee `muestra_estimacion_monetaria_2024.parquet`
+  (superset de la muestra anterior) y agrega dos outcomes —
+  `log_ingreso_percapita` (`log1p`) y `POBRE_MONETARIO` — a los dos de
+  IPM-GEIH. Corre 4 outcomes × 2 especificaciones de `W` (proxy continuo
+  vs. celda exacta del Hot-Deck).
+
+### Resultado
+- Con la celda exacta, el ATE de `log_ingreso_percapita` pasa de -0,0317
+  a -0,0468 y el de `POBRE_MONETARIO` de +0,0136 a +0,0152: se amplían en
+  vez de encogerse, al contrario de `ipm_geih_score` (-63 %). Los números
+  de IPM-GEIH no cambian frente a la corrida anterior. Ver
+  `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
+
+### Revisado
+- `viv_paredes`/`viv_pisos` frente a la auditoría de la entrada (4): la
+  matriz homologa los códigos GEIH contra la regla oficial del IPM, no
+  contra las categorías del Sisbén. Siguen sin homologar con Sisbén.
+
+### Pendiente
+- `cotas_frechet_manski.py` sobre `POBRE_MONETARIO`.
+
 ## 2026-11-02 (4) — Comparación de proxies del IPM: auditoría y matriz de homologación (rama `comparacion-proxies-ipm`)
 
 ### Añadido

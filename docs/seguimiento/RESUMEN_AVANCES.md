@@ -258,15 +258,40 @@ métricas — consistente con no replicar la imputación de subreporte no
 laboral ni el ajuste por vivienda propia de la metodología oficial (ver
 "Qué SÍ y qué NO replica" en el detalle), no con un error de
 construcción. El patrón urbano/rural (rural más pobre) se mantiene en la
-dirección correcta. **Pendiente: conectar este outcome a
-`5_estimacion.py`** — no hecho todavía. Detalle completo en
+dirección correcta. Detalle completo en
+`docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+
+## 3h. Pobreza monetaria conectada a DML/Causal Forest (2026-11-02)
+
+Se agregaron `log_ingreso_percapita` (`log1p(ingreso_percapita)`, para
+evitar que la cola derecha extrema del ingreso domine el ajuste por
+error cuadrático) y `POBRE_MONETARIO` a `5_estimacion.py` como tercer y
+cuarto outcome, y se repitió sobre ellos el diagnóstico `W` proxy vs.
+celda exacta (§3b-bis). Resultado — un patrón nuevo, distinto al de
+`ipm_geih_score`/`POBRE_GEIH`:
+
+| Outcome | ATE (W=PROXY) | ATE (W=CELDA EXACTA) |
+|---|---|---|
+| `log_ingreso_percapita` | -0,0317 [-0,0539;-0,0096] | -0,0468 [-0,0689;-0,0246] |
+| `POBRE_MONETARIO` | +0,0136 [+0,0101;+0,0171] | +0,0152 [+0,0118;+0,0187] |
+
+A diferencia de `ipm_geih_score` (el efecto se encogió 63 % con la celda
+exacta), los dos outcomes monetarios se **amplían** (+48 % y +12 % en
+magnitud) sin cambiar de signo. Bajo el sorteo aleatorio limpio del
+Hot-Deck, lo esperable es que el efecto se acerque a 0 con la celda
+exacta sin importar el efecto verdadero — que se aleje en cambio es la
+evidencia de robustez más fuerte producida hasta ahora en el proyecto, no
+solo para pobreza monetaria sino en general. No confirma causalidad por
+sí solo (sigue pendiente la homologación de `viv_paredes`/`viv_pisos` con
+Sisbén, ver punto siguiente, y confusores no observados DPS/RUI). Detalle
+completo: `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` y
 `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
 
 ## 4. Pendientes técnicos
 - [x] **Verificar los códigos de `PER002`** (hipótesis: 3=12–17, 4=18–28, 5=29–59, 6=60+) — corroborada indirectamente el 2026-10-10 cruzando contra escolaridad/estado civil/pensión en la base completa de Personas; falta la ficha oficial de ANDA. Ver `docs/insumos/DICCIONARIO_HOTDECK.md` §5.
 - [x] **Sumar variables de vivienda a la celda** — hecho parcialmente el 2026-10-21: se sumó `viv_cuartos` (conteo, seguro de usar sin homologar categorías; código corregido el 2026-10-28). `viv_paredes`/`viv_pisos` siguen fuera — ver el punto siguiente.
 - [x] **Conseguir la ficha técnica/diccionario oficial de variables de GEIH** — resuelto 2026-10-28 (`docs/insumos/DICCIONARIO_GEIH_2024.xlsx`, 761 filas, portal de microdatos DANE). Permitió corregir `viv_paredes`/`viv_pisos`/`viv_cuartos` y ampliar el indicador de 4 a 8 privaciones (pasó por 10 el mismo día, 2 se retiraron por tautología con `X`) — ver §3e y `docs/resultados/README.md`.
-- [ ] Verificar categorías de `geo_zona`, `jefe_sexo` entre fuentes (sin cambios, código GEIH de `viv_paredes`/`viv_pisos` ya confirmado el 2026-10-28) — **sigue siendo el bloqueador principal para sumar vivienda categórica a la celda**: el ATE/ATT/ATU/CATE real (§3b) no colapsa a 0 y la pista más fuerte apunta a `viv_pisos`/`viv_paredes`, ahora con el código correcto pero categorías Sisbén sin homologar.
+- [ ] Verificar categorías de `geo_zona`, `jefe_sexo` entre fuentes (sin cambios, código GEIH de `viv_paredes`/`viv_pisos` ya confirmado el 2026-10-28) — **sigue siendo el bloqueador principal para sumar vivienda categórica a la celda**: el ATE/ATT/ATU/CATE real (§3b) no colapsa a 0 y la pista más fuerte apunta a `viv_pisos`/`viv_paredes`, ahora con el código correcto pero categorías Sisbén sin homologar. Revisado otra vez el 2026-11-02 contra la auditoría de `docs/metodologia/comparacion_proxies/` (PR #9): esa matriz homologa `P4010`/`P4020` contra la regla oficial del IPM (DANE, `met-IPM.pdf`), no contra las categorías de `VIV002`/`VIV003` del Sisbén, y deja la columna Sisbén pendiente por la misma razón — falta el documento metodológico del DNP. Siguen sin ser equivalentes verificadas.
 - [x] Ubicar en GEIH los equivalentes de `HOG027`, `VIV005`, `VIV008` — resuelto 2026-10-28 (`P6008`, `P4030S3`, `P4030S5`).
 - [ ] Documentar como limitación la diferencia de corte (Bogotá 2026 vs. resto 2024).
 - [ ] 6 hogares de Bogotá con doble jefe y 227 con `Clasificacion` distinta entre miembros: confirmar con SDP cuál es la oficial.
@@ -277,12 +302,12 @@ dirección correcta. **Pendiente: conectar este outcome a
 - [ ] Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
 - [x] **OE1 (LASSO/Ridge/SHAP sobre el Sisbén)** — hecho 2026-11-02, ver §3f y `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 - [x] **Construir pobreza monetaria (ingreso per cápita, FGT0/FGT1)** — hecho 2026-11-02, ver §3g y `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
-- [ ] **Conectar pobreza monetaria a `5_estimacion.py`** — el outcome ya existe (`muestra_estimacion_monetaria_2024.parquet`), falta agregarlo como `y_col` al loop de DML/Causal Forest y repetir el diagnóstico `W` proxy vs. celda exacta sobre él.
+- [x] **Conectar pobreza monetaria a `5_estimacion.py`** — hecho 2026-11-02, con el diagnóstico `W` proxy vs. celda exacta repetido sobre `log_ingreso_percapita`/`POBRE_MONETARIO` (ver §3h). Los dos efectos se amplían con la celda exacta en vez de encogerse.
+- [ ] Correr `cotas_frechet_manski.py` sobre `POBRE_MONETARIO`.
 - [x] **Especificación de `W`: probar la celda EXACTA del Hot-Deck, no solo el proxy continuo** — hecho 2026-11-02, ver §3b-bis y `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`. Resultado dividido: explica el 63 % del efecto de `ipm_geih_score` pero casi nada del de `POBRE_GEIH`.
 - [x] **Rotulado ATT/ATU** ("error de inclusión"/"error de exclusión" era una etiqueta engañosa, no un error de cómputo) — corregido 2026-11-02 en `src/5_estimacion.py` y `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
 - [x] **Advertencias:** se probó quitar `warnings.filterwarnings("ignore")` de `src/5_estimacion.py` (con `-W always`, incluido un `CausalForestDML` completo a 80.000 filas) — no genera ningún warning en este entorno; el filtro no estaba ocultando nada real. Eliminado 2026-11-02.
 - [ ] **Rehacer `corrige-controles-celda` y `simulacion-identificacion`** sobre `main` actual — ambas se bifurcaron antes del diccionario GEIH (2026-10-28) y fusionarlas tal cual revertiría esta semana de correcciones. `simulacion-identificacion` trae código valioso (`simulacion_identificacion.py`) que no existe en `main` y que sustenta el diagnóstico de §3b-bis — rescatar ese archivo primero.
-- [ ] Construir pobreza monetaria (ingreso per cápita, línea, FGT1) — el nuevo outcome principal según el giro propuesto por el tutor el 2026-10-27; no iniciado.
 
 ## 5. Higiene del repositorio
 

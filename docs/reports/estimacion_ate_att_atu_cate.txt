@@ -1,5 +1,5 @@
-2026-11-02 13:17:01,933 INFO Cargando data\2_models\muestra_estimacion_2024.parquet
-2026-11-02 13:17:02,706 INFO n=290,968 | T=1 (Grupo A/B): 63.7%
+2026-11-02 14:24:44,460 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet
+2026-11-02 14:24:45,191 INFO n=290,968 | T=1 (Grupo A/B): 63.7%
 
 ######################################################################
 # Outcome: ipm_geih_score (continuo, 0-8 privaciones)
@@ -56,6 +56,62 @@ W = CELDA EXACTA (código categórico de _hotdeck_celda, igual al sorteo real)
   Por zona (urbana=1): {0: 0.0177, 1: 0.0022}
   Por sexo jefe (mujer=1): {0: 0.009, 1: -0.0007}
   Importancia de variables: {'viv_paredes': 0.33, 'geo_zona_urbana': 0.248, 'viv_pisos': 0.24, 'jefe_mujer': 0.181}
+
+######################################################################
+# Outcome: log_ingreso_percapita (continuo, log1p(ingreso_percapita))
+######################################################################
+
+======================================================================
+W = PROXY (geo_depto + jefe_edad continua + viv_cuartos continuo)
+======================================================================
+  Propensión (T=1 | W): min=0.000 p5=0.536 p95=0.731 max=0.783
+  ATE (toda la muestra): n=290,968 | -0.0317  IC95%=(-0.0539, -0.0096)
+  ATT (efecto en tratados): n=185,256 | -0.0322  IC95%=(-0.0543, -0.0101)
+  ATU (efecto en no tratados): n=105,712 | -0.0310  IC95%=(-0.0535, -0.0085)
+  CATE: n=80,000 | media=-0.0358  sd=0.1149  rango=(-0.5112, +0.7050)
+  Por zona (urbana=1): {0: -0.031, 1: -0.0365}
+  Por sexo jefe (mujer=1): {0: -0.0269, 1: -0.0449}
+  Importancia de variables: {'viv_pisos': 0.327, 'viv_paredes': 0.288, 'jefe_mujer': 0.195, 'geo_zona_urbana': 0.189}
+
+======================================================================
+W = CELDA EXACTA (código categórico de _hotdeck_celda, igual al sorteo real)
+======================================================================
+  Propensión (T=1 | W): min=0.633 p5=0.633 p95=0.640 max=0.642
+  ATE (toda la muestra): n=290,968 | -0.0468  IC95%=(-0.0689, -0.0246)
+  ATT (efecto en tratados): n=185,256 | -0.0481  IC95%=(-0.0702, -0.0260)
+  ATU (efecto en no tratados): n=105,712 | -0.0444  IC95%=(-0.0669, -0.0219)
+  CATE: n=80,000 | media=-0.0454  sd=0.1072  rango=(-0.5495, +0.6808)
+  Por zona (urbana=1): {0: -0.0683, 1: -0.042}
+  Por sexo jefe (mujer=1): {0: -0.0322, 1: -0.0589}
+  Importancia de variables: {'viv_pisos': 0.311, 'viv_paredes': 0.284, 'jefe_mujer': 0.208, 'geo_zona_urbana': 0.197}
+
+######################################################################
+# Outcome: POBRE_MONETARIO (binario, línea de pobreza DANE 2024 por zona)
+######################################################################
+
+======================================================================
+W = PROXY (geo_depto + jefe_edad continua + viv_cuartos continuo)
+======================================================================
+  Propensión (T=1 | W): min=0.000 p5=0.536 p95=0.731 max=0.783
+  ATE (toda la muestra): n=290,968 | +0.0136  IC95%=(+0.0101, +0.0171)
+  ATT (efecto en tratados): n=185,256 | +0.0137  IC95%=(+0.0102, +0.0172)
+  ATU (efecto en no tratados): n=105,712 | +0.0134  IC95%=(+0.0099, +0.0169)
+  CATE: n=80,000 | media=+0.0162  sd=0.0159  rango=(-0.0615, +0.0950)
+  Por zona (urbana=1): {0: 0.0103, 1: 0.0171}
+  Por sexo jefe (mujer=1): {0: 0.0113, 1: 0.0212}
+  Importancia de variables: {'viv_paredes': 0.369, 'viv_pisos': 0.271, 'jefe_mujer': 0.2, 'geo_zona_urbana': 0.16}
+
+======================================================================
+W = CELDA EXACTA (código categórico de _hotdeck_celda, igual al sorteo real)
+======================================================================
+  Propensión (T=1 | W): min=0.633 p5=0.633 p95=0.640 max=0.642
+  ATE (toda la muestra): n=290,968 | +0.0152  IC95%=(+0.0118, +0.0187)
+  ATT (efecto en tratados): n=185,256 | +0.0153  IC95%=(+0.0117, +0.0188)
+  ATU (efecto en no tratados): n=105,712 | +0.0152  IC95%=(+0.0117, +0.0187)
+  CATE: n=80,000 | media=+0.0156  sd=0.0161  rango=(-0.0650, +0.0837)
+  Por zona (urbana=1): {0: 0.0058, 1: 0.0171}
+  Por sexo jefe (mujer=1): {0: 0.009, 1: 0.0224}
+  Importancia de variables: {'viv_paredes': 0.345, 'viv_pisos': 0.259, 'jefe_mujer': 0.233, 'geo_zona_urbana': 0.163}
 
 ======================================================================
 Cómo leer esto: dos especificaciones de W para el mismo outcome.
