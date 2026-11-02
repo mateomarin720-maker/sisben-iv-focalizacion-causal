@@ -1,14 +1,28 @@
 """Estimación de efectos causales (P2/OE2).
 
-Corrida sobre el outcome construido en `3_preprocesamiento.py` (IPM-GEIH,
-8 privaciones verificadas contra el diccionario oficial de GEIH desde
-2026-10-28 — empezó en 10, pero `material_pisos_inadecuado`/
-`material_paredes_inadecuado` se retiraron el mismo día por ser los
-MISMOS códigos que `viv_pisos`/`viv_paredes` de `X` abajo, ver docstring
-de `3_preprocesamiento.py`) y el tratamiento asignado por el Hot-Deck con
-vivienda sumada a la celda (`geo_depto + jefe_edad + viv_cuartos`, este
-último también corregido el 2026-10-28 — antes tomaba el código
-equivocado, `docs/seguimiento/CHANGELOG_PENDIENTES.md`).
+Corre sobre `data/2_models/muestra_estimacion_monetaria_2024.parquet`
+(superconjunto de `muestra_estimacion_2024.parquet` — mismas filas y
+columnas de siempre, más `ingreso_percapita`/`POBRE_MONETARIO` de
+`3b_preprocesamiento_monetario.py`), con CUATRO outcomes:
+  - `ipm_geih_score`/`POBRE_GEIH`: IPM-GEIH, 8 privaciones verificadas
+    contra el diccionario oficial de GEIH desde 2026-10-28 — empezó en
+    10, pero `material_pisos_inadecuado`/`material_paredes_inadecuado`
+    se retiraron el mismo día por ser los MISMOS códigos que
+    `viv_pisos`/`viv_paredes` de `X` abajo, ver docstring de
+    `3_preprocesamiento.py`.
+  - `log_ingreso_percapita`/`POBRE_MONETARIO`: pobreza monetaria
+    (2026-11-02, nuevo outcome principal según el giro del tutor del
+    2026-10-27) — ver docstring de `3b_preprocesamiento_monetario.py`.
+    `log_ingreso_percapita = log1p(ingreso_percapita)`: el ingreso crudo
+    tiene cola derecha extrema (máximo ≈ 166 veces la mediana) que
+    dominaría el ajuste de `GradientBoostingRegressor` por error
+    cuadrático; log-ingreso es la transformación estándar en economía
+    laboral/desarrollo para este tipo de variable.
+
+El tratamiento es el mismo en los cuatro: Hot-Deck con vivienda sumada a
+la celda (`geo_depto + jefe_edad + viv_cuartos`, corregido 2026-10-28 —
+antes tomaba el código equivocado,
+`docs/seguimiento/CHANGELOG_PENDIENTES.md`).
 
 Los cuatro efectos que pide el documento de pipeline (Roncancio y Fonseca,
 2026, Figura 1):
@@ -56,14 +70,21 @@ no quede señal espuria.
 
 ⚠️ Limitaciones — las mismas de siempre, sin excepción:
   - El tratamiento es imputado por Hot-Deck, no observado.
-  - El outcome es un proxy reducido (8 de 15 privaciones), NO el IPM
-    oficial — ver docstring de `3_preprocesamiento.py` para qué se incluyó
-    y qué no, y la limitación de `sin_cotizacion_pension_jefe`.
+  - `ipm_geih_score`/`POBRE_GEIH` son un proxy reducido (8 de 15
+    privaciones), NO el IPM oficial — ver docstring de
+    `3_preprocesamiento.py` para qué se incluyó y qué no.
+  - `log_ingreso_percapita`/`POBRE_MONETARIO` no replican la imputación
+    completa de subreporte ni el ajuste por vivienda propia del DANE —
+    sobreestiman la pobreza por 6-7 puntos porcentuales frente a la
+    cifra oficial (ver docstring de `3b_preprocesamiento_monetario.py`).
   - Sin ajuste por diseño muestral de GEIH ni de Sisbén.
   - El Sisbén solo cubre hogares inscritos (selección).
   - Falta DPS/RUI como confusores (canal de la Figura 2 sin datos todavía).
 
-Uso:
+Uso (requiere correr primero 3_preprocesamiento.py y
+3b_preprocesamiento_monetario.py, en ese orden):
+    poetry run python src/3_preprocesamiento.py
+    poetry run python src/3b_preprocesamiento_monetario.py
     poetry run python src/5_estimacion.py
 Salida: docs/reports/estimacion_ate_att_atu_cate.txt (vía redirección de
 consola) y resumen interpretado en docs/resultados/.
@@ -83,7 +104,7 @@ from econml.dml import LinearDML, CausalForestDML
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-DATA = Path("data/2_models/muestra_estimacion_2024.parquet")
+DATA = Path("data/2_models/muestra_estimacion_monetaria_2024.parquet")
 SEED = 42
 N_SUB_CATE = 80_000
 
@@ -102,6 +123,7 @@ def _preparar(df: pd.DataFrame) -> pd.DataFrame:
     df["jefe_mujer"] = (df["jefe_sexo"] == "2").astype(int)
     df["geo_depto_cat"] = df["geo_depto"].astype("category").cat.codes
     df["hotdeck_celda_cat"] = df["_hotdeck_celda"].astype("category").cat.codes
+    df["log_ingreso_percapita"] = np.log1p(pd.to_numeric(df["ingreso_percapita"], errors="coerce"))
     return df
 
 
@@ -179,7 +201,9 @@ def main() -> None:
     ]
 
     for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-8 privaciones)"),
-                             ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)")]:
+                             ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)"),
+                             ("log_ingreso_percapita", "log_ingreso_percapita (continuo, log1p(ingreso_percapita))"),
+                             ("POBRE_MONETARIO", "POBRE_MONETARIO (binario, línea de pobreza DANE 2024 por zona)")]:
         print("\n" + "#" * 70)
         print(f"# Outcome: {etiqueta}")
         print("#" * 70)

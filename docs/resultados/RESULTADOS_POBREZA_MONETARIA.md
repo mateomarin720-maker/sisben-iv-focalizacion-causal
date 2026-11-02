@@ -167,22 +167,54 @@ Por zona:
 - GEIH es panel rotativo — una fila por hogar DENTRO de cada mes, no un
   hogar único en el año (mismo criterio que `3_preprocesamiento.py`).
 
+## Estimación causal (DML/Causal Forest) — 2026-11-02
+
+Conectado a `src/5_estimacion.py` como tercer y cuarto outcome
+(`log_ingreso_percapita` = `log1p(ingreso_percapita)`, y
+`POBRE_MONETARIO`), con las mismas dos especificaciones de `W` (proxy
+continuo vs. celda exacta del Hot-Deck) que ya se habían usado para
+`ipm_geih_score`/`POBRE_GEIH`. Resultado completo y comparación lado a
+lado con los outcomes IPM-GEIH:
+`docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
+
+Resumen:
+
+| Outcome | W = PROXY | W = CELDA EXACTA |
+|---|---|---|
+| `log_ingreso_percapita` (ATE) | -0,0317 [-0,0539;-0,0096] | -0,0468 [-0,0689;-0,0246] |
+| `POBRE_MONETARIO` (ATE) | +0,0136 [+0,0101;+0,0171] | +0,0152 [+0,0118;+0,0187] |
+
+Hallazgo principal: a diferencia de `ipm_geih_score` (cuyo efecto se
+encogió 63 % al pasar al `W` con la celda exacta, señal de que el proxy
+continuo lo inflaba), los dos outcomes monetarios **no se encogen — se
+amplían** (+48 % y +12 % en magnitud respectivamente) y el signo es
+estable (Grupo A/B del Sisbén se asocia con menor ingreso y mayor
+probabilidad de pobreza monetaria en ambas especificaciones). Bajo la
+simulación de sorteo aleatorio limpio (`simulacion_identificacion.py`),
+el resultado esperado es ≈0 sin importar el efecto verdadero — que estos
+dos outcomes se alejen de 0 en vez de acercarse es la evidencia más
+fuerte producida hasta ahora en el proyecto de que el efecto no es un
+artefacto del proxy continuo de `W`.
+
+Esto no confirma causalidad por sí solo (siguen pendientes
+`viv_paredes`/`viv_pisos` sin homologar con Sisbén y confusores no
+observados DPS/RUI), pero es la evidencia de robustez más fuerte entre
+los cuatro outcomes probados hasta ahora.
+
 ## Próximos pasos
 
-- Conectar este outcome a `src/5_estimacion.py` (DML/Causal Forest) como
-  una tercera especificación de `y_col`, igual que `ipm_geih_score`/
-  `POBRE_GEIH` — pendiente, no hecho en esta corrida.
-- Repetir el diagnóstico `W` proxy vs. celda exacta
-  (`docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`) con este outcome,
-  para ver si el patrón "la celda exacta explica el residuo del outcome
-  continuo pero no del binario" se repite aquí.
+- ~~Conectar este outcome a `src/5_estimacion.py`~~ — hecho 2026-11-02,
+  ver arriba.
+- ~~Repetir el diagnóstico `W` proxy vs. celda exacta~~ — hecho
+  2026-11-02, ver arriba y `DIAGNOSTICO_W_CELDA_EXACTA.md`.
 - Correr `cotas_frechet_manski.py` sobre `POBRE_MONETARIO` como
-  alternativa robusta sin suponer independencia condicional.
+  alternativa robusta sin suponer independencia condicional — pendiente.
 
 ## Cómo reproducirlo
 
 ```bash
 poetry run python src/3_preprocesamiento.py
 poetry run python src/3b_preprocesamiento_monetario.py
+poetry run python src/5_estimacion.py
 poetry run pytest tests/
 ```
