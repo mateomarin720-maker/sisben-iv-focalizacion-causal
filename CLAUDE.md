@@ -68,6 +68,15 @@ del código.
   columna equivocada). Detalle completo:
   `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 
+- **Agosto 2024 de GEIH se cargó desde `.DTA`** (7 de 8 módulos) y sus
+  códigos quedaron como texto `"1.0"`/`"2.0"` en vez de `"1"`/`"2"`.
+  Cualquier comparación de texto (`== "2"`, `_si()`) falla en ese mes sin
+  dar error. Detectado 2026-11-02: en agosto `sin_alcantarillado` y
+  `sin_acueducto` dan 0 %, `POBRE_GEIH` 6,9 % (≈17 % el resto del año) y
+  `POBRE_MONETARIO` 53,3 % (≈39 %). **Sin corregir todavía** — afecta todos
+  los resultados que usan esos outcomes. Normalizar con `pd.to_numeric`
+  antes de comparar códigos.
+
 ## Diccionarios oficiales de variables
 
 `docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (761 filas: ID/Nombre/Etiqueta/
@@ -80,30 +89,27 @@ GEIH (IPM ya tenía la suya en `docs/insumos/DICCIONARIO_IPM_2025.md`).
 código contra este diccionario** — no asumir por el nombre o la posición
 en el cuestionario (ver el bug de vivienda arriba). El diccionario de
 Sisbén es solo Nombre/Etiqueta (sin lista de categorías por código), así
-que NO resuelve por sí solo la homologación de categorías entre fuentes
-(sigue pendiente para `viv_paredes`/`viv_pisos`, ver abajo).
+que no basta para homologar categorías: para eso está la ficha del Sisbén
+IV (`docs/insumos/FICHA_SISBEN_IV_FCS_2017.pdf`), que sí trae los códigos
+de respuesta.
 
 ## Variables sin verificar — no asumir su dirección/categorías
 
-- **`viv_paredes` y `viv_pisos`**: el código GEIH ya está confirmado
-  contra el diccionario oficial (`viv_paredes`=`P4010`,
-  `viv_pisos`=`P4020`, corregido 2026-10-28 — antes apuntaban a las
-  columnas equivocadas, ver arriba). Lo que SIGUE sin verificar es la
-  **correspondencia de categorías entre GEIH y Sisbén**
-  (`VIV002`/`VIV003`, o `tip_mat_paredes`/`tip_mat_pisos` en Bogotá) — el
-  diccionario de Sisbén obtenido no trae la lista de categorías por
-  código, solo Nombre/Etiqueta. **No homologar categorías entre fuentes
-  sin esa verificación** — sigue siendo la causa más probable del
-  residuo que no colapsa a 0 en la estimación causal (ver
-  `docs/resultados/IDENTIFICACION_CAUSAL.md` y
-  `RESULTADOS_CAUSALFOREST_CATE.md`). Es seguro usarlas como control
-  dentro de UNA sola fuente (no comparar categorías entre fuentes).
+- **`viv_paredes` y `viv_pisos`: homologadas el 2026-11-02** con la
+  ficha del Sisbén IV (`docs/insumos/FICHA_SISBEN_IV_FCS_2017.pdf`) y
+  verificadas contra `I13`/`I14` del DNP. Tabla de equivalencias en
+  `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`. **Los códigos
+  crudos NO son comparables entre fuentes** (en pisos el orden va al
+  revés: tierra es 1 en GEIH y 5 en Sisbén); comparar solo a través de la
+  escala común del documento. Bogotá (SDP) es coherente con la ficha pero
+  no se pudo verificar con privaciones.
 - **`PER002`** (edad del jefe en Sisbén) es un código de ciclo de vida, no
   años — la correspondencia a rangos (3=12-17, 4=18-28, 5=29-59, 6=60+)
   está corroborada indirectamente (cruce con escolaridad/estado
   civil/pensión) pero no contra la ficha oficial de ANDA.
-- **`geo_zona`**: existe en ambas fuentes pero la dirección (¿1=urbano en
-  las dos?) no está confirmada.
+- **`geo_zona`**: 1 = urbano en las dos fuentes. En GEIH lo dice el
+  diccionario (`CLASE`); en el Sisbén se infiere de `I14` (2026-11-02,
+  ver la homologación de vivienda), no de una ficha de la variable.
 - Variables cardinales (conteos: `viv_cuartos`, número de personas) SÍ son
   seguras de comparar/sumar a una celda de matching sin homologar — no
   necesitan tabla de equivalencia de categorías.

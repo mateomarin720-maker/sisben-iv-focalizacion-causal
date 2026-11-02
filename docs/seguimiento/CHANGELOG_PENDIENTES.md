@@ -2,6 +2,28 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (7) — Homologación de paredes y pisos con la ficha del Sisbén IV; bug de agosto
+
+### Añadido
+- `docs/insumos/FICHA_SISBEN_IV_FCS_2017.pdf`: ficha de caracterización
+  socioeconómica del Sisbén IV (DNP), con los códigos de respuesta.
+- `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`: escala común de
+  paredes (7 categorías) y pisos (5), verificada contra `I13`/`I14` del
+  DNP (patrón 0 %/100 % idéntico a la regla oficial del IPM).
+
+### Resuelto
+- `viv_paredes`/`viv_pisos` homologadas entre GEIH y Sisbén nacional. Los
+  códigos crudos no son comparables (pisos en orden inverso). Bogotá
+  (SDP) coherente pero sin verificar con privaciones.
+- `geo_zona`: 1 = urbano en las dos fuentes.
+
+### Bug encontrado (sin corregir)
+- Agosto de GEIH viene de `.DTA` y sus códigos quedaron como `"1.0"`/`"2.0"`.
+  Las comparaciones de texto fallan en ese mes: `sin_alcantarillado` y
+  `sin_acueducto` = 0 %, `POBRE_GEIH` = 6,9 % (≈17 % el resto del año),
+  `POBRE_MONETARIO` = 53,3 % (≈39 %). Afecta el 8,4 % de la muestra y
+  todos los resultados que usan esos outcomes.
+
 ## 2026-11-02 (6) — Pobreza monetaria: auditoría de variables y metodología (Fase 1)
 
 ### Añadido
