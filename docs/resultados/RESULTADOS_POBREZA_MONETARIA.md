@@ -128,10 +128,53 @@ Resultados causales con este outcome: `DIAGNOSTICO_W_CELDA_EXACTA.md`
 (ATE ≈0, placebo) y `RESULTADOS_FRECHET_MANSKI.md` (cotas
 [−0,418; +0,648], con la celda con pisos).
 
+## Decisión: reconstrucción como outcome principal, oficial como robustez (2026-11-02)
+
+**Outcome principal: `POBRE_MONETARIO` (reconstrucción).** Cubre los 33
+departamentos y es replicable con microdatos públicos. **Prueba de
+robustez: `POBRE_MONETARIO_OFICIAL`**, la clasificación del DANE hogar
+por hogar, que `3b_preprocesamiento_monetario.py` pega a la muestra de
+estimación (275.057 hogares, 94,5 %; vacía en los 15.911 de los 9
+departamentos).
+
+**Los 9 departamentos no están en la base oficial con otro nombre ni
+código.** Se verificó de tres formas: `dpto` tiene solo 24 códigos;
+`dominio` y `ciudad_sinam` solo traen las 23 capitales de los 24
+departamentos, "resto urbano" y "rural" (no aparecen Arauca, Yopal,
+Mocoa, San Andrés, Leticia, Inírida, San José del Guaviare, Mitú ni
+Puerto Carreño); y ninguno de sus 15.911 hogares de GEIH aparece en la
+base por `directorio` (0 coincidencias en cada departamento). Que el
+Sisbén sí los clasifique no cambia esto: es otra fuente. La GEIH los
+encuesta, pero el DANE no publica su clasificación monetaria en esta
+base.
+
+| Resultado | Reconstrucción | Oficial DANE |
+|---|---|---|
+| Hogares pobres (fex), mismos 275.057 hogares | 27,0 % | 25,8 % |
+| Misma clasificación hogar por hogar | 93,9 % | |
+| ATE DML, W = celda exacta | −0,0002 [−0,0036; +0,0033] (33 deptos.) | −0,0005 [−0,0041; +0,0030] |
+| Cotas Fréchet-Manski, mismos 24 deptos. y Bogotá (712 celdas) | [−0,418; +0,649] | [−0,407; +0,620] |
+| Cotas Fréchet-Manski, todo el país (921 celdas) | [−0,418; +0,648] | — |
+
+Las conclusiones no cambian con la clasificación oficial: el DML sigue
+siendo ≈0 (placebo del emparejamiento) y las cotas siguen sin
+identificar el signo; la oficial las angosta 0,04 porque su tasa de
+pobreza es algo menor. Salidas: `docs/reports/estimacion_ate_att_atu_cate.txt`
+(último bloque) y `docs/reports/cotas_frechet_manski_pobre_monetario_oficial.csv`.
+
+**Cómo complementarlo.** Si el DANE publica o entrega la clasificación de
+esos 9 departamentos (por ejemplo, por solicitud de microdatos con
+reserva o en una versión posterior de la base), basta con agregarla a
+`hogares_oficial_2024.parquet` con las mismas llaves (`directorio`,
+`secuencia_p`, `mes`): `pegar_oficial` la toma sin otros cambios y la
+prueba de robustez pasaría a cubrir todo el país. Otra opción, sin datos
+nuevos, es un ajuste de la reconstrucción en esos departamentos con la
+diferencia observada frente a la oficial en departamentos parecidos (por
+ejemplo, Caquetá, Meta, Chocó y La Guajira); no se hizo porque supone
+que el error de la reconstrucción se traslada entre regiones.
+
 ## Pendiente
 
-- **Decidir el outcome monetario de la estimación:** la clasificación
-  oficial (24 departamentos y Bogotá) o la reconstrucción (todo el país).
 - Comparación con IPM-GEIH y el grupo Sisbén imputado (Fase 5), **por
   celda** (D6): con el Hot-Deck no se pueden medir errores de inclusión o
   exclusión hogar por hogar.
@@ -140,7 +183,7 @@ Resultados causales con este outcome: `DIAGNOSTICO_W_CELDA_EXACTA.md`
 
 ```bash
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.indicadores.pobreza_monetaria_geih
-poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
+poetry run python src/3b_preprocesamiento_monetario.py
 poetry run pytest tests/test_preprocesamiento_monetario.py
 ```

@@ -105,6 +105,19 @@ def test_pegar_pobreza_uno_a_uno():
     assert out["ingreso_percapita"].tolist() == [100.0, 900_000.0]
 
 
+def test_pegar_oficial_normaliza_mes_y_deja_vacio_lo_que_falta():
+    """`mes` llega como "01" en la muestra y "1" en la base oficial; un
+    hogar de un departamento que la base oficial no trae queda vacío."""
+    base = pd.DataFrame({"llave_directorio": ["1", "2"], "llave_secuencia_p": ["1", "1"],
+                         "mes": ["01", "01"], "geo_depto": ["11", "91"]})
+    oficial = pd.DataFrame({"llave_directorio": ["1"], "llave_secuencia_p": ["1"], "mes": ["1"],
+                            "pobre": [1], "indigente": [0]})
+    out = b3.pegar_oficial(base, oficial)
+    assert out["POBRE_MONETARIO_OFICIAL"].tolist()[0] == 1
+    assert pd.isna(out["POBRE_MONETARIO_OFICIAL"].iloc[1])
+    assert out["mes"].tolist() == ["01", "01"]
+
+
 @pytest.mark.skipif(not (pm.GEIH_DIR / "01" / "ocupados.parquet").exists(),
                     reason="Falta data/1_processed/geih/2024/01/ — restaurar el banco de datos desde Azure")
 def test_mes_real_una_fila_por_persona():
