@@ -133,6 +133,7 @@ poetry run python -m src.emparejamiento.emparejamiento_hotdeck_geih_sisben
 poetry run python -m src.validacion.comparar_filtros_sdp
 poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
+poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben

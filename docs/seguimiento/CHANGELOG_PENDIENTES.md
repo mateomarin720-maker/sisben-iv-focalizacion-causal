@@ -2,7 +2,7 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
-## 2026-11-02 (3) — Comparación de proxies del IPM: auditoría y matriz de homologación (rama `comparacion-proxies-ipm`)
+## 2026-11-02 (4) — Comparación de proxies del IPM: auditoría y matriz de homologación (rama `comparacion-proxies-ipm`)
 
 ### Añadido
 - `src/indicadores/inventario_variables_geih.py`: inventario de las
@@ -28,6 +28,66 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 ### Pendiente (requiere revisión antes de la Fase 3)
 - Ver §6 de `00_auditoria_variables.md`. No se construyó ningún indicador
   nuevo ni se corrió ningún modelo.
+
+## 2026-11-02 (3) — Pobreza monetaria: ingreso per cápita y FGT0/FGT1
+
+### Añadido
+- **`src/3b_preprocesamiento_monetario.py`**: nuevo outcome principal
+  según el giro propuesto por el tutor el 2026-10-27 — pobreza monetaria
+  en vez de (o además de) el IPM-GEIH. Construye `ingreso_hogar_mensual`
+  (ingreso laboral desde `INGLABO` + no laboral desde `otros_ingresos`/
+  `no_ocupados`, agregado a TODOS los miembros del hogar),
+  `ingreso_percapita`, `POBRE_MONETARIO`/`POBRE_EXTREMO_MONETARIO` y las
+  brechas FGT1, comparando contra las líneas de pobreza oficiales del
+  DANE 2024 por zona urbano/rural.
+- **`docs/insumos/DANE_boletin_PM_2024.pdf`**: boletín técnico oficial
+  *Pobreza Monetaria en Colombia 2024* del DANE, descargado y guardado
+  como referencia permanente — fuente de las líneas de pobreza
+  ($460.198 nacional, $510.161 cabeceras, $291.998 resto; extrema
+  $227.220/$242.389/$176.154) y de las cifras FGT0/FGT1 oficiales
+  (31,8%/12,6% pobreza; 11,7%/4,5% extrema) usadas para validar por
+  plausibilidad.
+- **`docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`** y
+  **`tests/test_preprocesamiento_monetario.py`** (6 pruebas: una fila
+  por hogar, ingreso no negativo/sin faltantes, casos de borde de
+  clasificación de pobreza con datos sintéticos, brecha entre 0 y 1,
+  `ingreso_percapita` NaN sin personas).
+
+### Corregido durante la construcción (documentado, no solo el número final)
+- **Primer intento descartado**: reconstruir el ingreso laboral sumando
+  `P6500` (empleo principal) + horas extra/primas/bonificaciones (según
+  sus sub-preguntas de doble conteo) + subsidios + pago en especie — tal
+  como sugiere el cuestionario, sin usar ninguna variable derivada. Dio
+  FGT0=53,6%/FGT1=39,0%, muy por encima de lo oficial (31,8%/12,6%) — no
+  el margen esperable de una aproximación sin imputación, un orden de
+  magnitud distinto.
+- **Causa**: `P6500` por sí solo tiene **47,7% de no respuesta** entre
+  personas ocupadas (13.751 de 28.815 en enero) — el script trataba esos
+  vacíos como ingreso $0 en vez de "no informa", inflando el conteo de
+  hogares con ingreso 0 (21,4%, implausible) y sobre todo FGT1 (un hogar
+  con ingreso real alto pero `P6500` vacío contribuía brecha de pobreza
+  100% en vez de 0%).
+- **Corrección**: el módulo `ocupados` trae `INGLABO`, la variable de
+  ingreso laboral que el DANE ya imputa internamente (reduce la no
+  respuesta de 47,7% a 4,3%). Usarla en vez de reconstruir a mano bajó el
+  % de hogares con ingreso 0 de 21,4% a 4,1%, y las cuatro FGT pasaron de
+  estar 1,5-3 veces por encima de lo oficial a estar 6-7 puntos
+  porcentuales por encima — una sobreestimación sistemática consistente
+  con no replicar la imputación de subreporte no laboral ni el ajuste
+  por vivienda propia de la metodología oficial del DANE, no un error de
+  construcción.
+
+### Documentación actualizada
+`docs/resultados/README.md` (nueva fila §3b y sección), `docs/README.md`,
+`docs/seguimiento/RESUMEN_AVANCES.md` (§3g, tabla de pipeline,
+pendientes, referencias), `src/README.md`, `CLAUDE.md` (bloque de
+validación).
+
+### Pendiente (no hecho en esta corrida)
+Conectar `muestra_estimacion_monetaria_2024.parquet` a
+`src/5_estimacion.py` como outcome causal (DML/Causal Forest), y repetir
+el diagnóstico `W` proxy vs. celda exacta
+(`DIAGNOSTICO_W_CELDA_EXACTA.md`) sobre este outcome.
 
 ## 2026-11-02 (2) — OE1: selección de variables con LASSO, Ridge y SHAP
 
