@@ -17,6 +17,12 @@ columnas de siempre, más `ingreso_percapita`/`POBRE_MONETARIO` de
     tiene cola derecha extrema que dominaría el ajuste por error
     cuadrático; log-ingreso es la transformación estándar para esta
     variable.
+  - `POBRE_MONETARIO_OFICIAL` (robustez, 2026-11-02): la clasificación
+    oficial del DANE (catálogo 874) en vez de la reconstruida. Solo
+    existe para 24 departamentos y Bogotá; los 9 que la base no trae
+    (Orinoquía, Amazonía, San Andrés) salen de esta corrida. La
+    reconstrucción sigue siendo el outcome principal porque cubre todo el
+    país.
 
 El tratamiento es el mismo en los cuatro: Hot-Deck con vivienda sumada a
 la celda (`geo_depto + jefe_edad + viv_cuartos`, corregido 2026-10-28 —
@@ -254,7 +260,9 @@ def main() -> None:
     for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-8 privaciones)"),
                              ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)"),
                              ("log_ingreso_percapita", "log_ingreso_percapita (continuo, log1p(ingreso_percapita))"),
-                             ("POBRE_MONETARIO", "POBRE_MONETARIO (binario, reconstrucción GEIH con líneas DANE 2024 por dominio)")]:
+                             ("POBRE_MONETARIO", "POBRE_MONETARIO (binario, reconstrucción GEIH con líneas DANE 2024 por dominio)"),
+                             ("POBRE_MONETARIO_OFICIAL", "POBRE_MONETARIO_OFICIAL (robustez: clasificación oficial DANE, "
+                                                         "24 departamentos y Bogotá; sin los 9 que la base no trae)")]:
         print("\n" + "#" * 70)
         print(f"# Outcome: {etiqueta}")
         print("#" * 70)

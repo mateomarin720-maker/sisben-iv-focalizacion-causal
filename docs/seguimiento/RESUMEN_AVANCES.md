@@ -17,8 +17,9 @@ celda del Hot-Deck incluye pisos desde el 2026-11-02. Con
 datos reales, el DML sobre el grupo Sisbén imputado da ≈0, que es lo
 esperado: el Hot-Deck sortea al azar dentro de la celda y el contraste
 es un placebo. Las cotas de Fréchet-Manski no fijan ni el signo del
-efecto. **La pieza central pendiente es la evaluación semisintética**
-(guía del tutor del 2026-10-27).
+efecto. **La evaluación semisintética** (guía del tutor del 2026-10-27)
+tiene primera versión: con hogares reales y efecto conocido, el Hot-Deck
+lleva cualquier estimación a ≈0 (`docs/resultados/SIMULACION_SEMISINTETICA.md`).
 
 ## 1. Fuentes de datos
 
@@ -48,7 +49,7 @@ efecto. **La pieza central pendiente es la evaluación semisintética**
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | ✅ |
 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | ✅ con métricas por grupo |
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
-| **Evaluación semisintética** | — | ⏳ **pendiente, prioridad** |
+| **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ primera versión 2026-11-02 |
 | Pruebas | `tests/` (`pytest`) | ✅ |
 
 ## 3. Resultados vigentes
@@ -133,20 +134,20 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
 
 ## 4. Pendientes, en orden
 
-1. **Evaluación semisintética** (componente central de la tesis). Sobre
-   hogares reales de GEIH: tratamiento verdadero y resultados potenciales
-   simulados con efecto heterogéneo conocido; escenarios de asignación
-   aleatoria, confusión observada, confusión no observada, solapamiento
-   débil y tratamiento reconstruido por Hot-Deck; estimadores diferencia
-   de medias, regresión ajustada, DML y Causal Forest; métricas sesgo,
-   RMSE, cobertura, error del CATE y degradación por la integración. El
-   tratamiento verdadero nunca entra a los modelos que reciben el
-   reconstruido. Diseñado para que una entidad pueda cambiar GEIH por sus
-   propios registros. Base: `src/validacion/simulacion_identificacion.py`
-   (ya en `main`, PR #11).
-2. **Decidir el outcome monetario de la estimación:** la clasificación
-   oficial del DANE (24 departamentos y Bogotá, 94,5 % de los hogares
-   GEIH) o la reconstrucción (todo el país).
+1. **Evaluación semisintética: primera versión hecha 2026-11-02**
+   (`src/validacion/simulacion_semisintetica.py`,
+   `docs/resultados/SIMULACION_SEMISINTETICA.md`). Siguientes pasos:
+   outcome binario de pobreza, sensibilidad a gamma y a la fuerza del
+   efecto, más repeticiones de Causal Forest, Hot-Deck con la cadena
+   completa de respaldos, y un escenario con discontinuidad (puntaje
+   continuo) para mostrar qué recuperaría el efecto con vínculo.
+2. ~~Decidir el outcome monetario~~ **Resuelto 2026-11-02:** la
+   reconstrucción es el outcome principal (todo el país) y la
+   clasificación oficial (`POBRE_MONETARIO_OFICIAL`, 24 departamentos y
+   Bogotá) la prueba de robustez; las conclusiones no cambian. Los 9
+   departamentos no están en la base oficial con ningún otro código.
+   Cómo completarla si el DANE entrega esos datos:
+   `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
 3. **Fase 5 de pobreza monetaria:** comparación con IPM-GEIH y el grupo
    imputado, por celda (D6).
 4. Angostar las cotas con supuestos de monotonía (MTS/MTR).

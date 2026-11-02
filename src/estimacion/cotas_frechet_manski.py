@@ -55,6 +55,8 @@ SISBEN_PATH = Path("data/2_models/sisben_estandarizado_2024_con_bogota.parquet")
 OUTCOMES = {
     "POBRE_GEIH": Path("docs/reports/cotas_frechet_manski.csv"),
     "POBRE_MONETARIO": Path("docs/reports/cotas_frechet_manski_pobre_monetario.csv"),
+    # Robustez: clasificación oficial DANE, sin los 9 departamentos que su base no trae
+    "POBRE_MONETARIO_OFICIAL": Path("docs/reports/cotas_frechet_manski_pobre_monetario_oficial.csv"),
 }
 
 

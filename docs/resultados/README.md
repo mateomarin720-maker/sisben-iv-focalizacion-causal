@@ -19,10 +19,11 @@ historial de correcciones está en
 3. **Sin suponer que el sorteo reproduce la realidad, los datos no fijan
    ni el signo del efecto** (cotas de Fréchet-Manski, §5). Es el
    resultado de identificación central con las fuentes actuales.
-4. **El componente causal de la tesis pasa a la evaluación semisintética**
-   (guía del tutor del 2026-10-27): efecto conocido sobre hogares reales,
-   tratamiento reconstruido por Hot-Deck, y medir cuánto se degrada su
-   recuperación. Pendiente.
+4. **Evaluación semisintética (§9):** con hogares reales y un efecto
+   conocido de +0,095, todo estimador que controla la celda devuelve ≈0
+   cuando el tratamiento viene del Hot-Deck, en todos los escenarios. Con
+   el tratamiento verdadero, regresión, DML y Causal Forest recuperan el
+   efecto si la confusión es observable, y ninguno si no lo es.
 5. Los outcomes están construidos y validados: IPM-GEIH (8 de 15
    privaciones) y pobreza monetaria reconstruida (33,2 % frente a 31,8 %
    oficial; clasifica igual al 93,9 % de los hogares de la base oficial).
@@ -45,7 +46,7 @@ historial de correcciones está en
 | 6 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
 | 7 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) |
 | 8 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) |
-| 9 | Evaluación semisintética | — | pendiente |
+| 9 | Evaluación semisintética | `src/validacion/simulacion_semisintetica.py` | [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md) |
 
 ## Resumen por paso
 
@@ -98,6 +99,12 @@ departamentos y Bogotá; la base no trae los 9 nuevos), la reconstrucción
 clasifica igual al 93,9 %, con razón mediana de ingreso 1,00. Las líneas
 oficiales por área explican 0,6 de los 1,4 puntos de diferencia.
 
+**Decisión (2026-11-02):** la reconstrucción es el outcome principal
+(cubre los 33 departamentos) y la clasificación oficial
+(`POBRE_MONETARIO_OFICIAL`) es la prueba de robustez en los 24
+departamentos y Bogotá. Los 9 departamentos restantes no están en la
+base oficial con ningún otro código ni identificador.
+
 ### 4. DML y Causal Forest (diagnóstico placebo)
 
 | Outcome | ATE, W = celda exacta [IC 95 %] |
@@ -106,6 +113,7 @@ oficiales por área explican 0,6 de los 1,4 puntos de diferencia.
 | `POBRE_GEIH` | −0,0026 [−0,0049; −0,0002] |
 | `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
 | `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
+| `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | −0,0005 [−0,0041; +0,0030] |
 
 Siete de ocho ATE (dos especificaciones de `W`) incluyen el cero; el
 octavo lo excluye por poco (−0,26 puntos), como cabe esperar por azar en
@@ -119,6 +127,7 @@ un artefacto. Detalle en §4c.
 |---|---|
 | `POBRE_GEIH` | [−0,261; +0,380] |
 | `POBRE_MONETARIO` | [−0,418; +0,648] |
+| `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | [−0,407; +0,620] |
 
 Ninguna celda excluye el 0. Toda la precisión de un punto estimado con
 el grupo imputado vendría del supuesto, no de los datos.
@@ -143,6 +152,24 @@ Con datos sintéticos de efecto conocido: el Hot-Deck con contraste
 dentro de la celda devuelve ≈0 sea cual sea el efecto verdadero; solo
 una discontinuidad con puntaje continuo lo recupera.
 
+### 9. Evaluación semisintética
+
+Covariables, celda e ingreso reales de GEIH; tratamiento y efecto
+simulados (ATE verdadero 0,095 en log-ingreso; P(T | celda) del Sisbén
+real). 50 repeticiones de 30.000 hogares.
+
+| ATE estimado (verdadero 0,095) | Oráculo | Vínculo 50 % | Hot-Deck |
+|---|---|---|---|
+| Confusión observada, LinearDML | 0,090 | 0,044 | −0,005 |
+| Confusión observada, regresión EF celda | 0,092 | 0,046 | −0,001 |
+| Confusión no observada fuerte, LinearDML | −0,770 | −0,384 | −0,002 |
+| Solapamiento débil, LinearDML | 0,080 | 0,031 | −0,008 |
+
+Con Hot-Deck se pierde el efecto completo (sesgo = −ATE); con vínculo
+parcial se atenúa en proporción a los hogares mal vinculados. La
+concordancia del T imputado (50-83 %) no indica la calidad para estimar
+efectos. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
+
 ## Limitaciones generales
 
 - El grupo Sisbén es imputado por emparejamiento, no observado en GEIH.
@@ -159,13 +186,14 @@ poetry run python -m src.validacion.comparar_filtros_sdp
 poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
 poetry run python -m src.indicadores.pobreza_monetaria_geih
-poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
+poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
 poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
+poetry run python -m src.validacion.simulacion_semisintetica
 poetry run pytest tests/
 ```
 

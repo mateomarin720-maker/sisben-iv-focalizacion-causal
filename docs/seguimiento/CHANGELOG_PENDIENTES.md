@@ -2,6 +2,32 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (11) — Pobreza monetaria oficial como robustez y evaluación semisintética
+
+### Decidido
+- Outcome monetario principal: la reconstrucción (33 departamentos).
+  `POBRE_MONETARIO_OFICIAL` (clasificación DANE, 24 departamentos y
+  Bogotá) como prueba de robustez en el DML y las cotas. Los 9
+  departamentos no están en la base oficial con otro código ni
+  identificador (0 de sus 15.911 hogares por `directorio`).
+
+### Nuevo
+- `3b_preprocesamiento_monetario.py` pega `POBRE_MONETARIO_OFICIAL` y
+  `POBRE_EXTREMO_OFICIAL` (275.057 hogares). Ahora corre después de
+  `comparar_pobreza_monetaria_oficial`. Primera corrida pegó solo el 23 %:
+  `mes` era "01" en la muestra y "1" en la oficial; se normalizan las
+  llaves (prueba en `tests/test_preprocesamiento_monetario.py`).
+- `src/validacion/simulacion_semisintetica.py`, `tests/test_simulacion_semisintetica.py`
+  y `docs/resultados/SIMULACION_SEMISINTETICA.md`.
+
+### Cifras nuevas
+- DML con la oficial: ATE −0,0005 [−0,0041; +0,0030] (celda exacta).
+  Cotas: [−0,407; +0,620] frente a [−0,418; +0,649] de la reconstrucción
+  en las mismas 712 celdas. Las demás cifras no cambian.
+- Semisintética (ATE verdadero 0,095): con Hot-Deck, ≈0 en los cinco
+  escenarios y los cuatro estimadores que controlan la celda; con
+  vínculo del 50 %, ≈0,044; con oráculo y confusión observable, 0,085-0,094.
+
 ## 2026-11-02 (10) — Celda del Hot-Deck con pisos y base oficial de pobreza monetaria
 
 ### Decidido

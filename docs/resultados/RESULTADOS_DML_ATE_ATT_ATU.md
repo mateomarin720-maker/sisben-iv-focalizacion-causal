@@ -51,6 +51,14 @@ inclusión ni de exclusión, que son conceptos de focalización.
 | `POBRE_MONETARIO` | PROXY | +0,0003 [−0,0031; +0,0037] | +0,0007 | −0,0001 |
 | `POBRE_MONETARIO` | CELDA | −0,0002 [−0,0036; +0,0033] | −0,0000 | −0,0003 |
 
+Robustez con la clasificación oficial del DANE (`POBRE_MONETARIO_OFICIAL`,
+275.057 hogares de 24 departamentos y Bogotá; se agregó el 2026-11-02):
+
+| Outcome | W | ATE [IC 95 %] | ATT | ATU |
+|---|---|---|---|---|
+| `POBRE_MONETARIO_OFICIAL` | PROXY | −0,0005 [−0,0040; +0,0030] | −0,0010 | −0,0001 |
+| `POBRE_MONETARIO_OFICIAL` | CELDA | −0,0005 [−0,0041; +0,0030] | −0,0011 | −0,0000 |
+
 Propensión con la celda exacta: p5 = 0,142, p95 = 0,847, igual a la
 empírica P(T | celda) (correlación 0,995). Con el proxy: p5 = 0,178,
 p95 = 0,851. Con pisos en la celda, la propensión varía más entre celdas

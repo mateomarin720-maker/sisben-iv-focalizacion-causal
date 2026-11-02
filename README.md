@@ -188,8 +188,9 @@ Detalle completo de marco teórico, metodología y cronograma en
    cotas de Fréchet-Manski sin suponer independencia condicional. ✅
 8. **Evaluación semisintética** (efecto conocido, tratamiento reconstruido
    por Hot-Deck; escenarios de asignación aleatoria, confusión observada y
-   no observada, solapamiento débil). ⏳ pendiente; parte de
-   `validacion/simulacion_identificacion.py`.
+   no observada, solapamiento débil; `validacion/simulacion_semisintetica.py`).
+   ✅ primera versión: con Hot-Deck todo estimador que controla la celda
+   devuelve ≈0 aunque el efecto verdadero sea +0,095.
 9. **Reporte** (`7_reporte/`): comparación FGT1 (OE3). ⏳ pendiente.
 
 Resultados interpretados de cada paso en

@@ -79,6 +79,19 @@ regenerado al reemplazar el outcome anterior, que daba [−0,5817; +0,6877]).
   (antes [−0,41; +0,32] y [−0,54; +0,50]): dentro de cada celda, P(T) y
   P(Y) quedan más alineadas.
 
+**Robustez con la clasificación oficial del DANE
+(`POBRE_MONETARIO_OFICIAL`, 2026-11-02).** Solo existe para 24
+departamentos y Bogotá (712 celdas, 99,0 % del peso de GEIH). En esas
+celdas:
+
+| Outcome | P(Y=1) | Cota Fréchet-Manski |
+|---|---|---|
+| `POBRE_MONETARIO` (reconstrucción) | 0,270 | [−0,418 ; +0,649] |
+| `POBRE_MONETARIO_OFICIAL` | 0,258 | [−0,407 ; +0,620] |
+
+La cota oficial es 0,04 más angosta porque la tasa es algo menor, y
+tampoco identifica el signo. Detalle: `docs/reports/cotas_frechet_manski_pobre_monetario_oficial.csv`.
+
 ## Cómo leerlo
 
 **Este es el resultado de identificación central del proyecto con los
