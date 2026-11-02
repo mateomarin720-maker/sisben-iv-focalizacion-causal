@@ -24,12 +24,14 @@ citar cualquier hallazgo anterior.*
 | 1b | Filtro del SDP (Bogotá) | `src/validacion/comparar_filtros_sdp.py` | [`COMPARACION_FILTROS_SDP.md`](COMPARACION_FILTROS_SDP.md) | ✅ |
 | 2 | Identificación causal (DAG) | `src/4_dag_identificacion.py` | [`IDENTIFICACION_CAUSAL.md`](IDENTIFICACION_CAUSAL.md) | ✅ |
 | 3 | Outcome (IPM-GEIH, 8 de 15 privaciones) | `src/3_preprocesamiento.py` | — (resumen abajo, detalle en `RESULTADOS_DML_ATE_ATT_ATU.md`) | ✅ (ampliado, ver limitación) |
+| 3b | Outcome: pobreza monetaria (ingreso per cápita, FGT0/FGT1) | `src/3b_preprocesamiento_monetario.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](RESULTADOS_POBREZA_MONETARIA.md) | ✅ (2026-11-02, nuevo outcome principal; aún no conectado a `5_estimacion.py`) |
 | 4 | Estimación: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) | ✅ |
 | 4b | Estimación: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) | ✅ |
 | 4c | Diagnóstico: `W` proxy vs. celda exacta | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md) | ✅ (2026-11-02) |
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
 | 6 | Representatividad del Sisbén frente a GEIH | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) | ✅ |
-| 7 | Simulación de identificación (qué diseño recupera el efecto) | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) | ✅ (datos sintéticos) |
+| 7 | Selección de variables: LASSO/Ridge/SHAP sobre el Sisbén (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) | ✅ (2026-11-02) |
+| 8 | Simulación de identificación (qué diseño recupera el efecto) | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) | ✅ (datos sintéticos) |
 
 Metodología completa del indicador de pobreza (qué se incluyó, qué no, y
 por qué — incluye el historial del bloqueo, ahora resuelto):
@@ -39,11 +41,13 @@ Diccionarios oficiales (nuevos, de referencia permanente):
 [`docs/insumos/DICCIONARIO_SISBEN_2024.xlsx`](../insumos/DICCIONARIO_SISBEN_2024.xlsx).
 
 Lo que **no** está en esta carpeta todavía porque no está implementado:
-LASSO/Ridge/SHAP sobre el Sisbén (P1/OE1), discontinuidad de regresión B/C
-(en duda — no hay puntaje continuo), diseño de una sola tabla Sisbén
-III→IV (falta el corte III), vecino más cercano con distancia de Gower,
-reglas contrafactuales FGT1 (P3/OE3), y las 5 dimensiones del IPM que
-todavía no se pueden construir sobre GEIH (trabajo infantil, acceso a
+discontinuidad de regresión B/C (en duda — no hay puntaje continuo),
+diseño de una sola tabla Sisbén III→IV (falta el corte III), vecino más
+cercano con distancia de Gower, reglas contrafactuales FGT1 (P3/OE3), el
+outcome de pobreza monetaria conectado a la estimación causal
+(`ingreso_percapita`/`POBRE_MONETARIO` ya se construyeron — ver §3b —
+pero `5_estimacion.py` todavía no los usa), y las 5 dimensiones del IPM
+que todavía no se pueden construir sobre GEIH (trabajo infantil, acceso a
 fuente de agua mejorada, eliminación de excretas, material de combustible
 para cocinar, desempleo de larga duración — ver
 `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2). Ver también Tabla 1
@@ -199,6 +203,33 @@ excretas, combustible de cocina, desempleo de larga duración) — ver
 `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2 para el detalle de
 qué falta y por qué.
 
+### 3b. Outcome: pobreza monetaria (ingreso per cápita, FGT0/FGT1)
+
+El nuevo outcome principal según el giro propuesto por el tutor el
+2026-10-27. Ingreso laboral desde `INGLABO` (variable ya imputada por el
+DANE — un primer intento reconstruyendo a mano desde `P6500` falló por
+47,7 % de no respuesta en esa pregunta) + ingreso no laboral
+(`otros_ingresos`, `no_ocupados`), agregado al hogar y dividido entre
+`hog_num_personas`. Clasificado contra las líneas oficiales del DANE
+2024 (urbano $510.161/rural $291.998 mensual per cápita, boletín técnico
+Pobreza Monetaria). Validación contra las cifras oficiales nacionales:
+
+| Indicador | Construido | Oficial DANE 2024 |
+|---|---|---|
+| FGT0 pobreza | 38,7 % | 31,8 % |
+| FGT1 pobreza | 19,5 % | 12,6 % |
+| FGT0 pobreza extrema | 18,8 % | 11,7 % |
+| FGT1 pobreza extrema | 10,7 % | 4,5 % |
+
+Sobreestimación sistemática de 6-7 puntos porcentuales en las cuatro
+métricas — consistente con no replicar la imputación de subreporte no
+laboral ni el ajuste por vivienda propia de la metodología oficial del
+DANE (ver "Qué SÍ y qué NO replica" en el detalle), no con un error de
+construcción. El patrón urbano/rural (rural más pobre) se mantiene en la
+dirección correcta. **Aún no está conectado a `5_estimacion.py`** — es
+la siguiente pieza natural del pipeline causal, pendiente. Detalle
+completo en `RESULTADOS_POBREZA_MONETARIA.md`.
+
 ### 4. ATE / ATT / ATU (`LinearDML`)
 
 | Outcome | ATE | ATT | ATU |
@@ -292,6 +323,23 @@ datos reales el supuesto que hasta ahora solo estaba como advertencia
 narrativa, y refuerza por qué la cota de Fréchet-Manski (§5) sale tan
 ancha. Detalle en `RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
 
+### 7. Selección de variables: LASSO, Ridge y SHAP sobre el Sisbén (OE1)
+
+**No es parte del pipeline causal** — responde al OE1 por separado: ¿qué
+variables del hogar predicen mejor el `Grupo` (A-D) que asigna el
+Sisbén? Sobre 150.000 hogares (submuestra estratificada de 3,09
+millones), `viv_pisos` es la variable individual más importante en los
+tres métodos (LASSO, Ridge, SHAP sobre un `RandomForestClassifier`).
+LASSO y Ridge casi no difieren entre sí (Spearman 0,988); SHAP reordena
+el tercio medio de la tabla, subiendo `hog_num_personas` y `viv_
+alcantarillado` — evidencia de interacciones no lineales que los modelos
+lineales no capturan. Ninguna variable fue eliminada por LASSO. Exactitud
+~53 % (línea base de predecir siempre la clase mayoritaria: ~30 %) — las
+variables disponibles explican una parte real pero parcial de la
+clasificación, el resto depende de las privaciones internas del Sisbén
+(`I1`-`I15`/`H_5`) que, por circularidad, no se usan como predictores.
+Detalle en `RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+
 ## Limitaciones que aplican a TODO lo anterior
 
 - El tratamiento (`Grupo_hotdeck`) es imputado por emparejamiento
@@ -318,9 +366,11 @@ poetry run python -m src.emparejamiento.emparejamiento_hotdeck_geih_sisben
 poetry run python -m src.validacion.comparar_filtros_sdp
 poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
+poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
+poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run pytest tests/
 ```
 

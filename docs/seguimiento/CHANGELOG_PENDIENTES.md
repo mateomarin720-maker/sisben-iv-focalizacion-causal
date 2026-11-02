@@ -2,6 +2,210 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (7) — Homologación de paredes y pisos con la ficha del Sisbén IV; bug de agosto
+
+### Añadido
+- `docs/insumos/FICHA_SISBEN_IV_FCS_2017.pdf`: ficha de caracterización
+  socioeconómica del Sisbén IV (DNP), con los códigos de respuesta.
+- `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`: escala común de
+  paredes (7 categorías) y pisos (5), verificada contra `I13`/`I14` del
+  DNP (patrón 0 %/100 % idéntico a la regla oficial del IPM).
+
+### Resuelto
+- `viv_paredes`/`viv_pisos` homologadas entre GEIH y Sisbén nacional. Los
+  códigos crudos no son comparables (pisos en orden inverso). Bogotá
+  (SDP) coherente pero sin verificar con privaciones.
+- `geo_zona`: 1 = urbano en las dos fuentes.
+
+### Bug encontrado (sin corregir)
+- Agosto de GEIH viene de `.DTA` y sus códigos quedaron como `"1.0"`/`"2.0"`.
+  Las comparaciones de texto fallan en ese mes: `sin_alcantarillado` y
+  `sin_acueducto` = 0 %, `POBRE_GEIH` = 6,9 % (≈17 % el resto del año),
+  `POBRE_MONETARIO` = 53,3 % (≈39 %). Afecta el 8,4 % de la muestra y
+  todos los resultados que usan esos outcomes.
+
+## 2026-11-02 (6) — Pobreza monetaria: auditoría de variables y metodología (Fase 1)
+
+### Añadido
+- `src/indicadores/inventario_ingresos_geih.py` →
+  `docs/reports/inventario_ingresos_geih.csv`: 46 variables de ingreso con
+  componente, periodicidad, relación con `INGLABO`, tratamiento propuesto
+  y cobertura en los 12 meses.
+- `docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md`:
+  auditoría y metodología propuesta, en espera de revisión.
+
+### Hallazgos
+- La cifra oficial cruza GEIH con registros administrativos (ayudas
+  institucionales, PILA): no es reproducible con microdatos públicos.
+- `INGLABO` no está imputado; corrige afirmaciones previas del proyecto.
+- `P7510S7A1` (ocasionales) se debe excluir; primas anuales, auxilios y
+  extras no incluidos faltan en el outcome actual.
+- Unidad de gasto: `P6050` = 10 es servicio doméstico; pensionista es el
+  11 o el 12 (sin resolver, 0,04 % de la muestra).
+- Factor anual `FEX_C18/12`; sin duplicados entre meses; FGT oficial
+  sobre personas.
+
+### Pendiente (requiere revisión)
+- Decisiones D1-D7 de la auditoría; no se construyó el agregado.
+
+## 2026-11-02 (5) — Pobreza monetaria conectada a DML/Causal Forest
+
+### Cambiado
+- `src/5_estimacion.py`: lee `muestra_estimacion_monetaria_2024.parquet`
+  (superset de la muestra anterior) y agrega dos outcomes —
+  `log_ingreso_percapita` (`log1p`) y `POBRE_MONETARIO` — a los dos de
+  IPM-GEIH. Corre 4 outcomes × 2 especificaciones de `W` (proxy continuo
+  vs. celda exacta del Hot-Deck).
+
+### Resultado
+- Con la celda exacta, el ATE de `log_ingreso_percapita` pasa de -0,0317
+  a -0,0468 y el de `POBRE_MONETARIO` de +0,0136 a +0,0152: se amplían en
+  vez de encogerse, al contrario de `ipm_geih_score` (-63 %). Los números
+  de IPM-GEIH no cambian frente a la corrida anterior. Ver
+  `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
+
+### Revisado
+- `viv_paredes`/`viv_pisos` frente a la auditoría de la entrada (4): la
+  matriz homologa los códigos GEIH contra la regla oficial del IPM, no
+  contra las categorías del Sisbén. Siguen sin homologar con Sisbén.
+
+### Cotas de Fréchet-Manski
+- `src/estimacion/cotas_frechet_manski.py` recorre `POBRE_GEIH` y
+  `POBRE_MONETARIO` (lee la muestra monetaria). `POBRE_GEIH` reproduce la
+  cota anterior; `POBRE_MONETARIO` da [-0,5886; +0,7035], ancho 1,29.
+  Ninguna celda excluye el 0 de forma informativa (las 6 que marca un
+  filtro numérico tienen `P(Y=1|X)=1` y cota [0; 0]).
+
+### Pendiente
+- Angostar las cotas con supuestos MTS/MTR.
+
+## 2026-11-02 (4) — Comparación de proxies del IPM: auditoría y matriz de homologación (rama `comparacion-proxies-ipm`)
+
+### Añadido
+- `src/indicadores/inventario_variables_geih.py`: inventario de las
+  columnas GEIH 2024 frente al diccionario oficial y al código del
+  proyecto (`docs/reports/inventario_variables_geih.csv`).
+- `src/indicadores/homologacion_ipm.py`: matriz GEIH ↔ Sisbén de las 15
+  privaciones con la regla oficial del DANE (met-IPM, pp. 15-26) y
+  diagnóstico de insumos por población de referencia. Genera
+  `docs/metodologia/comparacion_proxies/01_matriz_homologacion.{md,csv}`
+  y `docs/reports/diagnostico_insumos_homologacion.csv`. Resultado: 12
+  homologables, 1 parcial (trabajo infantil, solo 15-17), 2 no
+  disponibles (primera infancia, barreras de salud).
+- `docs/metodologia/comparacion_proxies/00_auditoria_variables.md`:
+  inventario, diferencias de `IPM_GEIH_BASE` frente a la regla oficial,
+  hallazgos y decisiones pendientes de revisión.
+- `tests/test_homologacion_ipm.py`: todo código GEIH/Sisbén de la matriz
+  debe existir en su diccionario oficial.
+
+### Corregido
+- `poetry.lock` regenerado: estaba desactualizado frente a
+  `pyproject.toml` (faltaba `openpyxl`); sin cambios en las demás versiones.
+
+### Pendiente (requiere revisión antes de la Fase 3)
+- Ver §6 de `00_auditoria_variables.md`. No se construyó ningún indicador
+  nuevo ni se corrió ningún modelo.
+
+## 2026-11-02 (3) — Pobreza monetaria: ingreso per cápita y FGT0/FGT1
+
+### Añadido
+- **`src/3b_preprocesamiento_monetario.py`**: nuevo outcome principal
+  según el giro propuesto por el tutor el 2026-10-27 — pobreza monetaria
+  en vez de (o además de) el IPM-GEIH. Construye `ingreso_hogar_mensual`
+  (ingreso laboral desde `INGLABO` + no laboral desde `otros_ingresos`/
+  `no_ocupados`, agregado a TODOS los miembros del hogar),
+  `ingreso_percapita`, `POBRE_MONETARIO`/`POBRE_EXTREMO_MONETARIO` y las
+  brechas FGT1, comparando contra las líneas de pobreza oficiales del
+  DANE 2024 por zona urbano/rural.
+- **`docs/insumos/DANE_boletin_PM_2024.pdf`**: boletín técnico oficial
+  *Pobreza Monetaria en Colombia 2024* del DANE, descargado y guardado
+  como referencia permanente — fuente de las líneas de pobreza
+  ($460.198 nacional, $510.161 cabeceras, $291.998 resto; extrema
+  $227.220/$242.389/$176.154) y de las cifras FGT0/FGT1 oficiales
+  (31,8%/12,6% pobreza; 11,7%/4,5% extrema) usadas para validar por
+  plausibilidad.
+- **`docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`** y
+  **`tests/test_preprocesamiento_monetario.py`** (6 pruebas: una fila
+  por hogar, ingreso no negativo/sin faltantes, casos de borde de
+  clasificación de pobreza con datos sintéticos, brecha entre 0 y 1,
+  `ingreso_percapita` NaN sin personas).
+
+### Corregido durante la construcción (documentado, no solo el número final)
+- **Primer intento descartado**: reconstruir el ingreso laboral sumando
+  `P6500` (empleo principal) + horas extra/primas/bonificaciones (según
+  sus sub-preguntas de doble conteo) + subsidios + pago en especie — tal
+  como sugiere el cuestionario, sin usar ninguna variable derivada. Dio
+  FGT0=53,6%/FGT1=39,0%, muy por encima de lo oficial (31,8%/12,6%) — no
+  el margen esperable de una aproximación sin imputación, un orden de
+  magnitud distinto.
+- **Causa**: `P6500` por sí solo tiene **47,7% de no respuesta** entre
+  personas ocupadas (13.751 de 28.815 en enero) — el script trataba esos
+  vacíos como ingreso $0 en vez de "no informa", inflando el conteo de
+  hogares con ingreso 0 (21,4%, implausible) y sobre todo FGT1 (un hogar
+  con ingreso real alto pero `P6500` vacío contribuía brecha de pobreza
+  100% en vez de 0%).
+- **Corrección**: el módulo `ocupados` trae `INGLABO`, la variable de
+  ingreso laboral que el DANE ya imputa internamente (reduce la no
+  respuesta de 47,7% a 4,3%). Usarla en vez de reconstruir a mano bajó el
+  % de hogares con ingreso 0 de 21,4% a 4,1%, y las cuatro FGT pasaron de
+  estar 1,5-3 veces por encima de lo oficial a estar 6-7 puntos
+  porcentuales por encima — una sobreestimación sistemática consistente
+  con no replicar la imputación de subreporte no laboral ni el ajuste
+  por vivienda propia de la metodología oficial del DANE, no un error de
+  construcción.
+
+### Documentación actualizada
+`docs/resultados/README.md` (nueva fila §3b y sección), `docs/README.md`,
+`docs/seguimiento/RESUMEN_AVANCES.md` (§3g, tabla de pipeline,
+pendientes, referencias), `src/README.md`, `CLAUDE.md` (bloque de
+validación).
+
+### Pendiente (no hecho en esta corrida)
+Conectar `muestra_estimacion_monetaria_2024.parquet` a
+`src/5_estimacion.py` como outcome causal (DML/Causal Forest), y repetir
+el diagnóstico `W` proxy vs. celda exacta
+(`DIAGNOSTICO_W_CELDA_EXACTA.md`) sobre este outcome.
+
+## 2026-11-02 (2) — OE1: selección de variables con LASSO, Ridge y SHAP
+
+### Añadido
+- **`src/estimacion/seleccion_variables_lasso_shap.py`**: responde al
+  OE1 ("determinar grupos y subgrupos de variables para LASSO, Ridge y
+  SHAP") por separado del pipeline causal — no estima ningún efecto,
+  solo qué variables del hogar predicen mejor el `Grupo` (A-D) del
+  Sisbén. Predictores: `hog_num_personas`/`viv_cuartos`/`jefe_edad`
+  (numéricas, orden establecido) y `viv_paredes`/`viv_pisos`/`viv_
+  alcantarillado`/`viv_acueducto`/`jefe_sexo`/`geo_zona` (one-hot,
+  dirección sin verificar, mismo criterio que evitó el bug de
+  `LinearDRLearner` con categóricas sin orden); `geo_depto` como control
+  geográfico aparte. Nunca usa `I1`-`I15`/`H_5` como predictor — serían
+  circulares con el propio `Grupo` que se calcula a partir de ellas.
+  150.000 hogares (submuestra estratificada de 3,09 millones).
+- **`docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`**:
+  resultado completo. `viv_pisos` es la variable individual más
+  importante en los tres métodos (LASSO, Ridge, SHAP sobre un
+  `RandomForestClassifier`). LASSO y Ridge casi no difieren (Spearman
+  0,988); SHAP reordena el tercio medio de la tabla (sube `hog_num_
+  personas` y `viv_alcantarillado`) — evidencia de interacciones no
+  lineales. Ninguna variable eliminada por LASSO. Exactitud ~53 % en las
+  tres (línea base de predecir siempre la clase mayoritaria: ~30 %).
+
+### Corregido (de paso, API de sklearn)
+- `LogisticRegressionCV` en sklearn 1.9 deprecó `multi_class` y está
+  deprecando `penalty` en favor de `l1_ratios` (se eliminará en 1.10) —
+  el script usa ya la API nueva (`l1_ratios=[1.0]`/`[0.0]`,
+  `use_legacy_attributes=False`), confirmado con `-W error::FutureWarning`
+  que no queda ningún warning pendiente.
+- `scipy` se declara explícito en `pyproject.toml` (antes solo llegaba
+  como dependencia transitiva de scikit-learn; el script lo importa
+  directo para `spearmanr`).
+
+### Documentación actualizada
+`docs/resultados/README.md` (nueva fila §7 y sección "Resumen por
+paso"), `docs/seguimiento/RESUMEN_AVANCES.md` (§3f, tabla de pipeline,
+pendientes, referencias), `src/estimacion/README.md`, `CLAUDE.md`
+(bloque de validación).
+
 ## 2026-11-02 — Diagnóstico W proxy vs. celda exacta, rotulado ATT/ATU, higiene
 
 ### Añadido

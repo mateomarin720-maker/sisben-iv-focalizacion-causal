@@ -18,6 +18,11 @@ Esta carpeta (`src/estimacion/`) contiene dos cosas distintas:
 - `cotas_frechet_manski.py`: parte vigente del pipeline — cotas de
   robustez para el ATE que NO suponen independencia condicional (a
   diferencia del DML). Resultado: `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+- `seleccion_variables_lasso_shap.py`: parte vigente, pero de OE1, no del
+  pipeline causal — LASSO/Ridge/SHAP sobre el Sisbén para ver qué
+  variables del hogar predicen mejor el `Grupo` (A-D). No estima ningún
+  efecto, es selección/importancia de variables. Resultado:
+  `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 
 Lo que sigue documenta la corrida de prueba original, útil para entender
 el razonamiento que llevó a la corrida oficial.
@@ -78,6 +83,8 @@ importancia en el Causal Forest). Ver el análisis formal de d-separación en
 ```bash
 poetry run python -m src.estimacion.preparar_outcome_prueba_empleo
 poetry run python -m src.estimacion.prueba_ate_att_cate
+poetry run python -m src.estimacion.cotas_frechet_manski
+poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 ```
 
 Requiere `econml>=0.17`, `shap>=0.51` y `scikit-learn>=1.9` (ver

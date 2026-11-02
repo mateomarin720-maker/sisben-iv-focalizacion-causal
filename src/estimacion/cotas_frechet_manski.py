@@ -25,14 +25,16 @@ cuartos):
 Agregado a ATE ponderando por el peso poblacional de cada celda en GEIH
 (`FEX_C18`/`fex`).
 
-Outcome: `POBRE_GEIH` (binario) — las cotas de Fréchet-Hoeffding para un
-outcome continuo (`ipm_geih_score`) requieren acotar la CDF conjunta
-completa, más trabajo; queda fuera de este primer corte (ver "Próximo
-paso" al final).
+Outcomes: `POBRE_GEIH` y `POBRE_MONETARIO` (binarios). Las cotas de
+Fréchet-Hoeffding para un outcome continuo (`ipm_geih_score`,
+`log_ingreso_percapita`) requieren acotar la CDF conjunta completa;
+quedan fuera de este corte. Los hogares sin `POBRE_MONETARIO` (sin
+personas, ingreso per cápita indefinido) se excluyen de su cálculo.
 
-Uso:
+Uso (requiere 3b_preprocesamiento_monetario.py):
     poetry run python -m src.estimacion.cotas_frechet_manski
-Salida: docs/reports/cotas_frechet_manski.csv (detalle por celda) +
+Salida: detalle por celda en docs/reports/cotas_frechet_manski.csv
+        (POBRE_GEIH) y cotas_frechet_manski_pobre_monetario.csv, más un
         resumen impreso en consola.
 """
 from __future__ import annotations
@@ -48,22 +50,25 @@ from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celd
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-GEIH_PATH = Path("data/2_models/muestra_estimacion_2024.parquet")
+GEIH_PATH = Path("data/2_models/muestra_estimacion_monetaria_2024.parquet")
 SISBEN_PATH = Path("data/2_models/sisben_estandarizado_2024_con_bogota.parquet")
-REPORT = Path("docs/reports/cotas_frechet_manski.csv")
+OUTCOMES = {
+    "POBRE_GEIH": Path("docs/reports/cotas_frechet_manski.csv"),
+    "POBRE_MONETARIO": Path("docs/reports/cotas_frechet_manski_pobre_monetario.csv"),
+}
 
 
-def _p_y_por_celda(geih: pd.DataFrame) -> pd.DataFrame:
+def _p_y_por_celda(geih: pd.DataFrame, y_col: str) -> pd.DataFrame:
     """P(Y=1|X) en GEIH, ponderado por el factor de expansión (encuesta
     compleja) — a diferencia de Sisbén, GEIH SÍ trae un diseño muestral
     real y hay que respetarlo."""
-    geih = geih.copy()
+    geih = geih[geih[y_col].notna()].copy()
     geih["celda"] = construir_celda(geih, edad_en_codigos=False)
     geih["fex"] = pd.to_numeric(geih["fex"], errors="coerce").fillna(0)
-    geih["y1"] = geih["POBRE_GEIH"].astype(float) * geih["fex"]
+    geih["y1"] = geih[y_col].astype(float) * geih["fex"]
 
     agg = geih.groupby("celda").agg(
-        n_geih=("POBRE_GEIH", "size"),
+        n_geih=(y_col, "size"),
         peso_fex=("fex", "sum"),
         y1_fex=("y1", "sum"),
     )
@@ -83,8 +88,8 @@ def _p_t_por_celda(sisben: pd.DataFrame) -> pd.DataFrame:
     return agg
 
 
-def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame) -> pd.DataFrame:
-    py = _p_y_por_celda(geih)
+def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame, y_col: str = "POBRE_GEIH") -> pd.DataFrame:
+    py = _p_y_por_celda(geih, y_col)
     pt = _p_t_por_celda(sisben)
     df = py.join(pt, how="inner")  # solo celdas con info de AMBAS fuentes
 
@@ -111,35 +116,34 @@ def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame) -> pd.DataFrame:
 
 def main() -> None:
     logger.info("Cargando %s y %s", GEIH_PATH, SISBEN_PATH)
-    geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "fex", "POBRE_GEIH"])
+    geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "fex", *OUTCOMES])
     sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "Grupo", "Clasificacion"])
-
-    df = cotas_por_celda(geih, sisben)
-    df = df.dropna(subset=["cate_lo", "cate_hi"])
-
-    cobertura = df["peso_fex"].sum()
     total_geih = pd.to_numeric(geih["fex"], errors="coerce").fillna(0).sum()
-    logger.info(
-        "Celdas con info de ambas fuentes: %s | cobertura poblacional GEIH: %.1f%%",
-        len(df), cobertura / total_geih * 100,
-    )
 
-    w = df["peso_fex"] / cobertura
-    ate_lo = (w * df["cate_lo"]).sum()
-    ate_hi = (w * df["cate_hi"]).sum()
+    for y_col, report in OUTCOMES.items():
+        df = cotas_por_celda(geih, sisben, y_col)
+        df = df.dropna(subset=["cate_lo", "cate_hi"])
 
-    REPORT.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(REPORT, index=False)
+        cobertura = df["peso_fex"].sum()
+        w = df["peso_fex"] / cobertura
+        ate_lo = (w * df["cate_lo"]).sum()
+        ate_hi = (w * df["cate_hi"]).sum()
+        p_y = (w * df["p_y"]).sum()
 
-    print("\n=== Cotas de Fréchet-Manski — ATE sobre POBRE_GEIH ===")
-    print(f"Celdas usadas: {len(df)} | cobertura poblacional GEIH: {cobertura / total_geih * 100:.1f}%")
-    print(f"\nATE (Fréchet-Manski, SIN suponer independencia condicional): [{ate_lo:+.4f}, {ate_hi:+.4f}]")
+        report.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(report, index=False)
+
+        print(f"\n=== Cotas de Fréchet-Manski — ATE sobre {y_col} ===")
+        print(f"Celdas usadas: {len(df)} | cobertura poblacional GEIH: {cobertura / total_geih * 100:.1f}%")
+        print(f"P(Y=1) ponderada en las celdas usadas: {p_y:.4f}")
+        print(f"ATE (Fréchet-Manski, SIN suponer independencia condicional): [{ate_lo:+.4f}, {ate_hi:+.4f}]")
+        print(f"Ancho de la cota: {ate_hi - ate_lo:.4f}")
+        print(f"Detalle por celda: {report}")
+
     print(
-        "ATE (DML con Hot-Deck, SÍ supone CIA): ver docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md "
-        "(el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda)."
+        "\nATE puntual del DML con Hot-Deck (SÍ supone CIA): ver "
+        "docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md — no se hardcodea aquí."
     )
-    print(f"\nAncho de la cota Fréchet-Manski: {ate_hi - ate_lo:.4f} (vs. ancho del IC95% del DML: 0.0068)")
-    print(f"\nGuardado detalle por celda: {REPORT}")
 
 
 if __name__ == "__main__":
