@@ -60,17 +60,18 @@ qué"). Los números de este documento ya reflejan la corrección final.
 
 Outcome: `ipm_geih_score` (IPM-GEIH ampliado, 8 de 15 privaciones, 0-8 —
 empezó en 10, 2 se retiraron el mismo día por tautología con `X`, ver
-abajo) y `POBRE_GEIH` (binario, score≥3, 16,3 % de los hogares).
+abajo) y `POBRE_GEIH` (binario, score≥3, 17,1 % de los hogares). Cifras
+regeneradas el 2026-11-02 tras corregir el bug de agosto (ver §3i).
 Tratamiento: `T=1` si `Grupo_hotdeck ∈ {A,B}`. `W` = celda completa del
 Hot-Deck (depto+edad+cuartos, `viv_cuartos` corregido); `X` = `geo_zona`,
 `jefe_sexo`, `viv_paredes`, `viv_pisos` (código GEIH corregido).
 
 | Modelo | `ipm_geih_score` | `POBRE_GEIH` |
 |---|---|---|
-| ATE (`LinearDML`) | +0,0206 [IC95% +0,0141;+0,0272] | +0,0052 [IC95% +0,0029;+0,0075] |
-| ATT | +0,0214 [+0,0146;+0,0281] | +0,0055 [+0,0032;+0,0079] |
-| ATU | +0,0193 [+0,0130;+0,0256] | +0,0046 [+0,0025;+0,0067] |
-| CATE medio (`CausalForestDML`) | +0,0237 (rural +0,0538 vs. urbana +0,0193) | +0,0041 (rural +0,0203 vs. urbana +0,0017) |
+| ATE (`LinearDML`) | +0,0235 [IC95% +0,0170;+0,0301] | +0,0056 [IC95% +0,0034;+0,0079] |
+| ATT | +0,0245 [+0,0177;+0,0312] | +0,0060 [+0,0036;+0,0083] |
+| ATU | +0,0219 [+0,0156;+0,0283] | +0,0049 [+0,0029;+0,0070] |
+| CATE medio (`CausalForestDML`) | +0,0228 (rural +0,0448 vs. urbana +0,0195) | +0,0033 (rural +0,0139 vs. urbana +0,0017) |
 
 **Chequeo de tautología (2026-10-28):** 2 de las 10 privaciones
 originales (`material_pisos_inadecuado`/`material_paredes_inadecuado`)
@@ -114,8 +115,8 @@ mismo script para comparar directo:
 
 | Outcome | `W` proxy (ATE) | `W` celda exacta (ATE) | Cambio |
 |---|---|---|---|
-| `ipm_geih_score` | +0,0206 [+0,0141;+0,0272] | **+0,0076 [+0,0008;+0,0143]** | -63 %, ATU deja de excluir 0 |
-| `POBRE_GEIH` | +0,0052 [+0,0029;+0,0075] | +0,0049 [+0,0026;+0,0072] | -6 %, sigue excluyendo 0 |
+| `ipm_geih_score` | +0,0235 [+0,0170;+0,0301] | **+0,0098 [+0,0029;+0,0166]** | -58 %, ATU apenas sobre 0 |
+| `POBRE_GEIH` | +0,0056 [+0,0034;+0,0079] | +0,0058 [+0,0035;+0,0081] | +4 %, sigue excluyendo 0 |
 
 **El proxy SÍ inflaba el efecto para `ipm_geih_score`, pero NO para
 `POBRE_GEIH`.** La simulación de identificación predice ≈0 bajo un
@@ -137,10 +138,11 @@ de GEIH y `P(T|X)` directo de Sisbén, sin pasar por el Hot-Deck:
 
 | | Estimador | Rango (`POBRE_GEIH`) |
 |---|---|---|
-| Fréchet-Manski (sin CIA) | Cota | **[-0,4083; +0,3080]** |
-| DML con Hot-Deck (con CIA) | Punto + IC95% | +0,0052 [+0,0029; +0,0075] |
+| Fréchet-Manski (sin CIA) | Cota | **[-0,4114; +0,3230]** |
+| DML con Hot-Deck, celda exacta (con CIA) | Punto + IC95% | +0,0058 [+0,0035; +0,0081] |
 
-La cota sin CIA es **~156 veces más ancha**, y ninguna de las 365 celdas
+Para `POBRE_MONETARIO`: [-0,5817; +0,6877] frente a +0,0158. La cota sin
+CIA es **~160 veces más ancha**, y ninguna de las 365 celdas
 individuales (celda con `viv_cuartos` corregido) logra excluir el cero
 por su cuenta. **Confirma que toda la precisión del resultado del DML
 depende de la suposición del Hot-Deck, no de los datos crudos** — no es
@@ -164,7 +166,7 @@ la cota de Fréchet-Manski (§3c) sale tan ancha. Detalle en
 Se agregaron variantes de umbral al outcome (`POBRE_GEIH_K1`...`K8`,
 `src/3_preprocesamiento.py`) y validaciones obligatorias automatizadas
 (`_validar()` + `tests/test_preprocesamiento.py`). La tasa de pobreza
-cambia de 79,8 % (K≥1) a ~0 % (K≥7-8) según el corte — K=3 (16,3 %) se
+cambia de 77,9 % (K≥1) a ~0 % (K≥7-8) según el corte — K=3 (17,1 %) se
 mantiene por ser el más cercano en orden de magnitud a la tasa oficial de
 IPM (13,0 %).
 
@@ -232,7 +234,8 @@ circularidad. Detalle completo en
 ## 3g. Pobreza monetaria: ingreso per cápita, FGT0/FGT1 (2026-11-02)
 
 El nuevo outcome principal según el giro del tutor (2026-10-27).
-Ingreso laboral desde `INGLABO` (ya imputado por el DANE) + ingreso no
+Ingreso laboral desde `INGLABO` (consolidado del DANE, no imputado — ver
+§8 de `docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md`) + ingreso no
 laboral (`otros_ingresos`/`no_ocupados`), agregado al hogar y dividido
 entre `hog_num_personas`; clasificado contra las líneas oficiales del
 DANE 2024 por zona (urbano $510.161/rural $291.998 mensual per cápita,
@@ -241,23 +244,23 @@ boletín técnico Pobreza Monetaria, `docs/insumos/DANE_boletin_PM_2024.pdf`).
 **Primer intento descartado:** reconstruir el ingreso laboral sumando
 `P6500` + componentes adicionales dio FGT0=53,6%/FGT1=39,0% — muy por
 encima de lo oficial, no por el margen esperable de una aproximación sin
-imputación. Causa: `P6500` solo tiene 47,7% de no respuesta entre
-ocupados, y el script trataba esos vacíos como ingreso $0. Corregido
-usando `INGLABO` (la variable ya imputada por el DANE, solo 4,3% de
-faltantes).
+imputación. Causa: `P6500` solo se le pregunta a asalariados (el 47,7 %
+de vacíos eran independientes, que declaran en `P6750`), y el script los
+trataba como ingreso $0. Corregido usando `INGLABO`, que consolida el
+ingreso de cada tipo de ocupado (4,3 % de faltantes, no respuesta real).
 
 | Indicador | Construido | Oficial DANE 2024 |
 |---|---|---|
-| FGT0 pobreza | 38,7% | 31,8% |
-| FGT1 brecha pobreza | 19,5% | 12,6% |
-| FGT0 pobreza extrema | 18,8% | 11,7% |
-| FGT1 brecha pobreza extrema | 10,7% | 4,5% |
+| FGT0 pobreza | 37,6% | 31,8% |
+| FGT1 brecha pobreza | 18,3% | 12,6% |
+| FGT0 pobreza extrema | 17,6% | 11,7% |
+| FGT1 brecha pobreza extrema | 9,5% | 4,5% |
 
-Sobreestimación sistemática de 6-7 puntos porcentuales en las cuatro
-métricas — consistente con no replicar la imputación de subreporte no
-laboral ni el ajuste por vivienda propia de la metodología oficial (ver
-"Qué SÍ y qué NO replica" en el detalle), no con un error de
-construcción. El patrón urbano/rural (rural más pobre) se mantiene en la
+Sobreestimación sistemática de 5-6 puntos porcentuales en las cuatro
+métricas (cifras tras corregir el bug de agosto, §3i). La auditoría de la
+Fase 1 (`docs/metodologia/pobreza_monetaria/`) identifica siete
+diferencias metodológicas y un cruce con registros administrativos del
+DANE no reproducible con GEIH pública. El patrón urbano/rural (rural más pobre) se mantiene en la
 dirección correcta. Detalle completo en
 `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
 
@@ -272,26 +275,45 @@ celda exacta (§3b-bis). Resultado — un patrón nuevo, distinto al de
 
 | Outcome | ATE (W=PROXY) | ATE (W=CELDA EXACTA) |
 |---|---|---|
-| `log_ingreso_percapita` | -0,0317 [-0,0539;-0,0096] | -0,0468 [-0,0689;-0,0246] |
-| `POBRE_MONETARIO` | +0,0136 [+0,0101;+0,0171] | +0,0152 [+0,0118;+0,0187] |
+| `log_ingreso_percapita` | -0,0294 [-0,0479;-0,0108] | -0,0467 [-0,0653;-0,0282] |
+| `POBRE_MONETARIO` | +0,0141 [+0,0106;+0,0175] | +0,0158 [+0,0123;+0,0192] |
 
-A diferencia de `ipm_geih_score` (el efecto se encogió 63 % con la celda
-exacta), los dos outcomes monetarios se **amplían** (+48 % y +12 % en
+A diferencia de `ipm_geih_score` (el efecto se encogió 58 % con la celda
+exacta), los dos outcomes monetarios se **amplían** (+59 % y +12 % en
 magnitud) sin cambiar de signo. Bajo el sorteo aleatorio limpio del
 Hot-Deck, lo esperable es que el efecto se acerque a 0 con la celda
 exacta sin importar el efecto verdadero — que se aleje en cambio es la
 evidencia de robustez más fuerte producida hasta ahora en el proyecto, no
 solo para pobreza monetaria sino en general. No confirma causalidad por
-sí solo (sigue pendiente la homologación de `viv_paredes`/`viv_pisos` con
-Sisbén, ver punto siguiente, y confusores no observados DPS/RUI). Detalle
-completo: `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` y
+sí solo (falta probar `viv_paredes`/`viv_pisos`, ya homologadas, dentro
+de la celda del Hot-Deck, y siguen los confusores no observados DPS/RUI).
+Detalle completo: `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` y
 `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+
+## 3i. Bug de agosto corregido y pipeline regenerado (2026-11-02)
+
+Agosto de GEIH se había cargado desde `.DTA` (7 de 8 módulos) y
+`parse_stata_a_parquet` dejaba los códigos como `"1.0"` y los faltantes
+como `"nan"`. Toda comparación de texto fallaba ese mes sin dar error: 0 %
+de hogares sin alcantarillado o acueducto, `POBRE_GEIH` 6,9 % (≈17 % el
+resto del año) y `POBRE_MONETARIO` 53,3 % (≈39 %), en el 8,4 % de la
+muestra. Se corrigió el parser (con prueba en
+`tests/test_local_csv_parser.py`) y se regeneró todo: carga de GEIH,
+armonización, Hot-Deck, outcomes, estimación, cotas e inventarios.
+
+- El Hot-Deck asigna el mismo grupo al 100 % de los hogares: el
+  tratamiento no cambió, solo los outcomes.
+- `POBRE_GEIH` 16,3 % → 17,1 %; `POBRE_MONETARIO` 40,6 % → 39,4 %; FGT0
+  monetaria 38,7 % → 37,6 %.
+- Las conclusiones cualitativas se mantienen. Cambia una: el ATU de
+  `ipm_geih_score` con celda exacta ahora excluye 0 por un margen mínimo
+  ([+0,0004;+0,0137]); antes no lo excluía.
 
 ## 4. Pendientes técnicos
 - [x] **Verificar los códigos de `PER002`** (hipótesis: 3=12–17, 4=18–28, 5=29–59, 6=60+) — corroborada indirectamente el 2026-10-10 cruzando contra escolaridad/estado civil/pensión en la base completa de Personas; falta la ficha oficial de ANDA. Ver `docs/insumos/DICCIONARIO_HOTDECK.md` §5.
 - [x] **Sumar variables de vivienda a la celda** — hecho parcialmente el 2026-10-21: se sumó `viv_cuartos` (conteo, seguro de usar sin homologar categorías; código corregido el 2026-10-28). `viv_paredes`/`viv_pisos` siguen fuera — ver el punto siguiente.
 - [x] **Conseguir la ficha técnica/diccionario oficial de variables de GEIH** — resuelto 2026-10-28 (`docs/insumos/DICCIONARIO_GEIH_2024.xlsx`, 761 filas, portal de microdatos DANE). Permitió corregir `viv_paredes`/`viv_pisos`/`viv_cuartos` y ampliar el indicador de 4 a 8 privaciones (pasó por 10 el mismo día, 2 se retiraron por tautología con `X`) — ver §3e y `docs/resultados/README.md`.
-- [ ] **Corregir el bug de agosto (códigos `"1.0"` del `.DTA`) y regenerar todos los resultados** — ver CHANGELOG 2026-11-02 (7). Prioritario: invalida los números actuales de `POBRE_GEIH`, `POBRE_MONETARIO` y todo lo que depende de ellos.
+- [x] **Corregir el bug de agosto (códigos `"1.0"` del `.DTA`) y regenerar todos los resultados** — hecho 2026-11-02, ver §3i.
 - [x] **Homologar `viv_paredes`/`viv_pisos` con Sisbén** — hecho 2026-11-02 con la ficha del Sisbén IV, ver `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`. `geo_zona` también verificada (1 = urbano en las dos fuentes). Pendiente decidir si se suman a la celda del Hot-Deck.
 - [ ] (Histórico, superado por el punto anterior) Verificar categorías de `geo_zona`, `jefe_sexo` entre fuentes (sin cambios, código GEIH de `viv_paredes`/`viv_pisos` ya confirmado el 2026-10-28) — **sigue siendo el bloqueador principal para sumar vivienda categórica a la celda**: el ATE/ATT/ATU/CATE real (§3b) no colapsa a 0 y la pista más fuerte apunta a `viv_pisos`/`viv_paredes`, ahora con el código correcto pero categorías Sisbén sin homologar. Revisado otra vez el 2026-11-02 contra la auditoría de `docs/metodologia/comparacion_proxies/` (PR #9): esa matriz homologa `P4010`/`P4020` contra la regla oficial del IPM (DANE, `met-IPM.pdf`), no contra las categorías de `VIV002`/`VIV003` del Sisbén, y deja la columna Sisbén pendiente por la misma razón — falta el documento metodológico del DNP. Siguen sin ser equivalentes verificadas.
 - [x] Ubicar en GEIH los equivalentes de `HOG027`, `VIV005`, `VIV008` — resuelto 2026-10-28 (`P6008`, `P4030S3`, `P4030S5`).
@@ -305,9 +327,9 @@ completo: `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` y
 - [x] **OE1 (LASSO/Ridge/SHAP sobre el Sisbén)** — hecho 2026-11-02, ver §3f y `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 - [x] **Construir pobreza monetaria (ingreso per cápita, FGT0/FGT1)** — hecho 2026-11-02, ver §3g y `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
 - [x] **Conectar pobreza monetaria a `5_estimacion.py`** — hecho 2026-11-02, con el diagnóstico `W` proxy vs. celda exacta repetido sobre `log_ingreso_percapita`/`POBRE_MONETARIO` (ver §3h). Los dos efectos se amplían con la celda exacta en vez de encogerse.
-- [x] **Cotas de Fréchet-Manski sobre `POBRE_MONETARIO`** — hecho 2026-11-02: [-0,5886; +0,7035], más ancha que la de `POBRE_GEIH` (las dos marginales están más cerca de 0,5). Ninguna celda excluye el 0 de forma informativa; el +0,0152 del DML depende por completo de la CIA. Ver `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+- [x] **Cotas de Fréchet-Manski sobre `POBRE_MONETARIO`** — hecho 2026-11-02: [-0,5817; +0,6877], más ancha que la de `POBRE_GEIH` (las dos marginales están más cerca de 0,5). Ninguna celda excluye el 0; el +0,0158 del DML depende por completo de la CIA. Ver `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
 - [ ] Angostar las cotas con supuestos MTS/MTR (Manski, 2003) — la cota sin supuestos no es informativa para ningún outcome.
-- [x] **Especificación de `W`: probar la celda EXACTA del Hot-Deck, no solo el proxy continuo** — hecho 2026-11-02, ver §3b-bis y `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`. Resultado dividido: explica el 63 % del efecto de `ipm_geih_score` pero casi nada del de `POBRE_GEIH`.
+- [x] **Especificación de `W`: probar la celda EXACTA del Hot-Deck, no solo el proxy continuo** — hecho 2026-11-02, ver §3b-bis y `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`. Resultado dividido: explica el 58 % del efecto de `ipm_geih_score` pero casi nada del de `POBRE_GEIH`.
 - [x] **Rotulado ATT/ATU** ("error de inclusión"/"error de exclusión" era una etiqueta engañosa, no un error de cómputo) — corregido 2026-11-02 en `src/5_estimacion.py` y `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
 - [x] **Advertencias:** se probó quitar `warnings.filterwarnings("ignore")` de `src/5_estimacion.py` (con `-W always`, incluido un `CausalForestDML` completo a 80.000 filas) — no genera ningún warning en este entorno; el filtro no estaba ocultando nada real. Eliminado 2026-11-02.
 - [ ] **Rehacer `corrige-controles-celda` y `simulacion-identificacion`** sobre `main` actual — ambas se bifurcaron antes del diccionario GEIH (2026-10-28) y fusionarlas tal cual revertiría esta semana de correcciones. `simulacion-identificacion` trae código valioso (`simulacion_identificacion.py`) que no existe en `main` y que sustenta el diagnóstico de §3b-bis — rescatar ese archivo primero.

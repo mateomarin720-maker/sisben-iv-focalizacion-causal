@@ -121,26 +121,30 @@ teoría (ver tabla abajo).
 
 ## Resultado
 
-Ingreso per cápita mensual: media $1.045.313, mediana $621.586.
+Cifras regeneradas el 2026-11-02 tras corregir el bug de agosto (en ese
+mes los ingresos no laborales se perdían por los códigos `"1.0"` del
+`.DTA`; antes: FGT0 38,7 %, FGT1 19,5 %, extrema 18,8 % y 10,7 %).
+
+Ingreso per cápita mensual: media $1.070.362, mediana $645.000.
 
 | Indicador | Construido | Oficial DANE 2024 | Diferencia |
 |---|---|---|---|
-| FGT0 pobreza monetaria | 38,7 % | 31,8 % | +6,9 pp |
-| FGT1 brecha pobreza monetaria | 19,5 % | 12,6 % | +6,9 pp |
-| FGT0 pobreza extrema | 18,8 % | 11,7 % | +7,1 pp |
-| FGT1 brecha pobreza extrema | 10,7 % | 4,5 % | +6,2 pp |
+| FGT0 pobreza monetaria | 37,6 % | 31,8 % | +5,8 pp |
+| FGT1 brecha pobreza monetaria | 18,3 % | 12,6 % | +5,7 pp |
+| FGT0 pobreza extrema | 17,6 % | 11,7 % | +5,9 pp |
+| FGT1 brecha pobreza extrema | 9,5 % | 4,5 % | +5,0 pp |
 
 Por zona:
 
 | Dominio | FGT0 construido | FGT0 oficial | FGT1 construido |
 |---|---|---|---|
-| Cabeceras (urbano) | 36,6 % | 28,6 % | 18,2 % |
-| Centros poblados y rural disperso | 46,4 % | 42,5 % | 24,1 % |
+| Cabeceras (urbano) | 35,4 % | 28,6 % | 17,0 % |
+| Centros poblados y rural disperso | 45,7 % | 42,5 % | 23,1 % |
 
 ## Cómo leerlo
 
 - **La sobreestimación es sistemática y de magnitud razonable** (todas
-  las FGT construidas quedan 6-7 puntos porcentuales por encima de la
+  las FGT construidas quedan 5-6 puntos porcentuales por encima de la
   oficial, no un orden de magnitud distinto) — consistente con lo
   esperado de no replicar los pasos (2)-(5) de la metodología del DANE,
   no con un error de construcción. Es la misma lógica de validación por
@@ -148,12 +152,12 @@ Por zona:
   espera coincidencia exacta, se espera un orden de magnitud razonable.
 - **El patrón urbano/rural se mantiene en la dirección correcta**
   (rural más pobre que urbano en ambas versiones), aunque la brecha
-  construida entre zonas (9,8 pp) es más chica que la oficial (13,9 pp)
+  construida entre zonas (10,3 pp) es más chica que la oficial (13,9 pp)
   — posible señal de que la imputación faltante afecta de forma
   distinta a cada dominio, sin investigar más por ahora.
 - **FGT1 sobreestima proporcionalmente más que FGT0** en pobreza extrema
-  (+6,2 pp sobre una base de 4,5 %, más del doble) que en pobreza
-  moderada (+6,9 pp sobre 12,6 %, poco más de la mitad) — consistente
+  (+5,0 pp sobre una base de 4,5 %, más del doble) que en pobreza
+  moderada (+5,7 pp sobre 12,6 %, menos de la mitad) — consistente
   con que los hogares peor medidos (sin imputación de subreporte) caen
   desproporcionadamente en la cola más pobre de la distribución.
 
@@ -190,13 +194,13 @@ Resumen:
 
 | Outcome | W = PROXY | W = CELDA EXACTA |
 |---|---|---|
-| `log_ingreso_percapita` (ATE) | -0,0317 [-0,0539;-0,0096] | -0,0468 [-0,0689;-0,0246] |
-| `POBRE_MONETARIO` (ATE) | +0,0136 [+0,0101;+0,0171] | +0,0152 [+0,0118;+0,0187] |
+| `log_ingreso_percapita` (ATE) | -0,0294 [-0,0479;-0,0108] | -0,0467 [-0,0653;-0,0282] |
+| `POBRE_MONETARIO` (ATE) | +0,0141 [+0,0106;+0,0175] | +0,0158 [+0,0123;+0,0192] |
 
 Hallazgo principal: a diferencia de `ipm_geih_score` (cuyo efecto se
-encogió 63 % al pasar al `W` con la celda exacta, señal de que el proxy
+encogió 58 % al pasar al `W` con la celda exacta, señal de que el proxy
 continuo lo inflaba), los dos outcomes monetarios **no se encogen — se
-amplían** (+48 % y +12 % en magnitud respectivamente) y el signo es
+amplían** (+59 % y +12 % en magnitud respectivamente) y el signo es
 estable (Grupo A/B del Sisbén se asocia con menor ingreso y mayor
 probabilidad de pobreza monetaria en ambas especificaciones). Bajo la
 simulación de sorteo aleatorio limpio (`simulacion_identificacion.py`),
@@ -205,9 +209,10 @@ dos outcomes se alejen de 0 en vez de acercarse es la evidencia más
 fuerte producida hasta ahora en el proyecto de que el efecto no es un
 artefacto del proxy continuo de `W`.
 
-Esto no confirma causalidad por sí solo (siguen pendientes
-`viv_paredes`/`viv_pisos` sin homologar con Sisbén y confusores no
-observados DPS/RUI), pero es la evidencia de robustez más fuerte entre
+Esto no confirma causalidad por sí solo (falta probar `viv_paredes`/
+`viv_pisos`, ya homologadas, dentro de la celda del Hot-Deck, y siguen
+los confusores no observados DPS/RUI), pero es la evidencia de robustez
+más fuerte entre
 los cuatro outcomes probados hasta ahora.
 
 ## Próximos pasos
@@ -217,7 +222,7 @@ los cuatro outcomes probados hasta ahora.
 - ~~Repetir el diagnóstico `W` proxy vs. celda exacta~~ — hecho
   2026-11-02, ver arriba y `DIAGNOSTICO_W_CELDA_EXACTA.md`.
 - ~~Correr `cotas_frechet_manski.py` sobre `POBRE_MONETARIO`~~ — hecho
-  2026-11-02: cota [-0,5886; +0,7035], contiene el 0 y el ATE del DML.
+  2026-11-02: cota [-0,5817; +0,6877], contiene el 0 y el ATE del DML.
   Sin la CIA del Hot-Deck, los datos no descartan un efecto de ningún
   signo. Ver `RESULTADOS_FRECHET_MANSKI.md`.
 

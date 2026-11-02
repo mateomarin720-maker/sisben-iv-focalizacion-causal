@@ -144,7 +144,7 @@ Interpretación y decisiones pendientes: [`00_auditoria_variables.md`](00_audito
 | Regla reproducible con GEIH | PEA = FT = 1 (Fuerza de trabajo). Privado si alguna persona con DSI = 1 tiene P7250 > 52 semanas. Hogar sin ninguna persona con FT = 1 -> privado. Pensionado: P6920 = 3 (ocupados) o P7500S2 = 1 (otros ingresos). |
 | Diferencias de definición | PEA desde 15 años (no 12). P7250 trae códigos 998/999 que el diccionario no documenta (60 casos en enero): se tratan como faltante. GEIH no tiene una pregunta directa de 'pensionado' para todas las personas: se identifica por las dos vías indicadas. |
 | Población de referencia | PEA (15 años y más en GEIH); agregación: al menos una. |
-| Disponibilidad y calidad | `FT` (15+): n = 657,803, vacío 35.82 % (vacío = inactivo, fuera de la fuerza de trabajo), no sabe 0.00 %; `P7250` (15+, DSI=1): n = 43,598, vacío 0.00 %, no sabe 1.46 % — 12 meses de GEIH 2024 apilados. |
+| Disponibilidad y calidad | `FT` (15+): n = 657,803, vacío 39.03 % (vacío = inactivo, fuera de la fuerza de trabajo), no sabe 0.00 %; `P7250` (15+, DSI=1): n = 47,395, vacío 0.00 %, no sabe 1.45 % — 12 meses de GEIH 2024 apilados. |
 | En `IPM_GEIH_BASE` (actual) | No incluida. |
 | Supuestos | P7250 >= 998 = no sabe/no informa (código no documentado). 'Más de 12 meses' = más de 52 semanas. |
 | Decisiones pendientes | Validar la identificación de pensionados (P6920 = 3, P7500S2 = 1). |
@@ -161,7 +161,7 @@ Interpretación y decisiones pendientes: [`00_auditoria_variables.md`](00_audito
 | Regla reproducible con GEIH | Nueva PEA = FT = 1, excluyendo ocupados con P6040 < 18 y a quienes cumplen I7. Formal = OCI = 1 y P6920 ∈ {1 Sí cotiza, 3 Ya es pensionado}. Privado si #formales < #nueva PEA o si la nueva PEA está vacía. |
 | Diferencias de definición | GEIH pregunta si 'está cotizando actualmente' (no 'afiliado'); el diccionario del IPM usa la misma pregunta P6920. La regla de 'solo pensionados' contradice la de I7 en el documento oficial (privados en I7, no privados en I8): se reproducen tal cual. |
 | Población de referencia | Nueva PEA (18 años y más ocupados, más desocupados); agregación: todos formales. |
-| Disponibilidad y calidad | `P6920` (18+, OCI=1): n = 321,444, vacío 0.00 %, no sabe 0.00 % — 12 meses de GEIH 2024 apilados. |
+| Disponibilidad y calidad | `P6920` (18+, OCI=1): n = 351,164, vacío 0.00 %, no sabe 0.00 % — 12 meses de GEIH 2024 apilados. |
 | En `IPM_GEIH_BASE` (actual) | `sin_cotizacion_pension_jefe`: solo el jefe, y lo marca privado si no es ocupado (mezcla informalidad con desempleo e inactividad). |
 | Supuestos | — |
 | Decisiones pendientes | — |

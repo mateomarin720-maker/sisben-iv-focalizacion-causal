@@ -313,7 +313,7 @@ sensibilidad individuales (D6).
 Los puntos 1 y 2 cambian el numerador y el denominador del ingreso per
 cápita de los hogares con servicio doméstico o pensionistas, y la base de
 las tasas. Los puntos 5, 6 y 7 empujan hacia más
-pobreza y explican parte de la sobreestimación de 6-7 puntos frente a la
+pobreza y explican parte de la sobreestimación de 5-6 puntos frente a la
 cifra oficial. El punto 4 empuja en la dirección contraria. El resto de la
 diferencia viene del cruce con registros administrativos y del modelo de
 imputación del DANE, que no son reproducibles (§0).

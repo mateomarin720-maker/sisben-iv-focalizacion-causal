@@ -11,6 +11,9 @@ heterogeneidad reportado el 2026-10-21 (concentrado en jefatura femenina)
 cambió — ver "Qué cambió y por qué" al final, no se puede seguir citando
 el hallazgo anterior.**
 
+**Regenerado 2026-11-02 tras corregir el bug de agosto** (códigos
+`"1.0"` del `.DTA`, ver CHANGELOG). El patrón cualitativo se mantiene.
+
 Generado por `src/5_estimacion.py` (`_cate`). Salida completa:
 `docs/reports/estimacion_ate_att_atu_cate.txt`.
 
@@ -34,24 +37,25 @@ hogares por costo computacional.
 
 | Outcome | CATE medio | Desv. estándar | Rango | Por zona (urbana=1) | Por sexo jefe (mujer=1) |
 |---|---|---|---|---|---|
-| `ipm_geih_score` (0-8) | +0,0237 | 0,0366 | (-0,234; +0,166) | rural 0,0538 · urbana 0,0193 | hombre 0,0321 · mujer 0,0152 |
-| `POBRE_GEIH` (0/1, K≥3) | +0,0041 | 0,0157 | (-0,074; +0,073) | rural 0,0203 · urbana 0,0017 | hombre 0,0076 · mujer 0,0006 |
+| `ipm_geih_score` (0-8) | +0,0228 | 0,0359 | (-0,246; +0,216) | rural 0,0448 · urbana 0,0195 | hombre 0,0288 · mujer 0,0167 |
+| `POBRE_GEIH` (0/1, K≥3) | +0,0033 | 0,0118 | (-0,050; +0,056) | rural 0,0139 · urbana 0,0017 | hombre 0,0056 · mujer 0,0009 |
 
-Importancia de variables: `ipm_geih_score` → `viv_paredes` 0,316,
-`viv_pisos` 0,301, `geo_zona_urbana` 0,217, `jefe_mujer` 0,167.
-`POBRE_GEIH` → `viv_paredes` 0,323, `geo_zona_urbana` 0,293, `viv_pisos`
-0,235, `jefe_mujer` 0,149.
+Importancia de variables: `ipm_geih_score` → `viv_paredes` 0,320,
+`viv_pisos` 0,285, `geo_zona_urbana` 0,222, `jefe_mujer` 0,172.
+`POBRE_GEIH` → `viv_paredes` 0,338, `viv_pisos` 0,262, `geo_zona_urbana`
+0,249, `jefe_mujer` 0,151.
 
 ## Cómo leerlo
 
 - **La heterogeneidad ahora se concentra en zona, no en sexo del jefe.**
   Los hogares rurales muestran un CATE bastante más grande que los
-  urbanos — 2,8 veces en `ipm_geih_score` (0,054 vs. 0,019) y 12 veces en
-  `POBRE_GEIH` (0,020 vs. 0,002). `geo_zona_urbana` es la segunda
-  variable más importante del forest en los dos outcomes.
+  urbanos — 2,3 veces en `ipm_geih_score` (0,045 vs. 0,020) y 8 veces en
+  `POBRE_GEIH` (0,014 vs. 0,002). `geo_zona_urbana` es la tercera
+  variable más importante del forest en los dos outcomes, detrás de la
+  vivienda.
 - La diferencia por sexo del jefe sigue presente pero mucho más chica que
-  antes (hombre 2 veces mujer en `ipm_geih_score`, 13 veces en
-  `POBRE_GEIH` pero con magnitudes absolutas pequeñas: 0,0076 vs 0,0006)
+  antes (hombre 1,7 veces mujer en `ipm_geih_score`, 6 veces en
+  `POBRE_GEIH` pero con magnitudes absolutas pequeñas: 0,0056 vs 0,0009)
   y **con el sentido invertido** respecto al reporte anterior (antes:
   mujer 36 veces más grande que hombre; ahora: hombre más grande que
   mujer).
@@ -61,18 +65,18 @@ Importancia de variables: `ipm_geih_score` → `viv_paredes` 0,316,
   colapsa a 0, y ahora es una pista confiable (código correcto, y
   verificada contra tautología — ver abajo), no un artefacto.
 - **No se puede leer como "el Sisbén afecta más a los hogares rurales"**
-  sin antes resolver `viv_paredes`/`viv_pisos` contra el Sisbén — mismo
-  razonamiento que antes, solo que ahora el patrón que hay que explicar
-  es otro.
+  sin antes probar `viv_paredes`/`viv_pisos` (ya homologadas con el
+  Sisbén, `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`) dentro de
+  la celda del Hot-Deck.
 
 **Diagnóstico 2026-11-02:** los números de esta página usan `W` con
 `jefe_edad`/`viv_cuartos` CONTINUOS, un proxy de la celda discreta real
 del Hot-Deck. Con la celda EXACTA (`W` categórico, igual al sorteo real),
-el CATE medio de `ipm_geih_score` cae de +0,0237 a +0,0119 y la
+el CATE medio de `ipm_geih_score` cae de +0,0228 a +0,0085 y la
 heterogeneidad por sexo del jefe se vuelve negativa para jefa mujer
-(-0,0057) — un TERCER patrón distinto a los dos reportados antes en este
-documento. La heterogeneidad por zona se mantiene y se acentúa (10x en
-vez de 2,8x). Ver `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` para el
+(-0,0071) — un TERCER patrón distinto a los dos reportados antes en este
+documento. La heterogeneidad por zona se mantiene y se acentúa (13x en
+vez de 2,3x). Ver `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` para el
 detalle completo.
 
 ## Chequeo de tautología: ¿la importancia de vivienda era mecánica?
