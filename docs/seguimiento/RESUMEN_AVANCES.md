@@ -303,7 +303,8 @@ completo: `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` y
 - [x] **OE1 (LASSO/Ridge/SHAP sobre el Sisbén)** — hecho 2026-11-02, ver §3f y `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 - [x] **Construir pobreza monetaria (ingreso per cápita, FGT0/FGT1)** — hecho 2026-11-02, ver §3g y `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
 - [x] **Conectar pobreza monetaria a `5_estimacion.py`** — hecho 2026-11-02, con el diagnóstico `W` proxy vs. celda exacta repetido sobre `log_ingreso_percapita`/`POBRE_MONETARIO` (ver §3h). Los dos efectos se amplían con la celda exacta en vez de encogerse.
-- [ ] Correr `cotas_frechet_manski.py` sobre `POBRE_MONETARIO`.
+- [x] **Cotas de Fréchet-Manski sobre `POBRE_MONETARIO`** — hecho 2026-11-02: [-0,5886; +0,7035], más ancha que la de `POBRE_GEIH` (las dos marginales están más cerca de 0,5). Ninguna celda excluye el 0 de forma informativa; el +0,0152 del DML depende por completo de la CIA. Ver `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+- [ ] Angostar las cotas con supuestos MTS/MTR (Manski, 2003) — la cota sin supuestos no es informativa para ningún outcome.
 - [x] **Especificación de `W`: probar la celda EXACTA del Hot-Deck, no solo el proxy continuo** — hecho 2026-11-02, ver §3b-bis y `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`. Resultado dividido: explica el 63 % del efecto de `ipm_geih_score` pero casi nada del de `POBRE_GEIH`.
 - [x] **Rotulado ATT/ATU** ("error de inclusión"/"error de exclusión" era una etiqueta engañosa, no un error de cómputo) — corregido 2026-11-02 en `src/5_estimacion.py` y `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
 - [x] **Advertencias:** se probó quitar `warnings.filterwarnings("ignore")` de `src/5_estimacion.py` (con `-W always`, incluido un `CausalForestDML` completo a 80.000 filas) — no genera ningún warning en este entorno; el filtro no estaba ocultando nada real. Eliminado 2026-11-02.

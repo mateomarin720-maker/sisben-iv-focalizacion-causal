@@ -23,8 +23,15 @@ Formato: más reciente primero. Rama de trabajo: `main`.
   matriz homologa los códigos GEIH contra la regla oficial del IPM, no
   contra las categorías del Sisbén. Siguen sin homologar con Sisbén.
 
+### Cotas de Fréchet-Manski
+- `src/estimacion/cotas_frechet_manski.py` recorre `POBRE_GEIH` y
+  `POBRE_MONETARIO` (lee la muestra monetaria). `POBRE_GEIH` reproduce la
+  cota anterior; `POBRE_MONETARIO` da [-0,5886; +0,7035], ancho 1,29.
+  Ninguna celda excluye el 0 de forma informativa (las 6 que marca un
+  filtro numérico tienen `P(Y=1|X)=1` y cota [0; 0]).
+
 ### Pendiente
-- `cotas_frechet_manski.py` sobre `POBRE_MONETARIO`.
+- Angostar las cotas con supuestos MTS/MTR.
 
 ## 2026-11-02 (4) — Comparación de proxies del IPM: auditoría y matriz de homologación (rama `comparacion-proxies-ipm`)
 
