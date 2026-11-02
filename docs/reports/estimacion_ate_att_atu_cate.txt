@@ -1,5 +1,5 @@
-2026-11-02 13:12:49,129 INFO Cargando data\2_models\muestra_estimacion_2024.parquet
-2026-11-02 13:12:49,896 INFO n=290,968 | T=1 (Grupo A/B): 63.7%
+2026-11-02 13:17:01,933 INFO Cargando data\2_models\muestra_estimacion_2024.parquet
+2026-11-02 13:17:02,706 INFO n=290,968 | T=1 (Grupo A/B): 63.7%
 
 ######################################################################
 # Outcome: ipm_geih_score (continuo, 0-8 privaciones)

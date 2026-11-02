@@ -214,7 +214,7 @@ alcance/tiempo, 2 por tautología) — detalle en
 - [ ] Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
 - [x] **Especificación de `W`: probar la celda EXACTA del Hot-Deck, no solo el proxy continuo** — hecho 2026-11-02, ver §3b-bis y `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`. Resultado dividido: explica el 63 % del efecto de `ipm_geih_score` pero casi nada del de `POBRE_GEIH`.
 - [x] **Rotulado ATT/ATU** ("error de inclusión"/"error de exclusión" era una etiqueta engañosa, no un error de cómputo) — corregido 2026-11-02 en `src/5_estimacion.py` y `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
-- [ ] **Advertencias:** `warnings.filterwarnings("ignore")` en `src/5_estimacion.py` sigue ocultando avisos sin revisar cada uno — pendiente, no se ha probado quitarlo.
+- [x] **Advertencias:** se probó quitar `warnings.filterwarnings("ignore")` de `src/5_estimacion.py` (con `-W always`, incluido un `CausalForestDML` completo a 80.000 filas) — no genera ningún warning en este entorno; el filtro no estaba ocultando nada real. Eliminado 2026-11-02.
 - [ ] **Rehacer `corrige-controles-celda` y `simulacion-identificacion`** sobre `main` actual — ambas se bifurcaron antes del diccionario GEIH (2026-10-28) y fusionarlas tal cual revertiría esta semana de correcciones. `simulacion-identificacion` trae código valioso (`simulacion_identificacion.py`) que no existe en `main` y que sustenta el diagnóstico de §3b-bis — rescatar ese archivo primero.
 - [ ] Construir pobreza monetaria (ingreso per cápita, línea, FGT1) — el nuevo outcome principal según el giro propuesto por el tutor el 2026-10-27; no iniciado.
 
