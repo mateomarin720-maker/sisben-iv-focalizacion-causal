@@ -207,8 +207,10 @@ los cuatro outcomes probados hasta ahora.
   ver arriba.
 - ~~Repetir el diagnóstico `W` proxy vs. celda exacta~~ — hecho
   2026-11-02, ver arriba y `DIAGNOSTICO_W_CELDA_EXACTA.md`.
-- Correr `cotas_frechet_manski.py` sobre `POBRE_MONETARIO` como
-  alternativa robusta sin suponer independencia condicional — pendiente.
+- ~~Correr `cotas_frechet_manski.py` sobre `POBRE_MONETARIO`~~ — hecho
+  2026-11-02: cota [-0,5886; +0,7035], contiene el 0 y el ATE del DML.
+  Sin la CIA del Hot-Deck, los datos no descartan un efecto de ningún
+  signo. Ver `RESULTADOS_FRECHET_MANSKI.md`.
 
 ## Cómo reproducirlo
 
