@@ -65,6 +65,16 @@ Importancia de variables: `ipm_geih_score` → `viv_paredes` 0,316,
   razonamiento que antes, solo que ahora el patrón que hay que explicar
   es otro.
 
+**Diagnóstico 2026-11-02:** los números de esta página usan `W` con
+`jefe_edad`/`viv_cuartos` CONTINUOS, un proxy de la celda discreta real
+del Hot-Deck. Con la celda EXACTA (`W` categórico, igual al sorteo real),
+el CATE medio de `ipm_geih_score` cae de +0,0237 a +0,0119 y la
+heterogeneidad por sexo del jefe se vuelve negativa para jefa mujer
+(-0,0057) — un TERCER patrón distinto a los dos reportados antes en este
+documento. La heterogeneidad por zona se mantiene y se acentúa (10x en
+vez de 2,8x). Ver `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` para el
+detalle completo.
+
 ## Chequeo de tautología: ¿la importancia de vivienda era mecánica?
 
 Al ampliar el outcome a 10 privaciones (ver docstring de

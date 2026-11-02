@@ -26,6 +26,7 @@ citar cualquier hallazgo anterior.*
 | 3 | Outcome (IPM-GEIH, 8 de 15 privaciones) | `src/3_preprocesamiento.py` | — (resumen abajo, detalle en `RESULTADOS_DML_ATE_ATT_ATU.md`) | ✅ (ampliado, ver limitación) |
 | 4 | Estimación: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) | ✅ |
 | 4b | Estimación: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) | ✅ |
+| 4c | Diagnóstico: `W` proxy vs. celda exacta | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md) | ✅ (2026-11-02) |
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
 | 6 | Representatividad del Sisbén frente a GEIH | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) | ✅ |
 
@@ -238,6 +239,23 @@ tautológica**: al retirar del outcome los 2 componentes que compartían
 código con `X`, la importancia de vivienda no bajó, subió levemente — ver
 "Chequeo de tautología" en `RESULTADOS_CAUSALFOREST_CATE.md`. Detalle
 completo en `RESULTADOS_CAUSALFOREST_CATE.md`.
+
+### 4c. Diagnóstico: `W` proxy continuo vs. celda exacta del Hot-Deck
+
+`W` usaba `jefe_edad`/`viv_cuartos` CONTINUOS como proxy de la celda
+discreta real (`geo_depto + ciclo de vida + tramo de cuartos`). Se probó
+con la celda EXACTA (columna `_hotdeck_celda`, ya guardada por el propio
+Hot-Deck, 376 celdas, 99,999 % de cobertura exacta) como `W` categórico.
+**El resultado se divide en dos historias:** el ATE de `ipm_geih_score`
+cae 63 % (+0,0206 → +0,0076) y el ATU deja de excluir 0 — el proxy SÍ
+inflaba el efecto para este outcome. El ATE de `POBRE_GEIH` casi no se
+mueve (+0,0052 → +0,0049) — el proxy NO explica el residuo de este
+outcome, que sobrevive usando el mecanismo exacto del sorteo real. La
+heterogeneidad por sexo del jefe cambia de signo otra vez (tercer patrón
+distinto en tres corridas), mientras que la heterogeneidad por zona se
+mantiene y se acentúa. Detalle completo, incluida la conexión con la
+simulación de identificación, en
+[`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md).
 
 ### 5. Cotas de Fréchet-Manski (robustez, sin suponer independencia condicional)
 

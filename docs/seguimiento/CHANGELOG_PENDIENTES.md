@@ -1,6 +1,51 @@
 # Changelog del proyecto
 
-Formato: más reciente primero. Rama de trabajo: `hotdeck-azure-avances`.
+Formato: más reciente primero. Rama de trabajo: `main`.
+
+## 2026-11-02 — Diagnóstico W proxy vs. celda exacta, rotulado ATT/ATU, higiene
+
+### Añadido
+- `src/5_estimacion.py`: segunda especificación de `W` (`W_COLS_CELDA`),
+  el código categórico de `_hotdeck_celda` — la celda EXACTA que usa el
+  propio Hot-Deck para sortear el donante (confirmado: sorteo uniforme
+  random, `rng.integers` sin ponderar nada del receptor,
+  `emparejamiento_hotdeck_geih_sisben.py`). La especificación anterior
+  (`W_COLS_PROXY`, con `jefe_edad`/`viv_cuartos` continuos) queda como
+  proxy documentado, no se elimina. El script corre ambas para los dos
+  outcomes y las imprime una tras otra para comparar directamente.
+- `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`: resultado completo y
+  su lectura. Hallazgo principal — **el proxy continuo SÍ inflaba el
+  efecto para `ipm_geih_score`** (ATE +0,0206→+0,0076, -63 %, el ATU deja
+  de excluir 0) **pero NO para `POBRE_GEIH`** (ATE +0,0052→+0,0049, casi
+  sin cambio, los tres efectos siguen excluyendo 0). La heterogeneidad
+  por sexo del jefe cambia de signo otra vez (tercer patrón distinto en
+  tres corridas: jefa-mujer-domina → zona-domina-sexo-positivo →
+  zona-domina-sexo-negativo) — no citar ninguna versión como robusta. La
+  heterogeneidad por zona se mantiene y se acentúa (2,8x → 10x).
+
+### Corregido
+- **Rotulado ATT/ATU**: se venían describiendo como "error de
+  inclusión"/"error de exclusión" (concepto de focalización, no
+  calculado aquí) — etiqueta engañosa, sin error de cómputo. Corregido en
+  `src/5_estimacion.py` y `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`
+  a "efecto en tratados"/"efecto en no tratados".
+- `docs/seguimiento/RESUMEN_AVANCES.md`: §5 "Higiene del repositorio"
+  describía un problema ya resuelto (carpetas `NACIONAL`/`DEPARTAMENTAL`
+  versionadas) — confirmado con `git ls-files` que ya no están en el
+  repo. Encabezado de rama actualizado (`hotdeck-azure-avances` ya está
+  fusionada a `main`, confirmado con `git merge-base --is-ancestor`).
+
+### Hallazgo adicional (sin cambio de código)
+- Las ramas `corrige-controles-celda` y `simulacion-identificacion`
+  (Tabla 5 del paper de avance, prioridad 1) se bifurcaron de `main`
+  ANTES de la corrección del diccionario GEIH del 2026-10-28 — no tienen
+  `DICCIONARIO_GEIH_2024.xlsx`, tienen el outcome de 4 privaciones, y la
+  vivienda sin corregir. Fusionarlas tal cual revertiría las
+  correcciones de esta semana — necesitan rehacerse sobre `main` actual,
+  no fusionarse directo. `simulacion-identificacion` sí trae código
+  nuevo valioso (`src/validacion/simulacion_identificacion.py`,
+  `docs/resultados/SIMULACION_IDENTIFICACION.md`) que no existe en
+  `main` y que sustenta el diagnóstico de este changelog.
 
 ## 2026-10-28 (2) — Retira 2 privaciones tautológicas con las covariables de heterogeneidad
 
