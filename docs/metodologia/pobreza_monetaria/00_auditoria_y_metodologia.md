@@ -1,7 +1,11 @@
 # Pobreza monetaria con GEIH 2024: auditoría de variables y metodología propuesta
 
-Estado: **Fase 1 entregada para revisión**. No se ha construido el agregado
-definitivo, no se corrió DML ni Causal Forest.
+Estado: **Fase 1 revisada; decisiones D1-D7 cerradas el 2026-11-02.** La
+construcción está en `01_diccionario_ingreso.md` y
+`src/indicadores/pobreza_monetaria_geih.py`; los resultados, en
+`docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`. Este documento se
+conserva como auditoría. **Corrección:** `P6430` = 7 es jornalero, no
+"sin remuneración" (ver §1.1).
 
 Insumos usados: microdatos GEIH 2024 (12 meses, 8 módulos,
 `data/1_processed/geih/2024/`), diccionario oficial
@@ -60,10 +64,13 @@ componentes:
 | Cuenta propia (`P6430` = 4) | `INGLABO` = `P6750` | 94,4 % exacto |
 | Horas extra declaradas aparte (`P6510S2` = 2) | ¿están en `INGLABO`? | No: en 343 casos `INGLABO` = `P6500` exacto |
 
-Faltantes de `INGLABO` en enero (1.235 ocupados): 293 asalariados sin
-`P6500`, 429 independientes o patronos sin `P6750` y 512 trabajadores sin
-remuneración (`P6430` ∈ {6,7}). Los primeros 722 son no respuesta real.
-Para los 512 sin remuneración el valor correcto es 0, no faltante.
+Faltantes de `INGLABO` en enero: la mayoría son no respuesta real de
+asalariados e independientes; los trabajadores familiares sin
+remuneración (`P6430` = 6, 506 en enero, 100 % vacíos) valen 0.
+**Corregido 2026-11-02:** esta sección decía `P6430` ∈ {6,7}. Los números
+de `P6430` no siguen el orden de las letras del diccionario: el 7 es
+jornalero o peón (99 % declara `P6500`) y sin remuneración son el 6 y el
+8.
 
 No existen en GEIH las variables de ingreso total, ingreso de la unidad
 de gasto, número de personas de la unidad de gasto ni líneas de pobreza.

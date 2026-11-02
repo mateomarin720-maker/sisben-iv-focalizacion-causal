@@ -1,0 +1,26 @@
+2026-11-02 16:02:53,878 INFO Personas GEIH 2024: 829,683 | población expandida: 51.55 M
+2026-11-02 16:02:53,880 INFO Montos 98/99 tratados como 0: 12,843
+2026-11-02 16:03:13,159 INFO Hot-deck laboral: 12,163 ocupados imputados (3.5% de los remunerados), 0 sin donante
+
+=== Pobreza monetaria reconstruida 2024 (personas, FEX_C18/12) vs. DANE oficial ===
+        dominio  personas  fgt0_pobreza  fgt0_oficial  fgt1_pobreza  fgt1_oficial  fgt2_pobreza  fgt0_extrema  fgt0_extrema_oficial     gini  gini_oficial
+       nacional    828305          33.2          31.8          13.5          12.6           7.8          12.5                  11.7 0.565405         0.551
+      cabeceras    719410          30.9          28.6          12.3          11.0           7.0           9.9                   8.7 0.548470         0.530
+    13_ciudades    334248          26.4          24.0          10.2           8.9           5.8           7.0                   5.9 0.544792         0.522
+otras_cabeceras    385162          36.7          34.8          15.1          13.9           8.6          13.8                  12.4 0.501717         0.490
+          rural    108895          41.3          42.5          17.6          17.9          10.4          21.3                  21.8 0.494148         0.482
+
+Sensibilidad (nacional):
+                 escenario  fgt0_pobreza  fgt1_pobreza  fgt0_extrema     gini
+                      base          33.2          13.5          12.5 0.565405
+                   nr_cero          34.9          15.0          14.1 0.570716
+          nr_caso_completo          33.6          13.7          12.7 0.563590
+              ug_sin_11_12          33.2          13.5          12.5 0.565478
+     sin_arriendo_imputado          38.8          17.3          16.8 0.564002
+arriendo_solo_propietarios          35.3          15.1          14.3 0.570574
+                rural_p550          34.0          14.1          13.3 0.568893
+  con_cesantias_accidentes          33.2          13.5          12.5 0.565670
+
+Guardado: data\2_models\muestra_pobreza_monetaria_reconstruida_2024.parquet (828,305 personas)
+Guardado: data\2_models\pobreza_monetaria_hogar_2024.parquet (290,968 hogares)
+Guardado: docs\reports\validacion_pobreza_monetaria.csv

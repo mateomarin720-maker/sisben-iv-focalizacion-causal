@@ -70,14 +70,15 @@ import shap
 from scipy.stats import spearmanr
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegressionCV
-from sklearn.metrics import accuracy_score, f1_score
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, brier_score_loss, confusion_matrix, f1_score, precision_recall_fscore_support
+from sklearn.model_selection import GroupShuffleSplit, train_test_split
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 SISBEN_PATH = Path("data/2_models/sisben_estandarizado_2024_con_bogota.parquet")
 REPORT = Path("docs/reports/seleccion_variables_lasso_ridge_shap.csv")
+REPORT_CLASES = Path("docs/reports/seleccion_variables_metricas_por_clase.csv")
 SEED = 42
 N_MUESTRA = 150_000  # submuestra estratificada por Grupo, por costo de LogisticRegressionCV/SHAP
 
@@ -117,6 +118,30 @@ def _muestra_estratificada(X: pd.DataFrame, y: pd.Series, n: int, seed: int) -> 
     frac = min(1.0, n / len(X))
     idx = y.groupby(y).sample(frac=frac, random_state=seed).index
     return X.loc[idx], y.loc[idx]
+
+
+def _metricas_por_clase(nombre: str, modelo, X_te, y_te) -> pd.DataFrame:
+    """Precisión, sensibilidad y F1 por grupo, matriz de confusión y
+    calibración (probabilidad predicha media vs. tasa observada, Brier por
+    clase). El modelo predice el grupo ASIGNADO por el Sisbén, no la
+    pobreza real."""
+    pred = modelo.predict(X_te)
+    proba = modelo.predict_proba(X_te)
+    clases = list(modelo.classes_)
+    prec, rec, f1, sop = precision_recall_fscore_support(y_te, pred, labels=clases, zero_division=0)
+    tabla = pd.DataFrame({
+        "modelo": nombre, "grupo": clases, "precision": prec, "sensibilidad": rec, "f1": f1, "soporte": sop,
+        "tasa_observada": [(y_te == c).mean() for c in clases],
+        "prob_predicha_media": proba.mean(axis=0),
+        "brier": [brier_score_loss((y_te == c).astype(int), proba[:, i]) for i, c in enumerate(clases)],
+    })
+    cm = pd.DataFrame(confusion_matrix(y_te, pred, labels=clases, normalize="true") * 100,
+                      index=[f"real {c}" for c in clases], columns=[f"pred {c}" for c in clases])
+    print(f"\n{nombre} — por grupo:")
+    print(tabla.drop(columns="modelo").round(3).to_string(index=False))
+    print(f"{nombre} — matriz de confusión (% de cada grupo real):")
+    print(cm.round(1).to_string())
+    return tabla
 
 
 def _lasso(X_tr, y_tr, X_te, y_te, columnas, mapa):
@@ -170,8 +195,9 @@ def _shap_rf(X_tr, y_tr, X_te, y_te, columnas, mapa):
 
 def main() -> None:
     logger.info("Cargando %s", SISBEN_PATH)
-    df = pd.read_parquet(SISBEN_PATH, columns=[*TODAS, "Grupo"])
+    df = pd.read_parquet(SISBEN_PATH, columns=[*TODAS, "Grupo", "cod_mpio"])
     X, y, mapa = _preparar(df)
+    municipios = df.loc[X.index, "cod_mpio"].astype(str)
     logger.info("Hogares con las %s variables completas: %s", len(TODAS), f"{len(X):,}")
 
     X_m, y_m = _muestra_estratificada(X, y, N_MUESTRA, SEED)
@@ -183,18 +209,36 @@ def main() -> None:
     print(f"n total con variables completas: {len(X):,} | submuestra usada: {len(X_m):,} "
           f"(train={len(X_tr):,}, test={len(X_te):,})")
 
-    _, imp_lasso, eliminadas, acc_l, f1_l = _lasso(X_tr, y_tr, X_te, y_te, columnas, mapa)
+    m_lasso, imp_lasso, eliminadas, acc_l, f1_l = _lasso(X_tr, y_tr, X_te, y_te, columnas, mapa)
     print(f"\n--- LASSO (L1) --- accuracy={acc_l:.3f} f1_macro={f1_l:.3f}")
     print(imp_lasso.round(3).to_string())
     print(f"Variables eliminadas (coef=0 en las 4 clases): {eliminadas or 'ninguna'}")
 
-    _, imp_ridge, acc_r, f1_r = _ridge(X_tr, y_tr, X_te, y_te, columnas, mapa)
+    m_ridge, imp_ridge, acc_r, f1_r = _ridge(X_tr, y_tr, X_te, y_te, columnas, mapa)
     print(f"\n--- Ridge (L2) --- accuracy={acc_r:.3f} f1_macro={f1_r:.3f}")
     print(imp_ridge.round(3).to_string())
 
-    _, imp_shap, acc_s, f1_s = _shap_rf(X_tr, y_tr, X_te, y_te, columnas, mapa)
+    m_rf, imp_shap, acc_s, f1_s = _shap_rf(X_tr, y_tr, X_te, y_te, columnas, mapa)
     print(f"\n--- SHAP sobre RandomForestClassifier --- accuracy={acc_s:.3f} f1_macro={f1_s:.3f}")
     print(imp_shap.round(4).to_string())
+
+    print("\n=== Rendimiento por grupo y calibración (partición aleatoria) ===")
+    por_clase = [_metricas_por_clase(n, m, X_te, y_te)
+                 for n, m in (("LASSO", m_lasso), ("Ridge", m_ridge), ("RandomForest", m_rf))]
+
+    # Partición por municipio: ningún municipio queda en entrenamiento y prueba a
+    # la vez, para que la nota no se apoye en hogares vecinos o registros repetidos.
+    tr, te = next(GroupShuffleSplit(n_splits=1, test_size=0.3, random_state=SEED)
+                  .split(X_m, y_m, groups=municipios.loc[X_m.index]))
+    rf_g = RandomForestClassifier(n_estimators=300, max_depth=10, min_samples_leaf=20,
+                                  random_state=SEED, n_jobs=-1).fit(X_m.iloc[tr], y_m.iloc[tr])
+    pred_g = rf_g.predict(X_m.iloc[te])
+    print(f"\n=== Partición por municipio (RandomForest) === accuracy="
+          f"{accuracy_score(y_m.iloc[te], pred_g):.3f} "
+          f"f1_macro={f1_score(y_m.iloc[te], pred_g, average='macro'):.3f} (aleatoria: {acc_s:.3f} / {f1_s:.3f})")
+    por_clase.append(_metricas_por_clase("RandomForest_por_municipio", rf_g, X_m.iloc[te], y_m.iloc[te]))
+    REPORT_CLASES.parent.mkdir(parents=True, exist_ok=True)
+    pd.concat(por_clase).to_csv(REPORT_CLASES, index=False)
 
     variables = sorted(set(imp_lasso.index) | set(imp_ridge.index) | set(imp_shap.index))
     tabla = pd.DataFrame({

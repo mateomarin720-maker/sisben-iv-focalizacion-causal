@@ -1,6 +1,6 @@
-2026-11-02 13:37:14,956 INFO Cargando data\2_models\sisben_estandarizado_2024_con_bogota.parquet
-2026-11-02 13:37:22,156 INFO Hogares con las 10 variables completas: 3,093,411
-2026-11-02 13:37:22,715 INFO Submuestra estratificada por Grupo: 150,000 hogares
+2026-11-02 16:09:43,339 INFO Cargando data\2_models\sisben_estandarizado_2024_con_bogota.parquet
+2026-11-02 16:09:54,625 INFO Hogares con las 10 variables completas: 3,093,411
+2026-11-02 16:09:55,365 INFO Submuestra estratificada por Grupo: 150,000 hogares
 
 === Selección de variables — Sisbén, outcome = Grupo (A-D) ===
 n total con variables completas: 3,093,411 | submuestra usada: 150,000 (train=105,000, test=45,000)
@@ -41,6 +41,62 @@ viv_cuartos           0.0695
 viv_acueducto         0.0454
 geo_zona              0.0291
 jefe_edad             0.0230
+
+=== Rendimiento por grupo y calibración (partición aleatoria) ===
+
+LASSO — por grupo:
+grupo  precision  sensibilidad    f1  soporte  tasa_observada  prob_predicha_media  brier
+    A      0.630         0.635 0.633    10538           0.234                0.235  0.114
+    B      0.475         0.477 0.476    13667           0.304                0.304  0.189
+    C      0.503         0.579 0.539    13356           0.297                0.297  0.177
+    D      0.550         0.391 0.457     7439           0.165                0.164  0.106
+LASSO — matriz de confusión (% de cada grupo real):
+        pred A  pred B  pred C  pred D
+real A    63.5    31.5     4.8     0.1
+real B    21.8    47.7    27.6     2.9
+real C     6.0    21.3    57.9    14.8
+real D     2.0    13.8    45.0    39.1
+
+Ridge — por grupo:
+grupo  precision  sensibilidad    f1  soporte  tasa_observada  prob_predicha_media  brier
+    A      0.630         0.635 0.633    10538           0.234                0.235  0.114
+    B      0.475         0.476 0.476    13667           0.304                0.304  0.189
+    C      0.503         0.580 0.539    13356           0.297                0.297  0.177
+    D      0.550         0.391 0.457     7439           0.165                0.164  0.106
+Ridge — matriz de confusión (% de cada grupo real):
+        pred A  pred B  pred C  pred D
+real A    63.5    31.5     4.8     0.1
+real B    21.8    47.6    27.7     2.9
+real C     6.0    21.2    58.0    14.8
+real D     2.0    13.8    45.0    39.1
+
+RandomForest — por grupo:
+grupo  precision  sensibilidad    f1  soporte  tasa_observada  prob_predicha_media  brier
+    A      0.626         0.654 0.639    10538           0.234                0.234  0.116
+    B      0.481         0.460 0.470    13667           0.304                0.304  0.188
+    C      0.487         0.668 0.563    13356           0.297                0.297  0.177
+    D      0.620         0.218 0.323     7439           0.165                0.165  0.108
+RandomForest — matriz de confusión (% de cada grupo real):
+        pred A  pred B  pred C  pred D
+real A    65.4    28.1     6.5     0.0
+real B    22.2    46.0    31.1     0.7
+real C     7.0    19.4    66.8     6.8
+real D     1.9    16.4    59.8    21.8
+
+=== Partición por municipio (RandomForest) === accuracy=0.541 f1_macro=0.435 (aleatoria: 0.527 / 0.499)
+
+RandomForest_por_municipio — por grupo:
+grupo  precision  sensibilidad    f1  soporte  tasa_observada  prob_predicha_media  brier
+    A      0.627         0.707 0.665     9526           0.373                0.364  0.176
+    B      0.482         0.602 0.536     9357           0.366                0.364  0.215
+    C      0.445         0.266 0.333     4531           0.177                0.184  0.132
+    D      0.618         0.124 0.207     2148           0.084                0.088  0.063
+RandomForest_por_municipio — matriz de confusión (% de cada grupo real):
+        pred A  pred B  pred C  pred D
+real A    70.7    27.8     1.5     0.0
+real B    31.8    60.2     7.7     0.3
+real C    20.2    50.1    26.6     3.1
+real D     5.2    52.9    29.5    12.4
 
 === Tabla combinada (normalizada 0-1 dentro de cada método) ===
                     lasso_norm  ridge_norm  shap_norm  es_control_geografico  promedio

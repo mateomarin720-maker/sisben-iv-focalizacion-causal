@@ -64,6 +64,20 @@ y fuentes oficiales del DANE y el DPS.
   focalización informadas por los efectos heterogéneos, frente a la
   clasificación vigente.
 
+> **Enfoque vigente del componente causal (desde la guía del tutor del
+> 2026-10-27).** Con GEIH y Sisbén vinculados por Hot-Deck, el grupo
+> imputado se sortea al azar dentro de cada celda, así que un DML sobre él
+> da ≈0 sea cual sea el efecto verdadero: es una prueba placebo del
+> emparejamiento, no el efecto del Sisbén (lo confirman la simulación de
+> identificación y la estimación con datos reales; ver
+> [`docs/resultados/README.md`](docs/resultados/README.md)). Por eso el
+> P2/OE2 se aborda como una **evaluación semisintética**: sobre hogares
+> reales se simula un tratamiento con efecto conocido y se mide cuánto se
+> degrada su recuperación (sesgo, RMSE, cobertura, error del CATE) cuando
+> el tratamiento se reconstruye por Hot-Deck. Con los datos reales se
+> reportan las cotas de Fréchet-Manski, que no fijan ni el signo del
+> efecto.
+
 > El anteproyecto (`docs/institucional/Anteproyecto_Sisben_IV.docx`, abril 2026) aún
 > contiene la versión anterior (OE1–OE5); su actualización está pendiente
 > a cargo del equipo. Esta es la formulación que rige el código y la
@@ -158,20 +172,24 @@ Detalle completo de marco teórico, metodología y cronograma en
    Sisbén por celdas (departamento + ciclo de vida del jefe + tramo de
    cuartos de la vivienda). Válido solo a nivel poblacional; no identifica
    el mismo hogar. ✅
-5. **Preprocesamiento causal** (`3_preprocesamiento.py`): outcome IPM-GEIH
-   (reducido a 4 de 15 privaciones — analfabetismo, aseguramiento de
-   salud, hacinamiento, cotización a pensión del jefe; nunca las variables
-   propias del Sisbén `I1`–`I15`, `H_5`). ✅
+5. **Outcomes** (`3_preprocesamiento.py`, `indicadores/pobreza_monetaria_geih.py`,
+   `3b_preprocesamiento_monetario.py`): IPM-GEIH con 8 de las 15
+   privaciones oficiales, y pobreza monetaria reconstruida con la
+   metodología del DANE (unidad de gasto, líneas por dominio, arriendo
+   imputado: 33,2 % frente a 31,8 % oficial). Nunca las variables propias
+   del Sisbén `I1`–`I15`, `H_5`. ✅
 6. **Especificación causal** (`4_dag_identificacion.py`): los dos diseños
    del proyecto (principal, y de una sola tabla) como DAG, con chequeo
    formal de d-separación. ✅
-7. **Estimación** (`5_estimacion.py`): DML (ATE/ATT/ATU) y Causal Forest
-   (CATE); cotas de Fréchet-Manski como robustez sin suponer independencia
-   condicional (`src/estimacion/cotas_frechet_manski.py`). ✅ primera
-   corrida real — pendiente resolver `viv_paredes`/`viv_pisos` antes de
-   leer el resultado como efecto causal.
-8. **Refutación** (`6_refutacion.py`) y **reporte** (`7_reporte/`):
-   placebo, sensibilidad, comparación FGT1 (OE3). ⏳ pendiente.
+7. **Estimación sobre datos reales** (`5_estimacion.py`,
+   `estimacion/cotas_frechet_manski.py`): DML y Causal Forest como
+   diagnóstico placebo del emparejamiento (ATE ≈0, como se espera), y
+   cotas de Fréchet-Manski sin suponer independencia condicional. ✅
+8. **Evaluación semisintética** (efecto conocido, tratamiento reconstruido
+   por Hot-Deck; escenarios de asignación aleatoria, confusión observada y
+   no observada, solapamiento débil). ⏳ pendiente; parte de
+   `validacion/simulacion_identificacion.py`.
+9. **Reporte** (`7_reporte/`): comparación FGT1 (OE3). ⏳ pendiente.
 
 Resultados interpretados de cada paso en
 [`docs/resultados/`](docs/resultados/README.md) (empezar por su índice).
@@ -182,8 +200,9 @@ Resultados interpretados de cada paso en
 |---|---|---|
 | Fuentes de datos | GEIH, IPM, Sisbén nacional y Bogotá | ✅ Las cuatro obtenidas, armonizadas y validadas. DPS y RUI quedan fuera del alcance vigente o pendientes de gestión (ver §8 y `data/README.md`). |
 | Emparejamiento (Hot-Deck) | Asignar grupo Sisbén a GEIH | ✅ 100 % en celda exacta, celda con depto+edad+vivienda, código de edad (`PER002`) corroborado indirectamente. |
-| P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | ⏳ No iniciado. |
-| P2 / OE2 — Causalidad (DML, Causal Forest) | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Primera corrida real completa (ATE/ATT/ATU/CATE + cotas de robustez Fréchet-Manski) — el resultado todavía no se puede leer como efecto causal confirmado: falta verificar las categorías de vivienda (`viv_paredes`/`viv_pisos`) que explican el residuo observado. |
+| Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida (D1 pendiente: descargar la base oficial del DANE). |
+| P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
+| P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Falta la evaluación semisintética. |
 | P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ⏳ No iniciado, depende de P1 y P2. |
 
 Detalle completo, hallazgos y pendientes técnicos en

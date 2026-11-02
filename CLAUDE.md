@@ -42,6 +42,14 @@ del código.
   en `W` (controles, con modelos no lineales tipo GradientBoosting/Logistic),
   nunca en `X` de un estimador *lineal*. Para `CausalForestDML` (no
   lineal) sí es seguro pasarlas en `X`.
+- **Tampoco como código numérico en los modelos auxiliares
+  (`model_t`/`model_y`).** Hasta el 2026-11-02 `5_estimacion.py` pasaba la
+  celda del Hot-Deck (0..375) y el departamento (0..32) como números a una
+  `LogisticRegression`: la propensión con la "celda exacta" salía
+  ≈0,64 para todos, cuando P(T|celda) real va de 0,36 a 0,87, y los ATE
+  (+0,02, IC sin el 0) eran un artefacto; con indicadoras dan ≈0. No da
+  error. Comprobar siempre la propensión estimada contra la empírica por
+  celda (`5_estimacion.py` lo imprime).
 - **`econml 0.15` no es compatible con `numpy 2.x`** (ni `shap<0.46`,
   dependencia interna de econml). Versión mínima vigente:
   `econml>=0.17`, `shap>=0.51`, `scikit-learn>=1.9` (`pyproject.toml` ya
@@ -67,6 +75,13 @@ del código.
   hacinamiento viejo daba 23,3 %, un número plausible, calculado con la
   columna equivocada). Detalle completo:
   `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
+
+- **Los códigos numéricos de GEIH no siempre siguen el orden de las
+  letras del diccionario.** `P6050` trae 13 códigos para 9 letras, y en
+  `P6430` el 7 es jornalero o peón (99 % declara salario), no "sin
+  remuneración" como sugiere la letra g; sin remuneración son el 6 y el
+  8. Verificar con los datos (cruce con otra variable) antes de usar un
+  código por su letra.
 
 - **Agosto 2024 de GEIH se carga desde `.DTA`** (7 de 8 módulos).
   Hasta el 2026-11-02, `parse_stata_a_parquet` dejaba los códigos como
@@ -138,11 +153,13 @@ poetry run python -m src.emparejamiento.emparejamiento_hotdeck_geih_sisben
 poetry run python -m src.validacion.comparar_filtros_sdp
 poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
+poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
 poetry run python -m src.estimacion.seleccion_variables_lasso_shap
+poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run pytest tests/
 ```
 

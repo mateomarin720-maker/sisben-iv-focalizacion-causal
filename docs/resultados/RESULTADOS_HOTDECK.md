@@ -29,9 +29,49 @@ ni siquiera medía lo que se pensaba que medía.
 
 ## Cómo leerlo
 
-- **El 100 % en celda exacta sigue sin demostrar por sí solo un buen emparejamiento** — hay más celdas (depto×edad×cuartos, no solo depto×edad), pero el donante (3,1 millones) sigue siendo ~11 veces más grande que el receptor. El chequeo real de validez está en `RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`.
+- **El 100 % en celda exacta no demuestra por sí solo un buen emparejamiento** — el donante (3,1 millones) es ~11 veces más grande que el receptor. Con el sorteo al azar dentro de la celda, el DML sobre el grupo imputado da ≈0 por construcción (`DIAGNOSTICO_W_CELDA_EXACTA.md`).
 - **La distribución A/B/C/D no es la nacional.** El Sisbén solo cubre hogares registrados, de modo que A y B quedan sobrerrepresentados.
 - **El emparejamiento solo es válido a nivel poblacional.** No identifica al mismo hogar en las dos fuentes.
+
+## ¿Sumar pisos y paredes a la celda? (2026-11-02)
+
+Con pisos y paredes ya homologados
+(`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`) se compararon tres
+celdas sin cambiar la oficial
+(`src/validacion/comparar_celdas_hotdeck_vivienda.py`,
+`docs/reports/comparacion_celdas_hotdeck_vivienda.csv`). Pisos y paredes
+entran en tres niveles de la escala común (pisos: acabado / cemento o
+madera burda / tierra; paredes: ladrillo / tapia o bahareque / precarias),
+para no fragmentar las celdas.
+
+| | 1. Depto + edad + cuartos (actual) | 2. + pisos | 3. + pisos + paredes |
+|---|---|---|---|
+| Celdas con receptores | 376 | 993 | 2.081 |
+| Hogares en celda exacta | 99,999 % | 99,976 % | 99,946 % |
+| Donantes por celda (mediana / p5) | 9.437 / 1.301 | 2.353 / 183 | 1.898 / 140 |
+| Hogares en celdas con < 30 donantes | 0,06 % | 0,83 % | 1,38 % |
+| P(T \| celda): sd (p5-p95) | 0,170 (0,36-0,86) | 0,223 (0,15-0,84) | 0,224 (0,15-0,85) |
+| Correlación de P(T \| celda) con pobreza monetaria | 0,20 | 0,29 | 0,29 |
+| Pobreza T=1 − T=0 (sin controles) | +9,0 pp | +13,3 pp | +13,6 pp |
+| Grupos A / B / C / D (%) | 22,0 / 33,8 / 28,7 / 15,6 | 14,2 / 29,4 / 34,4 / 22,0 | 14,0 / 29,0 / 34,5 / 22,5 |
+
+**Lectura:**
+- **Pisos aporta información; paredes casi nada encima.** Con pisos, el
+  grupo imputado sigue mejor la pobreza del receptor (correlación 0,20 →
+  0,29) y la cobertura apenas cambia. Paredes triplica las celdas sin
+  mejorar la correlación (0,29 → 0,29).
+- **La distribución de grupos se mueve bastante** (A cae de 22 % a 14 %):
+  en GEIH predominan los pisos con acabado, y con pisos en la celda los
+  hogares reciben donantes del Sisbén con viviendas parecidas, que son
+  menos pobres. Es un cambio de nivel que se arrastraría a todo lo que
+  usa el grupo imputado.
+- Nada de esto cambia el problema de identificación: dentro de cualquier
+  celda el sorteo sigue siendo al azar y el contraste del DML sigue
+  siendo un placebo. Lo que mejora es la concordancia **entre celdas**
+  (útil para P1/OE1 y para la simulación semisintética).
+- **Propuesta:** adoptar la celda 2 (+ pisos) como especificación de
+  sensibilidad del Hot-Deck, y decidir si pasa a ser la oficial. No se ha
+  cambiado la celda oficial.
 
 ## Historial de la cobertura
 
@@ -63,5 +103,6 @@ ni siquiera medía lo que se pensaba que medía.
 - [ ] Validar con el IPM sin usarlo en la celda: comparar privaciones medias por grupo asignado.
 - [x] Sumar variables de vivienda a la celda — hecho con `viv_cuartos` (2026-10-21), código corregido el 2026-10-28.
 - [x] Homologar alcantarillado/acueducto/número de personas en GEIH — hecho 2026-10-28 (`P4030S3`, `P4030S5`, `P6008`), ver `DICCIONARIO_HOTDECK.md` §4.
-- [ ] Sumar `viv_paredes`/`viv_pisos` a la celda — código del lado GEIH ya confirmado (2026-10-28), falta homologar las categorías del lado Sisbén.
+- [x] Homologar `viv_paredes`/`viv_pisos` (2026-11-02) y comparar celdas con ellos (ver arriba).
+- [ ] Decidir si la celda con pisos pasa a ser la oficial.
 - [ ] Confirmar en ANDA los códigos de `PER002`.
