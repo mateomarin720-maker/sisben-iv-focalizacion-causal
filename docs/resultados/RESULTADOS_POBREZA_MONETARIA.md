@@ -4,6 +4,15 @@ Generado 2026-11-02 por `src/3b_preprocesamiento_monetario.py`. Salida:
 `data/2_models/muestra_estimacion_monetaria_2024.parquet`,
 `docs/reports/validacion_fgt_pobreza_monetaria.csv`.
 
+> **Aviso (2026-11-02):** la auditoría de
+> `docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md`
+> encontró que `INGLABO` **no** está imputado por el DANE y que el "47,7 %
+> de no respuesta en `P6500`" eran independientes, a quienes no se les hace
+> esa pregunta (§8 de la auditoría). También lista siete diferencias
+> metodológicas de este outcome (unidad de gasto, tasas por hogar, líneas,
+> ingresos ocasionales, componentes omitidos, no respuesta, vivienda
+> propia; §7). Este documento se reescribirá con la nueva construcción.
+
 ## Qué es
 
 El nuevo outcome principal según el giro propuesto por el tutor el

@@ -2,6 +2,30 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (6) — Pobreza monetaria: auditoría de variables y metodología (Fase 1)
+
+### Añadido
+- `src/indicadores/inventario_ingresos_geih.py` →
+  `docs/reports/inventario_ingresos_geih.csv`: 46 variables de ingreso con
+  componente, periodicidad, relación con `INGLABO`, tratamiento propuesto
+  y cobertura en los 12 meses.
+- `docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md`:
+  auditoría y metodología propuesta, en espera de revisión.
+
+### Hallazgos
+- La cifra oficial cruza GEIH con registros administrativos (ayudas
+  institucionales, PILA): no es reproducible con microdatos públicos.
+- `INGLABO` no está imputado; corrige afirmaciones previas del proyecto.
+- `P7510S7A1` (ocasionales) se debe excluir; primas anuales, auxilios y
+  extras no incluidos faltan en el outcome actual.
+- Unidad de gasto: `P6050` = 10 es servicio doméstico; pensionista es el
+  11 o el 12 (sin resolver, 0,04 % de la muestra).
+- Factor anual `FEX_C18/12`; sin duplicados entre meses; FGT oficial
+  sobre personas.
+
+### Pendiente (requiere revisión)
+- Decisiones D1-D7 de la auditoría; no se construyó el agregado.
+
 ## 2026-11-02 (5) — Pobreza monetaria conectada a DML/Causal Forest
 
 ### Cambiado

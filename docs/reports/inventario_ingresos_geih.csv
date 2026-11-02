@@ -1,0 +1,47 @@
+variable,modulo,componente,periodicidad,en_INGLABO,tratamiento_propuesto,en_diccionario,etiqueta_oficial,existe_en_datos,filas_modulo_12m,n_valor_positivo,pct_valor_positivo,n_codigo_98,n_codigo_99,mediana_positivos
+INGLABO,ocupados,laboral: consolidado DANE,mensual,—,base del ingreso laboral; NO imputado: vacío = no informa o sin remuneración,True,Ingresos laborales,True,353672,335535,94.87,0,0,1300000.0
+P6500,ocupados,laboral: salario asalariados,mensual,sí,no sumar (ya en INGLABO),True,Antes de descuentos ¿cuánto ganó ... El mes pasado en este empleo?,True,353672,183610,51.92,0,0,1300000.0
+P6750,ocupados,laboral: ganancia neta independientes,mensual,sí,no sumar (ya en INGLABO),True,"¿cuál fue la ganancia neta o los honorarios netos de ... Esa actividad, negocio, profesión o ﬁnca, el mes pasado?",True,353672,151477,42.83,0,0,800000.0
+P6760,ocupados,laboral: meses a que corresponde P6750,—,sí,solo verificación,True,¿a cuántos meses corresponde lo que recibió?,True,353672,17217,4.87,5,6,1.0
+P550,ocupados,laboral: ganancia neta 12 meses (solo rural),anual,por verificar,decisión pendiente: alternativa a P6750 en rural (/12),True,¿cuál fue la ganancia neta del negocio o de la cosecha durante los últimos 12 meses?,True,353672,23278,6.58,1013,193,5000000.0
+P7070,ocupados,laboral: segundo trabajo,mensual,sí,no sumar (ya en INGLABO),True,¿cuánto recibio o ganó ... El mes pasado en ese segundo trabajo?,True,353672,8420,2.38,0,0,300000.0
+P6590S1,ocupados,especie: alimentos,mensual,sí,no sumar (ya en INGLABO),True,"¿en cuánto estima lo que recibió el mes pasado? (si recibió pero no sabe estimar el monto, escriba 98)",True,353672,16845,4.76,0,0,240000.0
+P6600S1,ocupados,especie: vivienda,mensual,sí,no sumar (ya en INGLABO),True,"¿en cuánto estima lo que recibió el mes pasado? (si recibió pero no sabe estimar el monto, escriba 98)",True,353672,5144,1.45,0,0,250000.0
+P6610S1,ocupados,especie: transporte empresa,mensual,sí,no sumar (ya en INGLABO),True,"¿en cuánto estima lo que recibió el mes pasado? (si recibió pero no sabe estimar el monto, escriba 98)",True,353672,3834,1.08,409,0,200000.0
+P6620S1,ocupados,especie: otros,mensual,sí,no sumar (ya en INGLABO),True,"¿en cuánto estima lo que recibió el mes pasado? (si recibió pero no sabe estimar el monto, escriba 98)",True,353672,883,0.25,51,0,180000.0
+P6510S1,ocupados,laboral: horas extra,mensual,no si P6510S2=2,sumar solo si P6510S2=2,True,¿cuánto recibió?,True,353672,5985,1.69,763,0,150000.0
+P6545S1,ocupados,laboral: primas mensuales,mensual,no si P6545S2=2,sumar solo si P6545S2=2,True,¿cuánto?,True,353672,1774,0.5,243,0,600000.0
+P6580S1,ocupados,laboral: bonificaciones mensuales,mensual,no si P6580S2=2,sumar solo si P6580S2=2,True,¿cuánto recibió el mes pasado?,True,353672,5653,1.6,289,0,300000.0
+P6585S1A1,ocupados,laboral: auxilio alimentación,mensual,no si S1A2=2,sumar solo si P6585S1A2=2,True,"¿cuánto? (si recibió pero no sabe el monto, escriba 98)",True,353672,3389,0.96,268,0,135000.0
+P6585S2A1,ocupados,laboral: auxilio transporte,mensual,no si S2A2=2,sumar solo si P6585S2A2=2,True,"¿cuánto? (si recibió pero no sabe el monto, escriba 98)¿cuánto? (si recibió pero no sabe el monto, escriba 98)",True,353672,81121,22.94,1100,0,162000.0
+P6585S3A1,ocupados,laboral: subsidio familiar,mensual,no si S3A2=2,sumar solo si P6585S3A2=2,True,"¿cuánto? (si recibió pero no sabe el monto, escriba 98)",True,353672,21555,6.09,366,0,54000.0
+P6585S4A1,ocupados,laboral: subsidio educativo,mensual,no si S4A2=2,sumar solo si P6585S4A2=2,True,"¿cuánto recibió? (si recibió pero no sabe el monto, escriba 98)",True,353672,474,0.13,50,0,109000.0
+P6630S1A1,ocupados,laboral: prima de servicios,anual,no,sumar /12,True,"¿cuánto recibió? (si recibió pero no sabe el monto, escriba 98)",True,353672,104968,29.68,4493,0,1250000.0
+P6630S2A1,ocupados,laboral: prima de navidad,anual,no,sumar /12,True,"¿cuánto recibió? (si recibió pero no sabe el monto, escriba 98)",True,353672,33413,9.45,2183,0,1500000.0
+P6630S3A1,ocupados,laboral: prima de vacaciones,anual,no,sumar /12,True,"¿cuánto recibió? (si recibió pero no sabe el monto, escriba 98)",True,353672,32392,9.16,2480,0,1000000.0
+P6630S4A1,ocupados,laboral: viáticos permanentes / bonif. anuales,anual,no,sumar /12,True,"¿cuánto recibió? (si recibió pero no sabe el monto, escriba 98)",True,353672,3471,0.98,424,0,800000.0
+P6630S6A1,ocupados,laboral: pagos por accidente de trabajo,anual,no,decisión pendiente: ¿corriente u ocasional?,True,Cuánto recibió,True,353672,210,0.06,54,0,650000.0
+P3051,ocupados,laboral: honorarios brutos independientes,mensual,no,NO sumar: bruto; P6750 (neto) ya lo cubre,True,"Antes de descuentos, ¿Cuánto recibió ... el mes pasado por concepto de honorarios profesionales?",True,353672,18170,5.14,389,424,2400000.0
+P3052,ocupados,laboral: ingresos/comisiones brutos independientes,mensual,no,"NO sumar: bruto, >= P6750 en 99 %",True,"Antes de descuentos, ¿Cuánto recibió ... el mes pasado por concepto de ingresos o comisiones?",True,353672,116807,33.03,2064,1103,800000.0
+P3054S1,ocupados,especie independientes: alimentos,mensual,por verificar,decisión pendiente,True,¿En cuánto estima lo que recibió ($)?,True,353672,4679,1.32,117,0,144000.0
+P3055S1,ocupados,especie independientes: vivienda,mensual,por verificar,decisión pendiente,True,¿En cuánto estima lo que recibió ($)?,True,353672,220,0.06,13,0,200000.0
+P7422S1,no_ocupados,laboral: ingreso por trabajo de no ocupados,mensual,no,sumar,True,¿cuánto?,True,304131,10143,3.34,141,53,750000.0
+P7500S1A1,otros_ingresos,no laboral: arriendos,mensual,no,sumar,True,Valor mes pasado,True,657803,20425,3.11,673,0,700000.0
+P7500S2A1,otros_ingresos,no laboral: pensiones y jubilaciones,mensual,no,sumar,True,Valor mes pasado:,True,657803,43434,6.6,1943,0,1300000.0
+P7500S3A1,otros_ingresos,no laboral: pensión alimenticia,mensual,no,sumar,True,Valor mes pasado:,True,657803,4531,0.69,53,0,300000.0
+P7510S1A1,otros_ingresos,transferencias: otros hogares en el país,anual,no,sumar /12,True,Valor,True,657803,74558,11.33,2517,144,2400000.0
+P7510S2A1,otros_ingresos,transferencias: remesas del exterior,anual,no,sumar /12,True,Valor,True,657803,6469,0.98,304,32,3600000.0
+P7510S3A1,otros_ingresos,transferencias: ayudas institucionales (total),anual,no,sumar /12; es el total de P750S1-S3,True,Valor,True,657803,51894,7.89,243,0,960000.0
+P750S1A1,otros_ingresos,transferencias: ayudas privadas (detalle),anual,no,NO sumar: contenido en P7510S3A1,True,Valor,True,657803,945,0.14,9,0,1000000.0
+P750S2A1,otros_ingresos,transferencias: ayudas del gobierno (detalle),anual,no,NO sumar: contenido en P7510S3A1,True,Valor,True,657803,50630,7.7,192,2,960000.0
+P750S3A1,otros_ingresos,transferencias: ayudas del exterior (detalle),anual,no,NO sumar: contenido en P7510S3A1,True,Valor,True,657803,346,0.05,33,6,1920000.0
+P1661S1A1,otros_ingresos,transferencias: Más Familias en Acción,anual,no,NO sumar: contenido en P750S2A1,True,valor,True,657803,12552,1.91,70,2,960000.0
+P1661S2A1,otros_ingresos,transferencias: Jóvenes en Acción,anual,no,NO sumar: contenido en P750S2A1,True,valor,True,657803,3379,0.51,35,0,1200000.0
+P1661S3A1,otros_ingresos,transferencias: Colombia Mayor,anual,no,NO sumar: contenido en P750S2A1,True,valor,True,657803,23785,3.62,33,0,960000.0
+P1661S4A2,otros_ingresos,transferencias: otro programa,anual,no,NO sumar: contenido en P750S2A1,True,valor,True,657803,11530,1.75,54,1,500000.0
+P7510S5A1,otros_ingresos,"capital: intereses, dividendos, utilidades",anual,no,sumar /12,True,Valor,True,657803,2058,0.31,258,0,2000000.0
+P7510S6A1,otros_ingresos,cesantías e intereses a las cesantías,anual,no,decisión pendiente: ¿corriente u ocasional?,True,Valor,True,657803,27144,4.13,2918,0,180000.0
+P7510S7A1,otros_ingresos,"ocasional: loterías, indemnizaciones, venta de bienes",anual,no,EXCLUIR: ingreso ocasional (boletín DANE),True,Valor,True,657803,9555,1.45,631,0,1600000.0
+P5130,hogar_vivienda,vivienda: arriendo estimado por el hogar,mensual,no,ajuste por vivienda propia (regla exacta pendiente),True,"Si tuviera que pagar el arriendo por esta vivienda, ¿cuánto estima que tendria que pagar mensualmente?",True,290968,173632,59.67,5916,2346,500000.0
+P5100,hogar_vivienda,vivienda: cuota de amortización,mensual,no,decisión pendiente (propia pagando),True,¿cuánto pagan mensualmente por cuota de amortización?,True,290968,10106,3.47,234,167,700000.0
+P5090,hogar_vivienda,vivienda: tenencia,—,no,define a quién se ajusta,True,La vivienda ocupada por este hogar es:,True,290968,290968,100.0,0,0,3.0
