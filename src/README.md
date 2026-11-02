@@ -104,19 +104,18 @@ documentado y preferiblemente cubierto por pruebas.
     `Grupo_hotdeck`/`Clasificacion_hotdeck` (ya en el parquet fusionado del
     Hot-Deck). Salida: `data/2_models/muestra_estimacion_2024.parquet`.
 
-- **`3b_preprocesamiento_monetario.py`** ✅ implementado 2026-11-02
-  - Construye el nuevo outcome principal según el giro del tutor
-    (2026-10-27): pobreza monetaria — `ingreso_percapita`,
-    `POBRE_MONETARIO`/`POBRE_EXTREMO_MONETARIO`, brechas FGT1. Ingreso
-    laboral desde `INGLABO` (variable ya imputada por el DANE — un primer
-    intento reconstruyendo a mano desde `P6500` falló por 47,7% de no
-    respuesta en esa pregunta, ver docstring del script); ingreso no
-    laboral desde `otros_ingresos`/`no_ocupados`. Líneas de pobreza
-    oficiales del DANE 2024 por zona urbano/rural. Validado contra FGT0/
-    FGT1 oficiales — sobreestima por 6-7 puntos porcentuales, consistente
-    con no replicar la imputación completa de la metodología del DANE.
-    Conectado a `5_estimacion.py` el 2026-11-02 (ver abajo). Ver
-    `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`. Salida:
+- **`indicadores/pobreza_monetaria_geih.py`** ✅ 2026-11-02
+  - Pobreza monetaria reconstruida con la metodología del DANE (unidad
+    de gasto, `INGLABO` más componentes no incluidos, hot-deck de no
+    respuesta laboral, arriendo imputado, líneas por dominio, tasas por
+    persona) y 8 escenarios de sensibilidad. FGT0 33,2 % frente a 31,8 %
+    oficial. Ver `docs/metodologia/pobreza_monetaria/01_diccionario_ingreso.md`
+    y `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+
+- **`3b_preprocesamiento_monetario.py`** ✅
+  - Pega el resultado anterior (escenario base) a la muestra de
+    estimación: `ingreso_percapita`, `POBRE_MONETARIO`,
+    `POBRE_EXTREMO_MONETARIO` y brechas. Salida:
     `data/2_models/muestra_estimacion_monetaria_2024.parquet`.
 
 - **`4_dag_identificacion.py`** ✅ implementado 2026-10-21
@@ -124,25 +123,13 @@ documentado y preferiblemente cubierto por pruebas.
     sola tabla) con `networkx` y chequeo formal de d-separación. Ver
     `docs/resultados/IDENTIFICACION_CAUSAL.md`.
 
-- **`5_estimacion.py`** ✅ implementado 2026-10-21, ampliado 2026-11-02
-  - DML (`LinearDML`: ATE, y ATT/ATU evaluando el mismo modelo sobre cada
-    subpoblación) y Causal Forest (`CausalForestDML`: CATE) sobre
-    `muestra_estimacion_monetaria_2024.parquet` (superset de
-    `muestra_estimacion_2024.parquet` con las columnas de pobreza
-    monetaria). Corre 4 outcomes (`ipm_geih_score`, `POBRE_GEIH`,
-    `log_ingreso_percapita`, `POBRE_MONETARIO`) × 2 especificaciones de
-    `W` (proxy continuo vs. celda exacta del Hot-Deck). Resultados
-    interpretados: `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`,
-    `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md` y
-    `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` (comparación de las
-    dos especificaciones de `W`, las cuatro combinaciones de outcome).
-    Sigue siendo una corrida sobre outcomes parciales (IPM-GEIH cubre 8
-    de 15 privaciones; pobreza monetaria sobreestima 6-7pp frente a
-    oficial) — no reemplaza el marco teórico-metodológico completo
-    pendiente (ver Tabla 1 del documento de pipeline: LASSO/Ridge/SHAP,
-    RD B/C, vecino más cercano con Gower y estudio de eventos Sisbén
-    III→IV siguen sin implementar; cotas de Fréchet-Manski ya
-    implementadas, ver `estimacion/` abajo).
+- **`5_estimacion.py`** ✅ corregido 2026-11-02
+  - DML (`LinearDML`: ATE, ATT y ATU) y Causal Forest (`CausalForestDML`:
+    CATE), 4 outcomes × 2 especificaciones de `W` (proxy y celda exacta
+    del Hot-Deck). Las categóricas sin orden entran a los modelos
+    auxiliares como indicadoras. Con el grupo imputado por Hot-Deck el
+    resultado es un **diagnóstico placebo** (ATE ≈0 esperado), no el
+    efecto del Sisbén: ver `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
 
 - **`6_refutacion.py`**
   - Pruebas de refutación y sensibilidad: placebo, random common cause,

@@ -1,12 +1,10 @@
-"""Pruebas sobre las transformaciones críticas de
-`src/3b_preprocesamiento_monetario.py` (outcome de pobreza monetaria).
+"""Pruebas de la reconstrucción de pobreza monetaria
+(`src/indicadores/pobreza_monetaria_geih.py`) y de su paso a la muestra de
+estimación (`src/3b_preprocesamiento_monetario.py`).
 
-Usan un mes real (enero 2024) ya procesado en `data/1_processed/geih/`,
-igual que `tests/test_preprocesamiento.py`. `_ingreso_mes` se prueba
-contra datos reales; `_clasificar_pobreza` se prueba con un DataFrame
-sintético pequeño, porque es lógica pura (no necesita I/O) y así se
-pueden probar casos de borde exactos (ingreso justo en la línea, ingreso
-0, zona rural vs. urbana).
+Las reglas (unidad de gasto, líneas por dominio, trabajadores sin
+remuneración, arriendo imputado) se prueban con DataFrames sintéticos;
+la lectura de un mes real solo si existe `data/1_processed/geih/2024/01/`.
 
 Uso:
     poetry run pytest tests/
@@ -16,76 +14,101 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
+from src.indicadores import pobreza_monetaria_geih as pm
+
 ROOT = Path(__file__).resolve().parents[1]
 _SPEC = importlib.util.spec_from_file_location("preprocesamiento_monetario", ROOT / "src" / "3b_preprocesamiento_monetario.py")
-pm = importlib.util.module_from_spec(_SPEC)
-_SPEC.loader.exec_module(pm)
-
-LLAVE = ["llave_directorio", "llave_secuencia_p", "llave_hogar"]
-pytestmark = pytest.mark.skipif(
-    not (pm.GEIH_DIR / "01" / "ocupados.parquet").exists(),
-    reason="Falta data/1_processed/geih/2024/01/ — restaurar el banco de datos desde Azure",
-)
+b3 = importlib.util.module_from_spec(_SPEC)
+_SPEC.loader.exec_module(b3)
 
 
-@pytest.fixture(scope="module")
-def ingreso_enero():
-    df = pm._ingreso_mes("01")
-    assert df is not None
-    return df
+def _personas(**cols) -> pd.DataFrame:
+    """Un hogar urbano de 13 ciudades con los valores por defecto en 0."""
+    n = len(next(iter(cols.values())))
+    base = dict(
+        mes=["01"] * n, DIRECTORIO=["1"] * n, SECUENCIA_P=["1"] * n, HOGAR=["1"] * n,
+        ORDEN=[str(i + 1) for i in range(n)], P6050=["1"] + ["3"] * (n - 1), P6430=[pd.NA] * n,
+        ocupado=[False] * n, inglabo=[np.nan] * n, p6750=[np.nan] * n, p550_mes=[np.nan] * n,
+        CLASE=["1"] * n, AREA=["11"] * n, DPTO=["11"] * n, peso=[1.0] * n,
+        P5090=["3"] * n, arriendo_imputado=[0.0] * n,
+    )
+    for c in ("lab_no_incluido", "primas_anuales", "especie_indep", "trabajo_no_ocupado",
+              "no_laboral", "cesantias", "accidentes"):
+        base[c] = [0.0] * n
+    base.update(cols)
+    p = pd.DataFrame(base)
+    p["dominio"] = pm._dominio(p)
+    return p
 
 
-def test_una_fila_por_hogar(ingreso_enero):
-    assert ingreso_enero.duplicated(subset=LLAVE).sum() == 0
+def test_dominio_y_lineas():
+    p = pd.DataFrame({"CLASE": ["1", "1", "2", "1"], "AREA": ["11", "15", pd.NA, "5"]})
+    assert pm._dominio(p).tolist() == ["13_ciudades", "otras_cabeceras", "rural", "13_ciudades"]
 
 
-def test_ingreso_no_negativo(ingreso_enero):
-    assert (ingreso_enero["ingreso_hogar_mensual"] >= 0).all()
+def test_servicio_domestico_fuera_de_la_unidad_de_gasto():
+    p = _personas(P6050=["1", "10"], ocupado=[True, True], P6430=["1", "3"],
+                  inglabo=[1_200_000.0, 1_300_000.0])
+    per = pm._construir(p, pm._imputar_laboral(p))
+    assert len(per) == 1 and per["personas_ug"].iloc[0] == 1
+    assert per["ingreso_pc_ug"].iloc[0] == 1_200_000.0
 
 
-def test_ingreso_sin_faltantes(ingreso_enero):
-    assert ingreso_enero["ingreso_hogar_mensual"].isna().sum() == 0
+def test_jornalero_es_remunerado_y_familiar_no():
+    p = _personas(ocupado=[True, True, True], P6430=["7", "6", "8"], inglabo=[np.nan, np.nan, np.nan])
+    assert pm._remunerado(p).tolist() == [True, False, False]
 
 
-def test_clasificar_pobreza_casos_de_borde():
-    """DataFrame sintético: un hogar justo en la línea urbana, uno muy por
-    debajo (extremo), uno muy por encima (no pobre), y uno rural con el
-    mismo ingreso que uno urbano — deben clasificar distinto porque la
-    línea rural es más baja."""
-    df = pd.DataFrame({
-        "ingreso_hogar_mensual": [510_161 * 2, 50_000 * 2, 5_000_000 * 2, 400_000 * 2],
-        "hog_num_personas": ["2", "2", "2", "2"],
-        "geo_zona": ["1", "1", "1", "2"],
-    })
-    out = pm._clasificar_pobreza(df)
-
-    assert out.loc[0, "POBRE_MONETARIO"] == 0, "ingreso == línea no es pobre (desigualdad estricta <)"
-    assert out.loc[1, "POBRE_EXTREMO_MONETARIO"] == 1, "muy por debajo de la línea extrema debe ser pobre extremo"
-    assert out.loc[2, "POBRE_MONETARIO"] == 0
-    assert out.loc[2, "brecha_pobreza_monetaria"] == 0, "la brecha de un hogar no pobre debe ser 0, no negativa"
-    # Mismo ingreso per cápita (400.000) en zona urbana (línea 510.161, pobre)
-    # vs. rural (línea 291.998, no pobre) — la clasificación debe diferir.
-    df_urbano = pd.DataFrame({"ingreso_hogar_mensual": [800_000], "hog_num_personas": ["2"], "geo_zona": ["1"]})
-    df_rural = pd.DataFrame({"ingreso_hogar_mensual": [800_000], "hog_num_personas": ["2"], "geo_zona": ["2"]})
-    assert pm._clasificar_pobreza(df_urbano).loc[0, "POBRE_MONETARIO"] == 1
-    assert pm._clasificar_pobreza(df_rural).loc[0, "POBRE_MONETARIO"] == 0
+def test_hotdeck_solo_imputa_faltantes_remunerados():
+    p = _personas(P3271=["1"] * 4, P6040=["30"] * 4, P3042=["5"] * 4, RAMA2D_R4=["47"] * 4,
+                  ocupado=[True] * 4, P6430=["1", "1", "6", "1"],
+                  inglabo=[900_000.0, np.nan, np.nan, 0.0])
+    lab = pm._imputar_laboral(p)
+    assert lab.tolist() == [900_000.0, 900_000.0, 0.0, 900_000.0]
 
 
-def test_brecha_entre_0_y_1_para_pobres():
-    df = pd.DataFrame({
-        "ingreso_hogar_mensual": [0, 510_161 * 2 - 2],
-        "hog_num_personas": ["2", "2"],
-        "geo_zona": ["1", "1"],
-    })
-    out = pm._clasificar_pobreza(df)
-    assert out["brecha_pobreza_monetaria"].between(0, 1).all()
-    assert out.loc[0, "brecha_pobreza_monetaria"] == 1.0, "ingreso 0 implica brecha máxima (100%)"
+def test_arriendo_imputado_solo_a_propietarios_y_usufructo():
+    p = _personas(P6050=["1"], P5090=["1"], arriendo_imputado=[600_000.0])
+    assert pm._construir(p, pm._imputar_laboral(p))["ingreso_pc_ug"].iloc[0] == 600_000.0
+    p = _personas(P6050=["1"], P5090=["3"], arriendo_imputado=[600_000.0])
+    assert pm._construir(p, pm._imputar_laboral(p))["ingreso_pc_ug"].iloc[0] == 0.0
 
 
-def test_ingreso_percapita_nan_sin_personas():
-    df = pd.DataFrame({"ingreso_hogar_mensual": [500_000], "hog_num_personas": ["0"], "geo_zona": ["1"]})
-    out = pm._clasificar_pobreza(df)
-    assert out["ingreso_percapita"].isna().all()
+def test_linea_por_dominio_y_brecha():
+    ingreso = 500_000.0  # pobre en 13 ciudades (566.228), no pobre en otras cabeceras (434.323)
+    for area, pobre in (("11", 1), ("15", 0)):
+        p = _personas(P6050=["1"], AREA=[area], no_laboral=[ingreso])
+        p["dominio"] = pm._dominio(p)
+        per = pm._construir(p, pm._imputar_laboral(p))
+        assert per["POBRE_MONETARIA"].iloc[0] == pobre
+        assert 0 <= per["BRECHA_PM"].iloc[0] < 1
+
+
+def test_gini_extremos():
+    assert pm._gini(np.array([5.0, 5.0, 5.0]), np.ones(3)) == pytest.approx(0.0)
+    assert pm._gini(np.array([0.0, 0.0, 0.0, 10.0]), np.ones(4)) == pytest.approx(0.75)
+
+
+def test_pegar_pobreza_uno_a_uno():
+    base = pd.DataFrame({"llave_directorio": ["1", "2"], "llave_secuencia_p": ["1", "1"],
+                         "llave_hogar": ["1", "1"], "mes": ["01", "01"]})
+    pob = pd.DataFrame({"DIRECTORIO": ["1", "2"], "SECUENCIA_P": ["1", "1"], "HOGAR": ["1", "1"],
+                        "mes": ["01", "01"], "ingreso_pc_ug": [100.0, 900_000.0], "personas_ug": [2, 3],
+                        "dominio_pm": ["rural", "rural"], "POBRE_MONETARIA": [1, 0], "POBRE_EXTREMA": [1, 0],
+                        "BRECHA_PM": [0.9, 0.0], "BRECHA_PE": [0.9, 0.0]})
+    out = b3.pegar_pobreza(base, pob)
+    assert out["POBRE_MONETARIO"].tolist() == [1, 0]
+    assert out["ingreso_percapita"].tolist() == [100.0, 900_000.0]
+
+
+@pytest.mark.skipif(not (pm.GEIH_DIR / "01" / "ocupados.parquet").exists(),
+                    reason="Falta data/1_processed/geih/2024/01/ — restaurar el banco de datos desde Azure")
+def test_mes_real_una_fila_por_persona():
+    p = pm._personas_mes("01")
+    assert not p.duplicated(subset=["DIRECTORIO", "SECUENCIA_P", "HOGAR", "ORDEN"]).any()
+    assert p["ocupado"].dtype == bool
+    assert (p[["lab_no_incluido", "primas_anuales", "no_laboral"]] >= 0).all().all()

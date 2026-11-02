@@ -1,0 +1,21 @@
+2026-11-02 16:07:48,805 INFO Receptor GEIH: 290,968 hogares | Donante Sisbén: 3,093,411 hogares
+
+=== Celdas Hot-Deck con y sin vivienda homologada ===
+                                                        0            1                    2
+celda                                1_depto_edad_cuartos  2_mas_pisos  3_mas_pisos_paredes
+celdas_con_receptores                                 376          993                 2081
+pct_hogares_celda_exacta                           99.999       99.976               99.946
+donantes_mediana                                   9437.0       2353.0               1898.0
+donantes_p5                                        1301.0        183.0                140.0
+pct_hogares_celda_menos_30_donantes                 0.064        0.833                1.384
+sd_p_t_celda                                         0.17        0.223                0.224
+p_t_p5                                              0.355        0.151                0.145
+p_t_p95                                             0.863        0.844                0.849
+corr_p_t_celda_pobre_monetario                      0.201         0.29                0.292
+dif_pobreza_T1_menos_T0                              0.09        0.133                0.136
+pct_grupo_A                                        21.998       14.187               13.969
+pct_grupo_B                                        33.779       29.442               29.001
+pct_grupo_C                                        28.655       34.358               34.545
+pct_grupo_D                                        15.569       22.013               22.485
+
+Guardado: docs\reports\comparacion_celdas_hotdeck_vivienda.csv

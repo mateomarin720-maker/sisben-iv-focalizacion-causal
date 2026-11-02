@@ -1,236 +1,107 @@
-# Resultados — Pobreza monetaria (ingreso per cápita, FGT0/FGT1)
+# Resultados — Pobreza monetaria reconstruida con GEIH 2024
 
-Generado 2026-11-02 por `src/3b_preprocesamiento_monetario.py`. Salida:
-`data/2_models/muestra_estimacion_monetaria_2024.parquet`,
-`docs/reports/validacion_fgt_pobreza_monetaria.csv`.
+Generado 2026-11-02 por `src/indicadores/pobreza_monetaria_geih.py`.
+Metodología y decisiones:
+`docs/metodologia/pobreza_monetaria/01_diccionario_ingreso.md` (sobre la
+auditoría `00_auditoria_y_metodologia.md`). Salidas:
+- `data/2_models/muestra_pobreza_monetaria_reconstruida_2024.parquet` (personas)
+- `data/2_models/pobreza_monetaria_hogar_2024.parquet` (hogares)
+- `docs/reports/validacion_pobreza_monetaria.csv` y `pobreza_monetaria_geih.txt`
 
-> **Aviso (2026-11-02):** la auditoría de
-> `docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md`
-> encontró que `INGLABO` **no** está imputado por el DANE y que el "47,7 %
-> de no respuesta en `P6500`" eran independientes, a quienes no se les hace
-> esa pregunta (§8 de la auditoría). También lista siete diferencias
-> metodológicas de este outcome (unidad de gasto, tasas por hogar, líneas,
-> ingresos ocasionales, componentes omitidos, no respuesta, vivienda
-> propia; §7). Este documento se reescribirá con la nueva construcción.
+**Es una reconstrucción experimental, no la medición oficial.** El DANE
+cruza GEIH con registros administrativos (ayudas institucionales, PILA)
+que no son públicos, e imputa con un modelo que no publica. Se rotula
+`FUENTE_PM = "reconstruccion_geih_publica"`.
 
-## Qué es
+## Resultado (escenario base, personas, `FEX_C18 / 12`)
 
-El nuevo outcome principal según el giro propuesto por el tutor el
-2026-10-27 (ver `docs/seguimiento/CHANGELOG_PENDIENTES.md`): en vez de
-(o además de) el IPM-GEIH de `3_preprocesamiento.py`, el resultado pasa a
-ser la **pobreza monetaria** — ingreso per cápita del hogar comparado
-contra la línea de pobreza oficial del DANE, con los indicadores FGT
-(Foster, Greer y Thorbecke, 1984): FGT0 (incidencia, % de pobres), FGT1
-(brecha, qué tan lejos están los pobres de la línea).
+| Dominio | FGT0 pobreza | Oficial | FGT1 | Oficial | FGT0 extrema | Oficial | Gini | Oficial |
+|---|---|---|---|---|---|---|---|---|
+| Nacional | 33,2 % | 31,8 % | 13,5 % | 12,6 % | 12,5 % | 11,7 % | 0,565 | 0,551 |
+| Cabeceras | 30,9 % | 28,6 % | 12,3 % | 11,0 % | 9,9 % | 8,7 % | 0,548 | 0,530 |
+| 13 ciudades y A.M. | 26,4 % | 24,0 % | 10,2 % | 8,9 % | 7,0 % | 5,9 % | 0,545 | 0,522 |
+| Otras cabeceras | 36,7 % | 34,8 % | 15,1 % | 13,9 % | 13,8 % | 12,4 % | 0,502 | 0,490 |
+| Centros poblados y rural disperso | 41,3 % | 42,5 % | 17,6 % | 17,9 % | 21,3 % | 21,8 % | 0,494 | 0,482 |
 
-## Fuente oficial de las líneas de pobreza
+FGT2 nacional: 7,8 % (el boletín no lo publica). Población expandida:
+51,55 M; 828.305 personas en unidades de gasto.
 
-`docs/insumos/DANE_boletin_PM_2024.pdf` (DANE, *Pobreza Monetaria en
-Colombia, año 2024*, boletín técnico oficial, Tablas 1 y 4), pesos
-corrientes mensuales por persona:
+## Sensibilidad (nacional)
 
-| Dominio | Línea de pobreza | Línea de pobreza extrema |
-|---|---|---|
-| Total nacional | $460.198 | $227.220 |
-| Cabeceras (urbano) | $510.161 | $242.389 |
-| Centros poblados y rural disperso (rural) | $291.998 | $176.154 |
-
-Incidencia y brecha oficiales 2024 (para validar por plausibilidad, el
-mismo criterio que la tasa de IPM oficial en `3_preprocesamiento.py`):
-
-| | Nacional | Cabeceras | Centros poblados y rural disperso |
-|---|---|---|---|
-| FGT0 pobreza | 31,8 % | 28,6 % | 42,5 % |
-| FGT1 pobreza | 12,6 % | — | — |
-| FGT0 pobreza extrema | 11,7 % | 8,7 % | 21,8 % |
-| FGT1 pobreza extrema | 4,5 % | — | — |
-
-## Cómo se construyó
-
-**Ingreso laboral:** `INGLABO` del módulo `ocupados` — la variable de
-ingreso laboral que el DANE ya construye e imputa internamente, no una
-reconstrucción manual desde `P6500`. Ver "Qué salió mal primero" abajo:
-el primer intento sí reconstruyó manualmente desde `P6500` y falló.
-
-**Ingreso no laboral** (módulo `otros_ingresos`, todos los miembros del
-hogar): arriendos, pensiones/jubilaciones, pensión alimenticia
-(mensuales, directo); dinero de otros hogares, ayudas institucionales,
-intereses/dividendos, cesantías, otras fuentes (preguntados sobre los
-últimos 12 meses, divididos entre 12 para un equivalente mensual).
-
-**Ingreso ocasional de no ocupados** (módulo `no_ocupados`, `P7422`):
-personas no clasificadas como ocupadas que igual ganaron algo el mes
-pasado.
-
-**Agregación:** suma de las tres fuentes por TODOS los miembros del
-hogar → `ingreso_hogar_mensual`; dividido entre `hog_num_personas` →
-`ingreso_percapita`. Comparado contra la línea del dominio
-(`geo_zona`: 1=urbano/2=rural) → `POBRE_MONETARIO`/
-`POBRE_EXTREMO_MONETARIO`. Brecha por hogar:
-`max(0, (línea - ingreso_percapita) / línea)` → agregada ponderando por
-`fex` da el FGT1 poblacional.
-
-## Qué SÍ y qué NO replica de la metodología oficial del DANE
-
-El DANE construye el "ingreso per cápita de la unidad de gasto" en 5
-pasos (nota 2 del boletín): (1) agregar ingresos por fuente, (2) un
-**modelo de imputación** para corregir subreporte, (3) consolidar a
-nivel de Población en Edad de Trabajar, (4) agregar a nivel de "unidad
-de gasto" (el hogar SIN pensionistas ni empleados domésticos internos),
-(5) un **ajuste por propiedad de la vivienda** (arriendo imputado a
-propietarios).
-
-Este script hace el paso (1) completo y una versión parcial del (2) — al
-usar `INGLABO` (ya imputado por el DANE) en vez de `P6500` crudo, hereda
-la imputación oficial del ingreso LABORAL, pero no imputa subreporte en
-el ingreso NO laboral (arriendos, pensiones, etc., que no tienen una
-variable equivalente ya imputada). Tampoco hace (3), no distingue
-"unidad de gasto" de "hogar" (4), y no hace el ajuste (5). Por diseño,
-esto **subestima el ingreso real y sobreestima la pobreza** frente a la
-cifra oficial — el patrón observado en el resultado (todas las FGT
-construidas por encima de las oficiales) es consistente con esa
-dirección esperada, no con un error aleatorio.
-
-## Qué salió mal primero (y cómo se encontró)
-
-El primer intento reconstruyó el ingreso laboral sumando `P6500` +
-horas extra/primas/bonificaciones (si no estaban ya incluidas, según la
-sub-pregunta de cada una) + subsidios + pago en especie — exactamente lo
-que sugieren las preguntas del cuestionario, sin usar ninguna variable
-derivada. Resultado: FGT0=53,6 %, FGT1=39,0 % — muy por encima de lo
-esperable para una aproximación sin imputación (no un margen de 5-10
-puntos, sino casi el doble en FGT0 y más de 3 veces en FGT1).
-
-**Causa:** `P6500` por sí solo tiene **47,7 % de no respuesta** entre
-las personas ocupadas (13.751 de 28.815 en enero) — casi la mitad de los
-ocupados no reportan un valor numérico a esa pregunta. El script
-original trataba esos vacíos como ingreso $0 en vez de "no informa", lo
-que inflaba el conteo de hogares con ingreso 0 (21,4 % de los hogares,
-implausible) y sobre todo inflaba FGT1 (un hogar con ingreso real alto
-pero `P6500` vacío contribuía una brecha de pobreza del 100 % en vez de
-0 %).
-
-**Corrección:** el módulo `ocupados` trae `INGLABO` ("Ingresos
-Laborales"), la variable que el DANE ya construye e imputa (reduce la no
-respuesta de 47,7 % a 4,3 %) — es precisamente el paso (2) de la
-metodología oficial. Usarla en vez de reconstruir manualmente bajó el
-porcentaje de hogares con ingreso $0 de 21,4 % a 4,1 %, y las cuatro FGT
-pasaron de estar 1,5-3 veces por encima de lo oficial a estar en un
-rango de sobreestimación mucho más consistente con lo que predice la
-teoría (ver tabla abajo).
-
-## Resultado
-
-Cifras regeneradas el 2026-11-02 tras corregir el bug de agosto (en ese
-mes los ingresos no laborales se perdían por los códigos `"1.0"` del
-`.DTA`; antes: FGT0 38,7 %, FGT1 19,5 %, extrema 18,8 % y 10,7 %).
-
-Ingreso per cápita mensual: media $1.070.362, mediana $645.000.
-
-| Indicador | Construido | Oficial DANE 2024 | Diferencia |
-|---|---|---|---|
-| FGT0 pobreza monetaria | 37,6 % | 31,8 % | +5,8 pp |
-| FGT1 brecha pobreza monetaria | 18,3 % | 12,6 % | +5,7 pp |
-| FGT0 pobreza extrema | 17,6 % | 11,7 % | +5,9 pp |
-| FGT1 brecha pobreza extrema | 9,5 % | 4,5 % | +5,0 pp |
-
-Por zona:
-
-| Dominio | FGT0 construido | FGT0 oficial | FGT1 construido |
-|---|---|---|---|
-| Cabeceras (urbano) | 35,4 % | 28,6 % | 17,0 % |
-| Centros poblados y rural disperso | 45,7 % | 42,5 % | 23,1 % |
+| Escenario | FGT0 | FGT1 | FGT0 extrema | Gini |
+|---|---|---|---|---|
+| **Base** | **33,2 %** | **13,5 %** | **12,5 %** | **0,565** |
+| No respuesta laboral = 0 | 34,9 % | 15,0 % | 14,1 % | 0,571 |
+| Caso completo (reponderado por dominio) | 33,6 % | 13,7 % | 12,7 % | 0,564 |
+| UG sin `P6050` = 11 y 12 (D2) | 33,2 % | 13,5 % | 12,5 % | 0,565 |
+| Sin arriendo imputado (D3) | 38,8 % | 17,3 % | 16,8 % | 0,564 |
+| Arriendo imputado solo a propietarios (D3) | 35,3 % | 15,1 % | 14,3 % | 0,571 |
+| Ganancia rural `P550` ÷ 12 (D4) | 34,0 % | 14,1 % | 13,3 % | 0,569 |
+| Con cesantías y accidentes (D5) | 33,2 % | 13,5 % | 12,5 % | 0,566 |
 
 ## Cómo leerlo
 
-- **La sobreestimación es sistemática y de magnitud razonable** (todas
-  las FGT construidas quedan 5-6 puntos porcentuales por encima de la
-  oficial, no un orden de magnitud distinto) — consistente con lo
-  esperado de no replicar los pasos (2)-(5) de la metodología del DANE,
-  no con un error de construcción. Es la misma lógica de validación por
-  plausibilidad que se usó para el umbral `K_POBRE` del IPM-GEIH: no se
-  espera coincidencia exacta, se espera un orden de magnitud razonable.
-- **El patrón urbano/rural se mantiene en la dirección correcta**
-  (rural más pobre que urbano en ambas versiones), aunque la brecha
-  construida entre zonas (10,3 pp) es más chica que la oficial (13,9 pp)
-  — posible señal de que la imputación faltante afecta de forma
-  distinta a cada dominio, sin investigar más por ahora.
-- **FGT1 sobreestima proporcionalmente más que FGT0** en pobreza extrema
-  (+5,0 pp sobre una base de 4,5 %, más del doble) que en pobreza
-  moderada (+5,7 pp sobre 12,6 %, menos de la mitad) — consistente
-  con que los hogares peor medidos (sin imputación de subreporte) caen
-  desproporcionadamente en la cola más pobre de la distribución.
+- **La reconstrucción queda a 1,4 puntos de la cifra oficial** en lo
+  nacional (antes, ≈39 %) y por debajo de ella en lo rural (−1,2). La
+  diferencia restante es de esperar: el DANE suma ayudas registradas en
+  administrativos que la encuesta subdeclara.
+- **La decisión que más pesa es el arriendo imputado** (5,6 puntos). La
+  ficha metodológica del DANE (catálogo 874) confirma que se imputa a
+  propietarios y usufructuarios, por eso está en la base.
+- **La imputación de no respuesta laboral importa poco** (hot-deck vs.
+  caso completo: 0,4 puntos). Ponerla en cero sesga hacia más pobreza
+  (+1,7).
+- Los códigos 11 y 12 de `P6050` y las cesantías no mueven las tasas.
+- El Gini queda 0,01-0,02 por encima del oficial en todos los dominios:
+  la reconstrucción no corrige ingresos atípicos ni "falsos ceros" fuera
+  del ingreso laboral.
 
-## Limitaciones
+## Qué corrigió frente a la versión anterior (`3b`, hasta el 2026-11-02)
 
-- No replica los pasos (2)-(5) completos de la metodología oficial del
-  DANE (imputación de subreporte no laboral, "unidad de gasto" exacta,
-  ajuste por vivienda propia) — ver "Qué SÍ y qué NO replica" arriba.
-- Dominio geográfico más grueso que el oficial: solo urbano/rural
-  (`geo_zona`), no los 5 dominios del boletín (13 ciudades y A.M., otras
-  cabeceras, etc.) — usa las líneas de cabeceras/resto, que agregan esos
-  sub-dominios.
-- `INGLABO` no está documentado en detalle en
-  `docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (solo "Ingresos Laborales");
-  se asume que ya incluye horas extra/primas/bonificaciones/subsidios/
-  pago en especie por su cobertura y orden de magnitud, no por
-  confirmación textual de su fórmula exacta.
-- Sin ajuste por diseño muestral complejo más allá de ponderar por `fex`
-  en la validación (el outcome en sí, a nivel de hogar, no se pondera).
-- GEIH es panel rotativo — una fila por hogar DENTRO de cada mes, no un
-  hogar único en el año (mismo criterio que `3_preprocesamiento.py`).
+| Antes | Ahora |
+|---|---|
+| Hogar completo | Unidad de gasto (sin servicio doméstico, `P6050` = 10) |
+| Tasas por hogar | Tasas por persona |
+| Dos líneas (cabecera, rural) | Tres líneas de dominio |
+| Incluía ingresos ocasionales | Los excluye |
+| Omitía extras, primas anuales, auxilios y especie de independientes | Los suma si no están en `INGLABO` |
+| `INGLABO` vacío = 0 y código 98 = $98 | Hot-deck para el laboral; 98/99 no cuentan como monto |
+| Sin arriendo imputado | Con arriendo imputado |
+| FGT0 37,6 % | FGT0 33,2 % |
 
-## Estimación causal (DML/Causal Forest) — 2026-11-02
+Durante la construcción apareció un error de la auditoría: `P6430` = 7 es
+**jornalero o peón** (el 99 % declara salario), no un trabajador sin
+remuneración. Los números de `P6430` no siguen el orden de las letras del
+diccionario, igual que pasa con `P6050`. Sin remuneración son el 6 y el 8.
 
-Conectado a `src/5_estimacion.py` como tercer y cuarto outcome
-(`log_ingreso_percapita` = `log1p(ingreso_percapita)`, y
-`POBRE_MONETARIO`), con las mismas dos especificaciones de `W` (proxy
-continuo vs. celda exacta del Hot-Deck) que ya se habían usado para
-`ipm_geih_score`/`POBRE_GEIH`. Resultado completo y comparación lado a
-lado con los outcomes IPM-GEIH:
-`docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
+## En la muestra de estimación
 
-Resumen:
+`src/3b_preprocesamiento_monetario.py` pega el escenario base a
+`muestra_estimacion_2024.parquet` (290.968 hogares, todos con ingreso
+reconstruido). A nivel de hogar, ponderado por `fex`: 27,0 % de hogares
+pobres y 10,4 % en pobreza extrema (es menor que la tasa por personas
+porque los hogares pobres son más grandes).
 
-| Outcome | W = PROXY | W = CELDA EXACTA |
-|---|---|---|
-| `log_ingreso_percapita` (ATE) | -0,0294 [-0,0479;-0,0108] | -0,0467 [-0,0653;-0,0282] |
-| `POBRE_MONETARIO` (ATE) | +0,0141 [+0,0106;+0,0175] | +0,0158 [+0,0123;+0,0192] |
+Resultados causales con este outcome: `DIAGNOSTICO_W_CELDA_EXACTA.md`
+(ATE ≈0, placebo) y `RESULTADOS_FRECHET_MANSKI.md` (cotas
+[−0,538; +0,503]).
 
-Hallazgo principal: a diferencia de `ipm_geih_score` (cuyo efecto se
-encogió 58 % al pasar al `W` con la celda exacta, señal de que el proxy
-continuo lo inflaba), los dos outcomes monetarios **no se encogen — se
-amplían** (+59 % y +12 % en magnitud respectivamente) y el signo es
-estable (Grupo A/B del Sisbén se asocia con menor ingreso y mayor
-probabilidad de pobreza monetaria en ambas especificaciones). Bajo la
-simulación de sorteo aleatorio limpio (`simulacion_identificacion.py`),
-el resultado esperado es ≈0 sin importar el efecto verdadero — que estos
-dos outcomes se alejen de 0 en vez de acercarse es la evidencia más
-fuerte producida hasta ahora en el proyecto de que el efecto no es un
-artefacto del proxy continuo de `W`.
+## Pendiente
 
-Esto no confirma causalidad por sí solo (falta probar `viv_paredes`/
-`viv_pisos`, ya homologadas, dentro de la celda del Hot-Deck, y siguen
-los confusores no observados DPS/RUI), pero es la evidencia de robustez
-más fuerte entre
-los cuatro outcomes probados hasta ahora.
-
-## Próximos pasos
-
-- ~~Conectar este outcome a `src/5_estimacion.py`~~ — hecho 2026-11-02,
-  ver arriba.
-- ~~Repetir el diagnóstico `W` proxy vs. celda exacta~~ — hecho
-  2026-11-02, ver arriba y `DIAGNOSTICO_W_CELDA_EXACTA.md`.
-- ~~Correr `cotas_frechet_manski.py` sobre `POBRE_MONETARIO`~~ — hecho
-  2026-11-02: cota [-0,5817; +0,6877], contiene el 0 y el ATE del DML.
-  Sin la CIA del Hot-Deck, los datos no descartan un efecto de ningún
-  signo. Ver `RESULTADOS_FRECHET_MANSKI.md`.
+- **D1:** la base anonimizada oficial existe (catálogo 874,
+  `BDatos-Pobreza_Monetaria_Desigualdad-2024.zip`). Hay que descargarla a
+  mano y guardarla en `data/0_raw/pobreza_monetaria/`. Si trae las llaves
+  de GEIH, reemplaza esta reconstrucción como referencia hogar por hogar.
+- **D7, versión A:** líneas por área (23 ciudades) de los anexos
+  estadísticos del boletín.
+- Comparación con IPM-GEIH y el grupo Sisbén imputado (Fase 5), **por
+  celda** (D6): con el Hot-Deck no se pueden medir errores de inclusión o
+  exclusión hogar por hogar.
 
 ## Cómo reproducirlo
 
 ```bash
-poetry run python src/3_preprocesamiento.py
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.indicadores.pobreza_monetaria_geih
 poetry run python src/3b_preprocesamiento_monetario.py
-poetry run python src/5_estimacion.py
-poetry run pytest tests/
+poetry run pytest tests/test_preprocesamiento_monetario.py
 ```

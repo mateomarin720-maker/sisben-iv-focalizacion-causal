@@ -93,10 +93,11 @@ se pudo verificar con privaciones porque la entrega del SDP no trae
 
 - `viv_paredes`/`viv_pisos` ya se pueden comparar entre fuentes usando la
   escala común (H1-H7, P1-P5). Antes eso no era posible.
-- Se pueden sumar a la celda del Hot-Deck (pendiente de decidir: más
-  celdas implica menos donantes por celda).
+- Se pueden sumar a la celda del Hot-Deck. Comparación de las tres
+  celdas (actual, + pisos, + pisos + paredes) en
+  `docs/resultados/RESULTADOS_HOTDECK.md`: pisos aporta, paredes no.
 - En `5_estimacion.py` se usan como `X` dentro de una sola fuente (GEIH),
   con los códigos de GEIH, así que el uso actual no cambia.
 - La pista de que el residuo causal venía de "vivienda sin homologar"
-  (`IDENTIFICACION_CAUSAL.md`, `DIAGNOSTICO_W_CELDA_EXACTA.md`) ya se puede
-  probar en vez de suponer.
+  quedó descartada: el residuo era un error de codificación de la celda
+  en el DML (`DIAGNOSTICO_W_CELDA_EXACTA.md`).

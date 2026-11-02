@@ -2,6 +2,56 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (9) — Saneamiento: modelos auxiliares del DML, pobreza monetaria definitiva, celdas con vivienda y documentación consolidada
+
+### Corregido
+- `src/5_estimacion.py`: la celda del Hot-Deck (0..375) y el departamento
+  (0..32) entraban como números a la `LogisticRegression` de propensión.
+  La propensión con "celda exacta" salía 0,633-0,642 para todos (real
+  P(T | celda): 0,36-0,87). Ahora las categóricas sin orden entran como
+  indicadoras (`model_t` logística, `model_y` regresión con efectos fijos
+  más splines). La propensión estimada reproduce la empírica
+  (correlación 0,998).
+- Auditoría monetaria: `P6430` = 7 es jornalero, no "sin remuneración".
+
+### Nuevo
+- `src/indicadores/pobreza_monetaria_geih.py`: pobreza monetaria
+  reconstruida con D1-D7 cerradas (unidad de gasto, tres líneas de
+  dominio, hot-deck de no respuesta laboral, arriendo imputado, tasas por
+  persona, 8 escenarios de sensibilidad). `3b` ahora solo pega el
+  resultado a la muestra de estimación. Diccionario y decisiones:
+  `docs/metodologia/pobreza_monetaria/01_diccionario_ingreso.md`.
+- `src/validacion/comparar_celdas_hotdeck_vivienda.py`: celdas actual,
+  + pisos y + pisos + paredes.
+- `seleccion_variables_lasso_shap.py`: métricas por grupo, matrices de
+  confusión, calibración y partición por municipio.
+- Pruebas de la reconstrucción monetaria (`tests/test_preprocesamiento_monetario.py`, reescrito).
+
+### Cambios en cifras
+- Pobreza monetaria (personas): FGT0 37,6 → **33,2 %** (oficial 31,8),
+  FGT1 18,3 → 13,5 % (12,6), extrema 17,6 → 12,5 % (11,7), Gini 0,565
+  (0,551). Rural 41,3 % (42,5).
+- ATE con celda exacta: `ipm_geih_score` +0,0098 → +0,0011,
+  `POBRE_GEIH` +0,0058 → +0,0004, `log_ingreso_percapita` −0,0467 →
+  −0,0132, `POBRE_MONETARIO` +0,0158 → +0,0025. Siete de ocho IC
+  incluyen el 0.
+- Fréchet-Manski `POBRE_MONETARIO`: [−0,5817; +0,6877] → [−0,5382; +0,5030].
+
+### Conclusiones que se retiran
+- "Los efectos monetarios con la celda exacta son la evidencia de
+  robustez más fuerte del proyecto" y "el residuo no colapsa a 0": eran
+  producto del error de codificación.
+- Los patrones de heterogeneidad del CATE (zona, sexo del jefe, vivienda
+  como pista del residuo).
+
+### Documentación consolidada
+- Reescritos: `RESUMEN_AVANCES.md`, `docs/resultados/README.md`,
+  `DIAGNOSTICO_W_CELDA_EXACTA.md`, `RESULTADOS_DML_ATE_ATT_ATU.md`,
+  `RESULTADOS_CAUSALFOREST_CATE.md`, `RESULTADOS_POBREZA_MONETARIA.md`.
+  Actualizados: `README.md` (enfoque semisintético vigente),
+  `RESULTADOS_FRECHET_MANSKI.md`, `RESULTADOS_HOTDECK.md`,
+  `RESULTADOS_SELECCION_VARIABLES_OE1.md`, `CLAUDE.md`.
+
 ## 2026-11-02 (8) — Corrección del bug de agosto y pipeline regenerado
 
 ### Corregido

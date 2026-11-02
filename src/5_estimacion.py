@@ -14,10 +14,9 @@ columnas de siempre, más `ingreso_percapita`/`POBRE_MONETARIO` de
     (2026-11-02, nuevo outcome principal según el giro del tutor del
     2026-10-27) — ver docstring de `3b_preprocesamiento_monetario.py`.
     `log_ingreso_percapita = log1p(ingreso_percapita)`: el ingreso crudo
-    tiene cola derecha extrema (máximo ≈ 166 veces la mediana) que
-    dominaría el ajuste de `GradientBoostingRegressor` por error
-    cuadrático; log-ingreso es la transformación estándar en economía
-    laboral/desarrollo para este tipo de variable.
+    tiene cola derecha extrema que dominaría el ajuste por error
+    cuadrático; log-ingreso es la transformación estándar para esta
+    variable.
 
 El tratamiento es el mismo en los cuatro: Hot-Deck con vivienda sumada a
 la celda (`geo_depto + jefe_edad + viv_cuartos`, corregido 2026-10-28 —
@@ -49,12 +48,12 @@ una etiqueta engañosa — corregida aquí y en
 Cada modelo corre con DOS especificaciones de `W`, para diagnosticar una
 discrepancia detectada el 2026-11-02 (ver
 `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`):
-  - **`W_COLS_PROXY`** = `{geo_depto, jefe_edad, viv_cuartos}` (la
+  - **`W_PROXY`** = `{geo_depto, jefe_edad, viv_cuartos}` (la
     especificación usada hasta ahora): `jefe_edad`/`viv_cuartos`
     CONTINUOS como proxy de los tramos discretos que el Hot-Deck usa de
     verdad para el sorteo (`geo_depto + ciclo de vida + tramo de
     cuartos`) — no es una réplica exacta de la celda.
-  - **`W_COLS_CELDA`** = `hotdeck_celda_cat`, el código categórico de
+  - **`W_CELDA`** = `hotdeck_celda_cat`, el código categórico de
     `_hotdeck_celda` (columna que ya guarda `emparejamiento_hotdeck_
     geih_sisben.py` con la celda EXACTA usada en cada sorteo — 376
     celdas, 99,999 % en celda exacta). Esta es la réplica fiel del
@@ -68,15 +67,27 @@ discrepancia detectada el 2026-11-02 (ver
 NO usadas en la celda, para heterogeneidad (CATE) y como chequeo de que
 no quede señal espuria.
 
+Modelos auxiliares (corregido 2026-11-02, ver `_codificador`): las
+categóricas sin orden (celda, departamento, material de paredes y pisos)
+entran como variables indicadoras; `model_t` es una logística sobre ellas
+y `model_y` una regresión con efectos fijos más splines de las continuas.
+Antes entraban como su código numérico y la "celda exacta" no controlaba
+la celda.
+
+⚠️ Cómo leer los resultados: son un **diagnóstico de sensibilidad**, no
+efectos causales. El tratamiento se sortea al azar dentro de la celda,
+así que dentro de la celda T no depende de nada del hogar receptor; la
+simulación (`docs/resultados/SIMULACION_IDENTIFICACION.md`) muestra que
+este contraste da ≈0 sea cual sea el efecto verdadero.
+
 ⚠️ Limitaciones — las mismas de siempre, sin excepción:
   - El tratamiento es imputado por Hot-Deck, no observado.
   - `ipm_geih_score`/`POBRE_GEIH` son un proxy reducido (8 de 15
     privaciones), NO el IPM oficial — ver docstring de
     `3_preprocesamiento.py` para qué se incluyó y qué no.
-  - `log_ingreso_percapita`/`POBRE_MONETARIO` no replican la imputación
-    completa de subreporte ni el ajuste por vivienda propia del DANE —
-    sobreestiman la pobreza por 6-7 puntos porcentuales frente a la
-    cifra oficial (ver docstring de `3b_preprocesamiento_monetario.py`).
+  - `log_ingreso_percapita`/`POBRE_MONETARIO` son una reconstrucción con
+    microdatos públicos (33,2 % de personas pobres frente a 31,8 %
+    oficial): sin el cruce del DANE con registros administrativos.
   - Sin ajuste por diseño muestral de GEIH ni de Sisbén.
   - El Sisbén solo cubre hogares inscritos (selección).
   - Falta DPS/RUI como confusores (canal de la Figura 2 sin datos todavía).
@@ -96,8 +107,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.linear_model import LogisticRegression
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LogisticRegression, Ridge
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import OneHotEncoder, SplineTransformer
 
 from econml.dml import LinearDML, CausalForestDML
 
@@ -108,9 +121,12 @@ DATA = Path("data/2_models/muestra_estimacion_monetaria_2024.parquet")
 SEED = 42
 N_SUB_CATE = 80_000
 
-W_COLS_PROXY = ["geo_depto_cat", "jefe_edad", "viv_cuartos"]  # proxy continuo (especificación anterior)
-W_COLS_CELDA = ["hotdeck_celda_cat"]  # celda EXACTA del Hot-Deck (igual al sorteo real)
+# Cada W: (categóricas sin orden, continuas). Las categóricas entran a los
+# modelos auxiliares como variables indicadoras, nunca como su código.
+W_PROXY = (["geo_depto_cat"], ["jefe_edad", "viv_cuartos"])  # proxy continuo (especificación anterior)
+W_CELDA = (["hotdeck_celda_cat"], [])  # celda EXACTA del Hot-Deck (igual al sorteo real)
 X_COLS = ["geo_zona_urbana", "jefe_mujer", "viv_paredes", "viv_pisos"]  # NO usadas en la celda
+X_CATEGORICAS = ["viv_paredes", "viv_pisos"]  # códigos de material: indicadoras en los modelos auxiliares
 
 
 def _preparar(df: pd.DataFrame) -> pd.DataFrame:
@@ -127,11 +143,39 @@ def _preparar(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _modelo_y() -> GradientBoostingRegressor:
-    return GradientBoostingRegressor(n_estimators=100, max_depth=3, random_state=SEED)
+def _codificador(columnas: list[str], categoricas: list[str], continuas: list[str]) -> ColumnTransformer:
+    """Indicadoras para las categóricas sin orden y splines para las
+    continuas, sobre la matriz que econml pasa a los modelos auxiliares
+    (`[X, W]`, en ese orden).
+
+    Hasta el 2026-11-02 el código de celda (0..375) y el de departamento
+    (0..32) entraban a una LogisticRegression como si fueran números: la
+    propensión con la celda exacta salía ≈0,64 para todos los hogares,
+    cuando P(T | celda) va de 0,36 a 0,87 (p5-p95). Ver CLAUDE.md."""
+    idx = {c: i for i, c in enumerate(columnas)}
+    partes = [("cat", OneHotEncoder(handle_unknown="ignore"), [idx[c] for c in categoricas])]
+    if continuas:
+        partes.append(("num", SplineTransformer(n_knots=5, degree=3), [idx[c] for c in continuas]))
+    resto = [i for c, i in idx.items() if c not in categoricas and c not in continuas]
+    if resto:
+        partes.append(("resto", "passthrough", resto))
+    return ColumnTransformer(partes, sparse_threshold=1.0)
 
 
-def _ate_att_atu(df: pd.DataFrame, y_col: str, w_cols: list[str]) -> None:
+def _modelos_auxiliares(w_spec: tuple[list[str], list[str]], con_x: bool = True):
+    """model_y: regresión con efectos fijos (celda o departamento) + splines;
+    model_t: logística sobre las mismas indicadoras. Con indicadoras de la
+    celda, la propensión es P(T | celda), que es lo que fija el sorteo."""
+    w_cat, w_num = w_spec
+    columnas = (X_COLS if con_x else []) + w_cat + w_num
+    categoricas = (X_CATEGORICAS if con_x else []) + w_cat
+    modelo_y = make_pipeline(_codificador(columnas, categoricas, w_num), Ridge(alpha=1.0))
+    modelo_t = make_pipeline(_codificador(columnas, categoricas, w_num),
+                             LogisticRegression(C=10.0, max_iter=2000))
+    return modelo_y, modelo_t
+
+
+def _ate_att_atu(df: pd.DataFrame, y_col: str, w_spec: tuple[list[str], list[str]]) -> None:
     """ATE, ATT y ATU con el MISMO LinearDML ya ajustado — se evalúa
     `effect()`/`ate()` sobre tres poblaciones distintas (todos, T=1, T=0).
 
@@ -144,20 +188,24 @@ def _ate_att_atu(df: pd.DataFrame, y_col: str, w_cols: list[str]) -> None:
     subpoblación evita ese problema y es una forma válida de reportar
     ATT/ATU bajo el mismo marco DML.
     """
+    w_cols = w_spec[0] + w_spec[1]
     d = df.dropna(subset=[y_col, "T", *w_cols, *X_COLS])
     W = d[w_cols].to_numpy(dtype=float)
     X = d[X_COLS].to_numpy(dtype=float)
     Y = d[y_col].to_numpy(dtype=float)
     T = d["T"].to_numpy(dtype=int)
 
-    modelo_t = LogisticRegression(max_iter=1000)
-    modelo_t.fit(W, T)
-    prop = modelo_t.predict_proba(W)[:, 1]
+    _, modelo_t = _modelos_auxiliares(w_spec, con_x=False)
+    prop = modelo_t.fit(W, T).predict_proba(W)[:, 1]
     print(f"  Propensión (T=1 | W): min={prop.min():.3f} p5={np.percentile(prop,5):.3f} "
-          f"p95={np.percentile(prop,95):.3f} max={prop.max():.3f}")
+          f"p50={np.percentile(prop,50):.3f} p95={np.percentile(prop,95):.3f} max={prop.max():.3f}")
+    empirica = d.groupby(w_cols)["T"].transform("mean").to_numpy() if not w_spec[1] else None
+    if empirica is not None:
+        print(f"  vs. P(T | W) empírica: corr={np.corrcoef(prop, empirica)[0, 1]:.3f} "
+              f"| dif. absoluta media={np.abs(prop - empirica).mean():.4f}")
 
-    est = LinearDML(model_y=_modelo_y(), model_t=LogisticRegression(max_iter=1000),
-                     discrete_treatment=True, random_state=SEED)
+    modelo_y, modelo_t = _modelos_auxiliares(w_spec)
+    est = LinearDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, random_state=SEED)
     est.fit(Y, T, X=X, W=W)
 
     for nombre, mask in [("ATE (toda la muestra)", np.ones(len(d), dtype=bool)),
@@ -167,7 +215,8 @@ def _ate_att_atu(df: pd.DataFrame, y_col: str, w_cols: list[str]) -> None:
         print(f"  {nombre}: n={mask.sum():,} | {efecto:+.4f}  IC95%=({lo:+.4f}, {hi:+.4f})")
 
 
-def _cate(df: pd.DataFrame, y_col: str, w_cols: list[str]) -> None:
+def _cate(df: pd.DataFrame, y_col: str, w_spec: tuple[list[str], list[str]]) -> None:
+    w_cols = w_spec[0] + w_spec[1]
     d = df.dropna(subset=[y_col, "T", *w_cols, *X_COLS])
     if len(d) > N_SUB_CATE:
         d = d.sample(N_SUB_CATE, random_state=SEED)
@@ -175,8 +224,8 @@ def _cate(df: pd.DataFrame, y_col: str, w_cols: list[str]) -> None:
     W = d[w_cols].to_numpy(dtype=float)
     Y = d[y_col].to_numpy(dtype=float)
     T = d["T"].to_numpy(dtype=int)
-    est = CausalForestDML(model_y=_modelo_y(), model_t=LogisticRegression(max_iter=1000),
-                           discrete_treatment=True, n_estimators=400, min_samples_leaf=50, random_state=SEED)
+    modelo_y, modelo_t = _modelos_auxiliares(w_spec)
+    est = CausalForestDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, n_estimators=400, min_samples_leaf=50, random_state=SEED)
     est.fit(Y, T, X=X, W=W)
     cate = est.effect(X)
     print(f"  CATE: n={len(d):,} | media={cate.mean():+.4f}  sd={cate.std():.4f}  "
@@ -196,28 +245,28 @@ def main() -> None:
     logger.info("n=%s | T=1 (Grupo A/B): %.1f%%", f"{len(df):,}", df["T"].mean() * 100)
 
     especificaciones = [
-        ("PROXY (geo_depto + jefe_edad continua + viv_cuartos continuo)", W_COLS_PROXY),
-        ("CELDA EXACTA (código categórico de _hotdeck_celda, igual al sorteo real)", W_COLS_CELDA),
+        ("PROXY (indicadoras de geo_depto + splines de jefe_edad y viv_cuartos)", W_PROXY),
+        ("CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)", W_CELDA),
     ]
 
     for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-8 privaciones)"),
                              ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)"),
                              ("log_ingreso_percapita", "log_ingreso_percapita (continuo, log1p(ingreso_percapita))"),
-                             ("POBRE_MONETARIO", "POBRE_MONETARIO (binario, línea de pobreza DANE 2024 por zona)")]:
+                             ("POBRE_MONETARIO", "POBRE_MONETARIO (binario, reconstrucción GEIH con líneas DANE 2024 por dominio)")]:
         print("\n" + "#" * 70)
         print(f"# Outcome: {etiqueta}")
         print("#" * 70)
-        for w_label, w_cols in especificaciones:
+        for w_label, w_spec in especificaciones:
             print("\n" + "=" * 70)
             print(f"W = {w_label}")
             print("=" * 70)
-            _ate_att_atu(df, y_col, w_cols)
-            _cate(df, y_col, w_cols)
+            _ate_att_atu(df, y_col, w_spec)
+            _cate(df, y_col, w_spec)
 
     print("\n" + "=" * 70)
-    print("Cómo leer esto: dos especificaciones de W para el mismo outcome.")
-    print("Si el efecto con la celda EXACTA no se acerca a 0 frente al PROXY,")
-    print("el residuo no se explica por el proxy continuo — ver")
+    print("Cómo leer esto: el grupo imputado se sortea al azar dentro de la celda,")
+    print("así que con la celda controlada el efecto esperado es ≈0 (placebo del")
+    print("emparejamiento, no efecto del Sisbén) — ver")
     print("docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md.")
     print("=" * 70)
 

@@ -1,171 +1,115 @@
-# Diagnóstico: ¿el residuo del DML dependía del proxy continuo de `W`?
+# Diagnóstico: ¿el DML controla la celda del Hot-Deck?
 
-Generado 2026-11-02 por `src/5_estimacion.py` (corrida con dos
-especificaciones de `W` en el mismo script). Ampliado el mismo día al
-conectar `muestra_estimacion_monetaria_2024.parquet` (outcome de pobreza
-monetaria, ver `RESULTADOS_POBREZA_MONETARIA.md`) como tercer y cuarto
-outcome. **Cifras regeneradas el 2026-11-02 tras corregir el bug de
-agosto** (códigos `"1.0"` del `.DTA`, ver CHANGELOG): las conclusiones se
-mantienen salvo la del ATU de `ipm_geih_score` (punto 1). Salida completa:
+Generado 2026-11-02 por `src/5_estimacion.py` (dos especificaciones de
+`W`, cuatro outcomes). Salida completa:
 `docs/reports/estimacion_ate_att_atu_cate.txt`.
+
+**Reescrito el 2026-11-02.** La primera versión de este documento venía de
+un modelo de propensión mal especificado (ver "El error") y llegaba a la
+conclusión contraria. Esas cifras ya no valen.
 
 ## La pregunta
 
-Desde la corrección del 2026-10-28, `W = {geo_depto, jefe_edad,
-viv_cuartos}` usa `jefe_edad` y `viv_cuartos` **continuos** como proxy de
-los tramos **discretos** que el Hot-Deck usa de verdad para sortear el
-donante (`geo_depto + ciclo de vida del jefe + tramo de cuartos`, ver
-`emparejamiento_hotdeck_geih_sisben.py`). Esa discrepancia quedó
-documentada como limitación desde el principio, pero nunca se había
-probado empíricamente si importaba.
+El tratamiento imputado (`T` = Grupo A/B del donante) se sortea al azar
+dentro de una celda: departamento × ciclo de vida del jefe × tramo de
+cuartos (376 celdas). Si el DML controla de verdad esa celda, el efecto
+estimado debería ser ≈0 sea cual sea el efecto verdadero, porque dentro
+de la celda `T` no depende de nada del hogar receptor. Eso es lo que
+predice la simulación (`SIMULACION_IDENTIFICACION.md`, estimador A).
 
-Se confirmó además que el sorteo real es verdaderamente aleatorio dentro
-de la celda (`rng.integers`, sin ponderar por nada del receptor) — el
-mismo mecanismo que simula `simulacion_identificacion.py` (rama
-`simulacion-identificacion`, sin fusionar). Esa simulación muestra que,
-con un sorteo así, el estimador debería dar ≈0 sin importar el efecto
-verdadero, porque el donante sorteado no lleva información del receptor
-específico, solo del promedio de la celda. Si el DML en datos reales con
-la celda EXACTA seguía dando un efecto robusto, eso sería evidencia de
-que el residuo no es un artefacto de especificación.
+Se comparan dos `W`:
+- **PROXY:** departamento + edad del jefe y cuartos como continuas (la
+  especificación usada hasta octubre).
+- **CELDA EXACTA:** la celda del sorteo (`_hotdeck_celda`).
 
-## El experimento
+## El error (corregido 2026-11-02)
 
-Se añadió `W_COLS_CELDA = ["hotdeck_celda_cat"]`: el código categórico de
-`_hotdeck_celda`, la columna que `emparejamiento_hotdeck_geih_sisben.py`
-ya guarda con la celda EXACTA usada en cada sorteo (376 celdas, 99,999 %
-de los hogares en celda exacta — los otros 0,001 % quedaron en
-`solo_depto_edad` y son estadísticamente irrelevantes). Se corrió
-`5_estimacion.py` con AMBAS especificaciones (`W_COLS_PROXY`, la de
-siempre, y `W_COLS_CELDA`, la nueva).
+Los modelos auxiliares recibían la celda (0..375) y el departamento
+(0..32) como **números**, no como categorías. La logística de propensión
+leía la celda como una escala ordinal y no podía separar las celdas:
 
-Outcomes: `ipm_geih_score` y `POBRE_GEIH` (IPM-GEIH), y
-`log_ingreso_percapita` (`log1p(ingreso_percapita)`, para que la cola
-derecha extrema del ingreso no domine el ajuste por error cuadrático de
-`GradientBoostingRegressor`) y `POBRE_MONETARIO` (línea de pobreza DANE
-2024 por zona): 4 outcomes × 2 especificaciones de `W`.
+| | P(T=1 \| W) estimada antes | Real, P(T \| celda) en los datos |
+|---|---|---|
+| Rango | 0,633-0,642 | 0,093-1,000 |
+| p5-p95 | 0,633-0,640 | 0,360-0,872 |
 
-## Resultado
+Es decir, la "celda exacta" no controlaba la celda: dejaba casi toda la
+variación entre celdas sin ajustar y el efecto "sobrevivía" por eso. Es
+el mismo tipo de error que ya estaba documentado en `CLAUDE.md` para
+`econml` (categóricas sin orden dentro de un modelo lineal), esta vez en
+los modelos auxiliares.
 
-| Outcome | W | ATE | ATT | ATU |
+**Corrección:** las categóricas sin orden (celda, departamento, material de
+paredes y pisos) entran a los modelos auxiliares como variables
+indicadoras. `model_t` es una logística sobre las indicadoras y `model_y`
+una regresión con efectos fijos más splines de las continuas. Con la
+celda exacta, la propensión estimada reproduce la empírica: correlación
+0,998, diferencia absoluta media 0,004.
+
+## Resultado (con la corrección)
+
+| Outcome | W | ATE [IC 95 %] | ATT | ATU |
 |---|---|---|---|---|
-| `ipm_geih_score` (0-8) | PROXY (continuo) | +0,0235 [+0,0170;+0,0301] | +0,0245 [+0,0177;+0,0312] | +0,0219 [+0,0156;+0,0283] |
-| `ipm_geih_score` (0-8) | **CELDA EXACTA** | **+0,0098 [+0,0029;+0,0166]** | +0,0113 [+0,0043;+0,0183] | **+0,0071 [+0,0004;+0,0137]** |
-| `POBRE_GEIH` (K≥3) | PROXY (continuo) | +0,0056 [+0,0034;+0,0079] | +0,0060 [+0,0036;+0,0083] | +0,0049 [+0,0029;+0,0070] |
-| `POBRE_GEIH` (K≥3) | **CELDA EXACTA** | **+0,0058 [+0,0035;+0,0081]** | +0,0061 [+0,0038;+0,0085] | +0,0052 [+0,0031;+0,0073] |
-| `log_ingreso_percapita` (log1p) | PROXY (continuo) | -0,0294 [-0,0479;-0,0108] | -0,0290 [-0,0475;-0,0104] | -0,0300 [-0,0490;-0,0111] |
-| `log_ingreso_percapita` (log1p) | **CELDA EXACTA** | **-0,0467 [-0,0653;-0,0282]** | -0,0470 [-0,0655;-0,0285] | -0,0463 [-0,0651;-0,0275] |
-| `POBRE_MONETARIO` (línea DANE) | PROXY (continuo) | +0,0141 [+0,0106;+0,0175] | +0,0142 [+0,0107;+0,0177] | +0,0138 [+0,0104;+0,0173] |
-| `POBRE_MONETARIO` (línea DANE) | **CELDA EXACTA** | **+0,0158 [+0,0123;+0,0192]** | +0,0158 [+0,0123;+0,0193] | +0,0157 [+0,0123;+0,0192] |
+| `ipm_geih_score` (0-8) | PROXY | +0,0002 [−0,0067; +0,0072] | +0,0009 | −0,0009 |
+| `ipm_geih_score` (0-8) | CELDA EXACTA | +0,0011 [−0,0060; +0,0081] | +0,0016 | +0,0001 |
+| `POBRE_GEIH` | PROXY | +0,0016 [−0,0008; +0,0039] | +0,0018 | +0,0012 |
+| `POBRE_GEIH` | CELDA EXACTA | +0,0004 [−0,0020; +0,0028] | +0,0006 | +0,0001 |
+| `log_ingreso_percapita` | PROXY | −0,0098 [−0,0229; +0,0033] | −0,0107 | −0,0083 |
+| `log_ingreso_percapita` | CELDA EXACTA | −0,0132 [−0,0264; −0,0001] | −0,0141 | −0,0117 |
+| `POBRE_MONETARIO` | PROXY | +0,0019 [−0,0015; +0,0053] | +0,0019 | +0,0018 |
+| `POBRE_MONETARIO` | CELDA EXACTA | +0,0025 [−0,0009; +0,0058] | +0,0025 | +0,0024 |
 
-CATE (`CausalForestDML`, misma submuestra de 80.000):
+`POBRE_MONETARIO` y `log_ingreso_percapita` ya usan la reconstrucción de
+pobreza monetaria del 2026-11-02 (`RESULTADOS_POBREZA_MONETARIA.md`).
 
-| Outcome | W | CATE medio | Por zona (rural / urbana) | Por sexo (hombre / mujer) |
+CATE (`CausalForestDML`, submuestra de 80.000):
+
+| Outcome | W | CATE medio | sd | Rural / urbana |
 |---|---|---|---|---|
-| `ipm_geih_score` | PROXY | +0,0228 | 0,0448 / 0,0195 | 0,0288 / 0,0167 |
-| `ipm_geih_score` | **CELDA EXACTA** | +0,0085 | 0,0434 / 0,0033 | 0,0238 / **-0,0071** |
-| `POBRE_GEIH` | PROXY | +0,0033 | 0,0139 / 0,0017 | 0,0056 / 0,0009 |
-| `POBRE_GEIH` | **CELDA EXACTA** | +0,0031 | 0,0090 / 0,0022 | 0,0067 / **-0,0006** |
-| `log_ingreso_percapita` | PROXY | -0,0466 | -0,0512 / -0,0459 | -0,0379 / -0,0555 |
-| `log_ingreso_percapita` | **CELDA EXACTA** | -0,0605 | -0,0847 / -0,0569 | -0,0449 / -0,0765 |
-| `POBRE_MONETARIO` | PROXY | +0,0149 | 0,0098 / 0,0157 | 0,0103 / 0,0197 |
-| `POBRE_MONETARIO` | **CELDA EXACTA** | +0,0164 | 0,0070 / 0,0178 | 0,0099 / 0,0232 |
-
-Un dato adicional revelador: con `W` = PROXY, la propensión `P(T=1|W)`
-varía de 0,000 a 0,783 (p5=0,536, p95=0,731). Con `W` = CELDA EXACTA, varía
-de 0,633 a 0,642 (p5=0,633, p95=0,640) — un rango casi 30 veces más
-angosto. Esto confirma que el proxy continuo (edad/cuartos sin discretizar
-+ logística) encontraba variación en la probabilidad de tratamiento que
-la celda real NO tiene — la elegibilidad A/B apenas varía entre celdas
-exactas, consistente con un sorteo aleatorio con una tasa casi constante.
+| `ipm_geih_score` | CELDA EXACTA | +0,0024 | 0,031 | +0,0165 / +0,0003 |
+| `POBRE_GEIH` | CELDA EXACTA | −0,0018 | 0,011 | +0,0028 / −0,0025 |
+| `log_ingreso_percapita` | CELDA EXACTA | −0,0206 | 0,063 | −0,0621 / −0,0144 |
+| `POBRE_MONETARIO` | CELDA EXACTA | +0,0023 | 0,012 | −0,0010 / +0,0028 |
 
 ## Cómo leerlo
 
-**El resultado no es uniforme entre outcomes, y eso es lo más informativo
-del experimento:**
+1. **Siete de los ocho ATE incluyen el cero**, y todos son de una magnitud
+   despreciable (≤ 0,25 puntos porcentuales en las tasas de pobreza). Es
+   lo que predice la simulación para un sorteo aleatorio dentro de la
+   celda: el contraste es una **prueba placebo** del emparejamiento, no
+   una estimación del efecto del Sisbén.
+2. El único que roza la significancia (`log_ingreso_percapita` con la
+   celda exacta, límite superior −0,0001) es del orden de 1 % del
+   ingreso y no se replica en `POBRE_MONETARIO`. Con ocho pruebas, uno
+   al borde del 5 % es lo esperable por azar.
+3. **Proxy y celda exacta ya no difieren** de forma relevante. La
+   diferencia que se reportaba antes (ATE de `ipm_geih_score` −58 %,
+   outcomes monetarios "más fuertes" con la celda) era producto del
+   error, no del proxy.
+4. La heterogeneidad del CATE (sd 0,01-0,06) es del mismo orden que el
+   ruido de un bosque causal con efectos ≈0; no se debe interpretar como
+   efectos diferenciales.
 
-1. **`ipm_geih_score` (continuo): el proxy SÍ estaba inflando el efecto.**
-   El ATE cae de +0,0235 a +0,0098 (-58 %) al pasar al `W` exacto. El
-   ATU queda apenas por encima de 0 ([+0,0004;+0,0137]). Antes de
-   corregir el bug de agosto la versión anterior lo daba como no
-   significativo ([-0,0016;+0,0116]); con los datos corregidos excluye 0
-   por un margen mínimo, así que no conviene apoyarse en ninguna de las
-   dos lecturas. Una parte sustancial del efecto de este outcome dependía
-   de usar edad/cuartos continuos como proxy de la celda.
-2. **`POBRE_GEIH` (binario): el proxy casi no importaba.** El ATE pasa de
-   +0,0056 a +0,0058 (+4 %), y los tres efectos (ATE/ATT/ATU) siguen
-   excluyendo 0 con márgenes similares. El residuo de este outcome NO se
-   explica por el proxy continuo — sobrevive usando la celda idéntica al
-   mecanismo real de sorteo.
-3. **La heterogeneidad por sexo del jefe es NEGATIVA para `jefe_mujer`**
-   con la celda exacta en los dos outcomes IPM-GEIH (`ipm_geih_score`:
-   -0,0071; `POBRE_GEIH`: -0,0006), y positiva y grande en los dos
-   monetarios. El patrón por sexo nunca ha sido estable entre
-   especificaciones ni entre outcomes — no se puede citar como robusto.
-4. **La heterogeneidad por zona se mantiene y se acentúa** en
-   `ipm_geih_score` (rural/urbana pasa de 2,3x a 13x) — la variable más
-   estable entre todas las especificaciones probadas para IPM-GEIH. En
-   `POBRE_MONETARIO` va en sentido contrario (más efecto urbano), algo
-   que todavía no se ha examinado.
-5. **Los outcomes monetarios no se encogen con la celda exacta: se
-   mantienen o se amplían.**
-   - `log_ingreso_percapita`: el ATE pasa de -0,0294 a **-0,0467** (+59 %
-     en magnitud). El signo es estable (Grupo A/B se asocia con MENOR
-     ingreso per cápita) y el intervalo se aleja de 0.
-   - `POBRE_MONETARIO`: el ATE pasa de +0,0141 a **+0,0158** (+12 %). Signo
-     estable (Grupo A/B se asocia con MAYOR probabilidad de pobreza
-     monetaria), intervalo lejos de 0 en las dos especificaciones.
-   - Al contrario de `ipm_geih_score`, aquí el proxy continuo estaba
-     **atenuando** el efecto: con la celda que reproduce el sorteo real,
-     el efecto sobre pobreza monetaria es más fuerte, no más débil.
+## Qué cambia en las conclusiones del proyecto
 
-## Qué significa esto para la pregunta de validez causal
+- Se retira la afirmación de que los efectos monetarios con la celda
+  exacta eran "la evidencia de robustez más fuerte del proyecto". Además
+  de ser producto del error, un efecto que crece al cambiar la
+  especificación no es por sí mismo evidencia de robustez: demuestra
+  sensibilidad a `W`, y para saber si un estimador recupera el efecto
+  hace falta conocer el efecto verdadero (la simulación semisintética).
+- Los resultados de DML y Causal Forest se presentan como **diagnóstico**
+  del emparejamiento: confirman en datos reales lo que la simulación
+  predice (≈0 por construcción).
+- La evidencia de identificación sobre el efecto en sí son las cotas de
+  Fréchet-Manski (`RESULTADOS_FRECHET_MANSKI.md`): sin suponer
+  independencia condicional, los datos no fijan ni el signo del efecto.
 
-La simulación predice ≈0 bajo un sorteo limpio, sin importar el efecto
-verdadero. Con la celda exacta:
-- `ipm_geih_score` se ACERCA a esa predicción (cae 58 %, el ATU queda en
-  el borde de 0) — consistente con que buena parte de la señal anterior
-  era un artefacto de especificación.
-- `POBRE_GEIH` NO se acerca — el efecto es prácticamente el mismo con las
-  dos especificaciones. Para el outcome binario aparece algo que el
-  mecanismo limpio de Hot-Deck no debería producir. No se identifica aquí
-  la causa (ver limitaciones); solo se descarta que sea el proxy de `W`.
-- `log_ingreso_percapita` y `POBRE_MONETARIO` tampoco se acercan a 0: se
-  alejan. Es la evidencia más fuerte del proyecto de que el efecto
-  reportado no es un artefacto del proxy continuo de `W`.
+## Limitaciones
 
-**No se puede concluir que `POBRE_GEIH`, `log_ingreso_percapita` o
-`POBRE_MONETARIO` tengan un efecto causal confirmado del Sisbén.**
-Sobrevivir este chequeo descarta UNA explicación alternativa (el proxy),
-no todas. `viv_paredes`/`viv_pisos` siguen siendo las variables de mayor
-importancia en el Causal Forest en las cuatro combinaciones; ya están
-homologadas con el Sisbén (`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`),
-pero todavía no se probó si sumarlas a la celda del Hot-Deck explica el
-residuo. Faltan también los confusores no observados (DPS/RUI).
-
-## Limitaciones de este diagnóstico
-
-- No identifica POR QUÉ `POBRE_GEIH` no se mueve — solo descarta una
-  explicación (el proxy). Explicaciones no descartadas: sobreajuste de
-  los modelos de molestia (`GradientBoostingRegressor`/
-  `LogisticRegression` con 376 categorías dummy), vivienda fuera de la
-  celda del Hot-Deck, o algo distinto al mecanismo que simula
-  `simulacion_identificacion.py` (esa simulación no modela una
-  binarización del outcome como `POBRE_GEIH`, solo un continuo).
-- `cotas_frechet_manski.py` ya usaba `construir_celda()` (la celda
-  exacta) desde su implementación original — no tenía el problema del
-  proxy continuo. Su cota para `POBRE_GEIH` ([-0,4114;+0,3230], ver
-  `RESULTADOS_FRECHET_MANSKI.md`) se compara con el ATE de celda exacta
-  (+0,0058), no con el de proxy continuo.
-- Solo se probó con `5_estimacion.py` (DML/Causal Forest). No se
-  repitieron `4_dag_identificacion.py` ni la comparación de filtros SDP
-  porque no dependen de esta especificación.
-- `log_ingreso_percapita`/`POBRE_MONETARIO` heredan las limitaciones de
-  `3b_preprocesamiento_monetario.py`: sobreestiman la pobreza en 5-6
-  puntos porcentuales frente a las cifras oficiales y tienen siete
-  diferencias metodológicas documentadas en
-  `docs/metodologia/pobreza_monetaria/00_auditoria_y_metodologia.md`
-  (§7). Eso afecta el nivel de `POBRE_MONETARIO`, pero ambas
-  especificaciones de `W` comparten el mismo sesgo de nivel, así que la
-  diferencia entre ellas (lo que mide este diagnóstico) no depende de
-  corregirlo.
+- `model_y` pasó de `GradientBoostingRegressor` a una regresión con
+  efectos fijos y splines: es lo que permite controlar 376 celdas sin una
+  matriz densa de 291.000 × 376. Pierde no linealidades de `X`, pero `X`
+  son 4 variables (zona, sexo del jefe, paredes, pisos) y la etapa final
+  de `LinearDML` es lineal en `X` de todos modos.
+- Los modelos no ajustan por el diseño muestral de GEIH.

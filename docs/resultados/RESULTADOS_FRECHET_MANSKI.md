@@ -49,45 +49,40 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
   mayor parte del rango posible de una diferencia de proporciones (de -1
   a +1).
 - Ancho del IC95 % del DML con celda exacta (`POBRE_GEIH`, ver
-  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0046 — **~160 veces más angosto**
-  que la cota Fréchet-Manski.
+  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0048 — **~150 veces más angosto**
+  que la cota Fréchet-Manski. Ese punto ≈0 es la prueba placebo del
+  emparejamiento, no una estimación del efecto.
 - **Ninguna de las 365 celdas individuales tiene una cota que excluya el
   0** — ni una sola celda, por sí sola, permite descartar que el efecto
   sea cero o incluso de signo contrario.
 
 ## Pobreza monetaria (`POBRE_MONETARIO`) — 2026-11-02
 
-Mismo cálculo, misma celda, mismo `T`, con `Y = POBRE_MONETARIO`
-(`3b_preprocesamiento_monetario.py`). Se excluyen los hogares sin
-`POBRE_MONETARIO` (ingreso per cápita indefinido).
+Mismo cálculo, misma celda, mismo `T`, con `Y = POBRE_MONETARIO` de la
+reconstrucción de pobreza monetaria (`RESULTADOS_POBREZA_MONETARIA.md`;
+regenerado al reemplazar el outcome anterior, que daba [−0,5817; +0,6877]).
 
 | Outcome | P(Y=1) | Cota Fréchet-Manski (sin CIA) | Ancho | ATE DML, celda exacta (con CIA) |
 |---|---|---|---|---|
-| `POBRE_GEIH` | 0,204 | [-0,4114 ; +0,3230] | 0,7344 | +0,0058 [+0,0035 ; +0,0081] |
-| `POBRE_MONETARIO` | 0,376 | **[-0,5817 ; +0,6877]** | **1,2694** | +0,0158 [+0,0123 ; +0,0192] |
+| `POBRE_GEIH` | 0,204 | [−0,4114 ; +0,3230] | 0,7344 | +0,0004 [−0,0020 ; +0,0028] |
+| `POBRE_MONETARIO` | 0,270 | **[−0,5382 ; +0,5030]** | **1,0412** | +0,0025 [−0,0009 ; +0,0058] |
 
 - Cobertura: las mismas 365 celdas, 100 % del peso de GEIH.
-- La cota de `POBRE_MONETARIO` es **más ancha** que la de `POBRE_GEIH`
-  (1,27 frente a 0,73, de un máximo posible de 2). No es un defecto del
-  outcome: las cotas de Fréchet-Hoeffding son más anchas cuanto más
-  cerca de 0,5 están las dos marginales. Aquí `P(T=1)` ≈ 0,56 y
-  `P(Y=1)` sube de 0,20 a 0,38 (la sobreestimación de 5-6 pp de pobreza
-  monetaria la ensancha un poco más).
-- El ATE del DML (+0,0158) cae dentro de la cota y equivale al ~1 % de
-  su ancho.
-- **Ninguna celda excluye el 0.** Las celdas donde todos los hogares son
-  pobres (`P(Y=1|X) = 1`; 18 en `POBRE_MONETARIO`, 2 en `POBRE_GEIH`)
-  tienen cota exactamente [0; 0]; un filtro sin tolerancia las marcaba por
-  residuos de punto flotante.
-
-**Lectura:** la robustez que mostró `POBRE_MONETARIO` en el diagnóstico de
-`W` (`DIAGNOSTICO_W_CELDA_EXACTA.md`) sigue dependiendo por completo de
-la CIA del Hot-Deck. Sin ese supuesto, los datos no descartan un efecto
-de ningún signo. Las dos piezas no se contradicen: el diagnóstico de `W`
-descarta que el efecto sea un artefacto del proxy *dado* el supuesto, y
-las cotas muestran cuánto pesa el supuesto.
+- La cota de `POBRE_MONETARIO` es más ancha que la de `POBRE_GEIH` (1,04
+  frente a 0,73, de un máximo posible de 2): las cotas de
+  Fréchet-Hoeffding se ensanchan cuanto más cerca de 0,5 están las dos
+  marginales.
+- **Ninguna celda excluye el 0.** Las celdas con `P(Y=1|X)` = 1 (12) o = 0
+  (13) tienen cota exactamente [0; 0].
 
 ## Cómo leerlo
+
+**Este es el resultado de identificación central del proyecto con los
+datos actuales.** Sin suponer que el sorteo del Hot-Deck reproduce la
+relación real entre clasificación y pobreza, los datos no fijan ni el
+signo del efecto: pasar a A/B puede asociarse con entre 54 puntos menos
+y 50 puntos más de pobreza monetaria. No es un fracaso del modelo: es lo
+que dos fuentes sin llave común permiten decir.
 
 **Esto no contradice al DML — lo contextualiza.** El DML da un número
 preciso porque **asume** que, dentro de la celda, el grupo Sisbén
@@ -135,9 +130,8 @@ extensión natural de este script.
 ## Limitaciones
 
 Las mismas de `RESULTADOS_DML_ATE_ATT_ATU.md`: outcome con 8 de 15
-privaciones, selección del Sisbén, falta DPS/RUI, `viv_paredes`/
-`viv_pisos` con código GEIH confirmado pero categorías sin homologar
-contra el Sisbén. Además:
+privaciones, pobreza monetaria reconstruida, selección del Sisbén, falta
+DPS/RUI. Además:
 `P(T|X)` del Sisbén se calcula sin ponderar (no es una encuesta con diseño
 muestral, es un registro administrativo) — `P(Y|X)` de GEIH sí se pondera
 por `FEX_C18`.

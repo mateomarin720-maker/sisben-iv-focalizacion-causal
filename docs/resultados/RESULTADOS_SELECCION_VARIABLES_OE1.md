@@ -4,7 +4,8 @@ Generado 2026-11-02 por
 `src/estimacion/seleccion_variables_lasso_shap.py`. Salida completa:
 `docs/reports/seleccion_variables_lasso_ridge_shap.txt` (consola) y
 `docs/reports/seleccion_variables_lasso_ridge_shap.csv` (tabla
-combinada).
+combinada) y `docs/reports/seleccion_variables_metricas_por_clase.csv`
+(por grupo).
 
 ## Qué es
 
@@ -85,6 +86,41 @@ siempre la clase mayoritaria `B`, 30,4 % — sería ~0,30 de exactitud):
 Ninguna variable quedó eliminada por LASSO (todas con al menos un
 coeficiente distinto de 0 en alguna de las 4 clases).
 
+## Rendimiento por grupo, confusión y calibración (2026-11-02)
+
+Agregado a pedido de la revisión: la exactitud global esconde diferencias
+grandes entre grupos. Salida: `docs/reports/seleccion_variables_metricas_por_clase.csv`.
+
+| Grupo | LASSO: precisión / sensibilidad | RandomForest: precisión / sensibilidad |
+|---|---|---|
+| A | 0,63 / 0,64 | 0,63 / 0,65 |
+| B | 0,48 / 0,48 | 0,48 / 0,46 |
+| C | 0,50 / 0,58 | 0,49 / 0,67 |
+| D | 0,55 / **0,39** | 0,62 / **0,22** |
+
+Matriz de confusión de LASSO (% de cada grupo real): el 45 % de los
+hogares D se predicen como C, y el 31,5 % de los A como B. Los errores
+casi siempre caen en el grupo vecino; casi nunca hay saltos de dos grupos
+(A predicho como D: 0,1 %).
+
+**Calibración:** la probabilidad media predicha coincide con la tasa
+observada en cada grupo (por ejemplo D: 0,164 frente a 0,165) y el Brier
+por grupo va de 0,11 (A, D) a 0,19 (B). Los modelos están bien
+calibrados en promedio; el problema es de discriminación entre grupos
+vecinos.
+
+**Partición por municipio** (ningún municipio en entrenamiento y prueba a
+la vez, RandomForest): F1 macro cae de 0,499 a **0,435** y la
+sensibilidad de D de 0,22 a 0,12. La exactitud sube (0,527 → 0,541) solo
+porque los municipios de prueba tienen más hogares A y B, que son los
+más fáciles; no es una mejora. Parte del rendimiento de la partición
+aleatoria venía de reconocer patrones locales del municipio.
+
+**Lectura:** las variables del esquema canónico separan bien los
+extremos pobres (A) y mal al grupo D, que se confunde con C. El modelo
+predice el grupo **asignado** por el Sisbén, no la pobreza real: un 53 %
+de exactitud no mide la validez del Sisbén frente a la pobreza.
+
 ## Cómo leerlo
 
 - **`viv_pisos` es, con ventaja, la variable individual más importante en
@@ -122,10 +158,9 @@ coeficiente distinto de 0 en alguna de las 4 clases).
   variables) — el Sisbén real recoge muchas más (ingresos, activos,
   educación de todos los miembros, etc.) que no están en la tabla
   estandarizada de este repositorio.
-- `viv_paredes`/`viv_pisos`/`geo_zona`/`jefe_sexo` tienen categorías o
-  dirección sin verificar contra la ficha oficial de ANDA — igual que en
-  el resto del proyecto, se usan como predictores (seguro dentro de una
-  sola fuente) pero no se interpreta la dirección de sus coeficientes.
+- Se usan los códigos del Sisbén en one-hot, dentro de una sola fuente.
+  `viv_paredes`/`viv_pisos` ya están verificados con la ficha
+  (`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`); `jefe_sexo` no.
 - Submuestra de 150.000 (no los 3,09 millones completos) por costo
   computacional — no se probó si el ranking cambia con el total.
 - `RandomForestClassifier` con hiperparámetros fijos (300 árboles,

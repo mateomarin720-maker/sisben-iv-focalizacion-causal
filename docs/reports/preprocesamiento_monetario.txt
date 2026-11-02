@@ -1,0 +1,8 @@
+
+=== Outcome pobreza monetaria (reconstrucción GEIH, escenario base) ===
+Hogares: 290,968 | sin ingreso reconstruido: 0
+Ingreso per cápita UG — mediana: $796,750
+Hogares pobres (ponderado por fex): 27.0% | pobres extremos: 10.4%
+(La tasa oficial, 31,8 %, es sobre personas; la de personas reconstruida está en docs/reports/validacion_pobreza_monetaria.csv)
+
+Guardado: data\2_models\muestra_estimacion_monetaria_2024.parquet
