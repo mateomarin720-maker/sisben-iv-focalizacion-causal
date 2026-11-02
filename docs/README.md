@@ -46,8 +46,9 @@ reportes generados; los resultados interpretados van en `resultados/`.
 
 ## Pendiente
 - Marco teórico y metodológico completo: se redacta en un documento aparte y se agregará a `insumos/` cuando esté estable (el diagrama causal ya está en `resultados/IDENTIFICACION_CAUSAL.md`, pero falta integrarlo al marco teórico formal).
-- Resultados de determinantes y validez (P1/OE1): LASSO/Ridge/SHAP sobre el Sisbén solo — no implementado.
-- Efectos causales (P2/OE2): primera corrida real ya en `resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`, con robustez vía `resultados/RESULTADOS_FRECHET_MANSKI.md` — falta resolver `viv_paredes`/`viv_pisos` (categorías sin verificar) antes de poder interpretar el DML como efecto causal, no solo asociación.
+- Resultados de determinantes y validez (P1/OE1): LASSO/Ridge/SHAP sobre el Sisbén — hecho 2026-11-02, ver `resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+- Efectos causales (P2/OE2): primera corrida real ya en `resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y `RESULTADOS_CAUSALFOREST_CATE.md`, con robustez vía `resultados/RESULTADOS_FRECHET_MANSKI.md` y `resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` — falta resolver `viv_paredes`/`viv_pisos` (categorías Sisbén sin verificar) antes de poder interpretar el DML como efecto causal, no solo asociación.
 - Reglas contrafactuales (P3/OE3): no implementado, depende de P1 y P2.
 - Angostar las cotas de Fréchet-Manski con supuestos de monotonía (MTS/MTR) — ver "Próximo paso" en `resultados/RESULTADOS_FRECHET_MANSKI.md`.
-- Indicador de pobreza ampliado (más allá de las 4 privaciones actuales): bloqueado por falta del diccionario oficial de variables de GEIH — ver `insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5 para las alternativas.
+- Indicador de pobreza ampliado: resuelto 2026-10-28 (8 de 15 privaciones, antes 4) — ver `insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`. Quedan 7 privaciones sin construir (5 por alcance/tiempo, 2 retiradas por tautología con covariables de heterogeneidad).
+- Pobreza monetaria (ingreso per cápita, FGT1): nuevo outcome principal según el giro propuesto por el tutor el 2026-10-27 — no iniciado.

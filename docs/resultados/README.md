@@ -29,6 +29,7 @@ citar cualquier hallazgo anterior.*
 | 4c | Diagnóstico: `W` proxy vs. celda exacta | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md) | ✅ (2026-11-02) |
 | 5 | Cotas de Fréchet-Manski (robustez, sin CIA) | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) | ✅ |
 | 6 | Representatividad del Sisbén frente a GEIH | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) | ✅ |
+| 7 | Selección de variables: LASSO/Ridge/SHAP sobre el Sisbén (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) | ✅ (2026-11-02) |
 
 Metodología completa del indicador de pobreza (qué se incluyó, qué no, y
 por qué — incluye el historial del bloqueo, ahora resuelto):
@@ -38,10 +39,11 @@ Diccionarios oficiales (nuevos, de referencia permanente):
 [`docs/insumos/DICCIONARIO_SISBEN_2024.xlsx`](../insumos/DICCIONARIO_SISBEN_2024.xlsx).
 
 Lo que **no** está en esta carpeta todavía porque no está implementado:
-LASSO/Ridge/SHAP sobre el Sisbén (P1/OE1), discontinuidad de regresión B/C
-(en duda — no hay puntaje continuo), diseño de una sola tabla Sisbén
-III→IV (falta el corte III), vecino más cercano con distancia de Gower,
-reglas contrafactuales FGT1 (P3/OE3), y las 5 dimensiones del IPM que
+discontinuidad de regresión B/C (en duda — no hay puntaje continuo),
+diseño de una sola tabla Sisbén III→IV (falta el corte III), vecino más
+cercano con distancia de Gower, reglas contrafactuales FGT1 (P3/OE3),
+pobreza monetaria/ingreso per cápita (el nuevo outcome principal según el
+giro del 2026-10-27, no iniciado), y las 5 dimensiones del IPM que
 todavía no se pueden construir sobre GEIH (trabajo infantil, acceso a
 fuente de agua mejorada, eliminación de excretas, material de combustible
 para cocinar, desempleo de larga duración — ver
@@ -291,6 +293,23 @@ datos reales el supuesto que hasta ahora solo estaba como advertencia
 narrativa, y refuerza por qué la cota de Fréchet-Manski (§5) sale tan
 ancha. Detalle en `RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
 
+### 7. Selección de variables: LASSO, Ridge y SHAP sobre el Sisbén (OE1)
+
+**No es parte del pipeline causal** — responde al OE1 por separado: ¿qué
+variables del hogar predicen mejor el `Grupo` (A-D) que asigna el
+Sisbén? Sobre 150.000 hogares (submuestra estratificada de 3,09
+millones), `viv_pisos` es la variable individual más importante en los
+tres métodos (LASSO, Ridge, SHAP sobre un `RandomForestClassifier`).
+LASSO y Ridge casi no difieren entre sí (Spearman 0,988); SHAP reordena
+el tercio medio de la tabla, subiendo `hog_num_personas` y `viv_
+alcantarillado` — evidencia de interacciones no lineales que los modelos
+lineales no capturan. Ninguna variable fue eliminada por LASSO. Exactitud
+~53 % (línea base de predecir siempre la clase mayoritaria: ~30 %) — las
+variables disponibles explican una parte real pero parcial de la
+clasificación, el resto depende de las privaciones internas del Sisbén
+(`I1`-`I15`/`H_5`) que, por circularidad, no se usan como predictores.
+Detalle en `RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+
 ## Limitaciones que aplican a TODO lo anterior
 
 - El tratamiento (`Grupo_hotdeck`) es imputado por emparejamiento
@@ -320,6 +339,7 @@ poetry run python src/3_preprocesamiento.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
+poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run pytest tests/
 ```
 
