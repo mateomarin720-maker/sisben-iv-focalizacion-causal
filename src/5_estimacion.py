@@ -13,22 +13,46 @@ equivocado, `docs/seguimiento/CHANGELOG_PENDIENTES.md`).
 Los cuatro efectos que pide el documento de pipeline (Roncancio y Fonseca,
 2026, Figura 1):
   - **ATE** (efecto promedio global) — `LinearDML` sobre toda la muestra.
-  - **ATT** (efecto sobre los tratados, error de inclusión) — el MISMO
-    `LinearDML`, evaluado solo sobre los hogares con `T=1`.
-  - **ATU** (efecto sobre los no tratados, error de exclusión) — el mismo
-    modelo, evaluado solo sobre los hogares con `T=0`.
+  - **ATT** (efecto promedio sobre los hogares tratados, `T=1`) — el
+    MISMO `LinearDML`, evaluado solo sobre esa subpoblación.
+  - **ATU** (efecto promedio sobre los hogares no tratados, `T=0`) — el
+    mismo modelo, evaluado solo sobre esa subpoblación.
   - **CATE** (efecto por tipo de hogar) — `CausalForestDML`.
+
+⚠️ **Rotulado corregido 2026-11-02:** ATT/ATU se venían describiendo en
+este repositorio como "error de inclusión"/"error de exclusión" — son
+conceptos distintos. ATT/ATU son el efecto promedio del tratamiento en
+una subpoblación (tratados o no tratados); error de inclusión/exclusión
+es un concepto de focalización (clasificar como pobre/no pobre a quien no
+lo es) que no se calcula en este script. No había cómputo erróneo, solo
+una etiqueta engañosa — corregida aquí y en
+`docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
 
   (Se descartó `LinearDRLearner` para ATT/ATU — daba valores absurdos por
   inestabilidad del estimador doblemente robusto; ver docstring de
   `_ate_att_atu`.)
 
-Cada modelo controla por `W = {geo_depto, jefe_edad, viv_cuartos}` — la
-celda COMPLETA del Hot-Deck tal como quedó implementada (ver
-`docs/resultados/IDENTIFICACION_CAUSAL.md`: dado W, el grupo asignado
-debería quedar d-separado del outcome). `X = {geo_zona, jefe_sexo,
-viv_paredes, viv_pisos}` son las covariables NO usadas en la celda, para
-heterogeneidad (CATE) y como chequeo de que no quede señal espuria.
+Cada modelo corre con DOS especificaciones de `W`, para diagnosticar una
+discrepancia detectada el 2026-11-02 (ver
+`docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`):
+  - **`W_COLS_PROXY`** = `{geo_depto, jefe_edad, viv_cuartos}` (la
+    especificación usada hasta ahora): `jefe_edad`/`viv_cuartos`
+    CONTINUOS como proxy de los tramos discretos que el Hot-Deck usa de
+    verdad para el sorteo (`geo_depto + ciclo de vida + tramo de
+    cuartos`) — no es una réplica exacta de la celda.
+  - **`W_COLS_CELDA`** = `hotdeck_celda_cat`, el código categórico de
+    `_hotdeck_celda` (columna que ya guarda `emparejamiento_hotdeck_
+    geih_sisben.py` con la celda EXACTA usada en cada sorteo — 376
+    celdas, 99,999 % en celda exacta). Esta es la réplica fiel del
+    mecanismo real: si el sorteo es verdaderamente aleatorio dentro de
+    esa celda (confirmado — `rng.integers` sin ponderar por nada más),
+    el tratamiento imputado debería ser independiente de TODO lo demás
+    condicional en esta celda, por construcción del propio algoritmo
+    (no por supuesto).
+
+`X = {geo_zona, jefe_sexo, viv_paredes, viv_pisos}` son las covariables
+NO usadas en la celda, para heterogeneidad (CATE) y como chequeo de que
+no quede señal espuria.
 
 ⚠️ Limitaciones — las mismas de siempre, sin excepción:
   - El tratamiento es imputado por Hot-Deck, no observado.
@@ -65,7 +89,8 @@ DATA = Path("data/2_models/muestra_estimacion_2024.parquet")
 SEED = 42
 N_SUB_CATE = 80_000
 
-W_COLS = ["geo_depto_cat", "jefe_edad", "viv_cuartos"]  # celda completa del Hot-Deck
+W_COLS_PROXY = ["geo_depto_cat", "jefe_edad", "viv_cuartos"]  # proxy continuo (especificación anterior)
+W_COLS_CELDA = ["hotdeck_celda_cat"]  # celda EXACTA del Hot-Deck (igual al sorteo real)
 X_COLS = ["geo_zona_urbana", "jefe_mujer", "viv_paredes", "viv_pisos"]  # NO usadas en la celda
 
 
@@ -78,6 +103,7 @@ def _preparar(df: pd.DataFrame) -> pd.DataFrame:
     df["geo_zona_urbana"] = (df["geo_zona"] == "1").astype(int)
     df["jefe_mujer"] = (df["jefe_sexo"] == "2").astype(int)
     df["geo_depto_cat"] = df["geo_depto"].astype("category").cat.codes
+    df["hotdeck_celda_cat"] = df["_hotdeck_celda"].astype("category").cat.codes
     return df
 
 
@@ -85,7 +111,7 @@ def _modelo_y() -> GradientBoostingRegressor:
     return GradientBoostingRegressor(n_estimators=100, max_depth=3, random_state=SEED)
 
 
-def _ate_att_atu(df: pd.DataFrame, y_col: str) -> None:
+def _ate_att_atu(df: pd.DataFrame, y_col: str, w_cols: list[str]) -> None:
     """ATE, ATT y ATU con el MISMO LinearDML ya ajustado — se evalúa
     `effect()`/`ate()` sobre tres poblaciones distintas (todos, T=1, T=0).
 
@@ -98,8 +124,8 @@ def _ate_att_atu(df: pd.DataFrame, y_col: str) -> None:
     subpoblación evita ese problema y es una forma válida de reportar
     ATT/ATU bajo el mismo marco DML.
     """
-    d = df.dropna(subset=[y_col, "T", *W_COLS, *X_COLS])
-    W = d[W_COLS].to_numpy(dtype=float)
+    d = df.dropna(subset=[y_col, "T", *w_cols, *X_COLS])
+    W = d[w_cols].to_numpy(dtype=float)
     X = d[X_COLS].to_numpy(dtype=float)
     Y = d[y_col].to_numpy(dtype=float)
     T = d["T"].to_numpy(dtype=int)
@@ -115,18 +141,18 @@ def _ate_att_atu(df: pd.DataFrame, y_col: str) -> None:
     est.fit(Y, T, X=X, W=W)
 
     for nombre, mask in [("ATE (toda la muestra)", np.ones(len(d), dtype=bool)),
-                          ("ATT (tratados, error de inclusión)", T == 1),
-                          ("ATU (no tratados, error de exclusión)", T == 0)]:
+                          ("ATT (efecto en tratados)", T == 1),
+                          ("ATU (efecto en no tratados)", T == 0)]:
         efecto, (lo, hi) = est.ate(X[mask]), est.ate_interval(X[mask], alpha=0.05)
         print(f"  {nombre}: n={mask.sum():,} | {efecto:+.4f}  IC95%=({lo:+.4f}, {hi:+.4f})")
 
 
-def _cate(df: pd.DataFrame, y_col: str) -> None:
-    d = df.dropna(subset=[y_col, "T", *W_COLS, *X_COLS])
+def _cate(df: pd.DataFrame, y_col: str, w_cols: list[str]) -> None:
+    d = df.dropna(subset=[y_col, "T", *w_cols, *X_COLS])
     if len(d) > N_SUB_CATE:
         d = d.sample(N_SUB_CATE, random_state=SEED)
     X = d[X_COLS].to_numpy(dtype=float)
-    W = d[W_COLS].to_numpy(dtype=float)
+    W = d[w_cols].to_numpy(dtype=float)
     Y = d[y_col].to_numpy(dtype=float)
     T = d["T"].to_numpy(dtype=int)
     est = CausalForestDML(model_y=_modelo_y(), model_t=LogisticRegression(max_iter=1000),
@@ -149,18 +175,28 @@ def main() -> None:
     df = _preparar(pd.read_parquet(DATA))
     logger.info("n=%s | T=1 (Grupo A/B): %.1f%%", f"{len(df):,}", df["T"].mean() * 100)
 
+    especificaciones = [
+        ("PROXY (geo_depto + jefe_edad continua + viv_cuartos continuo)", W_COLS_PROXY),
+        ("CELDA EXACTA (código categórico de _hotdeck_celda, igual al sorteo real)", W_COLS_CELDA),
+    ]
+
     for y_col, etiqueta in [("ipm_geih_score", "ipm_geih_score (continuo, 0-8 privaciones)"),
                              ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)")]:
-        print("\n" + "=" * 70)
-        print(f"Outcome: {etiqueta}")
-        print("=" * 70)
-        _ate_att_atu(df, y_col)
-        _cate(df, y_col)
+        print("\n" + "#" * 70)
+        print(f"# Outcome: {etiqueta}")
+        print("#" * 70)
+        for w_label, w_cols in especificaciones:
+            print("\n" + "=" * 70)
+            print(f"W = {w_label}")
+            print("=" * 70)
+            _ate_att_atu(df, y_col, w_cols)
+            _cate(df, y_col, w_cols)
 
     print("\n" + "=" * 70)
-    print("Cómo leer esto: W = celda completa del Hot-Deck (depto+edad+cuartos).")
-    print("Si el efecto no es ~0, no se puede interpretar como causal del Sisbén")
-    print("sin antes descartar fuga por geografía/vivienda — ver IDENTIFICACION_CAUSAL.md.")
+    print("Cómo leer esto: dos especificaciones de W para el mismo outcome.")
+    print("Si el efecto con la celda EXACTA no se acerca a 0 frente al PROXY,")
+    print("el residuo no se explica por el proxy continuo — ver")
+    print("docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md.")
     print("=" * 70)
 
 

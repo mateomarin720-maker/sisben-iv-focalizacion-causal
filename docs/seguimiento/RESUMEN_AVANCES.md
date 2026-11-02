@@ -1,6 +1,8 @@
 # Resumen de Avances — Efecto Causal del Sisbén IV
 
-Última actualización: 2026-10-28 | Rama: `hotdeck-azure-avances`
+Última actualización: 2026-11-02 | Rama: `main` (sincronizada con
+`ediciones-hotdeck-sdp`) — `hotdeck-azure-avances` ya está fusionada,
+este encabezado quedó desactualizado
 
 **2026-10-28 (dos veces el mismo día):** se obtuvo el diccionario oficial
 de variables de GEIH (antes bloqueado, ver §3e) y se descubrió que
@@ -99,6 +101,31 @@ qué"). **No se puede leer como efecto causal del Sisbén todavía** — ver
 `RESULTADOS_CAUSALFOREST_CATE.md` para el detalle y las limitaciones
 completas.
 
+## 3b-bis. Diagnóstico: `W` proxy continuo vs. celda exacta del Hot-Deck (2026-11-02)
+
+`W` usaba `jefe_edad`/`viv_cuartos` CONTINUOS, un proxy de la celda
+discreta real (`geo_depto + ciclo de vida + tramo de cuartos`). Se probó
+con la celda EXACTA (`_hotdeck_celda`, 376 celdas, 99,999 % cobertura
+exacta, confirmado sorteo uniforme random sin ponderar nada del
+receptor) como `W` categórico, corriendo ambas especificaciones en el
+mismo script para comparar directo:
+
+| Outcome | `W` proxy (ATE) | `W` celda exacta (ATE) | Cambio |
+|---|---|---|---|
+| `ipm_geih_score` | +0,0206 [+0,0141;+0,0272] | **+0,0076 [+0,0008;+0,0143]** | -63 %, ATU deja de excluir 0 |
+| `POBRE_GEIH` | +0,0052 [+0,0029;+0,0075] | +0,0049 [+0,0026;+0,0072] | -6 %, sigue excluyendo 0 |
+
+**El proxy SÍ inflaba el efecto para `ipm_geih_score`, pero NO para
+`POBRE_GEIH`.** La simulación de identificación predice ≈0 bajo un
+sorteo limpio (independiente del efecto verdadero) — `ipm_geih_score` se
+acerca mucho a esa predicción con la celda exacta; `POBRE_GEIH` no se
+mueve, lo que es la evidencia más fuerte hasta ahora de que ese outcome
+binario tiene algo que el mecanismo limpio del Hot-Deck no debería
+producir. La heterogeneidad por sexo del jefe cambia de signo otra vez
+(tercer patrón distinto en tres corridas de esta semana) — no citar
+ninguna versión como robusta. Detalle completo:
+`docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
+
 ## 3c. Cotas de Fréchet-Manski — robustez sin suponer independencia condicional (refrescado 2026-10-28)
 
 El DML del punto anterior asume que, dentro de la celda del Hot-Deck, el
@@ -185,9 +212,18 @@ alcance/tiempo, 2 por tautología) — detalle en
 - [ ] Refinar `sin_cotizacion_pension_jefe` (mezcla informalidad con desempleo/inactividad, ver `src/3_preprocesamiento.py` — sin cambios por la corrección del 2026-10-28).
 - [ ] Construir las 5 dimensiones del IPM que todavía faltan sobre GEIH (trabajo infantil, fuente de agua mejorada, eliminación de excretas, combustible de cocina, desempleo de larga duración) — ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2.
 - [ ] Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
+- [x] **Especificación de `W`: probar la celda EXACTA del Hot-Deck, no solo el proxy continuo** — hecho 2026-11-02, ver §3b-bis y `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`. Resultado dividido: explica el 63 % del efecto de `ipm_geih_score` pero casi nada del de `POBRE_GEIH`.
+- [x] **Rotulado ATT/ATU** ("error de inclusión"/"error de exclusión" era una etiqueta engañosa, no un error de cómputo) — corregido 2026-11-02 en `src/5_estimacion.py` y `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
+- [ ] **Advertencias:** `warnings.filterwarnings("ignore")` en `src/5_estimacion.py` sigue ocultando avisos sin revisar cada uno — pendiente, no se ha probado quitarlo.
+- [ ] **Rehacer `corrige-controles-celda` y `simulacion-identificacion`** sobre `main` actual — ambas se bifurcaron antes del diccionario GEIH (2026-10-28) y fusionarlas tal cual revertiría esta semana de correcciones. `simulacion-identificacion` trae código valioso (`simulacion_identificacion.py`) que no existe en `main` y que sustenta el diagnóstico de §3b-bis — rescatar ese archivo primero.
+- [ ] Construir pobreza monetaria (ingreso per cápita, línea, FGT1) — el nuevo outcome principal según el giro propuesto por el tutor el 2026-10-27; no iniciado.
 
-## 5. ⚠️ Higiene del repositorio
-Las carpetas `NACIONAL/` y `DEPARTAMENTAL/` (microdatos IPM, ~330 MB en CSV/DTA/SAV) están versionadas en git. Son datos públicos del DANE, pero contradicen la decisión de que Azure sea el único banco de datos. Hay que dejar de versionarlas (`git rm -r --cached`) y agregarlas a `.gitignore`; el historial seguirá conteniéndolas hasta que se reescriba (opcional).
+## 5. Higiene del repositorio
+
+Resuelto. `NACIONAL/`/`DEPARTAMENTAL/` (microdatos IPM) ya no están
+versionadas (`git ls-files` las confirma ausentes); `.git` pesa 23 MB. El
+historial previo a la limpieza las sigue conteniendo (no reescrito, por
+decisión explícita de no tocar commits ya publicados).
 
 ## 6. Gestiones institucionales
 | Solicitud | Estado |

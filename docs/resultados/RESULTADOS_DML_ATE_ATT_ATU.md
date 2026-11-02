@@ -8,6 +8,22 @@ de `X`, ver abajo) — ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 Los números de esta página reemplazan la corrida anterior (4 privaciones,
 2026-10-21/27).*
 
+**Rotulado corregido 2026-11-02:** ATT/ATU se venían describiendo como
+"error de inclusión"/"error de exclusión" — son conceptos distintos (ATT/
+ATU son el efecto promedio del tratamiento en una subpoblación; error de
+inclusión/exclusión es un concepto de focalización que no se calcula
+aquí). No había ningún cómputo erróneo, solo una etiqueta engañosa.
+
+**Diagnóstico 2026-11-02:** los números de esta página usan `W` con
+`jefe_edad`/`viv_cuartos` CONTINUOS, un proxy de la celda discreta real
+del Hot-Deck. Se probó qué pasa con la celda EXACTA (`W` categórico,
+igual al sorteo real) — el ATE de `ipm_geih_score` cae 63 % (y el ATU deja
+de excluir 0), pero el de `POBRE_GEIH` casi no cambia. Ver
+`docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` para el detalle completo
+— no se reemplazan los números de abajo (siguen siendo la especificación
+adoptada, documentada como proxy desde el inicio), se complementan con
+esa prueba de robustez.
+
 Generado por `src/5_estimacion.py` (`_ate_att_atu`). Salida completa:
 `docs/reports/estimacion_ate_att_atu_cate.txt`.
 
@@ -42,7 +58,7 @@ modelos de molestia `Y~W` y `T~W`), con validación cruzada (`LinearDML` de
 
 ## Resultado
 
-| Outcome | ATE | ATT (error de inclusión) | ATU (error de exclusión) |
+| Outcome | ATE | ATT (efecto en tratados) | ATU (efecto en no tratados) |
 |---|---|---|---|
 | `ipm_geih_score` (0-8) | +0,0206 [+0,0141; +0,0272] | +0,0214 [+0,0146; +0,0281] | +0,0193 [+0,0130; +0,0256] |
 | `POBRE_GEIH` (0/1, K≥3, 16,3 % de los hogares) | +0,0052 [+0,0029; +0,0075] | +0,0055 [+0,0032; +0,0079] | +0,0046 [+0,0025; +0,0067] |
