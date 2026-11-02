@@ -1,0 +1,60 @@
+2026-11-02 13:37:14,956 INFO Cargando data\2_models\sisben_estandarizado_2024_con_bogota.parquet
+2026-11-02 13:37:22,156 INFO Hogares con las 10 variables completas: 3,093,411
+2026-11-02 13:37:22,715 INFO Submuestra estratificada por Grupo: 150,000 hogares
+
+=== Selección de variables — Sisbén, outcome = Grupo (A-D) ===
+n total con variables completas: 3,093,411 | submuestra usada: 150,000 (train=105,000, test=45,000)
+
+--- LASSO (L1) --- accuracy=0.530 f1_macro=0.526
+geo_depto             23.650
+viv_pisos              8.290
+viv_paredes            2.189
+jefe_sexo              1.736
+hog_num_personas       1.566
+viv_cuartos            1.065
+viv_alcantarillado     1.047
+jefe_edad              0.262
+geo_zona               0.243
+viv_acueducto          0.140
+Variables eliminadas (coef=0 en las 4 clases): ninguna
+
+--- Ridge (L2) --- accuracy=0.530 f1_macro=0.526
+geo_depto             31.428
+viv_pisos              9.218
+viv_paredes            2.716
+jefe_sexo              1.743
+hog_num_personas       1.569
+viv_cuartos            1.067
+viv_alcantarillado     1.061
+geo_zona               0.571
+jefe_edad              0.264
+viv_acueducto          0.172
+
+--- SHAP sobre RandomForestClassifier --- accuracy=0.527 f1_macro=0.499
+viv_pisos             0.2952
+geo_depto             0.1584
+hog_num_personas      0.1335
+viv_alcantarillado    0.1321
+jefe_sexo             0.0842
+viv_paredes           0.0701
+viv_cuartos           0.0695
+viv_acueducto         0.0454
+geo_zona              0.0291
+jefe_edad             0.0230
+
+=== Tabla combinada (normalizada 0-1 dentro de cada método) ===
+                    lasso_norm  ridge_norm  shap_norm  es_control_geografico  promedio
+geo_depto                1.000       1.000      0.537                   True     0.846
+viv_pisos                0.351       0.293      1.000                  False     0.548
+hog_num_personas         0.066       0.050      0.452                  False     0.189
+viv_alcantarillado       0.044       0.034      0.448                  False     0.175
+viv_paredes              0.093       0.086      0.238                  False     0.139
+jefe_sexo                0.073       0.055      0.285                  False     0.138
+viv_cuartos              0.045       0.034      0.235                  False     0.105
+viv_acueducto            0.006       0.005      0.154                  False     0.055
+geo_zona                 0.010       0.018      0.099                  False     0.042
+jefe_edad                0.011       0.008      0.078                  False     0.033
+
+Correlación de Spearman entre rankings: LASSO-Ridge=0.988 LASSO-SHAP=0.794 Ridge-SHAP=0.806
+
+Guardado: docs\reports\seleccion_variables_lasso_ridge_shap.csv

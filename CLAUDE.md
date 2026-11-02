@@ -136,6 +136,7 @@ poetry run python src/3_preprocesamiento.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
+poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run pytest tests/
 ```
 

@@ -28,6 +28,7 @@ openpyxl = "^3.1"  # leer los diccionarios oficiales de variables (.xlsx) en doc
 #
 # Modelado base
 scikit-learn = ">=1.9.0,<2.0.0"
+scipy = "^1.15"  # scipy.stats.spearmanr en seleccion_variables_lasso_shap.py (viene como dependencia transitiva de sklearn, se declara explícita)
 xgboost = "^2.0.0"
 #
 # Inferencia causal

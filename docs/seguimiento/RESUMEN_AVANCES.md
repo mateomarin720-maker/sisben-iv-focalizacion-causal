@@ -41,6 +41,7 @@ qué"). Los números de este documento ya reflejan la corrección final.
 | **Estimación causal** | `src/5_estimacion.py` ✅ | DML (ATE/ATT/ATU) + Causal Forest (CATE), primera corrida real — ver §3b |
 | **Robustez** | `src/estimacion/cotas_frechet_manski.py` ✅ | Cotas de Fréchet-Manski, sin suponer independencia condicional — ver §3c |
 | **Representatividad** | `src/validacion/verificar_representatividad_sisben.py` ✅ | Cobertura del Sisbén vs. GEIH por departamento — ver §3d |
+| **Selección de variables (OE1)** | `src/estimacion/seleccion_variables_lasso_shap.py` ✅ | LASSO/Ridge/SHAP sobre el Sisbén — qué variables predicen `Grupo` — ver §3f |
 | **Pruebas automatizadas** | `tests/` ✅ | `pytest tests/` — valida las transformaciones críticas de `3_preprocesamiento.py` sobre datos reales |
 | Refutación | `src/6_refutacion.py` | Placebo, random common cause, sensibilidad a confusores — **no iniciado** |
 
@@ -199,6 +200,34 @@ alcance/tiempo, 2 por tautología) — detalle en
 3. **GEIH agosto sin jefe:** llaves con formato distinto entre módulos (24.402 hogares). Corregido normalizando identificadores.
 4. **Tipos mixtos al fusionar Bogotá:** corregido convirtiendo a texto.
 
+## 3f. Selección de variables: LASSO, Ridge y SHAP sobre el Sisbén (OE1, 2026-11-02)
+
+Responde al OE1 por separado del pipeline causal — no estima ningún
+efecto, solo qué variables del hogar predicen mejor el `Grupo` (A-D) del
+Sisbén. Sobre 150.000 hogares (submuestra estratificada de 3,09
+millones), usando `hog_num_personas`, `viv_cuartos`, `jefe_edad`
+(numéricas) y `viv_paredes`, `viv_pisos`, `viv_alcantarillado`, `viv_
+acueducto`, `jefe_sexo`, `geo_zona` (one-hot, dirección sin verificar) +
+`geo_depto` como control:
+
+| Método | Exactitud | F1 macro | Variable más importante (sin contar `geo_depto`) |
+|---|---|---|---|
+| LASSO (L1) | 0,530 | 0,526 | `viv_pisos` |
+| Ridge (L2) | 0,530 | 0,526 | `viv_pisos` |
+| SHAP (RandomForest) | 0,527 | 0,499 | `viv_pisos` |
+
+Spearman LASSO-Ridge=0,988 (casi idéntico); LASSO-SHAP=0,794,
+Ridge-SHAP=0,806 — SHAP sube notablemente `hog_num_personas` y `viv_
+alcantarillado` frente a los modelos lineales, evidencia de interacciones
+no lineales. Ninguna variable eliminada por LASSO. Línea base (predecir
+siempre `B`, la clase mayoritaria): ~30 % — las tres exactitudes (~53 %)
+están muy por encima, pero lejos de perfectas: las variables disponibles
+(el esquema canónico del Hot-Deck) explican una parte real pero parcial
+de la clasificación; el resto depende de las privaciones internas del
+Sisbén (`I1`-`I15`/`H_5`), que no se usan como predictores por
+circularidad. Detalle completo en
+`docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+
 ## 4. Pendientes técnicos
 - [x] **Verificar los códigos de `PER002`** (hipótesis: 3=12–17, 4=18–28, 5=29–59, 6=60+) — corroborada indirectamente el 2026-10-10 cruzando contra escolaridad/estado civil/pensión en la base completa de Personas; falta la ficha oficial de ANDA. Ver `docs/insumos/DICCIONARIO_HOTDECK.md` §5.
 - [x] **Sumar variables de vivienda a la celda** — hecho parcialmente el 2026-10-21: se sumó `viv_cuartos` (conteo, seguro de usar sin homologar categorías; código corregido el 2026-10-28). `viv_paredes`/`viv_pisos` siguen fuera — ver el punto siguiente.
@@ -212,6 +241,7 @@ alcance/tiempo, 2 por tautología) — detalle en
 - [ ] Refinar `sin_cotizacion_pension_jefe` (mezcla informalidad con desempleo/inactividad, ver `src/3_preprocesamiento.py` — sin cambios por la corrección del 2026-10-28).
 - [ ] Construir las 5 dimensiones del IPM que todavía faltan sobre GEIH (trabajo infantil, fuente de agua mejorada, eliminación de excretas, combustible de cocina, desempleo de larga duración) — ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §2.
 - [ ] Fase 3: RD en la frontera B/C (en duda, no hay puntaje continuo en la microdata).
+- [x] **OE1 (LASSO/Ridge/SHAP sobre el Sisbén)** — hecho 2026-11-02, ver §3f y `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 - [x] **Especificación de `W`: probar la celda EXACTA del Hot-Deck, no solo el proxy continuo** — hecho 2026-11-02, ver §3b-bis y `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`. Resultado dividido: explica el 63 % del efecto de `ipm_geih_score` pero casi nada del de `POBRE_GEIH`.
 - [x] **Rotulado ATT/ATU** ("error de inclusión"/"error de exclusión" era una etiqueta engañosa, no un error de cómputo) — corregido 2026-11-02 en `src/5_estimacion.py` y `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
 - [x] **Advertencias:** se probó quitar `warnings.filterwarnings("ignore")` de `src/5_estimacion.py` (con `-W always`, incluido un `CausalForestDML` completo a 80.000 filas) — no genera ningún warning en este entorno; el filtro no estaba ocultando nada real. Eliminado 2026-11-02.
@@ -243,6 +273,8 @@ decisión explícita de no tocar commits ya publicados).
 - `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` — primera corrida real de ATE/ATT/ATU
 - `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md` — primera corrida real de CATE
 - `docs/resultados/RESULTADOS_FRECHET_MANSKI.md` — cotas sin suponer independencia condicional (robustez)
+- `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` — proxy continuo vs. celda exacta del Hot-Deck como `W`
+- `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md` — LASSO/Ridge/SHAP sobre el Sisbén (OE1)
 - `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md` — cobertura del Sisbén por departamento
 - `src/estimacion/README.md` — prueba exploratoria que precedió a la corrida real
 - `docs/seguimiento/CHANGELOG_PENDIENTES.md` — historial de cambios y pendientes

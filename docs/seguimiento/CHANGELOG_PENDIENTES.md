@@ -2,6 +2,46 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-02 (2) — OE1: selección de variables con LASSO, Ridge y SHAP
+
+### Añadido
+- **`src/estimacion/seleccion_variables_lasso_shap.py`**: responde al
+  OE1 ("determinar grupos y subgrupos de variables para LASSO, Ridge y
+  SHAP") por separado del pipeline causal — no estima ningún efecto,
+  solo qué variables del hogar predicen mejor el `Grupo` (A-D) del
+  Sisbén. Predictores: `hog_num_personas`/`viv_cuartos`/`jefe_edad`
+  (numéricas, orden establecido) y `viv_paredes`/`viv_pisos`/`viv_
+  alcantarillado`/`viv_acueducto`/`jefe_sexo`/`geo_zona` (one-hot,
+  dirección sin verificar, mismo criterio que evitó el bug de
+  `LinearDRLearner` con categóricas sin orden); `geo_depto` como control
+  geográfico aparte. Nunca usa `I1`-`I15`/`H_5` como predictor — serían
+  circulares con el propio `Grupo` que se calcula a partir de ellas.
+  150.000 hogares (submuestra estratificada de 3,09 millones).
+- **`docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`**:
+  resultado completo. `viv_pisos` es la variable individual más
+  importante en los tres métodos (LASSO, Ridge, SHAP sobre un
+  `RandomForestClassifier`). LASSO y Ridge casi no difieren (Spearman
+  0,988); SHAP reordena el tercio medio de la tabla (sube `hog_num_
+  personas` y `viv_alcantarillado`) — evidencia de interacciones no
+  lineales. Ninguna variable eliminada por LASSO. Exactitud ~53 % en las
+  tres (línea base de predecir siempre la clase mayoritaria: ~30 %).
+
+### Corregido (de paso, API de sklearn)
+- `LogisticRegressionCV` en sklearn 1.9 deprecó `multi_class` y está
+  deprecando `penalty` en favor de `l1_ratios` (se eliminará en 1.10) —
+  el script usa ya la API nueva (`l1_ratios=[1.0]`/`[0.0]`,
+  `use_legacy_attributes=False`), confirmado con `-W error::FutureWarning`
+  que no queda ningún warning pendiente.
+- `scipy` se declara explícito en `pyproject.toml` (antes solo llegaba
+  como dependencia transitiva de scikit-learn; el script lo importa
+  directo para `spearmanr`).
+
+### Documentación actualizada
+`docs/resultados/README.md` (nueva fila §7 y sección "Resumen por
+paso"), `docs/seguimiento/RESUMEN_AVANCES.md` (§3f, tabla de pipeline,
+pendientes, referencias), `src/estimacion/README.md`, `CLAUDE.md`
+(bloque de validación).
+
 ## 2026-11-02 — Diagnóstico W proxy vs. celda exacta, rotulado ATT/ATU, higiene
 
 ### Añadido
