@@ -71,7 +71,6 @@ consola) y resumen interpretado en docs/resultados/.
 from __future__ import annotations
 
 import logging
-import warnings
 from pathlib import Path
 
 import numpy as np
@@ -81,7 +80,6 @@ from sklearn.linear_model import LogisticRegression
 
 from econml.dml import LinearDML, CausalForestDML
 
-warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 

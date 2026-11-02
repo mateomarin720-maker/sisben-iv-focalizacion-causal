@@ -35,6 +35,12 @@ Formato: más reciente primero. Rama de trabajo: `main`.
   repo. Encabezado de rama actualizado (`hotdeck-azure-avances` ya está
   fusionada a `main`, confirmado con `git merge-base --is-ancestor`).
 
+- Se quitó `warnings.filterwarnings("ignore")` de `src/5_estimacion.py`
+  (otro pendiente de la Tabla 4 del paper de avance). Probado con
+  `-W always`, incluido un `CausalForestDML` completo a 80.000 filas: no
+  generó ningún warning en este entorno — el filtro no ocultaba nada
+  real, era código muerto.
+
 ### Hallazgo adicional (sin cambio de código)
 - Las ramas `corrige-controles-celda` y `simulacion-identificacion`
   (Tabla 5 del paper de avance, prioridad 1) se bifurcaron de `main`
