@@ -2,8 +2,9 @@
 
 *Versión consolidada del 2026-11-02.* Todas las cifras de esta página
 vienen de la misma corrida: GEIH con agosto corregido, vivienda con los
-códigos verificados, pobreza monetaria reconstruida con D1-D7 cerradas y
-modelos auxiliares del DML con las categóricas como indicadoras. El
+códigos verificados, celda del Hot-Deck con pisos, pobreza monetaria
+reconstruida (contrastada con la base oficial del DANE) y modelos
+auxiliares del DML con las categóricas como indicadoras. El
 historial de correcciones está en
 [`CHANGELOG_PENDIENTES.md`](../seguimiento/CHANGELOG_PENDIENTES.md).
 
@@ -24,7 +25,7 @@ historial de correcciones está en
    recuperación. Pendiente.
 5. Los outcomes están construidos y validados: IPM-GEIH (8 de 15
    privaciones) y pobreza monetaria reconstruida (33,2 % frente a 31,8 %
-   oficial).
+   oficial; clasifica igual al 93,9 % de los hogares de la base oficial).
 
 ## El pipeline
 
@@ -36,6 +37,7 @@ historial de correcciones está en
 | 2 | Identificación (DAG) | `src/4_dag_identificacion.py` | [`IDENTIFICACION_CAUSAL.md`](IDENTIFICACION_CAUSAL.md) |
 | 3 | Outcome IPM-GEIH | `src/3_preprocesamiento.py` | [`METODOLOGIA_INDICADOR_IPM_GEIH.md`](../insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md) |
 | 3b | Outcome pobreza monetaria | `src/indicadores/pobreza_monetaria_geih.py`, `src/3b_preprocesamiento_monetario.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](RESULTADOS_POBREZA_MONETARIA.md) |
+| 3c | Contraste con la base oficial del DANE | `src/validacion/comparar_pobreza_monetaria_oficial.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](RESULTADOS_POBREZA_MONETARIA.md) |
 | 4 | DML: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) |
 | 4b | Causal Forest: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) |
 | 4c | Diagnóstico de `W` | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md) |
@@ -51,15 +53,14 @@ historial de correcciones está en
 
 290.968 hogares GEIH, 3.106.489 donantes Sisbén (nacional + Bogotá
 vigente). Celda: departamento + ciclo de vida del jefe + tramo de
-cuartos; 100 % en celda exacta (376 celdas). Grupo asignado (ponderado):
-**A 22,0 · B 33,8 · C 28,7 · D 15,6 %**. Bogotá se filtra por vigencia
-al 31-dic-2024 (§1b).
+cuartos + nivel de pisos homologado; 99,98 % en celda exacta (993
+celdas). Grupo asignado (ponderado): **A 14,2 · B 29,4 · C 34,4 · D
+22,0 %**. Bogotá se filtra por vigencia al 31-dic-2024 (§1b).
 
-**Celdas con vivienda (1c).** Con pisos y paredes homologados: sumar
-pisos sube la correlación entre P(T | celda) y la pobreza monetaria de
-0,20 a 0,29, con cobertura de 99,98 %; paredes no agrega nada encima.
-Pisos mueve la distribución de grupos (A 22 % → 14 %). La celda oficial
-no se ha cambiado: es una decisión pendiente.
+**Celdas con vivienda (1c).** Pisos entró a la celda el 2026-11-02: sube
+la correlación entre P(T | celda) y la pobreza monetaria de 0,20 a 0,29
+sin costo de cobertura; paredes no agrega nada encima. La celda sin pisos
+(A 22,0 · B 33,8 · C 28,7 · D 15,6 %) queda como sensibilidad.
 
 ### 2. Identificación
 
@@ -91,20 +92,24 @@ dominio, tasas por persona.
 | Gini nacional | 0,565 | 0,551 |
 
 Es una reconstrucción experimental: el DANE cruza con registros
-administrativos que no son públicos. Pendiente descargar la base oficial
-(D1, catálogo 874).
+administrativos que no son públicos. **Contraste con la base oficial
+(catálogo 874, §3c):** sobre los 275.057 hogares que mide el DANE (24
+departamentos y Bogotá; la base no trae los 9 nuevos), la reconstrucción
+clasifica igual al 93,9 %, con razón mediana de ingreso 1,00. Las líneas
+oficiales por área explican 0,6 de los 1,4 puntos de diferencia.
 
 ### 4. DML y Causal Forest (diagnóstico placebo)
 
 | Outcome | ATE, W = celda exacta [IC 95 %] |
 |---|---|
-| `ipm_geih_score` | +0,0011 [−0,0060; +0,0081] |
-| `POBRE_GEIH` | +0,0004 [−0,0020; +0,0028] |
-| `log_ingreso_percapita` | −0,0132 [−0,0264; −0,0001] |
-| `POBRE_MONETARIO` | +0,0025 [−0,0009; +0,0058] |
+| `ipm_geih_score` | −0,0021 [−0,0092; +0,0051] |
+| `POBRE_GEIH` | −0,0026 [−0,0049; −0,0002] |
+| `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
+| `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
 
-Siete de ocho ATE (dos especificaciones de `W`) incluyen el cero; el CATE
-medio también es ≈0. Hasta el 2026-11-02 la celda entraba como número a
+Siete de ocho ATE (dos especificaciones de `W`) incluyen el cero; el
+octavo lo excluye por poco (−0,26 puntos), como cabe esperar por azar en
+ocho pruebas. El CATE medio también es ≈0. Hasta el 2026-11-02 la celda entraba como número a
 la propensión y los efectos parecían robustos (+0,02, IC sin el 0): era
 un artefacto. Detalle en §4c.
 
@@ -112,8 +117,8 @@ un artefacto. Detalle en §4c.
 
 | Outcome | Cota del ATE sin CIA |
 |---|---|
-| `POBRE_GEIH` | [−0,411; +0,323] |
-| `POBRE_MONETARIO` | [−0,538; +0,503] |
+| `POBRE_GEIH` | [−0,261; +0,380] |
+| `POBRE_MONETARIO` | [−0,418; +0,648] |
 
 Ninguna celda excluye el 0. Toda la precisión de un punto estimado con
 el grupo imputado vendría del supuesto, no de los datos.
@@ -155,6 +160,7 @@ poetry run python src/4_dag_identificacion.py
 poetry run python src/3_preprocesamiento.py
 poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python src/3b_preprocesamiento_monetario.py
+poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben

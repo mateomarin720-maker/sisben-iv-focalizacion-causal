@@ -1,121 +1,121 @@
-2026-11-02 16:15:47,207 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet
-2026-11-02 16:15:48,566 INFO n=290,968 | T=1 (Grupo A/B): 63.7%
+2026-11-02 16:49:03,946 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet
+2026-11-02 16:49:04,756 INFO n=290,968 | T=1 (Grupo A/B): 46.7%
 
 ######################################################################
 # Outcome: ipm_geih_score (continuo, 0-8 privaciones)
 ######################################################################
 
 ======================================================================
-W = PROXY (indicadoras de geo_depto + splines de jefe_edad y viv_cuartos)
+W = PROXY (indicadoras de geo_depto y nivel de pisos + splines de jefe_edad y viv_cuartos)
 ======================================================================
-  Propensión (T=1 | W): min=0.028 p5=0.328 p50=0.665 p95=0.839 max=0.915
-  ATE (toda la muestra): n=290,968 | +0.0002  IC95%=(-0.0067, +0.0072)
-  ATT (efecto en tratados): n=185,256 | +0.0009  IC95%=(-0.0062, +0.0080)
-  ATU (efecto en no tratados): n=105,712 | -0.0009  IC95%=(-0.0076, +0.0058)
-  CATE: n=80,000 | media=+0.0043  sd=0.0323  rango=(-0.2271, +0.2016)
-  Por zona (urbana=1): {0: 0.0141, 1: 0.0029}
-  Por sexo jefe (mujer=1): {0: 0.0134, 1: -0.0049}
-  Importancia de variables: {'viv_paredes': 0.319, 'viv_pisos': 0.286, 'jefe_mujer': 0.198, 'geo_zona_urbana': 0.197}
+  Propensión (T=1 | W): min=0.027 p5=0.178 p50=0.414 p95=0.851 max=0.965
+  ATE (toda la muestra): n=290,968 | -0.0052  IC95%=(-0.0122, +0.0018)
+  ATT (efecto en tratados): n=135,739 | -0.0062  IC95%=(-0.0140, +0.0016)
+  ATU (efecto en no tratados): n=155,229 | -0.0044  IC95%=(-0.0111, +0.0024)
+  CATE: n=80,000 | media=-0.0110  sd=0.0238  rango=(-0.1350, +0.1905)
+  Por zona (urbana=1): {0: -0.0153, 1: -0.0104}
+  Por sexo jefe (mujer=1): {0: -0.0172, 1: -0.0047}
+  Importancia de variables: {'viv_paredes': 0.535, 'geo_zona_urbana': 0.241, 'jefe_mujer': 0.224}
 
 ======================================================================
 W = CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)
 ======================================================================
-  Propensión (T=1 | W): min=0.090 p5=0.363 p50=0.671 p95=0.871 max=0.941
-  vs. P(T | W) empírica: corr=0.998 | dif. absoluta media=0.0037
-  ATE (toda la muestra): n=290,968 | +0.0011  IC95%=(-0.0060, +0.0081)
-  ATT (efecto en tratados): n=185,256 | +0.0016  IC95%=(-0.0056, +0.0089)
-  ATU (efecto en no tratados): n=105,712 | +0.0001  IC95%=(-0.0067, +0.0070)
-  CATE: n=80,000 | media=+0.0024  sd=0.0308  rango=(-0.2048, +0.2135)
-  Por zona (urbana=1): {0: 0.0165, 1: 0.0003}
-  Por sexo jefe (mujer=1): {0: 0.0115, 1: -0.007}
-  Importancia de variables: {'viv_paredes': 0.305, 'viv_pisos': 0.295, 'jefe_mujer': 0.209, 'geo_zona_urbana': 0.191}
+  Propensión (T=1 | W): min=0.011 p5=0.142 p50=0.437 p95=0.847 max=0.960
+  vs. P(T | W) empírica: corr=0.995 | dif. absoluta media=0.0083
+  ATE (toda la muestra): n=290,968 | -0.0021  IC95%=(-0.0092, +0.0051)
+  ATT (efecto en tratados): n=135,739 | -0.0016  IC95%=(-0.0095, +0.0062)
+  ATU (efecto en no tratados): n=155,229 | -0.0025  IC95%=(-0.0094, +0.0044)
+  CATE: n=80,000 | media=-0.0045  sd=0.0305  rango=(-0.1653, +0.3042)
+  Por zona (urbana=1): {0: 0.0085, 1: -0.0064}
+  Por sexo jefe (mujer=1): {0: -0.009, 1: 0.0001}
+  Importancia de variables: {'viv_paredes': 0.564, 'geo_zona_urbana': 0.23, 'jefe_mujer': 0.207}
 
 ######################################################################
 # Outcome: POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)
 ######################################################################
 
 ======================================================================
-W = PROXY (indicadoras de geo_depto + splines de jefe_edad y viv_cuartos)
+W = PROXY (indicadoras de geo_depto y nivel de pisos + splines de jefe_edad y viv_cuartos)
 ======================================================================
-  Propensión (T=1 | W): min=0.028 p5=0.328 p50=0.665 p95=0.839 max=0.915
-  ATE (toda la muestra): n=290,968 | +0.0016  IC95%=(-0.0008, +0.0039)
-  ATT (efecto en tratados): n=185,256 | +0.0018  IC95%=(-0.0007, +0.0043)
-  ATU (efecto en no tratados): n=105,712 | +0.0012  IC95%=(-0.0010, +0.0034)
-  CATE: n=80,000 | media=-0.0005  sd=0.0114  rango=(-0.0646, +0.0587)
-  Por zona (urbana=1): {0: 0.0041, 1: -0.0011}
-  Por sexo jefe (mujer=1): {0: 0.0027, 1: -0.0037}
-  Importancia de variables: {'viv_pisos': 0.318, 'viv_paredes': 0.296, 'geo_zona_urbana': 0.215, 'jefe_mujer': 0.172}
+  Propensión (T=1 | W): min=0.027 p5=0.178 p50=0.414 p95=0.851 max=0.965
+  ATE (toda la muestra): n=290,968 | +0.0010  IC95%=(-0.0014, +0.0033)
+  ATT (efecto en tratados): n=135,739 | +0.0006  IC95%=(-0.0022, +0.0033)
+  ATU (efecto en no tratados): n=155,229 | +0.0013  IC95%=(-0.0009, +0.0035)
+  CATE: n=80,000 | media=+0.0019  sd=0.0083  rango=(-0.0583, +0.0387)
+  Por zona (urbana=1): {0: 0.0089, 1: 0.0008}
+  Por sexo jefe (mujer=1): {0: 0.0002, 1: 0.0036}
+  Importancia de variables: {'viv_paredes': 0.513, 'geo_zona_urbana': 0.296, 'jefe_mujer': 0.191}
 
 ======================================================================
 W = CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)
 ======================================================================
-  Propensión (T=1 | W): min=0.090 p5=0.363 p50=0.671 p95=0.871 max=0.941
-  vs. P(T | W) empírica: corr=0.998 | dif. absoluta media=0.0037
-  ATE (toda la muestra): n=290,968 | +0.0004  IC95%=(-0.0020, +0.0028)
-  ATT (efecto en tratados): n=185,256 | +0.0006  IC95%=(-0.0019, +0.0031)
-  ATU (efecto en no tratados): n=105,712 | +0.0001  IC95%=(-0.0021, +0.0023)
-  CATE: n=80,000 | media=-0.0018  sd=0.0114  rango=(-0.0796, +0.0677)
-  Por zona (urbana=1): {0: 0.0028, 1: -0.0025}
-  Por sexo jefe (mujer=1): {0: 0.0018, 1: -0.0055}
-  Importancia de variables: {'viv_pisos': 0.339, 'viv_paredes': 0.284, 'geo_zona_urbana': 0.206, 'jefe_mujer': 0.171}
+  Propensión (T=1 | W): min=0.011 p5=0.142 p50=0.437 p95=0.847 max=0.960
+  vs. P(T | W) empírica: corr=0.995 | dif. absoluta media=0.0083
+  ATE (toda la muestra): n=290,968 | -0.0026  IC95%=(-0.0049, -0.0002)
+  ATT (efecto en tratados): n=135,739 | -0.0031  IC95%=(-0.0059, -0.0003)
+  ATU (efecto en no tratados): n=155,229 | -0.0021  IC95%=(-0.0043, +0.0001)
+  CATE: n=80,000 | media=-0.0002  sd=0.0083  rango=(-0.0569, +0.0510)
+  Por zona (urbana=1): {0: 0.0057, 1: -0.0011}
+  Por sexo jefe (mujer=1): {0: -0.0015, 1: 0.0011}
+  Importancia de variables: {'viv_paredes': 0.513, 'geo_zona_urbana': 0.292, 'jefe_mujer': 0.195}
 
 ######################################################################
 # Outcome: log_ingreso_percapita (continuo, log1p(ingreso_percapita))
 ######################################################################
 
 ======================================================================
-W = PROXY (indicadoras de geo_depto + splines de jefe_edad y viv_cuartos)
+W = PROXY (indicadoras de geo_depto y nivel de pisos + splines de jefe_edad y viv_cuartos)
 ======================================================================
-  Propensión (T=1 | W): min=0.028 p5=0.328 p50=0.665 p95=0.839 max=0.915
-  ATE (toda la muestra): n=290,968 | -0.0098  IC95%=(-0.0229, +0.0033)
-  ATT (efecto en tratados): n=185,256 | -0.0107  IC95%=(-0.0238, +0.0024)
-  ATU (efecto en no tratados): n=105,712 | -0.0083  IC95%=(-0.0216, +0.0049)
-  CATE: n=80,000 | media=-0.0227  sd=0.0613  rango=(-0.3879, +0.4085)
-  Por zona (urbana=1): {0: -0.067, 1: -0.0161}
-  Por sexo jefe (mujer=1): {0: -0.0111, 1: -0.0345}
-  Importancia de variables: {'viv_pisos': 0.326, 'viv_paredes': 0.282, 'geo_zona_urbana': 0.207, 'jefe_mujer': 0.185}
+  Propensión (T=1 | W): min=0.027 p5=0.178 p50=0.414 p95=0.851 max=0.965
+  ATE (toda la muestra): n=290,968 | -0.0056  IC95%=(-0.0190, +0.0077)
+  ATT (efecto en tratados): n=135,739 | -0.0066  IC95%=(-0.0205, +0.0073)
+  ATU (efecto en no tratados): n=155,229 | -0.0048  IC95%=(-0.0182, +0.0087)
+  CATE: n=80,000 | media=+0.0107  sd=0.0360  rango=(-0.1766, +0.1651)
+  Por zona (urbana=1): {0: 0.0011, 1: 0.0121}
+  Por sexo jefe (mujer=1): {0: 0.0095, 1: 0.0118}
+  Importancia de variables: {'viv_paredes': 0.576, 'geo_zona_urbana': 0.214, 'jefe_mujer': 0.21}
 
 ======================================================================
 W = CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)
 ======================================================================
-  Propensión (T=1 | W): min=0.090 p5=0.363 p50=0.671 p95=0.871 max=0.941
-  vs. P(T | W) empírica: corr=0.998 | dif. absoluta media=0.0037
-  ATE (toda la muestra): n=290,968 | -0.0132  IC95%=(-0.0264, -0.0001)
-  ATT (efecto en tratados): n=185,256 | -0.0141  IC95%=(-0.0273, -0.0009)
-  ATU (efecto en no tratados): n=105,712 | -0.0117  IC95%=(-0.0250, +0.0016)
-  CATE: n=80,000 | media=-0.0206  sd=0.0629  rango=(-0.4080, +0.3803)
-  Por zona (urbana=1): {0: -0.0621, 1: -0.0144}
-  Por sexo jefe (mujer=1): {0: -0.0098, 1: -0.0317}
-  Importancia de variables: {'viv_pisos': 0.331, 'viv_paredes': 0.296, 'geo_zona_urbana': 0.194, 'jefe_mujer': 0.179}
+  Propensión (T=1 | W): min=0.011 p5=0.142 p50=0.437 p95=0.847 max=0.960
+  vs. P(T | W) empírica: corr=0.995 | dif. absoluta media=0.0083
+  ATE (toda la muestra): n=290,968 | +0.0006  IC95%=(-0.0128, +0.0141)
+  ATT (efecto en tratados): n=135,739 | +0.0007  IC95%=(-0.0132, +0.0147)
+  ATU (efecto en no tratados): n=155,229 | +0.0006  IC95%=(-0.0130, +0.0141)
+  CATE: n=80,000 | media=+0.0084  sd=0.0423  rango=(-0.2755, +0.1740)
+  Por zona (urbana=1): {0: 0.0014, 1: 0.0094}
+  Por sexo jefe (mujer=1): {0: 0.0015, 1: 0.0154}
+  Importancia de variables: {'viv_paredes': 0.581, 'jefe_mujer': 0.226, 'geo_zona_urbana': 0.193}
 
 ######################################################################
 # Outcome: POBRE_MONETARIO (binario, reconstrucción GEIH con líneas DANE 2024 por dominio)
 ######################################################################
 
 ======================================================================
-W = PROXY (indicadoras de geo_depto + splines de jefe_edad y viv_cuartos)
+W = PROXY (indicadoras de geo_depto y nivel de pisos + splines de jefe_edad y viv_cuartos)
 ======================================================================
-  Propensión (T=1 | W): min=0.028 p5=0.328 p50=0.665 p95=0.839 max=0.915
-  ATE (toda la muestra): n=290,968 | +0.0019  IC95%=(-0.0015, +0.0053)
-  ATT (efecto en tratados): n=185,256 | +0.0019  IC95%=(-0.0015, +0.0054)
-  ATU (efecto en no tratados): n=105,712 | +0.0018  IC95%=(-0.0015, +0.0051)
-  CATE: n=80,000 | media=+0.0020  sd=0.0115  rango=(-0.0964, +0.0476)
-  Por zona (urbana=1): {0: 0.0007, 1: 0.0022}
-  Por sexo jefe (mujer=1): {0: 0.002, 1: 0.002}
-  Importancia de variables: {'viv_paredes': 0.413, 'viv_pisos': 0.283, 'jefe_mujer': 0.154, 'geo_zona_urbana': 0.151}
+  Propensión (T=1 | W): min=0.027 p5=0.178 p50=0.414 p95=0.851 max=0.965
+  ATE (toda la muestra): n=290,968 | +0.0003  IC95%=(-0.0031, +0.0037)
+  ATT (efecto en tratados): n=135,739 | +0.0007  IC95%=(-0.0029, +0.0044)
+  ATU (efecto en no tratados): n=155,229 | -0.0001  IC95%=(-0.0035, +0.0033)
+  CATE: n=80,000 | media=-0.0010  sd=0.0078  rango=(-0.0331, +0.0462)
+  Por zona (urbana=1): {0: 0.006, 1: -0.0021}
+  Por sexo jefe (mujer=1): {0: -0.0015, 1: -0.0005}
+  Importancia de variables: {'viv_paredes': 0.544, 'geo_zona_urbana': 0.249, 'jefe_mujer': 0.207}
 
 ======================================================================
 W = CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)
 ======================================================================
-  Propensión (T=1 | W): min=0.090 p5=0.363 p50=0.671 p95=0.871 max=0.941
-  vs. P(T | W) empírica: corr=0.998 | dif. absoluta media=0.0037
-  ATE (toda la muestra): n=290,968 | +0.0025  IC95%=(-0.0009, +0.0058)
-  ATT (efecto en tratados): n=185,256 | +0.0025  IC95%=(-0.0010, +0.0060)
-  ATU (efecto en no tratados): n=105,712 | +0.0024  IC95%=(-0.0009, +0.0057)
-  CATE: n=80,000 | media=+0.0023  sd=0.0119  rango=(-0.1126, +0.0459)
-  Por zona (urbana=1): {0: -0.001, 1: 0.0028}
-  Por sexo jefe (mujer=1): {0: 0.0029, 1: 0.0016}
-  Importancia de variables: {'viv_paredes': 0.412, 'viv_pisos': 0.287, 'geo_zona_urbana': 0.155, 'jefe_mujer': 0.147}
+  Propensión (T=1 | W): min=0.011 p5=0.142 p50=0.437 p95=0.847 max=0.960
+  vs. P(T | W) empírica: corr=0.995 | dif. absoluta media=0.0083
+  ATE (toda la muestra): n=290,968 | -0.0002  IC95%=(-0.0036, +0.0033)
+  ATT (efecto en tratados): n=135,739 | -0.0000  IC95%=(-0.0037, +0.0036)
+  ATU (efecto en no tratados): n=155,229 | -0.0003  IC95%=(-0.0038, +0.0031)
+  CATE: n=80,000 | media=+0.0003  sd=0.0082  rango=(-0.0313, +0.0747)
+  Por zona (urbana=1): {0: -0.002, 1: 0.0006}
+  Por sexo jefe (mujer=1): {0: -0.0006, 1: 0.0012}
+  Importancia de variables: {'viv_paredes': 0.513, 'geo_zona_urbana': 0.251, 'jefe_mujer': 0.236}
 
 ======================================================================
 Cómo leer esto: el grupo imputado se sortea al azar dentro de la celda,

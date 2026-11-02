@@ -48,24 +48,25 @@ una etiqueta engañosa — corregida aquí y en
 Cada modelo corre con DOS especificaciones de `W`, para diagnosticar una
 discrepancia detectada el 2026-11-02 (ver
 `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`):
-  - **`W_PROXY`** = `{geo_depto, jefe_edad, viv_cuartos}` (la
-    especificación usada hasta ahora): `jefe_edad`/`viv_cuartos`
-    CONTINUOS como proxy de los tramos discretos que el Hot-Deck usa de
-    verdad para el sorteo (`geo_depto + ciclo de vida + tramo de
-    cuartos`) — no es una réplica exacta de la celda.
+  - **`W_PROXY`** = `{geo_depto, nivel de pisos, jefe_edad,
+    viv_cuartos}`: `jefe_edad`/`viv_cuartos` CONTINUOS como proxy de los
+    tramos discretos que el Hot-Deck usa de verdad para el sorteo
+    (`geo_depto + ciclo de vida + tramo de cuartos + nivel de pisos`) —
+    no es una réplica exacta de la celda.
   - **`W_CELDA`** = `hotdeck_celda_cat`, el código categórico de
     `_hotdeck_celda` (columna que ya guarda `emparejamiento_hotdeck_
-    geih_sisben.py` con la celda EXACTA usada en cada sorteo — 376
-    celdas, 99,999 % en celda exacta). Esta es la réplica fiel del
+    geih_sisben.py` con la celda EXACTA usada en cada sorteo; desde el
+    2026-11-02 incluye el nivel de pisos). Esta es la réplica fiel del
     mecanismo real: si el sorteo es verdaderamente aleatorio dentro de
     esa celda (confirmado — `rng.integers` sin ponderar por nada más),
     el tratamiento imputado debería ser independiente de TODO lo demás
     condicional en esta celda, por construcción del propio algoritmo
     (no por supuesto).
 
-`X = {geo_zona, jefe_sexo, viv_paredes, viv_pisos}` son las covariables
-NO usadas en la celda, para heterogeneidad (CATE) y como chequeo de que
-no quede señal espuria.
+`X = {geo_zona, jefe_sexo, viv_paredes}` son las covariables NO usadas
+en la celda, para heterogeneidad (CATE) y como chequeo de que no quede
+señal espuria. `viv_pisos` salió de `X` el 2026-11-02 al entrar a la
+celda.
 
 Modelos auxiliares (corregido 2026-11-02, ver `_codificador`): las
 categóricas sin orden (celda, departamento, material de paredes y pisos)
@@ -123,10 +124,10 @@ N_SUB_CATE = 80_000
 
 # Cada W: (categóricas sin orden, continuas). Las categóricas entran a los
 # modelos auxiliares como variables indicadoras, nunca como su código.
-W_PROXY = (["geo_depto_cat"], ["jefe_edad", "viv_cuartos"])  # proxy continuo (especificación anterior)
+W_PROXY = (["geo_depto_cat", "pisos_nivel_cat"], ["jefe_edad", "viv_cuartos"])  # proxy de la celda
 W_CELDA = (["hotdeck_celda_cat"], [])  # celda EXACTA del Hot-Deck (igual al sorteo real)
-X_COLS = ["geo_zona_urbana", "jefe_mujer", "viv_paredes", "viv_pisos"]  # NO usadas en la celda
-X_CATEGORICAS = ["viv_paredes", "viv_pisos"]  # códigos de material: indicadoras en los modelos auxiliares
+X_COLS = ["geo_zona_urbana", "jefe_mujer", "viv_paredes"]  # NO usadas en la celda
+X_CATEGORICAS = ["viv_paredes"]  # código de material: indicadoras en los modelos auxiliares
 
 
 def _preparar(df: pd.DataFrame) -> pd.DataFrame:
@@ -138,6 +139,7 @@ def _preparar(df: pd.DataFrame) -> pd.DataFrame:
     df["geo_zona_urbana"] = (df["geo_zona"] == "1").astype(int)
     df["jefe_mujer"] = (df["jefe_sexo"] == "2").astype(int)
     df["geo_depto_cat"] = df["geo_depto"].astype("category").cat.codes
+    df["pisos_nivel_cat"] = df["viv_pisos_nivel"].astype("category").cat.codes
     df["hotdeck_celda_cat"] = df["_hotdeck_celda"].astype("category").cat.codes
     df["log_ingreso_percapita"] = np.log1p(pd.to_numeric(df["ingreso_percapita"], errors="coerce"))
     return df
@@ -245,7 +247,7 @@ def main() -> None:
     logger.info("n=%s | T=1 (Grupo A/B): %.1f%%", f"{len(df):,}", df["T"].mean() * 100)
 
     especificaciones = [
-        ("PROXY (indicadoras de geo_depto + splines de jefe_edad y viv_cuartos)", W_PROXY),
+        ("PROXY (indicadoras de geo_depto y nivel de pisos + splines de jefe_edad y viv_cuartos)", W_PROXY),
         ("CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)", W_CELDA),
     ]
 

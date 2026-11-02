@@ -298,9 +298,10 @@ MATRIZ: list[Privacion] = [
         diferencias="Ninguna de fondo.",
         poblacion_referencia="Hogares.",
         estado=HOMOLOGABLE,
-        decisiones_pendientes=("`viv_pisos` (P4020) es covariable X en 5_estimacion.py: si entra al outcome se repite "
-                               "la tautología que retiró esta privación el 2026-10-28. Decidir si se incluye en "
-                               "IPM_GEIH_15 o si se saca de X en los modelos que usen este outcome."),
+        decisiones_pendientes=("`viv_pisos` (P4020) entra a la celda del Hot-Deck desde el 2026-11-02 (y a `W` en "
+                               "5_estimacion.py): si entra al outcome, el outcome queda definido en parte por la "
+                               "celda que sortea el tratamiento, como la tautología que retiró esta privación el "
+                               "2026-10-28. Decidir si se incluye en IPM_GEIH_15."),
     ),
     Privacion(
         id="I14", nombre="Material inadecuado de paredes exteriores", dimension="Vivienda y servicios públicos",

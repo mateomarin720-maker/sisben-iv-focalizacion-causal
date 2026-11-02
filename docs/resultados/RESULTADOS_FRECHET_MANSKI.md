@@ -6,7 +6,7 @@ el outcome de 10 a 8 privaciones (ver
 `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Ampliado el 2026-11-02
 a `POBRE_MONETARIO` (ver sección propia abajo) y regenerado ese mismo día
 tras corregir el bug de agosto (códigos `"1.0"` del `.DTA`, ver
-CHANGELOG). Detalle por celda:
+CHANGELOG) y otra vez al sumar el nivel de pisos a la celda. Detalle por celda:
 `docs/reports/cotas_frechet_manski.csv` (`POBRE_GEIH`) y
 `docs/reports/cotas_frechet_manski_pobre_monetario.csv`; salida de
 consola: `docs/reports/cotas_frechet_manski.txt`.
@@ -24,7 +24,7 @@ punto: el rango de efectos que los datos NO permiten descartar.
 ## Cómo se usa aquí
 
 Misma celda X que el Hot-Deck (`geo_depto + ciclo de edad del jefe + tramo
-de `viv_cuartos``), para que sea directamente comparable con el DML.
+de `viv_cuartos` + nivel de pisos`), para que sea directamente comparable con el DML.
 `Y = POBRE_GEIH` (binario). `T = 1{Grupo ∈ {A,B}}`, calculado directamente
 sobre el archivo estandarizado del Sisbén (nacional + Bogotá), SIN pasar
 por el Hot-Deck. Por celda: cota de Fréchet-Hoeffding sobre
@@ -36,25 +36,25 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
 
 | | Estimador | Rango |
 |---|---|---|
-| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[-0,4114 ; +0,3230]** |
+| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[−0,2607 ; +0,3801]** |
 | **DML con Hot-Deck** (con CIA) | Punto + IC95% | ver `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` (el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda) |
 
-- Cobertura: 365 celdas (antes de corregir `viv_cuartos`: 342 — la celda
-  correcta tiene más combinaciones distintas de tramo de cuartos), 100 %
-  del peso poblacional de GEIH.
-- Ancho de la cota Fréchet-Manski: **0,7344**. Historia: 0,986 antes de
+- Cobertura: 921 celdas con información de las dos fuentes (365 con la
+  celda sin pisos), 100 % del peso poblacional de GEIH.
+- Ancho de la cota Fréchet-Manski: **0,6409**. Historia: 0,986 antes de
   corregir `viv_cuartos`; 0,7267 con la celda correcta y 10 privaciones;
-  0,7163 con 8 privaciones; 0,7344 tras corregir el bug de agosto, que
-  subió `POBRE_GEIH` de 16,3 % a 17,1 % de hogares. Sigue cubriendo la
-  mayor parte del rango posible de una diferencia de proporciones (de -1
-  a +1).
+  0,7163 con 8 privaciones; 0,7344 tras corregir el bug de agosto; 0,6409
+  con pisos en la celda (la celda más fina separa mejor hogares con y sin
+  privaciones). Sigue cubriendo buena parte del rango posible de una
+  diferencia de proporciones (de −1 a +1).
 - Ancho del IC95 % del DML con celda exacta (`POBRE_GEIH`, ver
-  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0048 — **~150 veces más angosto**
+  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0047 — **~140 veces más angosto**
   que la cota Fréchet-Manski. Ese punto ≈0 es la prueba placebo del
   emparejamiento, no una estimación del efecto.
-- **Ninguna de las 365 celdas individuales tiene una cota que excluya el
-  0** — ni una sola celda, por sí sola, permite descartar que el efecto
-  sea cero o incluso de signo contrario.
+- **Ninguna celda tiene una cota que excluya el 0.** Las 130 celdas con
+  `P(Y=1|X)` igual a 0 o 1 tienen cota exactamente [0; 0]; en 10 de ellas
+  el CSV muestra un límite inferior de 2·10⁻¹⁶ por redondeo, que no es un
+  efecto.
 
 ## Pobreza monetaria (`POBRE_MONETARIO`) — 2026-11-02
 
@@ -64,24 +64,28 @@ regenerado al reemplazar el outcome anterior, que daba [−0,5817; +0,6877]).
 
 | Outcome | P(Y=1) | Cota Fréchet-Manski (sin CIA) | Ancho | ATE DML, celda exacta (con CIA) |
 |---|---|---|---|---|
-| `POBRE_GEIH` | 0,204 | [−0,4114 ; +0,3230] | 0,7344 | +0,0004 [−0,0020 ; +0,0028] |
-| `POBRE_MONETARIO` | 0,270 | **[−0,5382 ; +0,5030]** | **1,0412** | +0,0025 [−0,0009 ; +0,0058] |
+| `POBRE_GEIH` | 0,204 | [−0,2607 ; +0,3801] | 0,6409 | −0,0026 [−0,0049 ; −0,0002] |
+| `POBRE_MONETARIO` | 0,270 | **[−0,4179 ; +0,6477]** | **1,0656** | −0,0002 [−0,0036 ; +0,0033] |
 
-- Cobertura: las mismas 365 celdas, 100 % del peso de GEIH.
-- La cota de `POBRE_MONETARIO` es más ancha que la de `POBRE_GEIH` (1,04
-  frente a 0,73, de un máximo posible de 2): las cotas de
+- Cobertura: las mismas 921 celdas, 100 % del peso de GEIH.
+- La cota de `POBRE_MONETARIO` es más ancha que la de `POBRE_GEIH` (1,07
+  frente a 0,64, de un máximo posible de 2): las cotas de
   Fréchet-Hoeffding se ensanchan cuanto más cerca de 0,5 están las dos
   marginales.
-- **Ninguna celda excluye el 0.** Las celdas con `P(Y=1|X)` = 1 (12) o = 0
-  (13) tienen cota exactamente [0; 0].
+- **Ninguna celda excluye el 0.** Las celdas con `P(Y=1|X)` = 1 (46) o = 0
+  (54) tienen cota exactamente [0; 0] (16 aparecen con 2·10⁻¹⁶ por
+  redondeo).
+- Con pisos en la celda, las dos cotas se corren hacia valores positivos
+  (antes [−0,41; +0,32] y [−0,54; +0,50]): dentro de cada celda, P(T) y
+  P(Y) quedan más alineadas.
 
 ## Cómo leerlo
 
 **Este es el resultado de identificación central del proyecto con los
 datos actuales.** Sin suponer que el sorteo del Hot-Deck reproduce la
 relación real entre clasificación y pobreza, los datos no fijan ni el
-signo del efecto: pasar a A/B puede asociarse con entre 54 puntos menos
-y 50 puntos más de pobreza monetaria. No es un fracaso del modelo: es lo
+signo del efecto: pasar a A/B puede asociarse con entre 42 puntos menos
+y 65 puntos más de pobreza monetaria. No es un fracaso del modelo: es lo
 que dos fuentes sin llave común permiten decir.
 
 **Esto no contradice al DML — lo contextualiza.** El DML da un número

@@ -116,8 +116,8 @@ def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame, y_col: str = "POBR
 
 def main() -> None:
     logger.info("Cargando %s y %s", GEIH_PATH, SISBEN_PATH)
-    geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "fex", *OUTCOMES])
-    sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "Grupo", "Clasificacion"])
+    geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "fex", *OUTCOMES])
+    sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "Grupo", "Clasificacion"])
     total_geih = pd.to_numeric(geih["fex"], errors="coerce").fillna(0).sum()
 
     for y_col, report in OUTCOMES.items():

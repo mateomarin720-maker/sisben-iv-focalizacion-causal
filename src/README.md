@@ -34,15 +34,15 @@ documentado y preferiblemente cubierto por pruebas.
 
 - **`emparejamiento/`**
   - `emparejamiento_hotdeck_geih_sisben.py`: Hot-Deck por celdas
-    (departamento + ciclo de vida del jefe + tramo de `viv_cuartos`, desde
-    2026-10-21, código de `viv_cuartos` corregido 2026-10-28 — ver
-    `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`) con degradación
-    jerárquica (celda_exacta → solo_depto_edad → solo_depto →
+    (departamento + ciclo de vida del jefe + tramo de `viv_cuartos` + nivel
+    de pisos homologado, este último desde el 2026-11-02 — ver
+    `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`) con degradación
+    jerárquica (celda_exacta → sin_pisos → solo_depto_edad → solo_depto →
     pool_nacional). Asigna `Grupo`/`Nivel`/`Clasificacion` del Sisbén a
     los hogares GEIH. Válido solo a nivel poblacional (no identifica el
-    mismo hogar). `viv_paredes`/`viv_pisos` NO están en la celda — código
-    GEIH ya confirmado, pero sus categorías siguen sin homologar contra
-    el Sisbén (ver `docs/insumos/DICCIONARIO_HOTDECK.md` §8).
+    mismo hogar). `incluir_pisos=False` reproduce la celda anterior.
+    Paredes no entra (no mejora la celda, ver
+    `comparar_celdas_hotdeck_vivienda.py`).
 
 - **`estimacion/`**
   - Pruebas exploratorias de ATE/ATT/CATE que precedieron la corrida real
@@ -64,7 +64,10 @@ documentado y preferiblemente cubierto por pruebas.
     `docs/reports/comparacion_filtros_sdp.csv`), y
     `verificar_representatividad_sisben.py` (cobertura del Sisbén frente a
     la población de GEIH, por departamento — ver
-    `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`).
+    `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`), y
+    `comparar_pobreza_monetaria_oficial.py` (reconstrucción de la pobreza
+    monetaria frente a la base oficial del DANE, hogar por hogar — ver
+    `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`).
 
 - **`/tests`** (raíz del repo)
   - Pruebas con `pytest` sobre las transformaciones críticas —

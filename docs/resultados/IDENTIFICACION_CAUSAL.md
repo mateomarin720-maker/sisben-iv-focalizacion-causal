@@ -73,9 +73,10 @@ esperable si falta esa parte de X — no una contradicción del diseño, sino la
 confirmación empírica de por qué ese paso está en la lista de pendientes.
 
 > **Actualización 2026-11-02:** con la celda completa (depto + edad +
-> cuartos) controlada como indicadoras en los modelos auxiliares, el
-> residuo desaparece (ATE ≈0 en los cuatro outcomes,
-> `DIAGNOSTICO_W_CELDA_EXACTA.md`), como predice el grafo refinado.
+> cuartos, y desde ese día también pisos) controlada como indicadoras en
+> los modelos auxiliares, el residuo desaparece (ATE ≈0 en los cuatro
+> outcomes, `DIAGNOSTICO_W_CELDA_EXACTA.md`), como predice el grafo
+> refinado.
 
 ### Limitación que el grafo no resuelve
 

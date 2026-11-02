@@ -1,10 +1,10 @@
-2026-11-02 15:24:59,482 INFO [vigencia_31dic2024] Donante: 3,106,489 hogares
-2026-11-02 15:25:10,290 INFO [anio_exacto_2024] Donante: 1,907,399 hogares
+2026-11-02 16:51:45,267 INFO [vigencia_31dic2024] Donante: 3,106,489 hogares
+2026-11-02 16:52:02,739 INFO [anio_exacto_2024] Donante: 1,907,399 hogares
 
 === Comparación de filtros del SDP (Sisbén Bogotá) ===
 
             filtro  donantes_totales  receptores_geih  pct_celda_exacta  hogares_geih_bogota  grupo_nacional_A_pct  grupo_nacional_B_pct  grupo_nacional_C_pct  grupo_nacional_D_pct  grupo_bogota_A_pct  grupo_bogota_B_pct  grupo_bogota_C_pct  grupo_bogota_D_pct
-vigencia_31dic2024           3106489           290968             100.0                10016                 22.00                 33.78                 28.66                 15.57                3.01               18.92               46.76               31.31
-  anio_exacto_2024           1907399           290968             100.0                10016                 22.38                 34.76                 29.40                 13.46                5.02               25.21               50.75               19.02
+vigencia_31dic2024           3106489           290968             99.98                10016                 14.19                 29.44                 34.36                 22.01                2.83               17.46               48.12                31.6
+  anio_exacto_2024           1907399           290968             99.98                10016                 14.49                 30.86                 34.65                 19.99                4.61               25.75               49.84                19.8
 
 Guardado: docs\reports\comparacion_filtros_sdp.csv

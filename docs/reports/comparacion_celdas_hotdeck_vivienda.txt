@@ -1,4 +1,4 @@
-2026-11-02 16:07:48,805 INFO Receptor GEIH: 290,968 hogares | Donante Sisbén: 3,093,411 hogares
+2026-11-02 16:48:40,151 INFO Receptor GEIH: 290,968 hogares | Donante Sisbén: 3,093,411 hogares
 
 === Celdas Hot-Deck con y sin vivienda homologada ===
                                                         0            1                    2

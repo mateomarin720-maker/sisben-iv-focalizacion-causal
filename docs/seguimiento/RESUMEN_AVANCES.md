@@ -11,7 +11,9 @@ anteriores, con sus errores, quedan en el historial de
 ## 0. Estado en una frase
 
 Las fuentes están integradas y los outcomes construidos (IPM-GEIH y
-pobreza monetaria reconstruida, a 1,4 puntos de la cifra oficial). Con
+pobreza monetaria reconstruida, a 1,4 puntos de la cifra oficial y con
+la misma clasificación que el DANE en el 93,9 % de los hogares). La
+celda del Hot-Deck incluye pisos desde el 2026-11-02. Con
 datos reales, el DML sobre el grupo Sisbén imputado da ≈0, que es lo
 esperado: el Hot-Deck sortea al azar dentro de la celda y el contraste
 es un placebo. Las cotas de Fréchet-Manski no fijan ni el signo del
@@ -26,7 +28,8 @@ efecto. **La pieza central pendiente es la evaluación semisintética**
 | **GEIH (DANE)** | ✅ 12 meses | 290.968 hogares, 8 módulos por mes. Agosto se carga desde `.DTA` con el mismo formato de texto que el CSV. |
 | **Sisbén IV nacional (DNP-ANDA)** | ✅ | 1.833.166 hogares, 1.098 municipios, corte mayo 2024. |
 | **Sisbén IV Bogotá (SDP)** | ✅ | Registro continuo; se usan los vigentes al 31-dic-2024 (1.274.578 de 1.458.468). Reemplaza al municipio 11001 del nacional. |
-| **Pobreza monetaria oficial (DANE, catálogo 874)** | ⏳ | `BDatos-Pobreza_Monetaria_Desigualdad-2024.zip`: descargar a mano a `data/0_raw/pobreza_monetaria/` (D1). |
+| **Pobreza monetaria oficial (DANE, catálogo 874)** | ✅ 2026-11-02 | 275.057 hogares con llaves de GEIH, en `data/0_raw/pobreza_monetaria/` y Azure. 24 departamentos y Bogotá (sin los 9 nuevos). |
+| **Víctimas MPMD (DANE, catálogo 874)** | ✅ 2026-11-02 | Marca de víctima y desplazado por persona con llaves de GEIH (`data/0_raw/victimas_mpmd/`). Sin usar todavía. |
 | **Banco de datos** | ✅ Azure Blob Storage | `src/utils/publicar_banco_datos_azure.py` / `restaurar_banco_datos_azure.py`. |
 
 ## 2. Pipeline
@@ -34,11 +37,12 @@ efecto. **La pieza central pendiente es la evaluación semisintética**
 | Etapa | Script | Estado |
 |---|---|---|
 | Ingesta, limpieza, armonización | `src/1_integracion.py`, `src/ingesta/`, `src/2_limpieza.py`, `src/armonizacion/` | ✅ |
-| Hot-Deck GEIH ← Sisbén | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` | ✅ celda depto + ciclo de vida + cuartos |
+| Hot-Deck GEIH ← Sisbén | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` | ✅ celda depto + ciclo de vida + cuartos + pisos |
 | Comparación de celdas con pisos y paredes | `src/validacion/comparar_celdas_hotdeck_vivienda.py` | ✅ 2026-11-02 |
 | DAG e identificación | `src/4_dag_identificacion.py` | ✅ |
 | Outcome IPM-GEIH (8 de 15 privaciones) | `src/3_preprocesamiento.py` | ✅ |
 | Outcome pobreza monetaria | `src/indicadores/pobreza_monetaria_geih.py` → `src/3b_preprocesamiento_monetario.py` | ✅ 2026-11-02 |
+| Contraste con la base oficial | `src/validacion/comparar_pobreza_monetaria_oficial.py` | ✅ 2026-11-02 |
 | DML y Causal Forest (diagnóstico placebo) | `src/5_estimacion.py` | ✅ corregido 2026-11-02 |
 | Cotas de Fréchet-Manski | `src/estimacion/cotas_frechet_manski.py` | ✅ |
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | ✅ |
@@ -51,18 +55,18 @@ efecto. **La pieza central pendiente es la evaluación semisintética**
 
 ### 3a. Hot-Deck
 
-290.968 hogares GEIH, 3.106.489 donantes. 100 % en celda exacta (376
-celdas). Grupo asignado (ponderado): **A 22,0 · B 33,8 · C 28,7 · D
-15,6 %**. Refleja a los hogares registrados en el Sisbén, no a la
-población; válido solo a nivel poblacional.
+290.968 hogares GEIH, 3.106.489 donantes. Celda: departamento + ciclo de
+vida del jefe + tramo de cuartos + nivel de pisos homologado
+(`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`); 99,98 % en celda
+exacta (993 celdas). Grupo asignado (ponderado): **A 14,2 · B 29,4 · C
+34,4 · D 22,0 %**. Refleja a los hogares registrados en el Sisbén, no a
+la población; válido solo a nivel poblacional.
 
-**¿Sumar pisos y paredes a la celda?** (homologados con la ficha del
-Sisbén IV, `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`). Con
-pisos, la correlación entre P(T | celda) y la pobreza monetaria del
-receptor sube de 0,20 a 0,29 y la cobertura apenas cambia (99,98 %);
-paredes no agrega nada encima. Pisos cambia mucho la distribución de
-grupos (A 22 % → 14 %). **Decisión pendiente** de si la celda con pisos
-pasa a ser la oficial. Detalle: `docs/resultados/RESULTADOS_HOTDECK.md`.
+**Pisos entró a la celda el 2026-11-02.** La correlación entre
+P(T | celda) y la pobreza monetaria del receptor sube de 0,20 a 0,29 sin
+costo de cobertura; paredes no agrega nada encima y no entra. La celda
+sin pisos (A 22,0 · D 15,6 %) queda como sensibilidad. Detalle:
+`docs/resultados/RESULTADOS_HOTDECK.md`.
 
 ### 3b. Outcomes
 
@@ -74,20 +78,24 @@ pasa a ser la oficial. Detalle: `docs/resultados/RESULTADOS_HOTDECK.md`.
   rural 41,3 % frente a 42,5 %; extrema 12,5 % frente a 11,7 %. Es una
   reconstrucción experimental, no la medición oficial (el DANE usa
   registros administrativos no públicos). La decisión que más pesa es el
-  arriendo imputado (5,6 puntos). `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+  arriendo imputado (5,6 puntos). **Contraste con la base oficial del
+  DANE:** sobre los 275.057 hogares que mide (24 departamentos y Bogotá),
+  la reconstrucción clasifica igual al 93,9 %, con razón mediana de
+  ingreso 1,00; las líneas oficiales por área explican 0,6 de los 1,4
+  puntos de diferencia. `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
 
 ### 3c. DML y Causal Forest: diagnóstico placebo
 
 Con las categóricas como indicadoras en los modelos auxiliares
-(corregido 2026-11-02), siete de los ocho ATE incluyen el cero y todos
-son despreciables:
+(corregido 2026-11-02) y la celda con pisos, siete de los ocho ATE
+incluyen el cero y todos son despreciables:
 
 | Outcome | ATE, W = celda exacta [IC 95 %] |
 |---|---|
-| `ipm_geih_score` | +0,0011 [−0,0060; +0,0081] |
-| `POBRE_GEIH` | +0,0004 [−0,0020; +0,0028] |
-| `log_ingreso_percapita` | −0,0132 [−0,0264; −0,0001] |
-| `POBRE_MONETARIO` | +0,0025 [−0,0009; +0,0058] |
+| `ipm_geih_score` | −0,0021 [−0,0092; +0,0051] |
+| `POBRE_GEIH` | −0,0026 [−0,0049; −0,0002] |
+| `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
+| `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
 
 Es lo que predice la simulación: dentro de la celda el grupo imputado no
 depende del hogar receptor, así que el contraste da ≈0 sea cual sea el
@@ -101,10 +109,10 @@ número a la propensión. `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
 
 | Outcome | Cota del ATE sin suponer independencia condicional |
 |---|---|
-| `POBRE_GEIH` | [−0,411; +0,323] |
-| `POBRE_MONETARIO` | [−0,538; +0,503] |
+| `POBRE_GEIH` | [−0,261; +0,380] |
+| `POBRE_MONETARIO` | [−0,418; +0,648] |
 
-Ninguna de las 365 celdas excluye el cero. Sin el supuesto del
+Ninguna de las 921 celdas excluye el cero. Sin el supuesto del
 Hot-Deck, los datos no determinan ni el signo del efecto. No es un
 fracaso del modelo: es lo que dos fuentes sin llave común permiten
 decir. `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
@@ -136,18 +144,19 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
    reconstruido. Diseñado para que una entidad pueda cambiar GEIH por sus
    propios registros. Base: `src/validacion/simulacion_identificacion.py`
    (ya en `main`, PR #11).
-2. **Decidir la celda del Hot-Deck** (actual o + pisos).
-3. **D1:** descargar la base oficial de pobreza monetaria (catálogo 874)
-   y, si trae llaves de GEIH, usarla como referencia hogar por hogar.
-4. **D7, versión A:** líneas por área de los anexos del boletín.
-5. **Fase 5 de pobreza monetaria:** comparación con IPM-GEIH y el grupo
+2. **Decidir el outcome monetario de la estimación:** la clasificación
+   oficial del DANE (24 departamentos y Bogotá, 94,5 % de los hogares
+   GEIH) o la reconstrucción (todo el país).
+3. **Fase 5 de pobreza monetaria:** comparación con IPM-GEIH y el grupo
    imputado, por celda (D6).
-6. Angostar las cotas con supuestos de monotonía (MTS/MTR).
-7. Construir las 5 privaciones del IPM que faltan en GEIH; refinar
+4. Angostar las cotas con supuestos de monotonía (MTS/MTR).
+5. Construir las 5 privaciones del IPM que faltan en GEIH; refinar
    `sin_cotizacion_pension_jefe`.
-8. Confirmar en ANDA los cortes de `PER002`; 6 hogares de Bogotá con doble
+6. Confirmar en ANDA los cortes de `PER002`; 6 hogares de Bogotá con doble
    jefe y 227 con `Clasificacion` distinta entre miembros (SDP).
-9. Actualizar el anteproyecto con el enfoque vigente.
+7. Evaluar la marca de víctimas del DANE (`victimas_mpmd`) como
+   covariable, en lugar del RUI.
+8. Actualizar el anteproyecto con el enfoque vigente.
 
 ## 5. Errores encontrados y corregidos (los que cambiaron resultados)
 

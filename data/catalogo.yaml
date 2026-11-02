@@ -215,6 +215,53 @@ fuentes:
       - paredes
       - hacinamiento
 
+  - id: pobreza_monetaria
+    nombre: "Medición de Pobreza Monetaria y Desigualdad 2024 (base anonimizada)"
+    entidad: DANE
+    portal: "microdatos.dane.gov.co/index.php/catalog/874"
+    catalogo_ref: 874
+    periodo: "2024 (12 meses, versión 2 del 1-sep-2025)"
+    unidad_analisis: hogar / persona
+    acceso: registro
+    estado: disponible
+    notas: >
+      Descargada el 2026-11-02 (BDatos-Pobreza_Monetaria_Desigualdad-2024),
+      en data/0_raw/pobreza_monetaria/ (HOGARES/Hogares.csv, 275.057
+      hogares; PERSONAS/Personas.csv, 784.910 personas; .dta/.sav no se
+      suben a Azure). Llaves de GEIH: directorio + secuencia_p + mes
+      (+ orden en personas). Por hogar: ingtotug (sin arriendo imputado),
+      ingtotarr (con arriendo), ingpcug, npersug, lp/li del área y
+      semestre, pobre, indigente, fex_c. Cubre 24 departamentos y Bogotá:
+      no trae 81, 85, 86, 88, 91, 94, 95, 97, 99. Con la base, la tasa
+      oficial da 31,83 % de personas. Contraste con la reconstrucción:
+      src/validacion/comparar_pobreza_monetaria_oficial.py.
+    variables_clave:
+      - ingpcug
+      - lp
+      - li
+      - pobre
+      - indigente
+
+  - id: victimas_mpmd
+    nombre: "Víctimas en la medición de pobreza monetaria y multidimensional"
+    entidad: DANE
+    portal: "microdatos.dane.gov.co/index.php/catalog/874"
+    catalogo_ref: 874
+    periodo: "2024"
+    unidad_analisis: persona
+    acceso: registro
+    estado: disponible
+    notas: >
+      Viene en el mismo catálogo que la base de pobreza monetaria
+      (data/0_raw/victimas_mpmd/Victimas_MPMD.csv, separado por ";").
+      Columnas: directorio, secuencia_p, orden, CD_PERI (aaaamm),
+      es_victima, es_desplazado, FEX_VIC. Marca la condición de víctima
+      con las llaves de GEIH: posible covariable sin necesidad del RUI
+      (ver la fuente rui). No se usa todavía.
+    variables_clave:
+      - es_victima
+      - es_desplazado
+
   - id: rui
     nombre: "Registro Único de Víctimas"
     entidad: "Unidad para las Víctimas (UARIV)"

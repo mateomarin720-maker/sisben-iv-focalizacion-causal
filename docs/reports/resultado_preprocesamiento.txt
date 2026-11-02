@@ -1,5 +1,5 @@
-2026-11-02 15:25:28,182 INFO Outcome IPM-GEIH (ampliado, 8 privaciones) construido: 290,968 hogares
-2026-11-02 15:25:28,840 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
+2026-11-02 16:48:12,921 INFO Outcome IPM-GEIH (ampliado, 8 privaciones) construido: 290,968 hogares
+2026-11-02 16:48:13,696 INFO Hogares sin outcome tras el cruce: 0 de 290968 (0.0%)
 
 === Outcome real: IPM-GEIH (8 privaciones, verificadas contra el diccionario oficial) ===
 Hogares: 290,968

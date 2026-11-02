@@ -1,8 +1,10 @@
 # data/0_raw
 
 Datos originales sin modificación alguna, tal como se obtienen de cada
-fuente: GEIH 2024 (12 meses), IPM 2024, Sisbén IV nacional (TXT) y Sisbén
-Bogotá (CSV de la SDP). Ver [`../catalogo.yaml`](../catalogo.yaml) para el
+fuente: GEIH 2024 (12 meses), IPM 2024, Sisbén IV nacional (TXT), Sisbén
+Bogotá (CSV de la SDP), la base oficial de pobreza monetaria 2024
+(`pobreza_monetaria/`) y la marca de víctimas del mismo catálogo
+(`victimas_mpmd/`). Ver [`../catalogo.yaml`](../catalogo.yaml) para el
 detalle de cada fuente y su método de obtención.
 
 **Regla de oro**: esta carpeta es de solo lectura. Ningún script debe
