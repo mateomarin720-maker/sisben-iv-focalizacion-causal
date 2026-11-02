@@ -68,8 +68,11 @@ documentado y preferiblemente cubierto por pruebas.
 
 - **`/tests`** (raíz del repo)
   - Pruebas con `pytest` sobre las transformaciones críticas —
-    `poetry run pytest tests/`. Hoy cubre `3_preprocesamiento.py`
-    (construcción del outcome) sobre datos reales, no sintéticos.
+    `poetry run pytest tests/`. Cubre `3_preprocesamiento.py` (outcome
+    IPM-GEIH) sobre datos reales, no sintéticos, y
+    `3b_preprocesamiento_monetario.py` (outcome de pobreza monetaria) con
+    datos reales para `_ingreso_mes` y casos de borde sintéticos para la
+    clasificación de pobreza (lógica pura, sin I/O).
 
 - **`utils/`**
   - `azure_storage.py`, `publicar_banco_datos_azure.py` y
@@ -101,22 +104,45 @@ documentado y preferiblemente cubierto por pruebas.
     `Grupo_hotdeck`/`Clasificacion_hotdeck` (ya en el parquet fusionado del
     Hot-Deck). Salida: `data/2_models/muestra_estimacion_2024.parquet`.
 
+- **`3b_preprocesamiento_monetario.py`** ✅ implementado 2026-11-02
+  - Construye el nuevo outcome principal según el giro del tutor
+    (2026-10-27): pobreza monetaria — `ingreso_percapita`,
+    `POBRE_MONETARIO`/`POBRE_EXTREMO_MONETARIO`, brechas FGT1. Ingreso
+    laboral desde `INGLABO` (variable ya imputada por el DANE — un primer
+    intento reconstruyendo a mano desde `P6500` falló por 47,7% de no
+    respuesta en esa pregunta, ver docstring del script); ingreso no
+    laboral desde `otros_ingresos`/`no_ocupados`. Líneas de pobreza
+    oficiales del DANE 2024 por zona urbano/rural. Validado contra FGT0/
+    FGT1 oficiales — sobreestima por 6-7 puntos porcentuales, consistente
+    con no replicar la imputación completa de la metodología del DANE.
+    Conectado a `5_estimacion.py` el 2026-11-02 (ver abajo). Ver
+    `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`. Salida:
+    `data/2_models/muestra_estimacion_monetaria_2024.parquet`.
+
 - **`4_dag_identificacion.py`** ✅ implementado 2026-10-21
   - Los dos DAG del documento de pipeline (diseño principal, diseño de una
     sola tabla) con `networkx` y chequeo formal de d-separación. Ver
     `docs/resultados/IDENTIFICACION_CAUSAL.md`.
 
-- **`5_estimacion.py`** ✅ implementado 2026-10-21
+- **`5_estimacion.py`** ✅ implementado 2026-10-21, ampliado 2026-11-02
   - DML (`LinearDML`: ATE, y ATT/ATU evaluando el mismo modelo sobre cada
     subpoblación) y Causal Forest (`CausalForestDML`: CATE) sobre
-    `muestra_estimacion_2024.parquet`. Resultados interpretados:
-    `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
-    `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`. Sigue siendo una
-    corrida sobre un outcome que cubre 8 de 15 privaciones — no reemplaza el marco
-    teórico-metodológico completo pendiente (ver Tabla 1 del documento de
-    pipeline: LASSO/Ridge/SHAP, RD B/C, vecino más cercano con Gower y
-    estudio de eventos Sisbén III→IV siguen sin implementar; cotas de
-    Fréchet-Manski ya implementadas, ver `estimacion/` abajo).
+    `muestra_estimacion_monetaria_2024.parquet` (superset de
+    `muestra_estimacion_2024.parquet` con las columnas de pobreza
+    monetaria). Corre 4 outcomes (`ipm_geih_score`, `POBRE_GEIH`,
+    `log_ingreso_percapita`, `POBRE_MONETARIO`) × 2 especificaciones de
+    `W` (proxy continuo vs. celda exacta del Hot-Deck). Resultados
+    interpretados: `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`,
+    `docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md` y
+    `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md` (comparación de las
+    dos especificaciones de `W`, las cuatro combinaciones de outcome).
+    Sigue siendo una corrida sobre outcomes parciales (IPM-GEIH cubre 8
+    de 15 privaciones; pobreza monetaria sobreestima 6-7pp frente a
+    oficial) — no reemplaza el marco teórico-metodológico completo
+    pendiente (ver Tabla 1 del documento de pipeline: LASSO/Ridge/SHAP,
+    RD B/C, vecino más cercano con Gower y estudio de eventos Sisbén
+    III→IV siguen sin implementar; cotas de Fréchet-Manski ya
+    implementadas, ver `estimacion/` abajo).
 
 - **`6_refutacion.py`**
   - Pruebas de refutación y sensibilidad: placebo, random common cause,
