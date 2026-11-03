@@ -211,7 +211,7 @@ Detalle completo, hallazgos y pendientes técnicos en
 [`docs/resultados/README.md`](docs/resultados/README.md) (resultados) y
 [`docs/seguimiento/RESUMEN_AVANCES.md`](docs/seguimiento/RESUMEN_AVANCES.md) (estado y pendientes).
 Corte más reciente: [`docs/seguimiento/README_AVANCE_2026-11-02.md`](docs/seguimiento/README_AVANCE_2026-11-02.md)
-(commits del día, estado y pendientes).
+(commits del día, resultados de los modelos, estado y pendientes).
 
 ### 8. Consideraciones éticas y de datos
 
