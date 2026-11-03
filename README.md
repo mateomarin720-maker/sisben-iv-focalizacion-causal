@@ -204,14 +204,15 @@ Resultados interpretados de cada paso en
 | Emparejamiento (Hot-Deck) | Asignar grupo Sisbén a GEIH | ✅ 99,98 % en celda exacta, celda con depto+edad+cuartos+pisos, código de edad (`PER002`) corroborado indirectamente. |
 | Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida, contrastada hogar por hogar con la base oficial del DANE (93,9 % de coincidencia). |
 | P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
-| P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Falta la evaluación semisintética. |
+| P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. La evaluación semisintética tiene una primera versión; falta ampliarla (resultado binario, sensibilidad, más repeticiones). |
 | P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ⏳ No iniciado, depende de P1 y P2. |
 
 Detalle completo, hallazgos y pendientes técnicos en
 [`docs/resultados/README.md`](docs/resultados/README.md) (resultados) y
 [`docs/seguimiento/RESUMEN_AVANCES.md`](docs/seguimiento/RESUMEN_AVANCES.md) (estado y pendientes).
-Corte más reciente: [`docs/seguimiento/README_AVANCE_2026-11-02.md`](docs/seguimiento/README_AVANCE_2026-11-02.md)
-(commits del día, resultados de los modelos, estado y pendientes).
+Seguimiento consolidado (cambios, correcciones, resultados y pendientes desde agosto):
+[`docs/seguimiento/README.md`](docs/seguimiento/README.md). Corte del 2 de noviembre:
+[`docs/seguimiento/README_AVANCE_2026-11-02.md`](docs/seguimiento/README_AVANCE_2026-11-02.md).
 
 ### 8. Consideraciones éticas y de datos
 
