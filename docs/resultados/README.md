@@ -1,6 +1,6 @@
 # Resultados — índice y hallazgos consolidados
 
-*Versión consolidada del 2026-11-02.* Todas las cifras de esta página
+*Versión consolidada del 2026-11-02 (seguimiento general en [`../seguimiento/README.md`](../seguimiento/README.md)).* Todas las cifras de esta página
 vienen de la misma corrida: GEIH con agosto corregido, vivienda con los
 códigos verificados, celda del Hot-Deck con pisos, pobreza monetaria
 reconstruida (contrastada con la base oficial del DANE) y modelos

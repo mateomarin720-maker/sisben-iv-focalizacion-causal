@@ -1,5 +1,8 @@
 # Avance del 2026-11-02
 
+Este es el corte de un día. El seguimiento consolidado desde agosto, con
+las correcciones y el estado vigente, está en [`README.md`](README.md).
+
 Corte del trabajo hecho el 2 de noviembre de 2026: los 17 commits del día,
 los resultados de los modelos, el estado en que queda el proyecto y lo que
 falta. El detalle de cada cambio está en
