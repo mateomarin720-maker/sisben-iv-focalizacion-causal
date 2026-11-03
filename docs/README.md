@@ -34,7 +34,7 @@ carpeta responde a una pregunta distinta.
 ## `seguimiento/`
 - [`RESUMEN_AVANCES.md`](seguimiento/RESUMEN_AVANCES.md): estado de fuentes, pipeline y pendientes técnicos.
 - [`CHANGELOG_PENDIENTES.md`](seguimiento/CHANGELOG_PENDIENTES.md): historial de cambios, más reciente primero.
-- [`README_AVANCE_2026-11-02.md`](seguimiento/README_AVANCE_2026-11-02.md): corte del 2026-11-02 — commits del día, estado y pendientes.
+- [`README_AVANCE_2026-11-02.md`](seguimiento/README_AVANCE_2026-11-02.md): corte del 2026-11-02 — commits del día, resultados de los modelos, estado y pendientes.
 
 ## `institucional/`
 - [`Anteproyecto_Sisben_IV.docx`](institucional/Anteproyecto_Sisben_IV.docx): anteproyecto (abril 2026). Contiene la formulación anterior de objetivos (OE1–OE5); los vigentes son P1/OE1, P2/OE2 y P3/OE3 (ver el `README.md` de la raíz). Su actualización está a cargo del equipo.
