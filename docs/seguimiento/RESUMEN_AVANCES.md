@@ -1,7 +1,7 @@
 # Resumen de Avances — Efecto Causal del Sisbén IV
 
-Última actualización: 2026-11-02 | Ramas `main` y `ediciones-hotdeck-sdp`
-sincronizadas.
+Última actualización: 2026-11-03 | Rama de trabajo `main`.
+Seguimiento consolidado para revisión: [`README.md`](README.md).
 
 **Versión consolidada.** Este documento se reescribió el 2026-11-02 para
 que conviva una sola versión metodológica. Las cifras de corridas
