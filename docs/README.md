@@ -32,6 +32,7 @@ carpeta responde a una pregunta distinta.
 - [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md): la cobertura del Sisbén respecto a la población de GEIH varía 32 veces entre departamentos — el registro no es una muestra uniforme.
 
 ## `seguimiento/`
+- [`README.md`](seguimiento/README.md): **seguimiento consolidado** — cambios y avances desde agosto, correcciones, resultados vigentes y pendientes; es el documento para revisar con el profesor.
 - [`RESUMEN_AVANCES.md`](seguimiento/RESUMEN_AVANCES.md): estado de fuentes, pipeline y pendientes técnicos.
 - [`CHANGELOG_PENDIENTES.md`](seguimiento/CHANGELOG_PENDIENTES.md): historial de cambios, más reciente primero.
 - [`README_AVANCE_2026-11-02.md`](seguimiento/README_AVANCE_2026-11-02.md): corte del 2026-11-02 — commits del día, resultados de los modelos, estado y pendientes.
