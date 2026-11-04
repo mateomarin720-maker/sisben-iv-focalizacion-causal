@@ -33,7 +33,13 @@ historial de correcciones está en
    43,5 % a 18,6 % frente a la clasificación imputada (60 %). Informar la
    regla con el CATE estimado la empeora (72 %), y con el CATE desde el
    Hot-Deck queda peor que el azar (44 % frente a 47 %).
-6. Los outcomes están construidos y validados: IPM-GEIH (8 de 15
+6. **Variabilidad de la imputación (§11, datos reales):** dos sorteos
+   del Hot-Deck coinciden en el grupo de un hogar solo el 34 % de las
+   veces (63 % en A/B), pero la distribución nacional varía menos de 0,2
+   puntos. La mitad de la varianza de un contraste con el grupo imputado
+   viene del sorteo, y el único resultado del DML que excluía el cero
+   (`POBRE_GEIH`) desaparece al combinar 100 sorteos.
+7. Los outcomes están construidos y validados: IPM-GEIH (8 de 15
    privaciones) y pobreza monetaria reconstruida (33,2 % frente a 31,8 %
    oficial; clasifica igual al 93,9 % de los hogares de la base oficial).
 
@@ -57,6 +63,7 @@ historial de correcciones está en
 | 8 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) |
 | 9 | Evaluación semisintética | `src/validacion/simulacion_semisintetica.py` | [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md) |
 | 10 | Reglas de focalización (OE3) | `src/validacion/reglas_focalizacion.py` | [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md) |
+| 11 | Variabilidad de la imputación del Hot-Deck | `src/validacion/variabilidad_hotdeck.py` | [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](RESULTADOS_VARIABILIDAD_HOTDECK.md) |
 
 ## Resumen por paso
 
@@ -196,6 +203,20 @@ de participación, recupera el efecto en el corte con vínculo (0,086
 frente a 0,090); el sesgo de LinearDML viene de la regularización de los
 modelos auxiliares. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
 
+### 11. Variabilidad de la imputación del Hot-Deck
+
+El mismo Hot-Deck con 100 semillas (la 42 reproduce el pipeline). Datos
+reales.
+
+| Nivel | Resultado |
+|---|---|
+| Hogar | Dos sorteos coinciden en el grupo el 34,4 % de las veces y en A/B el 62,7 % (igual a lo teórico de la celda); 39 % de los hogares con P(A/B) entre 0,3 y 0,7 |
+| Celda | CV mediano de la proporción A/B 0,091 (0,049 ponderado); error relativo frente a los donantes 0,072 (0,039 ponderado); CV 0,17 en celdas de hasta 30 hogares |
+| Nacional | Desviación de 0,10 a 0,15 puntos por grupo (CV ≤ 0,007) |
+| Contraste placebo | Con Rubin, `POBRE_GEIH` pasa de −0,0030 (IC sin el 0, semilla 42) a −0,00003 [−0,0036; +0,0036]; 49-55 % de la varianza viene de la imputación |
+
+Detalle en [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](RESULTADOS_VARIABILIDAD_HOTDECK.md).
+
 ### 10. Reglas de focalización (OE3)
 
 Mismo mundo semisintético; todas las reglas con el mismo presupuesto
@@ -240,6 +261,7 @@ poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.validacion.simulacion_semisintetica
 poetry run python -m src.validacion.reglas_focalizacion
 poetry run python -m src.validacion.sensibilidad_semisintetica
+poetry run python -m src.validacion.variabilidad_hotdeck 2
 poetry run pytest tests/
 ```
 

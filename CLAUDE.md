@@ -27,7 +27,10 @@ abierta y recomendación, no como conclusión causal). Reglas del tutor:
   framework. Un módulo que reciba datos de otra institución exige los
   nombres canónicos y valida que estén; no los renombra.
 - **El DML sobre el grupo imputado no se presenta como efecto causal del
-  Sisbén** (es un placebo del emparejamiento).
+  Sisbén** (es un placebo del emparejamiento). Además, un solo sorteo del
+  Hot-Deck subestima la incertidumbre: la mitad de la varianza viene de
+  la imputación (`RESULTADOS_VARIABILIDAD_HOTDECK.md`); repetir el sorteo
+  y combinar con Rubin antes de leer un IC.
 - **Resultados simulados con asterisco (\*)** en toda tabla o cifra que
   los mezcle o los presente cerca de resultados con datos reales.
 - **El repositorio es entregable al jurado:** limpio y sin ruido. No dejar
@@ -194,6 +197,7 @@ poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.validacion.simulacion_semisintetica
 poetry run python -m src.validacion.reglas_focalizacion
 poetry run python -m src.validacion.sensibilidad_semisintetica
+poetry run python -m src.validacion.variabilidad_hotdeck 2
 poetry run pytest tests/
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
 ```
@@ -208,7 +212,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 24 de 24 el 2026-11-04). Antes de mapear una
+cuando el error vuelve; 26 de 26 el 2026-11-04). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

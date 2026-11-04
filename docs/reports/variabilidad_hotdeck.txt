@@ -1,0 +1,49 @@
+2026-11-04 13:27:25,157 INFO Receptor 290,968 hogares | donante 3,106,489 | 100 sorteos
+2026-11-04 13:49:47,715 INFO Sorteos listos en 1343 s
+
+=== Variabilidad de la imputación del Hot-Deck: 100 sorteos ===
+La semilla 42 reproduce el grupo guardado en el 100.00 % de los hogares
+
+1. Por hogar (ponderado por fex):
+   reproduce_semilla_42: 1.0000
+   concordancia_grupo: 0.3442
+   concordancia_grupo_teorica: 0.3440
+   concordancia_ab: 0.6270
+   concordancia_ab_teorica: 0.6268
+   pct_mismo_grupo_en_todos: 0.0084
+   pct_mismo_ab_en_todos: 0.0384
+   pct_ab_casi_seguro: 7.8294
+   pct_ab_incierto: 39.1484
+   correlacion_empirica_teorica: 0.8954
+
+2. Por celda (proporción A/B de los hogares GEIH de la celda):
+   celdas: 985 | CV mediano 0.091, ponderado 0.049, p90 0.336
+   error relativo medio frente a la proporción de donantes: mediano 0.072, ponderado 0.039
+   celdas con CV > 0.1: 458 (6.7 % de la población)
+   celdas con CV > 0.2: 204 (0.8 % de la población)
+   celdas con CV > 0.3: 113 (0.2 % de la población)
+         celdas  cv_mediano  error_relativo_mediano
+hogares                                            
+<30         425       0.171                   0.130
+30-99       202       0.086                   0.070
+100-299     183       0.066                   0.054
+300-999     107       0.049                   0.039
+1000+        68       0.033                   0.027
+
+3. Agregados:
+   nivel unidad  media_pct  sd_pct    cv  min_pct  max_pct  semilla_42_pct  hogares
+nacional      A     14.197   0.097 0.007   13.962   14.427          14.187      NaN
+nacional      B     29.368   0.136 0.005   29.026   29.700          29.442      NaN
+nacional      C     34.306   0.144 0.004   33.923   34.562          34.358      NaN
+nacional      D     22.129   0.145 0.007   21.817   22.528          22.013      NaN
+   A/B por departamento: CV de 0.0060 a 0.0524; rango máximo entre sorteos 6.94 puntos
+
+4. Contraste placebo (efectos fijos de celda) combinado con reglas de Rubin:
+              outcome  semilla_42  error_semilla_42   m  estimacion  var_dentro  var_entre  var_total  error_total  fraccion_info_imputacion    ic_lo   ic_hi  pct_sorteos_ic_sin_cero
+      POBRE_MONETARIO    -0.00042           0.00177 100    -0.00028     0.00000    0.00000    0.00001      0.00247                   0.48906 -0.00513 0.00456                      4.0
+           POBRE_GEIH    -0.00303           0.00131 100    -0.00003     0.00000    0.00000    0.00000      0.00183                   0.48765 -0.00361 0.00356                      3.0
+log_ingreso_percapita     0.00044           0.00685 100     0.00117     0.00005    0.00006    0.00010      0.01010                   0.54500 -0.01863 0.02097                      8.0
+
+Guardado: docs\reports\variabilidad_hotdeck_celdas.csv
+Guardado: docs\reports\variabilidad_hotdeck_agregados.csv
+Guardado: docs\reports\variabilidad_hotdeck_estimacion.csv

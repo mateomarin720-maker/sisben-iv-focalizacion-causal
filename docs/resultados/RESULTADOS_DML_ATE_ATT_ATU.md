@@ -66,6 +66,12 @@ que antes (p5 0,363 sin pisos).
 
 ## Cómo leerlo
 
+- **Actualización 2026-11-04:** el octavo, `POBRE_GEIH` con la celda,
+  depende de la semilla del Hot-Deck. Repitiendo el sorteo 100 veces, el
+  contraste promedio es −0,00003 y solo el 3 % de los sorteos excluye el
+  cero; con las reglas de Rubin el IC es [−0,0036; +0,0036]
+  (`RESULTADOS_VARIABILIDAD_HOTDECK.md`). Los IC de esta página no
+  incluyen la varianza de la imputación (≈ la mitad de la total).
 - Siete de ocho ATE incluyen el cero; el octavo (`POBRE_GEIH` con la
   celda) lo excluye por poco (−0,26 puntos, límite superior −0,0002) y no
   se replica en `POBRE_MONETARIO`. Con ocho intervalos al 95 %, uno al

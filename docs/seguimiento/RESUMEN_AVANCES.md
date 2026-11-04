@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/validacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 138 pruebas; 24 de 24 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 145 pruebas; 26 de 26 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -140,6 +140,12 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
 
 ## 4. Pendientes, en orden
 
+0. **Variabilidad de la imputación del Hot-Deck hecha el 2026-11-04**
+   (prioridad 1 de la guía; `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md`):
+   inestable por hogar (34 % de coincidencia de grupo entre sorteos),
+   estable en agregados (CV nacional ≤ 0,007). La mitad de la varianza de
+   un contraste viene del sorteo: las estimaciones con el grupo imputado
+   deberían repetir el sorteo y combinar con Rubin.
 0. **OE3 hecho el 2026-11-04** (`docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`):
    un proxy de medios logra 82-85 % de la reducción ideal de la brecha;
    las reglas con CATE estimado son peores (72 % con vínculo, 44 % con

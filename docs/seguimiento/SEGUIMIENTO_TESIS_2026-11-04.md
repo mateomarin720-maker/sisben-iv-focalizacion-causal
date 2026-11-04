@@ -178,6 +178,13 @@ Comprobado contra el repositorio al incorporar este documento:
   `seguimiento-readme`, `simulacion-identificacion` y
   `simulacion-identificacion-v2`. Revisar cuáles están integradas antes
   de archivarlas.
+- **Prioridad 1 hecha el mismo día:**
+  `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
+  hogar, dos sorteos coinciden en el grupo el 34,4 % de las veces y en
+  A/B el 62,7 %; por celda, CV mediano 0,091 y error relativo mediano
+  0,072 (ponderados: 0,049 y 0,039); a escala nacional, CV ≤ 0,007. El
+  −0,0026 del DML en `POBRE_GEIH` (único IC sin el cero) depende de la
+  semilla: con 100 sorteos y reglas de Rubin, −0,00003 [−0,0036; +0,0036].
 - **Prioridad 7 hecha el mismo día:** `poetry run pytest` pasa (138) tras
   agregar `pythonpath` en `pyproject.toml`; los tres scripts de
   simulación ya no usan `warnings.filterwarnings("ignore")` (sin el

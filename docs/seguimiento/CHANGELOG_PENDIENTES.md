@@ -2,6 +2,32 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (19) — Prioridad 1 de la guía: variabilidad de la imputación del Hot-Deck
+
+### Nuevo
+- `src/validacion/variabilidad_hotdeck.py`: el `hotdeck()` del pipeline
+  con 100 semillas (la 42 reproduce el grupo guardado en el 100 %).
+  Concordancia por hogar (empírica y teórica), CV y error relativo por
+  celda, agregados nacional y por departamento, contraste placebo con
+  reglas de Rubin.
+- `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md`.
+- `tests/test_variabilidad_hotdeck.py` (7 pruebas) y 2 mutaciones: 145
+  pruebas, 26 de 26 mutaciones detectadas.
+
+### Hallazgos
+- Por hogar: 34,4 % de concordancia de grupo entre dos sorteos y 62,7 %
+  en A/B, iguales a lo teórico de la celda.
+- Por celda: CV mediano 0,091 (0,049 ponderado), error relativo mediano
+  0,072 (0,039 ponderado); en celdas de hasta 30 hogares, CV 0,17.
+- Nacional: desviación de 0,10 a 0,15 puntos por grupo.
+- El −0,0026 del DML en `POBRE_GEIH`, el único IC sin el cero, depende de
+  la semilla: con 100 sorteos el contraste es −0,00003 y solo 3 %
+  excluye el cero. La imputación aporta 49-55 % de la varianza total.
+
+### Commits de esta serie (sin autor agregado)
+- `e4c0f57` pytest del proyecto con poetry y sin filtros de advertencias
+  en la simulación (prioridad 7).
+
 ## 2026-11-04 (18) — Prioridad 7 de la guía: pytest del proyecto y filtros de advertencias
 
 - `pyproject.toml`: `[tool.pytest.ini_options]` con `pythonpath = ["."]`.
