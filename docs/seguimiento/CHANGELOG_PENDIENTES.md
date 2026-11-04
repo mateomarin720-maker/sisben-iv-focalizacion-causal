@@ -30,10 +30,12 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 - Suite estable: 5 de 5 corridas, cada archivo por separado y en orden
   inverso.
 
+- Bogotá reconstruida desde el crudo del SDP (Azure,
+  `sisben/bogota/Sisben_03082026_bog.zip`, CSV de 587 MB) con el código
+  nuevo: idéntica columna por columna a la versión en uso, por vigencia
+  (1.274.578 hogares) y por año exacto (75.488).
+
 ### Pendiente
-- Bogotá no se pudo reconstruir desde el crudo del SDP (no está en este
-  equipo ni en Azure); el cálculo de la edad es equivalente por
-  construcción y está probado con datos sintéticos.
 - Integración continua y cobertura medida.
 
 ## 2026-11-03 (12) — Evaluación semisintética hasta la convergencia
