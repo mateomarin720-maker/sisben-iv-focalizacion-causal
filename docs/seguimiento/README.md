@@ -187,16 +187,23 @@ estimación media según el efecto verdadero.
 | Vínculo perfecto con grupos A a D vecinos | +0,806 | +0,662 | +0,516 |
 
 **Evaluación semisintética.** Usa los hogares reales de la GEIH y simula
-solo el tratamiento y el efecto (ATE verdadero 0,095 sobre el log-ingreso;
-50 repeticiones de 30.000 hogares).
+solo el tratamiento y el efecto (+0,095 sobre el log-ingreso, −0,033
+sobre la pobreza monetaria). Se corrió hasta la convergencia el
+2026-11-03: 432 repeticiones de 30.000 hogares (Causal Forest en 216),
+hasta que el error Monte Carlo de cada celda quedó bajo el umbral.
 
-- Con el tratamiento verdadero y sin confusión, los estimadores recuperan
-  el efecto (0,085 a 0,095).
-- Con Hot-Deck, todo estimador que controla la celda devuelve cerca de
-  cero en los cinco escenarios.
-- Con un vínculo del 50 %, el efecto se atenúa a 0,044.
-- Con confusión no observada fuerte, ningún estimador la corrige, ni
-  siquiera con el tratamiento verdadero.
+- Con el tratamiento verdadero y confusión observable, los estimadores
+  recuperan el efecto (0,089 a 0,094; −0,031 a −0,033 en pobreza).
+- Con Hot-Deck, todo estimador devuelve cerca de cero en los ocho
+  escenarios y los dos resultados.
+- Con un vínculo del 50 %, el efecto se atenúa a la mitad (0,041 a 0,048).
+- Con confusión no observada, ningún estimador la corrige, ni siquiera
+  con el tratamiento verdadero, y en pobreza el signo se invierte
+  (+0,138 con confusión fuerte).
+- Solo la discontinuidad en el corte la resiste (+0,086 frente a +0,090),
+  y solo con vínculo hogar por hogar; con Hot-Deck también da cero.
+
+Detalle en [`SIMULACION_SEMISINTETICA.md`](../resultados/SIMULACION_SEMISINTETICA.md).
 
 ### 5.7 Representatividad del Sisbén
 
@@ -226,9 +233,9 @@ departamentos: de 0,4 % en Valle del Cauca a 12,8 % en Putumayo.
 
 ## 8. Pendientes
 
-1. Ampliar la evaluación semisintética: resultado binario de pobreza,
-   sensibilidad a la confusión y a la fuerza del efecto, más
-   repeticiones del Causal Forest y escenario con discontinuidad.
+1. Evaluación semisintética: hecha hasta la convergencia el 2026-11-03.
+   Quedan ajustes menores: sensibilidad al tamaño del efecto,
+   discontinuidad difusa y la causa del sesgo pequeño de LinearDML.
 2. Definir y simular las reglas de asignación de transferencias
    (P3/OE3) y reportar rangos de efectos.
 3. Pobreza monetaria, fase 5: comparación con el IPM-GEIH y con el grupo
