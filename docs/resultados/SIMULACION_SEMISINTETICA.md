@@ -1,159 +1,261 @@
 # Evaluación semisintética: recuperación de un efecto conocido sobre hogares reales
 
-Generado 2026-11-02 por `src/validacion/simulacion_semisintetica.py`
-(50 repeticiones, encuesta de 30.000 hogares por repetición; Causal
-Forest en 10). Salida completa: `docs/reports/simulacion_semisintetica.txt`;
-tabla resumen: `docs/reports/simulacion_semisintetica_resumen.csv`; cada
-repetición: `docs/reports/simulacion_semisintetica.csv`.
+Generado 2026-11-03 por `src/validacion/simulacion_semisintetica.py`.
+**432 repeticiones hasta la convergencia** (Causal Forest en 216), encuesta
+de 30.000 hogares por repetición. Salidas en `docs/reports/`:
+`simulacion_semisintetica.txt` (consola), `_resumen.csv` (métricas con su
+error Monte Carlo), `_convergencia.csv` (traza por lote), `_tablas.md` (las
+tablas de abajo, generadas del resumen) y `simulacion_semisintetica.csv`
+(cada repetición). Figura: `simulacion_semisintetica_convergencia.png`.
 
 Es el componente central que pidió el tutor (2026-10-27) y que detalla la
-revisión externa (§9, "arquitectura semisintética"). A diferencia de
-`SIMULACION_IDENTIFICACION.md` (mundo 100 % sintético), **las covariables,
-la celda del Hot-Deck y el ingreso son los de los 290.968 hogares reales
-de GEIH 2024**; solo se simulan el tratamiento y el efecto, así que la
-verdad se conoce hogar por hogar.
+revisión externa (§9). A diferencia de `SIMULACION_IDENTIFICACION.md`
+(mundo 100 % sintético), **las covariables, la celda del Hot-Deck, el
+ingreso y la línea de pobreza son los de los 290.968 hogares reales de
+GEIH 2024**; solo se simulan el tratamiento y el efecto, así que la verdad
+se conoce hogar por hogar.
 
 ## Diseño
 
 ```text
 DATOS REALES     celda del Hot-Deck (993), X = {zona, sexo del jefe, paredes},
-                 Y0 = log(1 + ingreso per cápita de la UG)
+                 Y0 = log(1 + ingreso per cápita de la UG), línea de pobreza del dominio
 GENERADOR        U = parte del ingreso que la celda y X no explican (real, no observable)
-                 T verdadero ~ Bernoulli(score), score = logit P_Sisbén(T | celda) + X·b + gamma·U
-                 tau(X) = 0,10 + 0,05·rural − 0,03·jefa + 0,04·paredes precarias  (ATE ≈ 0,095)
+                 score = logit P_Sisbén(T | celda) + X·b + gamma·U
+                 T ~ Bernoulli(score); en la regla de corte, T = 1(puntaje ≥ corte),
+                 puntaje = score + ruido de medición
+                 tau(X) = 0,10 + 0,05·rural − 0,03·jefa + 0,04·paredes precarias
                  Y = Y0 + tau(X)·T
-ESCENARIOS       aleatoria / confusión observada / confusión no observada leve (gamma = 0,25)
-                 y fuerte (gamma = 1) / solapamiento débil (score × 4)
-INTEGRACIÓN      oráculo (T verdadero) / vínculo parcial (50 % recibe T de un donante)
-                 / Hot-Deck (todos lo reciben de un donante de su celda)
+OUTCOMES         log-ingreso (efecto +0,095) y pobreza monetaria (efecto −0,033)
+ESCENARIOS       aleatoria / confusión observada / efecto nulo / confusión no
+                 observada leve, media y fuerte (gamma 0,25, 0,5, 1) / solapamiento
+                 débil (score × 4) / regla de corte (con gamma = 1)
+INTEGRACIÓN      oráculo (T verdadero) / vínculo 50 % (la mitad recibe T y puntaje
+                 de un donante) / Hot-Deck (todos, de un donante de su celda)
 ESTIMADORES      diferencia de medias, regresión con efectos fijos de celda,
-                 LinearDML y CausalForestDML (los mismos de 5_estimacion.py, W = celda)
-EVALUACIÓN       sesgo, RMSE, cobertura del IC 95 %, ancho, error del CATE (PEHE),
-                 degradación = RMSE con integración − RMSE con oráculo
+                 LinearDML y CausalForestDML (los de 5_estimacion.py, W = celda),
+                 RD local lineal en el corte (solo en la regla de corte)
+EVALUACIÓN       sesgo, RMSE, cobertura del IC 95 %, ancho, PEHE (error del CATE),
+                 degradación por integración, y el MCSE de cada una
 ```
 
-- **P(T | celda) sale del Sisbén real**, así que la asignación observada
-  tiene la forma del sistema (tasa de tratados 46,7 % en todos los
-  escenarios, calibrada).
+- P(T | celda) sale del Sisbén real; la tasa de tratados es la misma en
+  todos los escenarios (46,7 %, calibrada).
 - En cada repetición la población se parte en dos muestras **sin llave
-  común**: la "encuesta" (X, Y) y el "registro" (X, T), como GEIH y
-  Sisbén. **El T verdadero de la encuesta solo se usa para medir**; los
-  estimadores reciben únicamente el T observado según la integración.
-- El efecto es sobre log-ingreso: 0,095 ≈ 10 % más ingreso. Con 30.000
-  hogares el IC 95 % de un estimador bien especificado mide ≈0,08.
-- Para usarlo con otra fuente (registros administrativos de una entidad)
+  común**: la "encuesta" (X, Y) y el "registro" (X, T, puntaje), como GEIH
+  y Sisbén. **El T verdadero de la encuesta solo se usa para medir.**
+- La pobreza es 1 si el ingreso queda bajo la línea del dominio (DANE
+  2024). Su efecto verdadero es la diferencia, hogar por hogar, entre ser
+  pobre con y sin tratamiento: −0,033 (3,3 puntos menos de pobreza).
+- La RD estima el efecto **en el corte**: su objetivo es el efecto medio
+  de los hogares cercanos al corte (+0,090 en log-ingreso, −0,038 en
+  pobreza), no el ATE.
+- Para usarla con otra fuente (registros administrativos de una entidad)
   basta una tabla con las columnas de `COLUMNAS` en el script.
 
-## Resultados (media de 50 repeticiones; ATE verdadero = 0,095)
+## Convergencia ("saciedad")
 
-**Estimación media del ATE** (entre paréntesis, cobertura del IC 95 %):
+Las repeticiones corren en lotes de 24, en paralelo, hasta que **el error
+estándar Monte Carlo (MCSE) de cada celda** (escenario × integración ×
+outcome × estimador, 166 celdas) queda bajo el umbral (Morris, White y
+Crowther, 2019, *Statistics in Medicine* 38:2074): MCSE del sesgo ≤ 0,003
+en log-ingreso y ≤ 0,0015 en pobreza, y MCSE de la cobertura ≤ 0,025.
+Mínimo 100 repeticiones, máximo 600.
 
-| Escenario | Integración | Dif. de medias | Regresión EF celda | LinearDML | Causal Forest |
-|---|---|---|---|---|---|
-| Aleatoria | Oráculo | 0,095 (0,92) | 0,094 (0,98) | 0,092 (0,94) | 0,095 (1,0) |
-| | Vínculo 50 % | 0,045 (0,30) | 0,044 (0,20) | 0,044 (0,20) | 0,042 (1,0) |
-| | Hot-Deck | −0,001 (0) | −0,001 (0) | −0,001 (0) | +0,002 (0,7) |
-| Confusión observada | Oráculo | −0,318 (0) | 0,092 (1,0) | 0,090 (0,94) | 0,085 (1,0) |
-| | Vínculo 50 % | −0,346 (0) | 0,046 (0,44) | 0,044 (0,38) | 0,049 (1,0) |
-| | Hot-Deck | −0,373 (0) | −0,001 (0) | −0,005 (0,02) | −0,001 (0,6) |
-| Confusión no observada leve | Oráculo | −0,615 (0) | −0,291 (0) | −0,292 (0) | −0,290 (0) |
-| | Hot-Deck | −0,367 (0) | +0,001 (0) | −0,005 (0) | −0,009 (0,9) |
-| Confusión no observada fuerte | Oráculo | −0,972 (0) | −0,771 (0) | −0,770 (0) | −0,776 (0) |
-| | Hot-Deck | −0,340 (0) | −0,003 (0) | −0,002 (0) | −0,010 (0,8) |
-| Solapamiento débil | Oráculo | −0,579 (0) | 0,062 (0,86) | 0,080 (0,88) | 0,078 (1,0) |
-| | Vínculo 50 % | −0,578 (0) | 0,027 (0,52) | 0,031 (0,62) | 0,034 (1,0) |
-| | Hot-Deck | −0,575 (0) | +0,001 (0,20) | −0,008 (0,28) | −0,011 (1,0) |
+| | Repeticiones | MCSE sesgo máx. | MCSE cobertura máx. | Celdas que cumplen |
+|---|---|---|---|---|
+| Todos los estimadores salvo Causal Forest | 432 | 0,0030 | 0,024 | 150 de 150 |
+| Causal Forest (log-ingreso, oráculo y Hot-Deck) | 216 | 0,0039 | 0,033 | 10 de 16 |
+
+Causal Forest se detuvo en su tope (200, alcanzado en el lote que llegó a
+216) por costo: ≈45 s por repetición frente a ≈8 s del resto. Sus 6
+celdas pendientes son coberturas con Hot-Deck (0,63-0,88), que
+necesitarían ≈400 repeticiones, y el sesgo en dos escenarios donde ya es
+enorme (solapamiento débil y regla de corte con oráculo). Ninguna cambia
+una conclusión.
+
+![Convergencia](simulacion_semisintetica_convergencia.png)
+
+Desde ≈200 repeticiones las estimaciones medias no se mueven más que su
+banda de error Monte Carlo: más repeticiones no cambiarían los resultados.
+
+## Resultados
+
+Media de la estimación en las repeticiones; entre paréntesis, la
+cobertura del IC 95 % (debería ser ≈0,95).
+
+#### log-ingreso
+
+| Escenario | Efecto verdadero | Integración | Dif. de medias | Regresión EF celda | LinearDML | Causal Forest | RD en el corte |
+|---|---|---|---|---|---|---|---|
+| aleatoria | +0,095 | Oráculo | +0,095 (0,97) | +0,094 (0,96) | +0,094 (0,94) | +0,093 (1,00) | — |
+|  | +0,095 | Vínculo 50 % | +0,048 (0,33) | +0,048 (0,30) | +0,047 (0,30) | — | — |
+|  | +0,095 | Hot-Deck | +0,001 (0,00) | +0,001 (0,00) | +0,001 (0,00) | +0,002 (0,63) | — |
+| confusion observada | +0,095 | Oráculo | -0,319 (0,00) | +0,090 (0,94) | +0,089 (0,91) | +0,090 (1,00) | — |
+|  | +0,095 | Vínculo 50 % | -0,345 (0,00) | +0,046 (0,39) | +0,041 (0,34) | — | — |
+|  | +0,095 | Hot-Deck | -0,371 (0,00) | +0,000 (0,00) | -0,006 (0,00) | -0,006 (0,72) | — |
+| efecto nulo | +0,000 | Oráculo | -0,419 (0,00) | -0,002 (0,96) | -0,006 (0,92) | -0,006 (1,00) | — |
+|  | +0,000 | Vínculo 50 % | -0,408 (0,00) | -0,000 (0,95) | -0,005 (0,91) | — | — |
+|  | +0,000 | Hot-Deck | -0,398 (0,00) | +0,000 (0,95) | -0,006 (0,91) | -0,004 (1,00) | — |
+| confusion no observada leve | +0,095 | Oráculo | -0,613 (0,00) | -0,291 (0,00) | -0,291 (0,00) | -0,293 (0,00) | — |
+|  | +0,095 | Vínculo 50 % | -0,490 (0,00) | -0,145 (0,00) | -0,149 (0,00) | — | — |
+|  | +0,095 | Hot-Deck | -0,369 (0,00) | -0,003 (0,00) | -0,008 (0,00) | -0,008 (0,75) | — |
+| confusion no observada media | +0,095 | Oráculo | -0,796 (0,00) | -0,529 (0,00) | -0,527 (0,00) | -0,531 (0,00) | — |
+|  | +0,095 | Vínculo 50 % | -0,578 (0,00) | -0,263 (0,00) | -0,264 (0,00) | — | — |
+|  | +0,095 | Hot-Deck | -0,359 (0,00) | +0,001 (0,00) | -0,003 (0,01) | -0,002 (0,82) | — |
+| confusion no observada | +0,095 | Oráculo | -0,981 (0,00) | -0,780 (0,00) | -0,778 (0,00) | -0,782 (0,00) | — |
+|  | +0,095 | Vínculo 50 % | -0,658 (0,00) | -0,388 (0,00) | -0,387 (0,00) | — | — |
+|  | +0,095 | Hot-Deck | -0,337 (0,00) | -0,001 (0,00) | -0,003 (0,01) | +0,000 (0,88) | — |
+| solapamiento debil | +0,095 | Oráculo | -0,578 (0,00) | +0,064 (0,87) | +0,081 (0,92) | +0,075 (1,00) | — |
+|  | +0,095 | Vínculo 50 % | -0,576 (0,00) | +0,032 (0,55) | +0,032 (0,58) | — | — |
+|  | +0,095 | Hot-Deck | -0,575 (0,00) | +0,001 (0,20) | -0,008 (0,24) | -0,010 (1,00) | — |
+| regla corte | +0,095 | Oráculo | -1,377 (0,00) | -1,708 (0,00) | -1,691 (0,00) | -1,708 (0,00) | +0,086 (0,94) |
+|  | +0,095 | Vínculo 50 % | -0,938 (0,00) | -0,844 (0,00) | -0,816 (0,00) | — | +0,042 (0,83) |
+|  | +0,095 | Hot-Deck | -0,502 (0,00) | +0,001 (0,08) | +0,003 (0,17) | -0,002 (0,99) | -0,001 (0,71) |
+
+#### pobreza monetaria
+
+| Escenario | Efecto verdadero | Integración | Dif. de medias | Regresión EF celda | LinearDML | RD en el corte |
+|---|---|---|---|---|---|---|
+| aleatoria | -0,033 | Oráculo | -0,033 (0,95) | -0,033 (0,96) | -0,033 (0,93) | — |
+|  | -0,033 | Vínculo 50 % | -0,016 (0,12) | -0,016 (0,08) | -0,016 (0,09) | — |
+|  | -0,033 | Hot-Deck | +0,000 (0,00) | -0,000 (0,00) | +0,000 (0,00) | — |
+| confusion observada | -0,033 | Oráculo | +0,086 (0,00) | -0,031 (0,97) | -0,031 (0,92) | — |
+|  | -0,033 | Vínculo 50 % | +0,097 (0,00) | -0,016 (0,13) | -0,015 (0,10) | — |
+|  | -0,033 | Hot-Deck | +0,108 (0,00) | -0,000 (0,00) | +0,002 (0,00) | — |
+| efecto nulo | +0,000 | Oráculo | +0,125 (0,00) | +0,000 (0,96) | +0,002 (0,92) | — |
+|  | +0,000 | Vínculo 50 % | +0,123 (0,00) | +0,000 (0,94) | +0,002 (0,91) | — |
+|  | +0,000 | Hot-Deck | +0,122 (0,00) | +0,000 (0,97) | +0,002 (0,91) | — |
+| confusion no observada leve | -0,033 | Oráculo | +0,125 (0,00) | +0,021 (0,00) | +0,021 (0,00) | — |
+|  | -0,033 | Vínculo 50 % | +0,116 (0,00) | +0,010 (0,00) | +0,012 (0,00) | — |
+|  | -0,033 | Hot-Deck | +0,107 (0,00) | +0,000 (0,00) | +0,002 (0,00) | — |
+| confusion no observada media | -0,033 | Oráculo | +0,160 (0,00) | +0,066 (0,00) | +0,066 (0,00) | — |
+|  | -0,033 | Vínculo 50 % | +0,133 (0,00) | +0,032 (0,00) | +0,033 (0,00) | — |
+|  | -0,033 | Hot-Deck | +0,106 (0,00) | -0,000 (0,00) | +0,001 (0,00) | — |
+| confusion no observada | -0,033 | Oráculo | +0,214 (0,00) | +0,138 (0,00) | +0,138 (0,00) | — |
+|  | -0,033 | Vínculo 50 % | +0,158 (0,00) | +0,069 (0,00) | +0,070 (0,00) | — |
+|  | -0,033 | Hot-Deck | +0,102 (0,00) | +0,000 (0,00) | +0,002 (0,00) | — |
+| solapamiento debil | -0,033 | Oráculo | +0,160 (0,00) | -0,023 (0,78) | -0,026 (0,87) | — |
+|  | -0,033 | Vínculo 50 % | +0,162 (0,00) | -0,011 (0,27) | -0,010 (0,33) | — |
+|  | -0,033 | Hot-Deck | +0,164 (0,00) | -0,000 (0,03) | +0,004 (0,02) | — |
+| regla corte | -0,033 | Oráculo | +0,350 (0,00) | +0,398 (0,00) | +0,389 (0,00) | -0,034 (0,95) |
+|  | -0,033 | Vínculo 50 % | +0,249 (0,00) | +0,197 (0,00) | +0,190 (0,00) | -0,016 (0,71) |
+|  | -0,033 | Hot-Deck | +0,150 (0,00) | +0,000 (0,00) | +0,003 (0,00) | +0,001 (0,32) |
+
+Efecto verdadero en el corte (objetivo de la RD): log-ingreso +0,090, pobreza monetaria -0,038
 
 ## Lectura
 
-1. **Con el tratamiento verdadero, los estimadores ajustados funcionan
-   mientras la confusión sea observable.** Con asignación aleatoria todos
-   recuperan 0,095. Con confusión por la celda y X, la regresión con
-   efectos fijos, el DML y el Causal Forest la recuperan (sesgo ≤ 0,01,
-   cobertura 0,94-1,0) y la diferencia de medias no (−0,32: los tratados
-   son más pobres). Con solapamiento débil siguen cerca pero pierden
-   precisión (sesgo −0,015 a −0,033, cobertura 0,86-0,88).
+1. **Con Hot-Deck se pierde todo el efecto, sin excepción.** Regresión,
+   DML, Causal Forest y RD devuelven ≈0 (−0,010 a +0,004) en los ocho
+   escenarios y en los dos outcomes. El donante se sorteó dentro de la
+   celda: su T no lleva información del hogar receptor. Es el mismo ≈0 de
+   `5_estimacion.py` con datos reales, ahora con el efecto verdadero
+   conocido: **ese ≈0 no dice nada sobre el efecto del Sisbén**.
 
-2. **Si la asignación depende de algo que no se observa, ningún
-   estimador lo corrige, ni con el tratamiento verdadero**: −0,29 con
-   confusión leve y −0,77 con fuerte, cuando la verdad es +0,095 (el
-   signo se invierte). Es lo que expresan las cotas de Fréchet-Manski
+2. **La pérdida es proporcional a los hogares mal vinculados.** Con la
+   mitad de los hogares vinculados a un donante, la estimación cae a la
+   mitad (0,041-0,048 en log-ingreso; −0,015 a −0,016 en pobreza). Regla
+   práctica: sesgo ≈ −(fracción mal vinculada) × efecto. La concordancia
+   del T imputado (50-83 % con Hot-Deck) no mide la calidad para estimar
+   efectos, porque esos aciertos vienen de la celda, que es justo lo que
+   se controla.
+
+3. **Con el T verdadero, todo depende de si la confusión se observa.**
+   Asignación aleatoria y confusión por la celda y X: regresión, DML y
+   Causal Forest recuperan el efecto (0,089-0,094; −0,031 a −0,033 en
+   pobreza). Solapamiento débil: siguen cerca, con menos cobertura
+   (regresión 0,064, cobertura 0,87; DML 0,081, cobertura 0,92).
+
+4. **Si la asignación depende de algo no observado, ningún estimador lo
+   corrige, ni con el tratamiento verdadero**, y el sesgo crece con su
+   fuerza: −0,29, −0,53 y −0,78 en log-ingreso (gamma 0,25, 0,5 y 1),
+   cuando la verdad es +0,095. En pobreza el signo se invierte: +0,021,
+   +0,066 y +0,138, es decir, "el programa aumenta la pobreza" cuando la
+   reduce en 3,3 puntos. Es lo que expresan las cotas de Fréchet-Manski
    con datos reales: sin supuestos, el signo no está identificado.
 
-3. **Con el tratamiento reconstruido por Hot-Deck, todo estimador que
-   controla la celda devuelve ≈0, en los cinco escenarios** (−0,011 a
-   +0,002). El sesgo es −0,095 = −ATE: se pierde el efecto completo. El
-   donante se sortea dentro de la celda, así que su T no tiene relación
-   con el hogar receptor más allá de la celda. Es el mismo ≈0 que da
-   `5_estimacion.py` con datos reales (`DIAGNOSTICO_W_CELDA_EXACTA.md`),
-   ahora con el efecto verdadero conocido: **ese ≈0 no informa sobre el
-   efecto del Sisbén**.
+5. **La discontinuidad en el corte es lo único que resiste la confusión
+   no observada, pero necesita el vínculo hogar por hogar.** En la regla
+   de corte con confusión fuerte, la regresión y el DML dan −1,7, y la RD
+   con el T verdadero da +0,086 frente a +0,090 en el corte (cobertura
+   0,94) y −0,034 frente a −0,038 en pobreza (0,95). Con vínculo del 50 %
+   la RD cae a la mitad y con Hot-Deck a ≈0. Es el argumento para pedir el
+   **puntaje continuo del Sisbén con una llave de hogar**.
 
-4. **La degradación es proporcional a la fracción de hogares mal
-   vinculados.** Con la mitad del T de un donante, el ATE estimado cae a
-   la mitad (0,044 de 0,095) en los escenarios donde el oráculo funciona.
-   El Hot-Deck es el extremo: 100 % de donantes.
+6. **La diferencia de medias nunca sirve fuera de la asignación
+   aleatoria** (−0,32 a −1,38): los tratados son más pobres por
+   construcción. Con Hot-Deck y sin controlar la celda, además traslada la
+   confusión entre celdas (−0,34 a −0,58): un efecto distinto de cero con
+   Hot-Deck sin la celda es geografía y composición, no efecto.
 
-5. **Sin controlar la celda, el Hot-Deck traslada la confusión entre
-   celdas** (diferencia de medias −0,37 con confusión observada): un
-   efecto distinto de cero con Hot-Deck sin la celda es geografía y
-   composición, no efecto.
+7. **Efecto nulo (control del error tipo I).** La regresión con efectos
+   fijos mantiene la cobertura nominal (0,94-0,97) con las tres
+   integraciones; LinearDML queda algo por debajo (0,91-0,92) por el sesgo
+   del punto 8.
 
-6. **La concordancia entre el T imputado y el verdadero no mide la
-   calidad para estimar efectos.** El Hot-Deck acierta el T del 50-61 %
-   de los hogares (83 % con solapamiento débil), y aun así el efecto es
-   ≈0: los aciertos vienen de la celda, que es justo lo que se controla.
+8. **LinearDML tiene un sesgo pequeño pero real: −0,004 a −0,008 en
+   log-ingreso** (≈5 % del efecto; z de −3 a −5 frente a su MCSE),
+   también con efecto nulo y con Hot-Deck, donde la regresión con efectos
+   fijos exactos da ≈0. Explicación probable, no verificada: la
+   regularización de los modelos auxiliares (Ridge y logística con 993
+   indicadoras de celda) encoge los efectos de celda y deja algo de
+   confusión entre celdas (las celdas más pobres tienen más tratados). En
+   pobreza es +0,002. Es pequeño frente a los demás sesgos, pero conviene
+   reportarlo junto a cualquier DML del proyecto.
 
-7. **Con confusión no observada la "degradación" sale negativa** (el
-   Hot-Deck tiene menor RMSE que el oráculo). No es una mejora: el
-   Hot-Deck lleva cualquier estimación a ≈0, y 0 queda más cerca de
-   +0,095 que el −0,77 del oráculo confundido. Se pierden por igual el
-   efecto y el sesgo.
+9. **Causal Forest no recupera la heterogeneidad.** Su error del CATE
+   (PEHE 0,052-0,068 con oráculo sin confusión no observada) es mayor que
+   la variación real del efecto entre hogares (desviación de tau = 0,028):
+   predecir el mismo efecto para todos daría menos error. Su IC del ATE es
+   2,6 a 5 veces más ancho que el del DML (0,20-0,78 frente a 0,08-0,16),
+   y por eso "cubre" aun cuando estima ≈0 con Hot-Deck (0,63-0,88): es
+   conservador, no más acertado.
 
-8. **Causal Forest:** su IC del ATE es 3-9 veces más ancho que el del
-   DML (0,20-0,72), por eso cubre aun cuando estima ≈0 con Hot-Deck: es
-   conservador, no más acertado. El error del CATE (PEHE 0,05-0,07 con
-   oráculo sin confusión no observada) es mayor que la variación real
-   del efecto entre hogares (desviación de tau = 0,028): con 30.000
-   hogares y el ruido del ingreso real, no recupera la heterogeneidad.
+10. **Con confusión no observada la "degradación" por integración sale
+    negativa** (el Hot-Deck tiene menor RMSE que el oráculo). No es una
+    mejora: el Hot-Deck lleva cualquier estimación a ≈0, y 0 queda más
+    cerca de +0,095 que el −0,78 del oráculo confundido.
 
 ## Qué significa para la tesis
 
-- **El Hot-Deck sirve para describir a nivel de celda, no para estimar
-  efectos causales a nivel de hogar.** La simulación lo muestra con
-  hogares reales y efecto conocido, para los cuatro estimadores y en
-  todos los escenarios.
-- Para recuperar el efecto hace falta **vincular hogar por hogar**
-  (llave común) **y** un diseño que resuelva la confusión no observada
-  (discontinuidad con puntaje continuo, como en
-  `SIMULACION_IDENTIFICACION.md`). Con vínculo parcial, el efecto se
-  atenúa en proporción a los hogares mal vinculados.
-- Mensaje para una entidad que integre sus propios registros: medir la
+- **Con las fuentes actuales (Hot-Deck), ningún estimador puede
+  recuperar el efecto del Sisbén.** Lo que se puede reportar son cotas
+  (Fréchet-Manski) y el placebo del emparejamiento; la simulación lo
+  demuestra con hogares reales, efecto conocido, cinco estimadores y ocho
+  escenarios.
+- **Para recuperar el efecto hacen falta dos cosas a la vez:** vincular
+  hogar por hogar (llave común) y un diseño que resista la confusión no
+  observada (RD con el puntaje continuo). Con vínculo parcial, el efecto
+  se atenúa en proporción a los hogares mal vinculados.
+- **Para una entidad que integre sus propios registros:** medir la
   fracción de hogares bien vinculados antes de estimar; la concordancia
   del tratamiento imputado no sirve como indicador.
 
 ## Limitaciones
 
-- El efecto es sobre log-ingreso y aditivo; no se simuló un outcome
-  binario de pobreza.
-- U se construye con el residuo del propio ingreso: es una confusión no
-  observada realista en forma, pero su fuerza (gamma) es un supuesto. Por
-  eso se reportan dos niveles.
-- Sin ajuste por diseño muestral; T sigue una logística de la celda y de
-  tres variables de X.
+- Efecto aditivo en log-ingreso; el de pobreza se deriva de él.
+- U se construye con el residuo del propio ingreso: realista en forma,
+  pero su fuerza (gamma) es un supuesto; por eso tres niveles.
+- Sin ajuste por diseño muestral. T sigue una logística de la celda y de
+  tres variables de X; la regla de corte es nítida (cumplimiento
+  perfecto), no difusa.
 - El Hot-Deck simulado sortea en la celda exacta (respaldo: todo el
   registro), sin la cadena completa de respaldos del pipeline; con 993
   celdas y ≈260.000 donantes por repetición casi nunca se usa el respaldo.
-- Causal Forest en 10 repeticiones (su cobertura y PEHE son menos
-  precisos que las demás cifras).
+- Causal Forest en 216 repeticiones (6 de sus 16 celdas sobre el umbral
+  de MCSE, ver Convergencia).
 
 ## Para reproducir
 
 ```bash
-PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.simulacion_semisintetica 50 30000 10 > docs/reports/simulacion_semisintetica.txt 2>&1
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.simulacion_semisintetica 3 > docs/reports/simulacion_semisintetica.txt 2>&1
 poetry run pytest tests/test_simulacion_semisintetica.py
 ```
 
-Tarda unos 15 minutos: ≈45 s por repetición con Causal Forest y ≈8 s
-sin él. Requiere
+El argumento es el número de procesos en paralelo. Con el equipo libre
+tarda ≈1,5 horas (lotes de 24 repeticiones: ≈12 min con Causal Forest y
+≈3,5 min sin él); esta corrida tomó 4 horas porque el equipo estuvo
+ocupado. Si se interrumpe, al volver a correrla retoma desde el último
+lote guardado (mientras no cambie la configuración). Requiere
 `muestra_estimacion_monetaria_2024.parquet` y el Sisbén estandarizado.

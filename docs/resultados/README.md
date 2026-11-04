@@ -19,11 +19,14 @@ historial de correcciones está en
 3. **Sin suponer que el sorteo reproduce la realidad, los datos no fijan
    ni el signo del efecto** (cotas de Fréchet-Manski, §5). Es el
    resultado de identificación central con las fuentes actuales.
-4. **Evaluación semisintética (§9):** con hogares reales y un efecto
-   conocido de +0,095, todo estimador que controla la celda devuelve ≈0
-   cuando el tratamiento viene del Hot-Deck, en todos los escenarios. Con
-   el tratamiento verdadero, regresión, DML y Causal Forest recuperan el
-   efecto si la confusión es observable, y ninguno si no lo es.
+4. **Evaluación semisintética (§9), corrida hasta la convergencia (432
+   repeticiones):** con hogares reales y un efecto conocido (+0,095 en
+   log-ingreso, −0,033 en pobreza), todo estimador devuelve ≈0 cuando el
+   tratamiento viene del Hot-Deck, en los ocho escenarios. Con el
+   tratamiento verdadero, regresión, DML y Causal Forest recuperan el
+   efecto si la confusión es observable, y ninguno si no lo es; solo la
+   discontinuidad en el corte resiste la confusión no observada, y
+   necesita vínculo hogar por hogar.
 5. Los outcomes están construidos y validados: IPM-GEIH (8 de 15
    privaciones) y pobreza monetaria reconstruida (33,2 % frente a 31,8 %
    oficial; clasifica igual al 93,9 % de los hogares de la base oficial).
@@ -154,21 +157,24 @@ una discontinuidad con puntaje continuo lo recupera.
 
 ### 9. Evaluación semisintética
 
-Covariables, celda e ingreso reales de GEIH; tratamiento y efecto
-simulados (ATE verdadero 0,095 en log-ingreso; P(T | celda) del Sisbén
-real). 50 repeticiones de 30.000 hogares.
+Covariables, celda, ingreso y línea de pobreza reales de GEIH;
+tratamiento y efecto simulados (P(T | celda) del Sisbén real). 432
+repeticiones de 30.000 hogares, hasta que el error Monte Carlo de las 150
+celdas quedó bajo el umbral (Causal Forest: 216).
 
-| ATE estimado (verdadero 0,095) | Oráculo | Vínculo 50 % | Hot-Deck |
-|---|---|---|---|
-| Confusión observada, LinearDML | 0,090 | 0,044 | −0,005 |
-| Confusión observada, regresión EF celda | 0,092 | 0,046 | −0,001 |
-| Confusión no observada fuerte, LinearDML | −0,770 | −0,384 | −0,002 |
-| Solapamiento débil, LinearDML | 0,080 | 0,031 | −0,008 |
+| Estimación media | Verdadero | Oráculo | Vínculo 50 % | Hot-Deck |
+|---|---|---|---|---|
+| Confusión observada, LinearDML, log-ingreso | +0,095 | +0,089 | +0,041 | −0,006 |
+| Confusión observada, LinearDML, pobreza | −0,033 | −0,031 | −0,015 | +0,002 |
+| Confusión no observada fuerte, LinearDML, log-ingreso | +0,095 | −0,778 | −0,387 | −0,003 |
+| Confusión no observada fuerte, LinearDML, pobreza | −0,033 | +0,138 | +0,070 | +0,002 |
+| Regla de corte, RD, log-ingreso (efecto en el corte) | +0,090 | +0,086 | +0,042 | −0,001 |
 
-Con Hot-Deck se pierde el efecto completo (sesgo = −ATE); con vínculo
-parcial se atenúa en proporción a los hogares mal vinculados. La
-concordancia del T imputado (50-83 %) no indica la calidad para estimar
-efectos. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
+Con Hot-Deck se pierde el efecto completo; con vínculo parcial se atenúa
+en proporción a los hogares mal vinculados. Con confusión no observada
+el signo se invierte aun con el tratamiento verdadero. LinearDML tiene
+un sesgo pequeño (≈−0,005) y Causal Forest no recupera la
+heterogeneidad. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
 
 ## Limitaciones generales
 
