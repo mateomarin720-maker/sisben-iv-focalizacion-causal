@@ -2,6 +2,31 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (16) — Cotas con supuestos de monotonía
+
+### Nuevo
+- `cotas_con_supuestos` en `cotas_frechet_manski.py` (Manski y Pepper,
+  2000): contraste, contraste con dependencia positiva y ATE sin
+  supuestos, con MTS, con MTR, con los dos y con los tres. Salida
+  `docs/reports/cotas_frechet_manski_monotonia.csv`.
+- Aclarado en `RESULTADOS_FRECHET_MANSKI.md`: las cotas anteriores acotan
+  el contraste E[Y|T=1] − E[Y|T=0] (problema de combinación de datos);
+  el ATE causal tiene una cota más ancha sin supuestos.
+- 28 pruebas nuevas (134 en total), entre ellas una que genera
+  poblaciones al azar que cumplen cada supuesto y comprueba que el ATE
+  verdadero cae dentro de su cota; 2 mutaciones nuevas (22 de 22).
+
+### Cifras (pobreza monetaria, 921 celdas)
+- ATE sin supuestos [−0,571; +0,829]; con MTR [−0,571; 0]; con MTS, MTR y
+  dependencia positiva **[−0,405; 0]**. `POBRE_GEIH`: [−0,469; +0,765] →
+  [−0,367; 0]. Oficial (712 celdas): [−0,405; 0].
+- El MTS no agrega nada sobre el MTR; solo la dependencia positiva sube
+  la cota inferior. Las cotas previas no cambian.
+
+### Commits de esta serie (sin autor agregado)
+- `6c4c364` Reglas de focalización (OE3) sobre el mundo semisintético
+  (las dos corridas de GitHub Actions pasaron).
+
 ## 2026-11-04 (15) — Reglas de focalización (P3/OE3)
 
 ### Nuevo

@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 20 de 20 mutaciones detectadas.
+Resultado del 2026-11-04: 22 de 22 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -74,6 +74,11 @@ MUTACIONES = [
     ("OE3: el monto fijo se aplica como proporcional", "src/validacion/reglas_focalizacion.py",
      "    return ingreso_relativo(y0, lp) + efecto\n", "    return ingreso_relativo(y0 + efecto, lp)\n",
      "tests/test_reglas_focalizacion.py"),
+    # Cotas con supuestos de monotonía
+    ("Cotas: la dependencia positiva no recorta P11", "src/estimacion/cotas_frechet_manski.py",
+     "lo11_dep = np.maximum(lo11, p_y * p_t)", "lo11_dep = lo11", "tests/test_cotas_frechet_manski.py"),
+    ("Cotas: MTS con la cota del contraste en el extremo equivocado", "src/estimacion/cotas_frechet_manski.py",
+     "hi = np.minimum(hi, contraste(hi11))", "hi = np.minimum(hi, contraste(lo11_s))", "tests/test_cotas_frechet_manski.py"),
 ]
 
 resultados = []

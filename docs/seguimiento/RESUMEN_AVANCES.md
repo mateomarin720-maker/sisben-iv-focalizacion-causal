@@ -54,7 +54,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/validacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 106 pruebas; 20 de 20 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 134 pruebas; 22 de 22 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -160,7 +160,10 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
    `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
 3. **Fase 5 de pobreza monetaria:** comparación con IPM-GEIH y el grupo
    imputado, por celda (D6).
-4. Angostar las cotas con supuestos de monotonía (MTS/MTR).
+4. ~~Angostar las cotas con supuestos de monotonía~~ **Hecho
+   2026-11-04:** con selección monótona, respuesta monótona y dependencia
+   positiva, la cota del ATE en pobreza monetaria pasa de [−0,571; +0,829]
+   a [−0,405; 0]. El signo lo fija el supuesto, no los datos.
 5. Construir las 5 privaciones del IPM que faltan en GEIH; refinar
    `sin_cotizacion_pension_jefe`.
 6. Confirmar en ANDA los cortes de `PER002`; 6 hogares de Bogotá con doble

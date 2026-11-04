@@ -154,7 +154,7 @@ Detalle completo de marco teórico, metodología y cronograma en
   `emparejamiento/`, `estimacion/` (DML/Causal Forest/Fréchet-Manski),
   `validacion/`, `utils/` (incluye Azure) y los scripts numerados `1_` a
   `7_` del flujo metodológico.
-- **`/tests`**: 106 pruebas automatizadas (`poetry run pytest tests/`),
+- **`/tests`**: 134 pruebas automatizadas (`poetry run pytest tests/`),
   casi todas con datos sintéticos; las que leen datos reales se saltan si
   no está el banco. Corren solas en GitHub Actions en cada push y PR
   (`.github/workflows/pruebas.yml`). Qué cubre cada una:
