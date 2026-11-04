@@ -204,7 +204,7 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
 |---|---|
 | Sisbén IV (DNP-ANDA) | Resuelto |
 | Sisbén Bogotá (SDP) | Resuelto (corte 03/08/2026) |
-| Puntaje continuo del Sisbén (para RD) | **Borrador de solicitud listo (2026-11-04)**, sin enviar: `docs/institucional/SOLICITUD_PUNTAJE_CONTINUO_SISBEN.md` (dos variantes, SDP y DNP). Es lo único que recuperaría el efecto en la simulación |
+| Puntaje continuo del Sisbén (para RD) | **No se solicita (decisión del 2026-11-04):** la réplica usa solo las fuentes ya disponibles. La falta del puntaje queda como limitación; es lo único que recuperaría el efecto en la simulación |
 
 ## 7. Documentación de referencia
 

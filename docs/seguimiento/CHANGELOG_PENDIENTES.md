@@ -13,6 +13,11 @@ Formato: más reciente primero. Rama de trabajo: `main`.
   simuladas; migración desde `src/validacion/simulacion_semisintetica.py`
   con equivalencia en 3 repeticiones; pruebas nuevas.
 
+### Decisión
+- No se solicitarán más datos: la réplica usa solo las fuentes del banco
+  de datos. La prioridad 8 (enviar la solicitud del puntaje continuo) se
+  descarta y la falta del puntaje queda como limitación.
+
 ### Decisiones abiertas
 - Umbral de protección de los parámetros (30 hogares).
 - Versionar P(T | celda) del Sisbén como agregado.
