@@ -123,26 +123,79 @@ poder reportar el número angosto del DML?".
   cotas de Fréchet-Hoeffding para un outcome continuo (`ipm_geih_score`,
   `log_ingreso_percapita`) requieren acotar la CDF conjunta completa —
   más trabajo, no implementado todavía.
-- No incorpora supuestos intermedios que podrían angostar la cota sin
-  llegar a la CIA completa — ver "Próximo paso".
+- Los supuestos de monotonía se agregaron el 2026-11-04 (sección
+  siguiente).
 
-## Próximo paso: angostar la cota con supuestos más débiles que la CIA
+## Con supuestos de monotonía (2026-11-04)
 
-Las cotas "worst-case" sin ningún supuesto casi siempre son así de anchas
-en la literatura de partial identification — eso no significa que no se
-pueda hacer nada. Manski (2003) propone supuestos intermedios, más débiles
-que la independencia condicional completa pero más fuertes que "nada",
-que sí angostan la cota:
-- **Monotone Treatment Selection (MTS):** asumir que los hogares con mejor
-  `Y` potencial no tienen sistemáticamente MÁS probabilidad de ser
-  clasificados A/B — razonable si se cree que el Sisbén no favorece
-  activamente a los hogares menos pobres.
-- **Monotone Treatment Response (MTR):** asumir que ser clasificado A/B
-  (y por tanto elegible a más subsidios) no puede, en promedio, EMPEORAR
-  el bienestar — descarta la mitad "negativa" del rango.
-Cualquiera de las dos, combinada con las marginales ya calculadas aquí,
-angostaría la cota sin necesitar la CIA completa del Hot-Deck. Queda como
-extensión natural de este script.
+**Qué acota cada cota.** Hay dos problemas superpuestos:
+
+1. **La conjunta de T e Y no se observa** (las fuentes no tienen llave):
+   P(Y=1, T=1) puede estar en cualquier punto entre los límites de
+   Fréchet. Las cotas de arriba resuelven solo este problema: acotan el
+   **contraste** E[Y|T=1] − E[Y|T=0], que es el ATE solo si no hay
+   confusión dentro de la celda.
+2. **Los resultados potenciales no se observan.** Sin suponer nada sobre
+   ellos (Manski, 1990), el ATE tiene una cota más ancha que el contraste.
+
+Los supuestos de Manski y Pepper (2000), con Y = pobre y T = clasificado
+en A/B:
+
+- **MTS (selección monótona):** los hogares A/B son al menos tan pobres
+  como el resto en los dos resultados potenciales. Es lo que busca la
+  focalización. Recorta la cota superior hasta el contraste.
+- **MTR (respuesta monótona):** el programa no aumenta la pobreza de
+  nadie. Recorta la cota superior a 0. **Fija el signo por supuesto, no
+  por los datos.**
+- **Dependencia positiva:** dentro de cada celda, los A/B son al menos
+  tan pobres como el resto (P(Y=1, T=1) ≥ P(Y=1)·P(T=1)). Entre celdas
+  se cumple: la correlación entre P(T | celda) y la pobreza de la celda es
+  0,29 (`RESULTADOS_HOTDECK.md`). Es el único que sube la cota inferior.
+
+Implementación: `cotas_con_supuestos` en `src/estimacion/cotas_frechet_manski.py`;
+salida `docs/reports/cotas_frechet_manski_monotonia.csv`. Todas las cotas
+son monótonas en P(Y=1, T=1), así que la unión sobre los valores
+factibles se alcanza en los extremos de Fréchet.
+
+| Cota del ATE (921 celdas) | `POBRE_GEIH` | Ancho | `POBRE_MONETARIO` | Ancho |
+|---|---|---|---|---|
+| Contraste (la de arriba) | [−0,261; +0,380] | 0,64 | [−0,418; +0,648] | 1,07 |
+| Contraste + dependencia positiva | [0; +0,380] | 0,38 | [0; +0,648] | 0,65 |
+| ATE sin supuestos | [−0,469; +0,765] | 1,23 | [−0,571; +0,829] | 1,40 |
+| ATE con MTS | [−0,469; +0,380] | 0,85 | [−0,571; +0,648] | 1,22 |
+| ATE con MTR | [−0,469; 0] | 0,47 | [−0,571; 0] | 0,57 |
+| ATE con MTS y MTR | [−0,469; 0] | 0,47 | [−0,571; 0] | 0,57 |
+| ATE con MTS, MTR y dependencia positiva | **[−0,367; 0]** | 0,37 | **[−0,405; 0]** | 0,41 |
+
+Con la clasificación oficial del DANE (712 celdas), la última fila da
+[−0,405; 0], igual que la reconstrucción.
+
+**Lectura.**
+
+1. **Con los tres supuestos, la cota se reduce a menos de un tercio**
+   (de 1,40 a 0,41 en pobreza monetaria), pero el efecto puede seguir
+   siendo cualquier cosa entre 0 y 40 puntos menos de pobreza. Los
+   supuestos acotan, no identifican.
+2. **El signo lo pone el MTR, no los datos.** Sin MTR, ninguna
+   combinación excluye efectos positivos (que el programa aumente la
+   pobreza).
+3. **El MTS no agrega nada si ya se supone MTR**: solo baja la cota
+   superior, y el MTR ya la deja en 0. Ninguno de los dos sube la cota
+   inferior.
+4. **Solo la dependencia positiva sube la cota inferior** (de −0,571 a
+   −0,405), y es el supuesto más fácil de defender con datos: la
+   focalización funciona entre celdas.
+5. **El contraste con dependencia positiva es [0; +0,648]**: los A/B son
+   al menos tan pobres como el resto, y el Hot-Deck (contraste ≈0 dentro
+   de la celda) está en el borde de lo que permiten los datos.
+
+**Validez.** `tests/test_cotas_frechet_manski.py` genera poblaciones al
+azar que cumplen cada combinación de supuestos (5 semillas, miles de
+poblaciones por combinación) y comprueba que el ATE verdadero cae
+siempre dentro de su cota, que cada supuesto angosta o deja igual la
+cota y que el contraste coincide con las cotas de Fréchet. Dos
+mutaciones (dependencia positiva sin efecto y MTS mal aplicado) hacen
+fallar las pruebas.
 
 ## Limitaciones
 

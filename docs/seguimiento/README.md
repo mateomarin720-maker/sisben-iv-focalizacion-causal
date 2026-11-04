@@ -244,7 +244,8 @@ departamentos: de 0,4 % en Valle del Cauca a 12,8 % en Putumayo.
 4. Comparación de proxies del IPM, fases 3 a 5: decisiones pendientes
    sobre las privaciones I5, I6 e I10 (ver
    [`00_auditoria_variables.md`](../metodologia/comparacion_proxies/00_auditoria_variables.md)).
-5. Angostar las cotas con supuestos de monotonía.
+5. Cotas con supuestos de monotonía: hechas el 2026-11-04 (pobreza
+   monetaria [−0,405; 0] con los tres supuestos).
 6. Construir las privaciones del IPM que faltan y refinar la de pensión.
 7. Confirmar en ANDA los cortes de `PER002` y revisar los hogares de
    Bogotá con doble jefe.

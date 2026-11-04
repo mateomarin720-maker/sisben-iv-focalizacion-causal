@@ -1,6 +1,6 @@
 # Pruebas
 
-106 pruebas en 12 archivos (2026-11-04). Casi todas usan datos
+134 pruebas en 12 archivos (2026-11-04). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -34,7 +34,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 |---|---|---|---|
 | `test_armonizacion.py` | `armonizacion/*`, `seleccion_variables_lasso_shap.py` | Cada código de GEIH y del Sisbén contra la etiqueta del diccionario oficial; que cada variable de vivienda salga de su columna; jefe por `P6050`/`PER003`/`tip_parentesco`; Bogotá filtrada por vigencia, no por año exacto; OE1 sin `I1`-`I15` ni `H_5` | Mapeo de vivienda equivocado (hasta 2026-10-28); sesgo hacia actualizaciones recientes del SDP; circularidad |
 | `test_estimacion_dml.py` | `5_estimacion.py` | Categóricas como indicadoras; propensión = P(T \| celda) (correlación > 0,99); el error anterior no la reproduce (< 0,6); LinearDML recupera 0 y 0,5 con confusión entre celdas | Celda como número en la propensión (ATE falsos de +0,02, hasta 2026-11-02) |
-| `test_cotas_frechet_manski.py` | `estimacion/cotas_frechet_manski.py` | Casos exactos (P(Y) = 0 o 1 → [0; 0]); la cota contiene el efecto de toda distribución conjunta compatible y alcanza sus extremos (2.000 conjuntas × 5 semillas); ATE ponderado por peso de celda; cada probabilidad de su fuente | El resultado de identificación central no tenía pruebas |
+| `test_cotas_frechet_manski.py` | `estimacion/cotas_frechet_manski.py` | Con supuestos de monotonía: la cota contiene el ATE de toda población que cumple el supuesto (25 configuraciones) y cada supuesto la angosta o la deja igual. Casos exactos (P(Y) = 0 o 1 → [0; 0]); la cota contiene el efecto de toda distribución conjunta compatible y alcanza sus extremos (2.000 conjuntas × 5 semillas); ATE ponderado por peso de celda; cada probabilidad de su fuente | El resultado de identificación central no tenía pruebas |
 | `test_variables_canonicas.py` | `utils/variables_canonicas.py` | Llaves con formatos distintos ("01", "1.0", " 1 "); jefe por fuente; cortes del ciclo de vida de `PER002`; GEIH y Sisbén en los mismos tramos del Hot-Deck | `mes` "01" frente a "1" (2026-11-02); celdas que no empatan entre fuentes |
 | `test_ingesta_y_validacion.py` | `ingesta/geih_loader.py`, `validacion/comparar_pobreza_monetaria_oficial.py`, `4_dag_identificacion.py` | Los 8 módulos de los 12 meses con las variantes reales ("No ocupado" en marzo, agosto desde `.DTA`, carpetas vacías); Latin-1; cruce uno a uno con la base oficial; d-separación del DAG | Meses incompletos sin aviso; cruce vacío con la base oficial |
 | `test_hotdeck_celda.py` | `emparejamiento/…` | Celda con nivel de pisos; falla si falta `viv_pisos` | Celda que cae al respaldo sin avisar |
@@ -48,7 +48,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 ## Cómo se comprobó que las pruebas sirven
 
 1. **Mutación** (`tests/mutaciones.py`): se reintroduce cada error ya
-   documentado (20 en total; los 16 de la primera versión: los tres del mapeo de vivienda, la celda
+   documentado (22 en total; los 16 de la primera versión: los tres del mapeo de vivienda, la celda
    como número en el DML, dos de las cotas, una privación del Sisbén como
    predictor, el filtro por año exacto, el jefe equivocado, llaves sin
    normalizar, un corte de edad distinto, el prefijo de "No ocupados", sin
@@ -56,7 +56,9 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
    normalizar y tramos de edad distintos en el Hot-Deck; y 4 de las reglas
    de focalización: error de inclusión mal dividido, tratar a los de menor
    puntaje, ignorar la incertidumbre del proxy y aplicar el monto fijo
-   como proporcional). **Las 20 hacen fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
+   como proporcional; y 2 de las cotas con monotonía: la dependencia
+   positiva sin efecto y el MTS en el extremo equivocado). **Las 22 hacen
+   fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
    protege nada.
 2. **Estabilidad:** la suite pasó 5 de 5 veces seguidas, cada archivo por
    separado y en orden inverso. Las pruebas con azar usan semillas fijas

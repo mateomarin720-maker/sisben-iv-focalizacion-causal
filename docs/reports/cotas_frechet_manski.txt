@@ -1,4 +1,4 @@
-2026-11-02 16:48:20,370 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet y data\2_models\sisben_estandarizado_2024_con_bogota.parquet
+2026-11-04 11:55:58,514 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet y data\2_models\sisben_estandarizado_2024_con_bogota.parquet
 
 === Cotas de Fréchet-Manski — ATE sobre POBRE_GEIH ===
 Celdas usadas: 921 | cobertura poblacional GEIH: 100.0%
@@ -13,5 +13,37 @@ P(Y=1) ponderada en las celdas usadas: 0.2702
 ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.4179, +0.6477]
 Ancho de la cota: 1.0656
 Detalle por celda: docs\reports\cotas_frechet_manski_pobre_monetario.csv
+
+=== Cotas de Fréchet-Manski — ATE sobre POBRE_MONETARIO_OFICIAL ===
+Celdas usadas: 712 | cobertura poblacional GEIH: 99.0%
+P(Y=1) ponderada en las celdas usadas: 0.2580
+ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.4065, +0.6201]
+Ancho de la cota: 1.0265
+Detalle por celda: docs\reports\cotas_frechet_manski_pobre_monetario_oficial.csv
+
+=== Cotas con supuestos de monotonía (Manski y Pepper, 2000) ===
+                outcome                 supuesto  cota_lo  cota_hi  ancho  celdas
+             POBRE_GEIH                contraste  -0.2607   0.3801 0.6409     921
+             POBRE_GEIH   contraste_dep_positiva  -0.0000   0.3801 0.3801     921
+             POBRE_GEIH        ate_sin_supuestos  -0.4687   0.7653 1.2340     921
+             POBRE_GEIH                  ate_mts  -0.4687   0.3801 0.8488     921
+             POBRE_GEIH                  ate_mtr  -0.4687   0.0000 0.4687     921
+             POBRE_GEIH              ate_mts_mtr  -0.4687   0.0000 0.4687     921
+             POBRE_GEIH ate_mts_mtr_dep_positiva  -0.3671   0.0000 0.3671     921
+        POBRE_MONETARIO                contraste  -0.4179   0.6477 1.0656     921
+        POBRE_MONETARIO   contraste_dep_positiva   0.0000   0.6477 0.6477     921
+        POBRE_MONETARIO        ate_sin_supuestos  -0.5712   0.8294 1.4005     921
+        POBRE_MONETARIO                  ate_mts  -0.5712   0.6477 1.2188     921
+        POBRE_MONETARIO                  ate_mtr  -0.5712   0.0000 0.5712     921
+        POBRE_MONETARIO              ate_mts_mtr  -0.5712   0.0000 0.5712     921
+        POBRE_MONETARIO ate_mts_mtr_dep_positiva  -0.4052   0.0000 0.4052     921
+POBRE_MONETARIO_OFICIAL                contraste  -0.4065   0.6201 1.0265     712
+POBRE_MONETARIO_OFICIAL   contraste_dep_positiva  -0.0000   0.6201 0.6201     712
+POBRE_MONETARIO_OFICIAL        ate_sin_supuestos  -0.5650   0.8186 1.3836     712
+POBRE_MONETARIO_OFICIAL                  ate_mts  -0.5650   0.6201 1.1850     712
+POBRE_MONETARIO_OFICIAL                  ate_mtr  -0.5650   0.0000 0.5650     712
+POBRE_MONETARIO_OFICIAL              ate_mts_mtr  -0.5650   0.0000 0.5650     712
+POBRE_MONETARIO_OFICIAL ate_mts_mtr_dep_positiva  -0.4045   0.0000 0.4045     712
+Guardado: docs\reports\cotas_frechet_manski_monotonia.csv
 
 ATE puntual del DML con Hot-Deck (SÍ supone CIA): ver docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md — no se hardcodea aquí.

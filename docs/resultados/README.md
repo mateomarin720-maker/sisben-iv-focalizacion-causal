@@ -142,6 +142,15 @@ un artefacto. Detalle en §4c.
 Ninguna celda excluye el 0. Toda la precisión de un punto estimado con
 el grupo imputado vendría del supuesto, no de los datos.
 
+**Con supuestos de monotonía (2026-11-04).** Estas cotas acotan el
+contraste entre A/B y el resto. Para el ATE causal, sin supuestos la cota
+de pobreza monetaria es [−0,571; +0,829]. Suponiendo que los A/B son al
+menos tan pobres (selección monótona y dependencia positiva dentro de la
+celda) y que el programa no aumenta la pobreza de nadie (respuesta
+monótona), queda en **[−0,405; 0]**: el ancho baja de 1,40 a 0,41, pero
+el signo lo pone el supuesto y la magnitud sigue sin identificarse (entre
+0 y 40 puntos menos de pobreza). `POBRE_GEIH`: [−0,367; 0].
+
 ### 6. Representatividad
 
 La cobertura del Sisbén frente a GEIH varía 32 veces entre departamentos
