@@ -10,6 +10,29 @@ hallazgos consolidados) y
 (estado y pendientes) — son la fuente de verdad, más confiable que inferir
 del código.
 
+## Enfoque vigente y reglas del tutor (tutoría del 2026-11-03)
+
+Guía de la tesis desde el 2026-11-04:
+[`docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md`](docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md)
+(enfoque, estado y prioridades). La tesis es un **framework de ingeniería
+y simulación para evaluar subsidios y transferencias**, en tres bloques:
+arquitectura e ingeniería (enlazar las bases y correr los modelos, de
+forma reutilizable), simulación semisintética como módulo independiente
+(modo con datos propios ya enlazados y modo simulado) y discusión de
+focalización (qué variables podría incorporar el Sisbén, como pregunta
+abierta y recomendación, no como conclusión causal). Reglas del tutor:
+
+- **Los nombres de las variables estandarizadas de GEIH y Sisbén no se
+  cambian ni se hacen configurables**; lo flexible es el resto del
+  framework. Un módulo que reciba datos de otra institución exige los
+  nombres canónicos y valida que estén; no los renombra.
+- **El DML sobre el grupo imputado no se presenta como efecto causal del
+  Sisbén** (es un placebo del emparejamiento).
+- **Resultados simulados con asterisco (\*)** en toda tabla o cifra que
+  los mezcle o los presente cerca de resultados con datos reales.
+- **El repositorio es entregable al jurado:** limpio y sin ruido. No dejar
+  archivos de prueba, ramas ni salidas sin propósito.
+
 ## Entorno
 
 - Python ≥3.11. Dependencias con Poetry (`pyproject.toml` /
