@@ -90,30 +90,41 @@ def _p_t_por_celda(sisben: pd.DataFrame) -> pd.DataFrame:
     return agg
 
 
-def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame, y_col: str = "POBRE_GEIH") -> pd.DataFrame:
-    py = _p_y_por_celda(geih, y_col)
-    pt = _p_t_por_celda(sisben)
-    df = py.join(pt, how="inner")  # solo celdas con info de AMBAS fuentes
-
-    p_y, p_t = df["p_y"], df["p_t"]
-
-    # Fréchet-Hoeffding: cotas de la conjunta dadas las marginales.
+def cotas_frechet(p_y, p_t) -> pd.DataFrame:
+    """Cotas de Fréchet-Hoeffding de E[Y|T=1], E[Y|T=0] y del CATE dadas
+    solo las marginales P(Y=1) y P(T=1) de una celda. Con P(T) en 0 o 1 el
+    contraste no está definido (NaN)."""
+    p_y, p_t = np.asarray(p_y, float), np.asarray(p_t, float)
     pyt1_lo = np.maximum(0, p_y + p_t - 1)
     pyt1_hi = np.minimum(p_y, p_t)
     pyt0_lo = np.maximum(0, p_y - p_t)
     pyt0_hi = np.minimum(p_y, 1 - p_t)
 
     with np.errstate(divide="ignore", invalid="ignore"):
-        e_y_t1_lo = np.where(p_t > 0, pyt1_lo / p_t, np.nan)
-        e_y_t1_hi = np.where(p_t > 0, pyt1_hi / p_t, np.nan)
-        e_y_t0_lo = np.where((1 - p_t) > 0, pyt0_lo / (1 - p_t), np.nan)
-        e_y_t0_hi = np.where((1 - p_t) > 0, pyt0_hi / (1 - p_t), np.nan)
+        out = pd.DataFrame({
+            "e_y_t1_lo": np.where(p_t > 0, pyt1_lo / p_t, np.nan),
+            "e_y_t1_hi": np.where(p_t > 0, pyt1_hi / p_t, np.nan),
+            "e_y_t0_lo": np.where((1 - p_t) > 0, pyt0_lo / (1 - p_t), np.nan),
+            "e_y_t0_hi": np.where((1 - p_t) > 0, pyt0_hi / (1 - p_t), np.nan),
+        })
+    out["cate_lo"] = out["e_y_t1_lo"] - out["e_y_t0_hi"]
+    out["cate_hi"] = out["e_y_t1_hi"] - out["e_y_t0_lo"]
+    return out
 
-    df["e_y_t1_lo"], df["e_y_t1_hi"] = e_y_t1_lo, e_y_t1_hi
-    df["e_y_t0_lo"], df["e_y_t0_hi"] = e_y_t0_lo, e_y_t0_hi
-    df["cate_lo"] = df["e_y_t1_lo"] - df["e_y_t0_hi"]
-    df["cate_hi"] = df["e_y_t1_hi"] - df["e_y_t0_lo"]
-    return df.reset_index()
+
+def ate_agregado(df: pd.DataFrame) -> tuple[float, float]:
+    """Cota del ATE: promedio de las cotas por celda ponderado por el peso
+    poblacional de la celda en GEIH (`peso_fex`)."""
+    w = df["peso_fex"] / df["peso_fex"].sum()
+    return float((w * df["cate_lo"]).sum()), float((w * df["cate_hi"]).sum())
+
+
+def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame, y_col: str = "POBRE_GEIH") -> pd.DataFrame:
+    py = _p_y_por_celda(geih, y_col)
+    pt = _p_t_por_celda(sisben)
+    df = py.join(pt, how="inner")  # solo celdas con info de AMBAS fuentes
+    cotas = cotas_frechet(df["p_y"], df["p_t"]).set_index(df.index)
+    return pd.concat([df, cotas], axis=1).reset_index()
 
 
 def main() -> None:
@@ -127,10 +138,8 @@ def main() -> None:
         df = df.dropna(subset=["cate_lo", "cate_hi"])
 
         cobertura = df["peso_fex"].sum()
-        w = df["peso_fex"] / cobertura
-        ate_lo = (w * df["cate_lo"]).sum()
-        ate_hi = (w * df["cate_hi"]).sum()
-        p_y = (w * df["p_y"]).sum()
+        ate_lo, ate_hi = ate_agregado(df)
+        p_y = (df["peso_fex"] / cobertura * df["p_y"]).sum()
 
         report.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(report, index=False)

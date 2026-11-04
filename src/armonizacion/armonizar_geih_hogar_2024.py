@@ -57,6 +57,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.utils.variables_canonicas import JEFE, es_jefe, normalizar_llave as _norm_llave
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -92,14 +94,9 @@ MAPA_JEFE = {
     "P6040": "jefe_edad",
 }
 
-FILTRO_JEFE_COL = "P6050"
-FILTRO_JEFE_VAL = "1"
+FILTRO_JEFE_COL, FILTRO_JEFE_VAL = JEFE["geih"]  # P6050 == "1"
 
 
-def _norm_llave(serie: pd.Series) -> pd.Series:
-    """Normaliza identificadores a texto de entero ('7893865.0', ' 01 ', 1 -> '7893865', '1', '1'),
-    para que hogar_vivienda y caracteristicas_generales crucen igual en todos los meses."""
-    return pd.to_numeric(serie, errors="coerce").astype("Int64").astype("string")
 
 
 def _cargar_mes(mes: str) -> pd.DataFrame | None:
@@ -121,7 +118,7 @@ def _cargar_mes(mes: str) -> pd.DataFrame | None:
         cg = pd.read_parquet(path_cg).replace("", pd.NA)
         for c in ("DIRECTORIO", "SECUENCIA_P", "HOGAR"):
             cg[c] = _norm_llave(cg[c])
-        jefes = cg[_norm_llave(cg[FILTRO_JEFE_COL]).astype("string") == FILTRO_JEFE_VAL].copy()
+        jefes = cg[es_jefe(cg, "geih")].copy()
         columnas_jefe = [c for c in MAPA_JEFE if c in jefes.columns]
         jefes = jefes[["DIRECTORIO", "SECUENCIA_P", "HOGAR", *columnas_jefe]].rename(columns=MAPA_JEFE)
         hv = hv.merge(

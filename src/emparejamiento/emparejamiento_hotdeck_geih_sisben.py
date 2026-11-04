@@ -35,6 +35,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from src.utils.variables_canonicas import CODIGOS_CICLO, edad_a_ciclo
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -47,9 +49,8 @@ OUT = DIR / "geih_sisben_fusionado_2024.parquet"
 # Sisbén (extracto anonimizado) trae PER002 como CODIGO de ciclo de vida, no años.
 # Corroborado indirectamente 2026-10-10 (ver docs/insumos/DICCIONARIO_HOTDECK.md
 # §5): 3=12-17, 4=18-28, 5=29-59, 6=60+.
-TRAMOS_EDAD = [0, 17, 28, 59, 200]
-LABELS_EDAD = ["ciclo3", "ciclo4", "ciclo5", "ciclo6"]
-CODIGO_A_CICLO = {"3": "ciclo3", "4": "ciclo4", "5": "ciclo5", "6": "ciclo6"}
+# Tramos en src/utils/variables_canonicas.py (los mismos para GEIH y el Sisbén de Bogotá).
+CODIGO_A_CICLO = {c: f"ciclo{c}" for c in CODIGOS_CICLO}
 TRAMOS_CUARTOS = [0, 1, 2, 100]
 LABELS_CUARTOS = ["1cuarto", "2cuartos", "3omascuartos"]
 TRAT = ["Grupo", "Nivel", "Clasificacion"]
@@ -65,8 +66,7 @@ PISOS_NIVEL = {
 def _tramo_edad(df: pd.DataFrame, edad_en_codigos: bool) -> pd.Series:
     if edad_en_codigos:  # Sisbén: jefe_edad ya es codigo de ciclo de vida
         return df["jefe_edad"].astype(str).map(CODIGO_A_CICLO).fillna("NA")
-    edad = pd.to_numeric(df["jefe_edad"], errors="coerce")  # GEIH: jefe_edad en años
-    return pd.cut(edad, bins=TRAMOS_EDAD, labels=LABELS_EDAD).astype("object").fillna("NA")
+    return edad_a_ciclo(df["jefe_edad"]).map(CODIGO_A_CICLO).fillna("NA")  # GEIH: jefe_edad en años
 
 
 def _tramo_cuartos(df: pd.DataFrame) -> pd.Series:

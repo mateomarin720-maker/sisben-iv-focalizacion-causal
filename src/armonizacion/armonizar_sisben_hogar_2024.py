@@ -20,6 +20,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.utils.variables_canonicas import JEFE, es_jefe
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -43,8 +45,7 @@ MAPA_JEFE = {
     "PER002": "jefe_edad",
 }
 
-FILTRO_JEFE_COL = "PER003"
-FILTRO_JEFE_VAL = "1"
+FILTRO_JEFE_COL, FILTRO_JEFE_VAL = JEFE["sisben"]  # PER003 == "1"
 
 LLAVE = ["cod_mpio", "ZONA", "llave", "CORTE"]
 
@@ -67,7 +68,7 @@ def armonizar_sisben_hogar() -> pd.DataFrame:
     cols_pers = list(dict.fromkeys(cols_pers))
     pers = pd.read_parquet(SISBEN_DIR / "personas.parquet", columns=cols_pers).replace("", pd.NA)
 
-    jefes = pers[pers[FILTRO_JEFE_COL] == FILTRO_JEFE_VAL].copy()
+    jefes = pers[es_jefe(pers, "sisben")].copy()
     n_dup_jefe = jefes.duplicated(subset=[*LLAVE, "HOGAR"]).sum()
     if n_dup_jefe > 0:
         logger.warning(

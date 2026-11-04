@@ -83,9 +83,13 @@ Salida: data/2_models/muestra_estimacion_2024.parquet
 from __future__ import annotations
 
 import logging
+import sys
 from pathlib import Path
 
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # raíz del repo: el script corre directo, no con -m
+from src.utils.variables_canonicas import es_jefe, normalizar_llave as _norm_llave  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -107,8 +111,6 @@ PRIVACIONES = [
 IPM_OFICIAL_TASA_POBREZA = 0.130  # IPM Hogares Nacional 2024 (data/catalogo.yaml) — referencia de plausibilidad, no un objetivo a igualar
 
 
-def _norm_llave(serie: pd.Series) -> pd.Series:
-    return pd.to_numeric(serie, errors="coerce").astype("Int64").astype("string")
 
 
 def _outcome_mes(mes: str) -> pd.DataFrame | None:
@@ -141,7 +143,7 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
         .rename("inasistencia_escolar_menores").reset_index()
     )
 
-    jefes = cg[_norm_llave(cg["P6050"]).astype("string") == "1"][
+    jefes = cg[es_jefe(cg, "geih")][
         [*k3, "ORDEN", "P6160", "P6090", "P3042"]
     ].copy()
 

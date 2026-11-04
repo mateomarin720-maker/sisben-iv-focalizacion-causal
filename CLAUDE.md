@@ -130,12 +130,17 @@ de respuesta.
 
 ## Convenciones de datos
 
-- Llave de hogar: normalizar con `pd.to_numeric(...).astype("Int64").astype("string")`
-  antes de cualquier cruce entre tablas — los mismos IDs llegan como texto
-  con formato distinto según el módulo/mes (ver `_norm_llave` en
-  `armonizar_geih_hogar_2024.py`).
-- Jefe de hogar: GEIH `P6050=="1"`; Sisbén nacional `PER003=="1"`; Sisbén
-  Bogotá (SDP) `tip_parentesco=="1"`.
+- **Reglas compartidas entre fuentes en un solo lugar:**
+  `src/utils/variables_canonicas.py` (desde 2026-11-04). Usarlo, no
+  copiar la regla en otro módulo — hasta esa fecha la normalización de
+  llaves estaba copiada en seis módulos y los tramos de edad en dos.
+  - Llave de hogar: `normalizar_llave` antes de cualquier cruce entre
+    tablas — los mismos IDs llegan como texto con formato distinto según
+    el módulo/mes ("01", "1", "1.0").
+  - Jefe de hogar: `es_jefe(df, fuente)` — GEIH `P6050=="1"`; Sisbén
+    nacional `PER003=="1"`; Sisbén Bogotá (SDP) `tip_parentesco=="1"`.
+  - Edad en años → código de ciclo de vida de `PER002`: `edad_a_ciclo`
+    (GEIH y Bogotá; el nacional ya trae el código).
 - El SDP (Sisbén Bogotá) es un **registro administrativo continuo**
   (`fec_fin_encuesta` 2019-2026), no un corte único — filtrar por
   vigencia (`<=` fecha de corte), no por año exacto de encuesta (sesga
@@ -163,6 +168,7 @@ poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.validacion.simulacion_semisintetica
 poetry run pytest tests/
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
 ```
 
 Cada uno debe reproducir los números ya documentados en
@@ -171,6 +177,13 @@ modifica en armonización o emparejamiento, estos números deberían moverse
 de forma explicable, no silenciosa). Reportes crudos van a
 `docs/reports/`; la interpretación de cada uno vive en `docs/resultados/`
 (un documento por paso, con un `README.md` índice).
+
+Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
+encuentra un error nuevo, agregar la prueba que lo habría detectado y su
+mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
+cuando el error vuelve; 16 de 16 el 2026-11-04). Antes de mapear una
+columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
+`tests/test_armonizacion.py`.
 
 ## Git
 

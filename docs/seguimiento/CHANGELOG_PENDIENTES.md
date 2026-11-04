@@ -2,6 +2,40 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (13) — Pruebas de prioridad alta y reglas compartidas entre fuentes
+
+### Nuevo
+- `src/utils/variables_canonicas.py`: `normalizar_llave`, `es_jefe` y
+  `edad_a_ciclo`, en un solo lugar. Reemplaza seis copias de la
+  normalización de llaves (`3_preprocesamiento.py`, `3b_…`,
+  `armonizar_geih_hogar_2024.py`, `pobreza_monetaria_geih.py`,
+  `preparar_outcome_prueba_empleo.py`, `comparar_pobreza_monetaria_oficial.py`)
+  y los tramos de edad duplicados del Hot-Deck y del SDP.
+- `cotas_frechet_manski.py`: la fórmula de las cotas (`cotas_frechet`) y
+  la agregación del ATE (`ate_agregado`) separadas para poder probarlas.
+- 61 pruebas nuevas (38 → 99): `test_armonizacion.py` (códigos contra los
+  diccionarios oficiales, vivienda, jefe, vigencia del SDP, OE1 sin
+  `I1`-`I15`/`H_5`), `test_estimacion_dml.py` (propensión con
+  indicadoras, LinearDML), `test_cotas_frechet_manski.py`,
+  `test_variables_canonicas.py` y `test_ingesta_y_validacion.py` (12
+  meses de GEIH con sus variantes, contraste oficial, DAG).
+- `tests/mutaciones.py`: reintroduce los 16 errores documentados; los 16
+  hacen fallar alguna prueba. `tests/README.md`: qué cubre cada archivo.
+
+### Verificado sin cambios en cifras
+- Salidas idénticas (`assert_frame_equal`) de `3_preprocesamiento.py`,
+  pobreza monetaria, contraste oficial y `3b`; celda del Hot-Deck igual en
+  los 290.899 hogares en celda exacta; llaves y jefes iguales en las
+  2.489.049 filas de los 12 meses; cotas de Fréchet-Manski byte a byte.
+- Suite estable: 5 de 5 corridas, cada archivo por separado y en orden
+  inverso.
+
+### Pendiente
+- Bogotá no se pudo reconstruir desde el crudo del SDP (no está en este
+  equipo ni en Azure); el cálculo de la edad es equivalente por
+  construcción y está probado con datos sintéticos.
+- Integración continua y cobertura medida.
+
 ## 2026-11-03 (12) — Evaluación semisintética hasta la convergencia
 
 ### Nuevo
