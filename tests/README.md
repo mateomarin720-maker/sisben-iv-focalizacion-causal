@@ -1,6 +1,6 @@
 # Pruebas
 
-99 pruebas en 11 archivos (2026-11-04). Casi todas usan datos
+106 pruebas en 12 archivos (2026-11-04). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -17,8 +17,8 @@ cada PR (Python 3.11, dependencias de `requirements-pruebas.txt`,
 fijadas a las versiones con las que pasan). Allí no está el banco de
 datos: **92 pruebas corren y 7 se saltan** (las que leen enero real de
 GEIH). Se comprobó antes de subirlo con un entorno limpio y un clon del
-repositorio sin datos: 92 pasan, 7 se saltan, 16 de 16 mutaciones
-detectadas.
+repositorio sin datos: 92 pasan, 7 se saltan y se detectan todas las
+mutaciones.
 
 Si una prueba falla en GitHub, el PR queda marcado en rojo. Para agregar
 una dependencia nueva a las pruebas, sumarla a `requirements-pruebas.txt`
@@ -42,18 +42,21 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_preprocesamiento.py` | `3_preprocesamiento.py` | IPM-GEIH con enero real: una fila por hogar, privaciones binarias sin faltantes, puntaje = suma, umbrales monótonos (se salta sin los datos) | |
 | `test_preprocesamiento_monetario.py` | `indicadores/pobreza_monetaria_geih.py`, `3b_…` | Unidad de gasto, jornalero (`P6430` = 7), imputación, líneas, cruce con la oficial | `P6430` = 7 leído como sin remuneración |
 | `test_homologacion_ipm.py` | `indicadores/homologacion_ipm.py` | Matriz GEIH ↔ Sisbén de las 15 privaciones: cada código existe en su diccionario oficial, pesos oficiales | Citar un código que no existe |
+| `test_reglas_focalizacion.py` | `validacion/reglas_focalizacion.py` | Brecha y efecto (proporcional y monto fijo), reducción esperada sobre los residuos, elección de los k mejores, errores de inclusión/exclusión ponderados por personas, la regla ideal nunca pierde, el proxy de medios sin el ingreso | |
 | `test_simulacion_semisintetica.py` | `validacion/simulacion_semisintetica.py` | Generador, Hot-Deck simulado, RD, MCSE | |
 
 ## Cómo se comprobó que las pruebas sirven
 
 1. **Mutación** (`tests/mutaciones.py`): se reintroduce cada error ya
-   documentado (16 en total: los tres del mapeo de vivienda, la celda
+   documentado (20 en total; los 16 de la primera versión: los tres del mapeo de vivienda, la celda
    como número en el DML, dos de las cotas, una privación del Sisbén como
    predictor, el filtro por año exacto, el jefe equivocado, llaves sin
    normalizar, un corte de edad distinto, el prefijo de "No ocupados", sin
    respaldo `.DTA`, UTF-8 en lugar de Latin-1, el cruce con `mes` sin
-   normalizar y tramos de edad distintos en el Hot-Deck). **Las 16 hacen
-   fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
+   normalizar y tramos de edad distintos en el Hot-Deck; y 4 de las reglas
+   de focalización: error de inclusión mal dividido, tratar a los de menor
+   puntaje, ignorar la incertidumbre del proxy y aplicar el monto fijo
+   como proporcional). **Las 20 hacen fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
    protege nada.
 2. **Estabilidad:** la suite pasó 5 de 5 veces seguidas, cada archivo por
    separado y en orden inverso. Las pruebas con azar usan semillas fijas

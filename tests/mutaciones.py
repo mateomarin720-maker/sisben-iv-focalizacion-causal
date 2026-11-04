@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 16 de 16 mutaciones detectadas.
+Resultado del 2026-11-04: 20 de 20 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -59,6 +59,21 @@ MUTACIONES = [
      'return edad_a_ciclo(df["jefe_edad"]).map(CODIGO_A_CICLO).fillna("NA")',
      'return pd.cut(pd.to_numeric(df["jefe_edad"], errors="coerce"), bins=[0, 17, 29, 59, 200], labels=list(CODIGO_A_CICLO.values())).astype("object").fillna("NA")',
      "tests/test_variables_canonicas.py"),
+    # P3/OE3 (reglas de focalización)
+    ("OE3: error de inclusión dividido por los pobres", "src/validacion/reglas_focalizacion.py",
+     "error_inclusion=float(np.sum(w * t * (1 - pobre)) / max(np.sum(w * t), 1e-12)),",
+     "error_inclusion=float(np.sum(w * t * (1 - pobre)) / max(np.sum(w * pobre), 1e-12)),",
+     "tests/test_reglas_focalizacion.py"),
+    ("OE3: la regla trata a los de menor puntaje", "src/validacion/reglas_focalizacion.py",
+     "orden = np.lexsort((rng.random(len(puntaje)), -np.asarray(puntaje, float)))",
+     "orden = np.lexsort((rng.random(len(puntaje)), np.asarray(puntaje, float)))",
+     "tests/test_reglas_focalizacion.py"),
+    ("OE3: la reducción esperada ignora la incertidumbre del proxy", "src/validacion/reglas_focalizacion.py",
+     "y = media[:, None] + residuos[None, :]", "y = media[:, None] + 0 * residuos[None, :]",
+     "tests/test_reglas_focalizacion.py"),
+    ("OE3: el monto fijo se aplica como proporcional", "src/validacion/reglas_focalizacion.py",
+     "    return ingreso_relativo(y0, lp) + efecto\n", "    return ingreso_relativo(y0 + efecto, lp)\n",
+     "tests/test_reglas_focalizacion.py"),
 ]
 
 resultados = []

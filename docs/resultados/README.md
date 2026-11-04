@@ -27,7 +27,13 @@ historial de correcciones está en
    efecto si la confusión es observable, y ninguno si no lo es; solo la
    discontinuidad en el corte resiste la confusión no observada, y
    necesita vínculo hogar por hogar.
-5. Los outcomes están construidos y validados: IPM-GEIH (8 de 15
+5. **Reglas de focalización (OE3, §10), en el mismo mundo simulado:**
+   un proxy de medios con variables del hogar logra 82-85 % de la
+   reducción ideal de la brecha (FGT1) y baja el error de exclusión de
+   43,5 % a 18,6 % frente a la clasificación imputada (60 %). Informar la
+   regla con el CATE estimado la empeora (72 %), y con el CATE desde el
+   Hot-Deck queda peor que el azar (44 % frente a 47 %).
+6. Los outcomes están construidos y validados: IPM-GEIH (8 de 15
    privaciones) y pobreza monetaria reconstruida (33,2 % frente a 31,8 %
    oficial; clasifica igual al 93,9 % de los hogares de la base oficial).
 
@@ -50,6 +56,7 @@ historial de correcciones está en
 | 7 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) |
 | 8 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) |
 | 9 | Evaluación semisintética | `src/validacion/simulacion_semisintetica.py` | [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md) |
+| 10 | Reglas de focalización (OE3) | `src/validacion/reglas_focalizacion.py` | [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md) |
 
 ## Resumen por paso
 
@@ -176,6 +183,24 @@ el signo se invierte aun con el tratamiento verdadero. LinearDML tiene
 un sesgo pequeño (≈−0,005) y Causal Forest no recupera la
 heterogeneidad. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
 
+### 10. Reglas de focalización (OE3)
+
+Mismo mundo semisintético; todas las reglas con el mismo presupuesto
+(los hogares A/B vigentes, 46,7 %). 300 repeticiones.
+
+| Regla | Error de exclusión | % de la reducción ideal de FGT1 (proporcional / monto fijo) |
+|---|---|---|
+| Vigente (Hot-Deck) | 43,5 % | 60 / 61 |
+| Aleatoria | 53,3 % | 47 / 47 |
+| Proxy de medios por ingreso | 18,6 % | 82 / 85 |
+| Proxy + CATE con vínculo | 26,1 % | 73 / 72 |
+| Proxy + CATE con Hot-Deck | 55,5 % | 45 / 44 |
+
+Con las fuentes actuales no hay efectos heterogéneos utilizables para
+focalizar; un proxy de medios con variables del hogar sí mejora la
+focalización. La regla vigente es la imputada por celda, no la del
+Sisbén real. Detalle en [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md).
+
 ## Limitaciones generales
 
 - El grupo Sisbén es imputado por emparejamiento, no observado en GEIH.
@@ -200,6 +225,7 @@ poetry run python -m src.validacion.verificar_representatividad_sisben
 poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.validacion.simulacion_semisintetica
+poetry run python -m src.validacion.reglas_focalizacion
 poetry run pytest tests/
 ```
 
