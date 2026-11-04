@@ -178,6 +178,13 @@ Comprobado contra el repositorio al incorporar este documento:
   `seguimiento-readme`, `simulacion-identificacion` y
   `simulacion-identificacion-v2`. Revisar cuáles están integradas antes
   de archivarlas.
+- **Prioridad 2, diseño hecho el mismo día:**
+  `docs/metodologia/DISENO_MODULO_SIMULACION.md`. Dos modos (simulado,
+  con una población sintética calibrada solo con agregados, y datos
+  propios), contrato de columnas canónicas que se valida y no se
+  traduce (desaparece `COLUMNAS`), asterisco en toda salida simulada y
+  migración en siete pasos con prueba de equivalencia. Falta la
+  implementación.
 - **Prioridad 1 hecha el mismo día:**
   `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
   hogar, dos sorteos coinciden en el grupo el 34,4 % de las veces y en
