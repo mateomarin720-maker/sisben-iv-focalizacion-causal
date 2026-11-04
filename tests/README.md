@@ -1,6 +1,6 @@
 # Pruebas
 
-134 pruebas en 12 archivos (2026-11-04). Casi todas usan datos
+138 pruebas en 13 archivos (2026-11-04). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -43,12 +43,13 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_preprocesamiento_monetario.py` | `indicadores/pobreza_monetaria_geih.py`, `3b_…` | Unidad de gasto, jornalero (`P6430` = 7), imputación, líneas, cruce con la oficial | `P6430` = 7 leído como sin remuneración |
 | `test_homologacion_ipm.py` | `indicadores/homologacion_ipm.py` | Matriz GEIH ↔ Sisbén de las 15 privaciones: cada código existe en su diccionario oficial, pesos oficiales | Citar un código que no existe |
 | `test_reglas_focalizacion.py` | `validacion/reglas_focalizacion.py` | Brecha y efecto (proporcional y monto fijo), reducción esperada sobre los residuos, elección de los k mejores, errores de inclusión/exclusión ponderados por personas, la regla ideal nunca pierde, el proxy de medios sin el ingreso | |
+| `test_sensibilidad_semisintetica.py` | `validacion/sensibilidad_semisintetica.py` | RD difusa insesgada y con cobertura ≈95 % en 100 semillas; la RD nítida sobre participación difusa se atenúa; escenarios y versión sin regularizar del DML | |
 | `test_simulacion_semisintetica.py` | `validacion/simulacion_semisintetica.py` | Generador, Hot-Deck simulado, RD, MCSE | |
 
 ## Cómo se comprobó que las pruebas sirven
 
 1. **Mutación** (`tests/mutaciones.py`): se reintroduce cada error ya
-   documentado (22 en total; los 16 de la primera versión: los tres del mapeo de vivienda, la celda
+   documentado (24 en total; los 16 de la primera versión: los tres del mapeo de vivienda, la celda
    como número en el DML, dos de las cotas, una privación del Sisbén como
    predictor, el filtro por año exacto, el jefe equivocado, llaves sin
    normalizar, un corte de edad distinto, el prefijo de "No ocupados", sin
@@ -57,8 +58,9 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
    de focalización: error de inclusión mal dividido, tratar a los de menor
    puntaje, ignorar la incertidumbre del proxy y aplicar el monto fijo
    como proporcional; y 2 de las cotas con monotonía: la dependencia
-   positiva sin efecto y el MTS en el extremo equivocado). **Las 22 hacen
-   fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
+   positiva sin efecto y el MTS en el extremo equivocado; y 2 de la RD
+   difusa: instrumentar la participación consigo misma y un error
+   estándar sin residuos). **Las 24 hacen fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
    protege nada.
 2. **Estabilidad:** la suite pasó 5 de 5 veces seguidas, cada archivo por
    separado y en orden inverso. Las pruebas con azar usan semillas fijas

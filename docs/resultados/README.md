@@ -190,7 +190,11 @@ Con Hot-Deck se pierde el efecto completo; con vínculo parcial se atenúa
 en proporción a los hogares mal vinculados. Con confusión no observada
 el signo se invierte aun con el tratamiento verdadero. LinearDML tiene
 un sesgo pequeño (≈−0,005) y Causal Forest no recupera la
-heterogeneidad. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
+heterogeneidad. **Sensibilidad (2026-11-04):** la pérdida es
+proporcional al tamaño del efecto (× 0,5 a × 2); la RD difusa, con 80 %
+de participación, recupera el efecto en el corte con vínculo (0,086
+frente a 0,090); el sesgo de LinearDML viene de la regularización de los
+modelos auxiliares. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
 
 ### 10. Reglas de focalización (OE3)
 
@@ -235,6 +239,7 @@ poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.validacion.simulacion_semisintetica
 poetry run python -m src.validacion.reglas_focalizacion
+poetry run python -m src.validacion.sensibilidad_semisintetica
 poetry run pytest tests/
 ```
 

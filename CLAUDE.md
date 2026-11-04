@@ -170,6 +170,7 @@ poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.validacion.simulacion_semisintetica
 poetry run python -m src.validacion.reglas_focalizacion
+poetry run python -m src.validacion.sensibilidad_semisintetica
 poetry run pytest tests/
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
 ```
@@ -184,7 +185,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 22 de 22 el 2026-11-04). Antes de mapear una
+cuando el error vuelve; 24 de 24 el 2026-11-04). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

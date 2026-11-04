@@ -197,12 +197,12 @@ Efecto verdadero en el corte (objetivo de la RD): log-ingreso +0,090, pobreza mo
 8. **LinearDML tiene un sesgo pequeño pero real: −0,004 a −0,008 en
    log-ingreso** (≈5 % del efecto; z de −3 a −5 frente a su MCSE),
    también con efecto nulo y con Hot-Deck, donde la regresión con efectos
-   fijos exactos da ≈0. Explicación probable, no verificada: la
-   regularización de los modelos auxiliares (Ridge y logística con 993
-   indicadoras de celda) encoge los efectos de celda y deja algo de
-   confusión entre celdas (las celdas más pobres tienen más tratados). En
-   pobreza es +0,002. Es pequeño frente a los demás sesgos, pero conviene
-   reportarlo junto a cualquier DML del proyecto.
+   fijos exactos da ≈0. En pobreza es +0,002. **Causa verificada en la
+   sensibilidad (sección siguiente):** la regularización de los modelos
+   auxiliares (Ridge alpha = 1 y logística C = 10 sobre 993 indicadoras
+   de celda) encoge los efectos de celda y deja confusión entre celdas.
+   Casi sin regularizar, el sesgo con efecto nulo baja de −0,006 a
+   −0,002 y deja de distinguirse de cero.
 
 9. **Causal Forest no recupera la heterogeneidad.** Su error del CATE
    (PEHE 0,052-0,068 con oráculo sin confusión no observada) es mayor que
@@ -216,6 +216,55 @@ Efecto verdadero en el corte (objetivo de la RD): log-ingreso +0,090, pobreza mo
     negativa** (el Hot-Deck tiene menor RMSE que el oráculo). No es una
     mejora: el Hot-Deck lleva cualquier estimación a ≈0, y 0 queda más
     cerca de +0,095 que el −0,78 del oráculo confundido.
+
+## Sensibilidad (2026-11-04)
+
+`src/validacion/sensibilidad_semisintetica.py`, mismo generador y mismos
+hogares, solo log-ingreso. 228 repeticiones, hasta que el MCSE del sesgo
+quedó bajo 0,003 en cada celda (0,008 en la RD). Salidas:
+`docs/reports/sensibilidad_semisintetica{.txt,_resumen.csv,.csv}`.
+
+**1. Tamaño del efecto: la pérdida es proporcional.** Regresión con
+efectos fijos de celda, confusión observada:
+
+| Efecto verdadero | Oráculo | Vínculo 50 % | Hot-Deck |
+|---|---|---|---|
+| 0,047 (× 0,5) | 0,044 | 0,021 (44 %) | −0,001 |
+| 0,095 (× 1) | 0,089 | 0,043 (45 %) | −0,001 |
+| 0,190 (× 2) | 0,183 | 0,093 (49 %) | 0,000 |
+
+Con Hot-Deck se pierde todo el efecto, sea del tamaño que sea; con
+vínculo del 50 %, algo menos de la mitad. La RD en la regla de corte se
+comporta igual (Hot-Deck −0,003 a +0,004 con efectos de 0,045 a 0,181 en
+el corte).
+
+**2. Regla de corte difusa.** Participa el 80 % de los elegibles y el 20 %
+de los no elegibles. La RD difusa (dos etapas local: salto en Y / salto
+en la participación) recupera el efecto en el corte con el tratamiento
+vinculado: **0,086 frente a 0,090, cobertura 0,96**; la regresión y el
+DML dan −0,55. Con vínculo del 50 %, 0,044; con Hot-Deck, 0,007 (≈0).
+La RD sirve aunque no todos los elegibles reciban el programa, pero
+sigue necesitando el vínculo hogar por hogar.
+
+**3. Causa del sesgo de LinearDML.** Mismos datos, LinearDML con la
+regularización del proyecto y casi sin regularizar (alpha = 1e-6,
+C = 1e6):
+
+| Efecto nulo | Regresión EF | LinearDML (proyecto) | LinearDML sin regularizar |
+|---|---|---|---|
+| Oráculo | −0,002 (z −1,4) | −0,006 (z −3,7) | −0,002 (z −1,3) |
+| Vínculo 50 % | −0,000 (z −0,3) | −0,006 (z −3,4) | −0,002 (z −1,1) |
+| Hot-Deck | −0,000 (z −0,2) | −0,007 (z −4,5) | −0,003 (z −1,9) |
+
+La regularización explica el sesgo propio del DML: sin ella cae a la
+mitad o menos y deja de ser significativo. Con confusión observada y
+efecto distinto de cero queda además un sesgo común a la regresión y al
+DML sin regularizar (−0,004 a −0,006 con el efecto de base) que crece
+con el efecto (−0,0035, −0,006 y −0,007 con × 0,5, × 1 y × 2): es la
+ponderación desigual de un efecto heterogéneo por la varianza del
+tratamiento, no confusión. **Pendiente de decisión:** bajar la
+regularización en `5_estimacion.py` (cambiaría los ATE de datos reales en
+milésimas; hoy son un placebo ≈0).
 
 ## Qué significa para la tesis
 
