@@ -116,8 +116,6 @@ def discontinuidad_difusa(y: np.ndarray, t: np.ndarray, puntaje: np.ndarray, cor
 
 
 def una_repeticion(b: pd.DataFrame, rep: int, n: int = ss.N_ENCUESTA) -> list[dict]:
-    import warnings
-    warnings.filterwarnings("ignore")
     filas = []
     for i_esc, (nombre, esc) in enumerate(ESCENARIOS.items()):
         rng = np.random.default_rng([SEED, rep, i_esc])

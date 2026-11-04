@@ -321,8 +321,6 @@ def _outcomes(d: pd.DataFrame, y0: np.ndarray, tau: np.ndarray, t: np.ndarray) -
 
 
 def una_repeticion(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA, con_bosque: bool = False) -> list[dict]:
-    import warnings
-    warnings.filterwarnings("ignore")
     filas = []
     for i_esc, (nombre_esc, esc) in enumerate(ESCENARIOS.items()):
         rng = np.random.default_rng([SEED, rep, i_esc])
