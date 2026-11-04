@@ -145,7 +145,9 @@ de respuesta.
   (`fec_fin_encuesta` 2019-2026), no un corte único — filtrar por
   vigencia (`<=` fecha de corte), no por año exacto de encuesta (sesga
   hacia actualizaciones recientes). Ver
-  `docs/resultados/COMPARACION_FILTROS_SDP.md`.
+  `docs/resultados/COMPARACION_FILTROS_SDP.md`. El crudo no está en
+  `0_raw/` de Azure sino en `sisben/bogota/Sisben_03082026_bog.zip`
+  (un CSV de 587 MB, separador `;`).
 - IPM no comparte llave de hogar con GEIH/Sisbén — nunca intentar un
   cruce a nivel hogar entre IPM y las otras dos fuentes.
 - Nunca usar `I1`-`I15` ni `H_5` del Sisbén como outcome — son privaciones

@@ -162,9 +162,7 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
    covariable, en lugar del RUI.
 8. Actualizar el anteproyecto con el enfoque vigente.
 9. Pruebas: integración continua (GitHub Actions) para que corran en
-   cada PR; verificar la armonización de Bogotá con el archivo crudo del
-   SDP (no está en este equipo ni en Azure); medir cobertura
-   (`tests/README.md`, "Pendiente").
+   cada PR y medir cobertura (`tests/README.md`, "Pendiente").
 
 ## 5. Errores encontrados y corregidos (los que cambiaron resultados)
 

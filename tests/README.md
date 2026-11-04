@@ -50,7 +50,11 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
    contraste oficial y `3b` regeneran salidas idénticas
    (`assert_frame_equal`), la celda del Hot-Deck coincide en los 290.899
    hogares en celda exacta, las llaves y los jefes en las 2.489.049 filas
-   de los 12 meses, y las cotas de Fréchet-Manski byte a byte.
+   de los 12 meses, y las cotas de Fréchet-Manski byte a byte. Bogotá,
+   reconstruida desde el crudo del SDP (Azure,
+   `sisben/bogota/Sisben_03082026_bog.zip`), coincide columna por columna
+   con la versión en uso en los dos modos: 1.274.578 hogares por vigencia
+   y 75.488 por año exacto.
 
 ## Al agregar código
 
@@ -66,8 +70,5 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 
 - Integración continua: no hay `.github/workflows`; las pruebas solo
   corren a mano.
-- Verificar la armonización de Bogotá con el archivo crudo del SDP (no
-  está en este equipo ni en Azure): el cálculo de la edad es equivalente
-  por construcción (mismos cortes) y está probado con datos sintéticos.
 - Cobertura medida (`pytest-cov` no está instalado) y pruebas de
   regresión de las cifras documentadas.
