@@ -1,7 +1,9 @@
 # Resumen de Avances — Efecto Causal del Sisbén IV
 
-Última actualización: 2026-11-03 | Rama de trabajo `main`.
+Última actualización: 2026-11-04 | Rama de trabajo `main`.
 Seguimiento consolidado para revisión: [`README.md`](README.md).
+**Guía vigente de la tesis (enfoque del tutor y prioridades):**
+[`SEGUIMIENTO_TESIS_2026-11-04.md`](SEGUIMIENTO_TESIS_2026-11-04.md).
 
 **Versión consolidada.** Este documento se reescribió el 2026-11-02 para
 que conviva una sola versión metodológica. Las cifras de corridas
