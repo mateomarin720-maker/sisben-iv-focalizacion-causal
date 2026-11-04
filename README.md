@@ -154,7 +154,7 @@ Detalle completo de marco teórico, metodología y cronograma en
   `emparejamiento/`, `estimacion/` (DML/Causal Forest/Fréchet-Manski),
   `validacion/`, `utils/` (incluye Azure) y los scripts numerados `1_` a
   `7_` del flujo metodológico.
-- **`/tests`**: 99 pruebas automatizadas (`poetry run pytest tests/`),
+- **`/tests`**: 106 pruebas automatizadas (`poetry run pytest tests/`),
   casi todas con datos sintéticos; las que leen datos reales se saltan si
   no está el banco. Corren solas en GitHub Actions en cada push y PR
   (`.github/workflows/pruebas.yml`). Qué cubre cada una:
@@ -210,7 +210,7 @@ Resultados interpretados de cada paso en
 | Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida, contrastada hogar por hogar con la base oficial del DANE (93,9 % de coincidencia). |
 | P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
 | P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Evaluación semisintética (432 repeticiones): con Hot-Deck ningún estimador recupera un efecto conocido; haría falta vínculo hogar por hogar y RD con puntaje continuo. |
-| P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ⏳ No iniciado, depende de P1 y P2. |
+| P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ✅ Simulado (2026-11-04): un proxy de medios logra 82-85 % de la reducción ideal de FGT1 frente a 60 % de la clasificación imputada; las reglas con CATE estimado son peores (72 %, y 44 % con Hot-Deck). Ver `docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`. |
 
 Detalle completo, hallazgos y pendientes técnicos en
 [`docs/resultados/README.md`](docs/resultados/README.md) (resultados) y

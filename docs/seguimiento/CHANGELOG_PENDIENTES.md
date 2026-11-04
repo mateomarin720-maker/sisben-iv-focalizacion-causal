@@ -2,6 +2,36 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (15) — Reglas de focalización (P3/OE3)
+
+### Nuevo
+- `src/validacion/reglas_focalizacion.py`: siete reglas con el mismo
+  presupuesto (los hogares A/B vigentes) en el mundo semisintético, con
+  dos modelos del efecto (proporcional, el de P2, y monto fijo en pesos),
+  hasta 300 repeticiones con error Monte Carlo. Usa el generador y los
+  estimadores de `simulacion_semisintetica.py`.
+- `docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`.
+- `tests/test_reglas_focalizacion.py` (7 pruebas) y 4 mutaciones nuevas:
+  20 de 20 detectadas; 106 pruebas.
+
+### Corregido antes de la corrida
+- La primera versión suponía un error normal del proxy de medios: los
+  hogares sin ingreso inflaban la desviación y la regla por brecha
+  esperada quedaba peor que la de ingreso predicho (62 % frente a 81 % del
+  ideal). Ahora promedia sobre los cuantiles empíricos del residuo.
+
+### Cifras
+- % de la reducción ideal de FGT1 (proporcional / monto fijo): vigente
+  imputada 60 / 61, aleatoria 47 / 47, proxy de medios 82 / 85, proxy +
+  CATE con vínculo 73 / 72, proxy + CATE con Hot-Deck 45 / 44.
+- Error de exclusión: vigente 43,5 %, proxy 18,6 %, CATE con Hot-Deck
+  55,5 %.
+
+### Commits de esta serie (sin autor agregado)
+- `4c93400` Integración continua: pruebas y prueba de mutación en GitHub
+  Actions (las dos corridas de GitHub, en `main` y en
+  `ediciones-hotdeck-sdp`, pasaron todos los pasos).
+
 ## 2026-11-04 (14) — Integración continua
 
 ### Nuevo

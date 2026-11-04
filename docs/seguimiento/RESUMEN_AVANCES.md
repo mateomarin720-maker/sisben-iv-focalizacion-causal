@@ -53,7 +53,8 @@ el efecto cuando hay confusión no observada
 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | ✅ con métricas por grupo |
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ 2026-11-03, hasta la convergencia |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 99 pruebas; 16 de 16 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| **Reglas de focalización (OE3)** | `src/validacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 106 pruebas; 20 de 20 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -136,6 +137,12 @@ partición por municipio el F1 macro cae de 0,50 a 0,44. Predice el grupo
 asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 
 ## 4. Pendientes, en orden
+
+0. **OE3 hecho el 2026-11-04** (`docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`):
+   un proxy de medios logra 82-85 % de la reducción ideal de la brecha;
+   las reglas con CATE estimado son peores (72 % con vínculo, 44 % con
+   Hot-Deck). Siguiente: presupuestos menores que la población pobre y
+   heterogeneidad más fuerte.
 
 1. **Evaluación semisintética: hecha hasta la convergencia 2026-11-03**
    (432 repeticiones; outcome de pobreza, efecto nulo, tres niveles de

@@ -229,15 +229,16 @@ departamentos: de 0,4 % en Valle del Cauca a 12,8 % en Putumayo.
 |---|---|
 | P1/OE1: determinantes y validez del Sisbén | Implementado (LASSO, Ridge y SHAP). Falta definir grupos y subgrupos de variables y la concordancia con la pobreza. |
 | P2/OE2: efecto causal sobre el bienestar | Estimación y cotas implementadas con indicador proxy de pobreza y con pobreza monetaria. Con los datos actuales el efecto no se identifica; la simulación cierra la parte metodológica. |
-| P3/OE3: reglas de focalización (FGT1) | No iniciado. Se plantea sobre la simulación semisintética. |
+| P3/OE3: reglas de focalización (FGT1) | Hecho en la simulación (2026-11-04): el proxy de medios logra 82-85 % de la reducción ideal de FGT1; las reglas con CATE estimado son peores. Ver [`RESULTADOS_REGLAS_FOCALIZACION.md`](../resultados/RESULTADOS_REGLAS_FOCALIZACION.md). |
 
 ## 8. Pendientes
 
 1. Evaluación semisintética: hecha hasta la convergencia el 2026-11-03.
    Quedan ajustes menores: sensibilidad al tamaño del efecto,
    discontinuidad difusa y la causa del sesgo pequeño de LinearDML.
-2. Definir y simular las reglas de asignación de transferencias
-   (P3/OE3) y reportar rangos de efectos.
+2. Reglas de focalización (P3/OE3): hechas el 2026-11-04. Quedan
+   presupuestos menores que la población pobre y heterogeneidad más
+   fuerte.
 3. Pobreza monetaria, fase 5: comparación con el IPM-GEIH y con el grupo
    imputado, por celda.
 4. Comparación de proxies del IPM, fases 3 a 5: decisiones pendientes
