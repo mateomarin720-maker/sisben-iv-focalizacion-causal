@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 26 de 26 mutaciones detectadas.
+Resultado del 2026-11-04: 29 de 29 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -80,11 +80,22 @@ MUTACIONES = [
     ("Cotas: MTS con la cota del contraste en el extremo equivocado", "src/estimacion/cotas_frechet_manski.py",
      "hi = np.minimum(hi, contraste(hi11))", "hi = np.minimum(hi, contraste(lo11_s))", "tests/test_cotas_frechet_manski.py"),
     # Sensibilidad: RD difusa
-    ("RD difusa: la participación se instrumenta consigo misma (MCO)", "src/validacion/sensibilidad_semisintetica.py",
+    ("RD difusa: la participación se instrumenta consigo misma (MCO)", "src/simulacion/estimadores.py",
      "Z = np.column_stack([np.ones_like(dd), z, dd, z * dd])", "Z = np.column_stack([np.ones_like(dd), tt, dd, z * dd])",
      "tests/test_sensibilidad_semisintetica.py"),
-    ("RD difusa: error estándar sin los residuos", "src/validacion/sensibilidad_semisintetica.py",
+    ("RD difusa: error estándar sin los residuos", "src/simulacion/estimadores.py",
      "Zwe = Z * (w * e)[:, None]", "Zwe = Z * (w * 0.1)[:, None]", "tests/test_sensibilidad_semisintetica.py"),
+    # Módulo de simulación
+    ("Simulación: código de celda int8 desborda los grados de libertad", "src/simulacion/estimadores.py",
+     "gl = len(y) - D.shape[1] - (int(celda.max()) + 1)", "gl = len(y) - D.shape[1] - (celda.max() + 1)",
+     "tests/test_simulacion_semisintetica.py"),
+    ("Simulación: el contrato acepta un alias de columna", "src/simulacion/contrato.py",
+     'faltan = [c for c in obligatorias if c not in tabla.columns]',
+     'faltan = [c for c in obligatorias if c not in tabla.columns and c.replace("jefe_sexo", "sexo_jefe") not in tabla.columns]',
+     "tests/test_simulacion_contrato.py"),
+    ("Simulación: el contrato no revisa dominios", "src/simulacion/contrato.py",
+     "ok = col.validar(filas[nombre]).fillna(False).astype(bool)", "ok = filas[nombre].notna()",
+     "tests/test_simulacion_contrato.py"),
     # Variabilidad de la imputación del Hot-Deck
     ("Variabilidad: concordancia con el estimador sesgado (incluye el par consigo mismo)",
      "src/validacion/variabilidad_hotdeck.py",

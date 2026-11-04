@@ -54,6 +54,13 @@ documentado y preferiblemente cubierto por pruebas.
     separado, sin suponer independencia condicional. Ver
     `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
 
+- **`simulacion/`** (módulo del framework, 2026-11-04)
+  - Evaluación semisintética reutilizable: qué estimador recupera un
+    efecto conocido y cuánto se pierde según el vínculo entre fuentes.
+    Exige las columnas canónicas (`contrato.py`, sin alias) y calcula la
+    celda y lo derivado. `python -m src.simulacion [n_jobs]`. Diseño en
+    `docs/metodologia/DISENO_MODULO_SIMULACION.md`.
+
 - **`validacion/`**
   - Chequeos de calidad: `validar_cobertura_celdas_hotdeck.py`,
     `verificar_esquema_armonizado.py`, `revisar_faltantes_modulos_geih.py`,

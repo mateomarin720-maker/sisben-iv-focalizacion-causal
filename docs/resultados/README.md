@@ -61,7 +61,7 @@ historial de correcciones está en
 | 6 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
 | 7 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) |
 | 8 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) |
-| 9 | Evaluación semisintética | `src/validacion/simulacion_semisintetica.py` | [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md) |
+| 9 | Evaluación semisintética | `src/simulacion/` | [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md) |
 | 10 | Reglas de focalización (OE3) | `src/validacion/reglas_focalizacion.py` | [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md) |
 | 11 | Variabilidad de la imputación del Hot-Deck | `src/validacion/variabilidad_hotdeck.py` | [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](RESULTADOS_VARIABILIDAD_HOTDECK.md) |
 
@@ -258,7 +258,7 @@ poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
 poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
-poetry run python -m src.validacion.simulacion_semisintetica
+poetry run python -m src.simulacion
 poetry run python -m src.validacion.reglas_focalizacion
 poetry run python -m src.validacion.sensibilidad_semisintetica
 poetry run python -m src.validacion.variabilidad_hotdeck 2

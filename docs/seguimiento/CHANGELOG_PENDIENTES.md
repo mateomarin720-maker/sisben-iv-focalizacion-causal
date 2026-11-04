@@ -2,6 +2,42 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (21) — Módulo `src/simulacion/`: contrato y traslado (pasos 1-3 del diseño)
+
+### Nuevo
+- `src/simulacion/`: `contrato`, `base`, `escenarios`, `asignacion`,
+  `vinculo`, `estimadores`, `evaluacion`, `reportes` y `__main__`
+  (`python -m src.simulacion [n_jobs]`).
+- `contrato.py`: columnas obligatorias de las tablas de hogares y de
+  registro con sus dominios; `validar()` falla nombrando cada columna
+  faltante o código fuera de dominio. Desaparece `COLUMNAS` (permitía
+  remapear nombres). La celda se calcula con `construir_celda`, no se
+  recibe.
+- Pruebas: `test_simulacion_contrato.py`, `test_simulacion_equivalencia.py`
+  (referencia en `tests/referencia/`, generada con la versión anterior) y
+  2 en `test_simulacion_semisintetica.py`; 3 mutaciones. 176 pruebas, 29
+  de 29 mutaciones detectadas.
+
+### Cambiado
+- `src/validacion/simulacion_semisintetica.py` se borra; la sensibilidad,
+  las reglas de focalización y las pruebas importan de `src/simulacion/`.
+  `discontinuidad_difusa` pasa a `simulacion/estimadores.py`.
+- Las reglas de focalización ya no descartan filas con faltantes en las
+  columnas canónicas: el contrato las rechaza (en la base real no hay).
+
+### Corregido
+- Códigos de celda `int8`/`int16` (de `cat.codes`) desbordaban los grados
+  de libertad de `regresion_efectos_fijos`; con las 993 celdas reales,
+  por encima de 32.767 hogares en la encuesta. No afectó las corridas
+  publicadas (30.000 hogares).
+- `tablas_markdown` no se llamaba en `main`.
+
+### Comprobado
+- Con los datos reales, tabla de trabajo y repetición 0 idénticas a la
+  versión anterior; la repetición 0 de la sensibilidad y de las reglas
+  coincide con los CSV publicados (1e-16 con un hilo de BLAS). Las
+  cifras publicadas no cambian.
+
 ## 2026-11-04 (20) — Prioridad 2 de la guía: diseño del módulo de simulación
 
 ### Nuevo

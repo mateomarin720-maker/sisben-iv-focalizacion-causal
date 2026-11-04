@@ -1,5 +1,5 @@
 """Sensibilidad de la evaluación semisintética (complemento de
-`simulacion_semisintetica.py`, mismo generador y mismos hogares reales).
+`src/simulacion/`, mismo generador y mismos hogares reales).
 
 Tres preguntas que dejó abierta la corrida principal:
 
@@ -41,7 +41,15 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression, Ridge
 from sklearn.pipeline import make_pipeline
 
-from src.validacion import simulacion_semisintetica as ss
+from src.simulacion import contrato
+from src.simulacion.asignacion import asignar
+from src.simulacion.base import diseno_x, preparar_base
+from src.simulacion.escenarios import ESCENARIOS as ESCENARIOS_BASE
+from src.simulacion.escenarios import H_RD, N_ENCUESTA, TAU, VINCULOS
+from src.simulacion.estimadores import (discontinuidad, discontinuidad_difusa, estimacion5, pesos_rd,
+                                        regresion_efectos_fijos)
+from src.simulacion.evaluacion import HOGARES, REGISTRO, p_t_por_celda
+from src.simulacion.vinculo import sortear_donante
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -59,8 +67,8 @@ UMBRAL_MCSE_DEFECTO = 0.003
 MIN_REPS, MAX_REPS, LOTE = 60, 400, 12
 PARTICIPACION = (0.2, 0.8)  # P(participa | no elegible), P(participa | elegible)
 
-_obs = ss.ESCENARIOS["confusion_observada"]
-_corte = ss.ESCENARIOS["regla_corte"]
+_obs = ESCENARIOS_BASE["confusion_observada"]
+_corte = ESCENARIOS_BASE["regla_corte"]
 ESCENARIOS = {
     "efecto_nulo": dict(_obs, factor_tau=0.0),
     **{f"confusion_observada_x{f}": dict(_obs, factor_tau=f) for f in (0.5, 1.0, 2.0)},
@@ -72,7 +80,7 @@ ESCENARIOS = {
 def _modelos_poco_regularizados():
     """Los mismos codificadores de `5_estimacion.py`, casi sin
     regularización: Ridge alpha=1e-6 y logística C=1e6."""
-    est5 = ss._est5()
+    est5 = estimacion5()
     w_cat, w_num = est5.W_CELDA
     columnas = est5.X_COLS + w_cat + w_num
     categoricas = est5.X_CATEGORICAS + w_cat
@@ -85,7 +93,7 @@ def _modelos_poco_regularizados():
 def linear_dml(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, regularizado: bool) -> tuple[float, float, float]:
     from econml.dml import LinearDML
 
-    est5 = ss._est5()
+    est5 = estimacion5()
     modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA) if regularizado else _modelos_poco_regularizados()
     m = LinearDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, random_state=SEED)
     X = d[est5.X_COLS].to_numpy(float)
@@ -94,32 +102,11 @@ def linear_dml(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, regularizado: bool
     return float(m.ate(X)), float(lo), float(hi)
 
 
-def discontinuidad_difusa(y: np.ndarray, t: np.ndarray, puntaje: np.ndarray, corte: float,
-                          h: float) -> tuple[float, float, float]:
-    """RD difusa local lineal: mínimos cuadrados en dos etapas con kernel
-    triangular; la participación T se instrumenta con 1(puntaje ≥ corte).
-    El efecto es el salto en Y dividido por el salto en la participación.
-    Error estándar robusto."""
-    w = ss._pesos_rd(puntaje, corte, h)
-    m = w > 0
-    dd, yy, tt, w = puntaje[m] - corte, y[m], t[m].astype(float), w[m]
-    z = (dd >= 0).astype(float)
-    X = np.column_stack([np.ones_like(dd), tt, dd, z * dd])
-    Z = np.column_stack([np.ones_like(dd), z, dd, z * dd])
-    ZwX_inv = np.linalg.pinv((Z * w[:, None]).T @ X)
-    beta = ZwX_inv @ (Z * w[:, None]).T @ yy
-    e = yy - X @ beta
-    Zwe = Z * (w * e)[:, None]
-    V = ZwX_inv @ (Zwe.T @ Zwe) @ ZwX_inv.T
-    se = np.sqrt(V[1, 1])
-    return beta[1], beta[1] - 1.96 * se, beta[1] + 1.96 * se
-
-
-def una_repeticion(b: pd.DataFrame, rep: int, n: int = ss.N_ENCUESTA) -> list[dict]:
+def una_repeticion(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -> list[dict]:
     filas = []
     for i_esc, (nombre, esc) in enumerate(ESCENARIOS.items()):
         rng = np.random.default_rng([SEED, rep, i_esc])
-        elegible, puntaje, corte = ss.asignar(b, esc, rng)
+        elegible, puntaje, corte = asignar(b, esc, rng)
         t_real = ((rng.random(len(b)) < np.where(elegible == 1, PARTICIPACION[1], PARTICIPACION[0])).astype(int)
                   if esc.get("difusa") else elegible)
         idx = rng.permutation(len(b))
@@ -128,22 +115,22 @@ def una_repeticion(b: pd.DataFrame, rep: int, n: int = ss.N_ENCUESTA) -> list[di
         celda = d["hotdeck_celda_cat"].to_numpy()
         tau = esc.get("factor_tau", 1.0) * d["tau"].to_numpy()
         y = d["y0"].to_numpy() + tau * t_real[enc]
-        donante = reg[ss.sortear_donante(celda, b["hotdeck_celda_cat"].to_numpy()[reg], rng)]
-        Z = ss._diseno_x(d)
-        h = ss.H_RD * float(np.std(puntaje))
-        w_rd = ss._pesos_rd(puntaje[enc], corte, h) if esc.get("corte") else None
-        for vinculo, frac in ss.VINCULOS.items():
+        donante = reg[sortear_donante(celda, b["hotdeck_celda_cat"].to_numpy()[reg], rng)]
+        Z = diseno_x(d)
+        h = H_RD * float(np.std(puntaje))
+        w_rd = pesos_rd(puntaje[enc], corte, h) if esc.get("corte") else None
+        for vinculo, frac in VINCULOS.items():
             usa = rng.random(n) < frac
             t_obs = np.where(usa, t_real[donante], t_real[enc])
             p_obs = np.where(usa, puntaje[donante], puntaje[enc])
-            res = {"regresion_efectos_fijos": ss.regresion_efectos_fijos(y, t_obs, Z, celda)}
+            res = {"regresion_efectos_fijos": regresion_efectos_fijos(y, t_obs, Z, celda)}
             if esc.get("corte") is None or esc.get("factor_tau", 1.0) == 1.0 or esc.get("difusa"):
                 res["linear_dml"] = linear_dml(d, y, t_obs, regularizado=True)
                 res["linear_dml_sin_regularizar"] = linear_dml(d, y, t_obs, regularizado=False)
             verdades = {k: float(tau.mean()) for k in res}
             if w_rd is not None:
                 res["discontinuidad_rd"] = (discontinuidad_difusa(y, t_obs, p_obs, corte, h) if esc.get("difusa")
-                                            else ss.discontinuidad(y, p_obs, corte, h))
+                                            else discontinuidad(y, p_obs, corte, h))
                 verdades["discontinuidad_rd"] = float(np.average(tau, weights=w_rd))
             for est, (a, lo, hi) in res.items():
                 filas.append(dict(rep=rep, escenario=nombre, vinculo=vinculo, estimador=est,
@@ -170,20 +157,15 @@ def sin_converger(res: pd.DataFrame) -> pd.DataFrame:
 
 
 def _firma(n: int) -> str:
-    cfg = dict(ESCENARIOS=ESCENARIOS, PARTICIPACION=PARTICIPACION, SEED=SEED, n=n, TAU=ss.TAU, version=1)
+    cfg = dict(ESCENARIOS=ESCENARIOS, PARTICIPACION=PARTICIPACION, SEED=SEED, n=n, TAU=TAU, version=1)
     return hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:12]
 
 
-def main(n_jobs: int = 3, n: int = ss.N_ENCUESTA) -> pd.DataFrame:
+def main(n_jobs: int = 3, n: int = N_ENCUESTA) -> pd.DataFrame:
     from joblib import Parallel, delayed, parallel_config
 
-    from src.estimacion.cotas_frechet_manski import _p_t_por_celda
-
-    sisben = pd.read_parquet(ss.SISBEN, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "Grupo",
-                                                  "Clasificacion"])
-    p_t = _p_t_por_celda(sisben)["p_t"]
-    del sisben
-    b = ss.preparar_base(pd.read_parquet(ss.BASE, columns=list(ss.COLUMNAS.values())), p_t)
+    p_t = p_t_por_celda(pd.read_parquet(REGISTRO, columns=contrato.columnas("registro")))
+    b = preparar_base(pd.read_parquet(HOGARES, columns=contrato.columnas("hogares")), p_t)
 
     r = pd.read_csv(OUT) if (OUT.exists() and OUT_FIRMA.exists()
                              and json.loads(OUT_FIRMA.read_text()).get("firma") == _firma(n)) else pd.DataFrame()

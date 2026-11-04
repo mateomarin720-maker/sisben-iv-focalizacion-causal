@@ -6,7 +6,7 @@ Con los datos actuales el efecto del Sisbén no está identificado (P2,
 `docs/resultados/SIMULACION_SEMISINTETICA.md`), así que el OE3 se responde
 sobre el mismo mundo semisintético: **hogares, ingresos y líneas de
 pobreza reales** de GEIH 2024 y un programa con efecto conocido tau(X)
-(el de `simulacion_semisintetica.py`). Las cifras son simuladas: dicen
+(el de `src/simulacion/`). Las cifras son simuladas: dicen
 qué regla funcionaría mejor si el efecto fuera ese, no cuánto reduce hoy
 la pobreza el Sisbén.
 
@@ -76,7 +76,13 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder
 
-from src.validacion import simulacion_semisintetica as ss
+from src.simulacion import contrato
+from src.simulacion.asignacion import asignar
+from src.simulacion.base import preparar_base
+from src.simulacion.escenarios import ESCENARIOS, TAU
+from src.simulacion.estimadores import estimacion5
+from src.simulacion.evaluacion import HOGARES, REGISTRO, p_t_por_celda
+from src.simulacion.vinculo import sortear_donante
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -108,8 +114,8 @@ TIPOS_EFECTO = ("proporcional", "monto_fijo")
 def preparar(df: pd.DataFrame, p_t_celda: pd.Series) -> pd.DataFrame:
     """La base del generador semisintético más las variables del proxy de
     medios, el grupo vigente imputado y el peso por personas."""
-    df = df.dropna(subset=list(ss.COLUMNAS.values())).reset_index(drop=True)
-    b = ss.preparar_base(df, p_t_celda)
+    df = df.reset_index(drop=True)  # faltantes en columnas canónicas: los rechaza el contrato
+    b = preparar_base(df, p_t_celda)
     assert len(b) == len(df), "preparar_base descartó filas: los índices dejarían de coincidir"
     for c in PMT_NUMERICAS:
         b[c] = pd.to_numeric(df[c], errors="coerce").fillna(0).astype(float)
@@ -172,7 +178,7 @@ def ajustar_bosque(d: pd.DataFrame, y: np.ndarray, t: np.ndarray):
     evaluación semisintética. Devuelve el modelo ajustado."""
     from econml.dml import CausalForestDML
 
-    est5 = ss._est5()
+    est5 = estimacion5()
     modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA)
     m = CausalForestDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, n_estimators=200,
                         min_samples_leaf=50, random_state=SEED, n_jobs=1)
@@ -221,10 +227,10 @@ def una_repeticion(b: pd.DataFrame, rep: int) -> list[dict]:
     media = pmt.predict(ev[PMT_CATEGORICAS + PMT_NUMERICAS])
 
     # El mundo semisintético: T verdadero y T por Hot-Deck (donante de la celda).
-    t_mundo, _, _ = ss.asignar(b, ss.ESCENARIOS[ESCENARIO], rng)
+    t_mundo, _, _ = asignar(b, ESCENARIOS[ESCENARIO], rng)
     t_en = t_mundo[idx[N_EVAL:N_EVAL + N_ENTRENA]]
-    donante = reg[ss.sortear_donante(en["hotdeck_celda_cat"].to_numpy(), b["hotdeck_celda_cat"].to_numpy()[reg], rng)]
-    x_cols = ss._est5().X_COLS
+    donante = reg[sortear_donante(en["hotdeck_celda_cat"].to_numpy(), b["hotdeck_celda_cat"].to_numpy()[reg], rng)]
+    x_cols = estimacion5().X_COLS
     y0_en, tau_en, lp_en = en["y0"].to_numpy(), en["tau"].to_numpy(), en["lp"].to_numpy()
 
     filas = []
@@ -292,22 +298,17 @@ def pendientes(res: pd.DataFrame) -> list[str]:
 
 def _firma() -> str:
     cfg = dict(SEED=SEED, N_EVAL=N_EVAL, N_ENTRENA=N_ENTRENA, ESCENARIO=ESCENARIO, PMT_CATEGORICAS=PMT_CATEGORICAS,
-               PMT_NUMERICAS=PMT_NUMERICAS, REGLAS=REGLAS, TAU=ss.TAU, TIPOS_EFECTO=TIPOS_EFECTO, version=2)
+               PMT_NUMERICAS=PMT_NUMERICAS, REGLAS=REGLAS, TAU=TAU, TIPOS_EFECTO=TIPOS_EFECTO, version=2)
     return hashlib.sha1(json.dumps(cfg, sort_keys=True).encode()).hexdigest()[:12]
 
 
 def main(n_jobs: int = 3) -> pd.DataFrame:
     from joblib import Parallel, delayed, parallel_config
 
-    from src.estimacion.cotas_frechet_manski import _p_t_por_celda
-
-    columnas = list(dict.fromkeys([*ss.COLUMNAS.values(), "Grupo_hotdeck", "fex", "personas_ug", *PMT_NUMERICAS,
+    columnas = list(dict.fromkeys([*contrato.columnas("hogares"), "Grupo_hotdeck", "fex", "personas_ug", *PMT_NUMERICAS,
                                    "viv_acueducto", "viv_alcantarillado"]))
-    sisben = pd.read_parquet(ss.SISBEN, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "Grupo",
-                                                  "Clasificacion"])
-    p_t = _p_t_por_celda(sisben)["p_t"]
-    del sisben
-    b = preparar(pd.read_parquet(ss.BASE, columns=columnas), p_t)
+    p_t = p_t_por_celda(pd.read_parquet(REGISTRO, columns=contrato.columnas("registro")))
+    b = preparar(pd.read_parquet(HOGARES, columns=columnas), p_t)
     logger.info("Base: %s hogares reales | A/B vigente %.1f %% de los hogares", f"{len(b):,}", 100 * b["vigente_ab"].mean())
 
     r = pd.read_csv(OUT) if (OUT.exists() and OUT_FIRMA.exists()

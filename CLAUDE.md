@@ -156,6 +156,10 @@ de respuesta.
 
 ## Convenciones de datos
 
+- **Módulo de simulación (`src/simulacion/`):** exige las columnas
+  canónicas (`contrato.py`) y las valida; no agregar alias, mapeos ni
+  columnas derivadas como entrada (la celda la calcula el módulo).
+
 - **Reglas compartidas entre fuentes en un solo lugar:**
   `src/utils/variables_canonicas.py` (desde 2026-11-04). Usarlo, no
   copiar la regla en otro módulo — hasta esa fecha la normalización de
@@ -194,7 +198,7 @@ poetry run python -m src.estimacion.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
 poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
-poetry run python -m src.validacion.simulacion_semisintetica
+poetry run python -m src.simulacion
 poetry run python -m src.validacion.reglas_focalizacion
 poetry run python -m src.validacion.sensibilidad_semisintetica
 poetry run python -m src.validacion.variabilidad_hotdeck 2
@@ -212,7 +216,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 26 de 26 el 2026-11-04). Antes de mapear una
+cuando el error vuelve; 29 de 29 el 2026-11-04). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 
