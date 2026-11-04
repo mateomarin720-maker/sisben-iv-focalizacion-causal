@@ -65,6 +65,7 @@ DEPARTAMENTAL/
 *.sav
 !docs/reports/*.csv
 !data/*.csv
+!tests/referencia/*.csv
 
 # Logs y scripts temporales de diagnostico
 # ----------------------------------------------------------------
