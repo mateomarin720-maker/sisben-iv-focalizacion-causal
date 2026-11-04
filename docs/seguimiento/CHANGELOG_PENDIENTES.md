@@ -33,6 +33,9 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 ### Commits de esta serie (sin autor agregado)
 - `09de1cb` Cotas de Fréchet-Manski con supuestos de monotonía (las dos
   corridas de GitHub Actions pasaron).
+- `ca02d57` Sensibilidad de la simulación semisintética y borrador de
+  solicitud del puntaje continuo (esta entrada; GitHub Actions pasó en
+  las dos ramas).
 
 ## 2026-11-04 (16) — Cotas con supuestos de monotonía
 
