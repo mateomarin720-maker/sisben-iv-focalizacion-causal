@@ -27,10 +27,10 @@ estimar nada.
 ## 2. Regla de nombres: el módulo exige, no traduce
 
 Regla del tutor (2026-11-03): los nombres estandarizados de GEIH y Sisbén
-no se cambian ni se hacen configurables. Hoy
-`src/validacion/simulacion_semisintetica.py` tiene un diccionario
-`COLUMNAS` que permite mapear otros nombres; **ese diccionario
-desaparece**. En su lugar:
+no se cambian ni se hacen configurables. Hasta el 2026-11-04,
+`src/validacion/simulacion_semisintetica.py` tenía un diccionario
+`COLUMNAS` que permitía mapear otros nombres; **ese diccionario
+desapareció**. En su lugar:
 
 - El módulo publica la lista de columnas que exige cada tabla
   (`contrato.py`, sección 3).
@@ -87,7 +87,7 @@ celda en el generador.
 | `geo_depto` | Código DANE de 2 dígitos |
 | `jefe_edad` | Código de ciclo de vida de `PER002` (3-6) |
 | `viv_cuartos` | Conteo ≥ 1 |
-| `viv_pisos` | Códigos del Sisbén (1-5, orden inverso al de la GEIH) |
+| `viv_pisos` | Códigos del Sisbén (1-6, orden inverso al de la GEIH; 6 = otro, sin par en la GEIH) |
 | `Grupo` | `A`-`D` |
 | `Clasificacion` | No nula en los hogares clasificados |
 
@@ -181,6 +181,17 @@ resultados reales o cerca de ellos. En el módulo:
   asterisco.
 
 ## 7. Migración desde `src/validacion/`
+
+**Estado (2026-11-04): pasos 1 a 3 hechos.** Comprobación: con los datos
+reales, la tabla de trabajo (290.968 hogares) y las 150 filas de la
+repetición 0 son idénticas a las de la versión anterior; la repetición 0
+de la sensibilidad y de las reglas de focalización coincide con los CSV
+publicados (diferencia máxima 1e-16 con un hilo de BLAS; con varios
+hilos, 1e-6, por el orden de las sumas). Al mover el código apareció un
+error que no daba aviso: los códigos de celda en `int8`/`int16` se
+desbordaban en `regresion_efectos_fijos` (con 993 celdas, por encima de
+32.767 hogares en la encuesta); se corrigió con prueba y mutación. Además,
+`tablas_markdown` no se llamaba en `main`: ahora sí.
 
 El código ya existe y produjo cifras publicadas (432 repeticiones,
 `SIMULACION_SEMISINTETICA.md`). La migración no puede moverlas en

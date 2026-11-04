@@ -1,6 +1,8 @@
 # Evaluación semisintética: recuperación de un efecto conocido sobre hogares reales
 
-Generado 2026-11-03 por `src/validacion/simulacion_semisintetica.py`.
+Generado 2026-11-03 por `src/validacion/simulacion_semisintetica.py`,
+hoy el módulo `src/simulacion/` (mismo código, resultados idénticos;
+`docs/metodologia/DISENO_MODULO_SIMULACION.md`).
 **432 repeticiones hasta la convergencia** (Causal Forest en 216), encuesta
 de 30.000 hogares por repetición. Salidas en `docs/reports/`:
 `simulacion_semisintetica.txt` (consola), `_resumen.csv` (métricas con su
@@ -298,8 +300,8 @@ milésimas; hoy son un placebo ≈0).
 ## Para reproducir
 
 ```bash
-PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.simulacion_semisintetica 3 > docs/reports/simulacion_semisintetica.txt 2>&1
-poetry run pytest tests/test_simulacion_semisintetica.py
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion 3 > docs/reports/simulacion_semisintetica.txt 2>&1
+poetry run pytest tests/test_simulacion_semisintetica.py tests/test_simulacion_contrato.py tests/test_simulacion_equivalencia.py
 ```
 
 El argumento es el número de procesos en paralelo. Con el equipo libre

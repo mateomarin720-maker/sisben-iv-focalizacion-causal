@@ -32,7 +32,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Tarea | Estado al 4 nov | Evidencia |
 | --- | --- | --- |
 | Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Pendiente | Aún no hay script ni reporte |
-| Simulación como módulo independiente, con modo de datos propios y modo simulado | Pendiente | Hoy vive en `src/validacion/simulacion_semisintetica.py`, con un contrato de columnas (`COLUMNAS`) |
+| Simulación como módulo independiente, con modo de datos propios y modo simulado | En curso (pasos 1-3 de 7) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
 | Evaluación semisintética completa | En gran parte hecha | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Falta la cadena completa de respaldos del Hot-Deck simulado |
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov | `RESULTADOS_REGLAS_FOCALIZACION.md` y `RESULTADOS_FRECHET_MANSKI.md` |
 | Recomendación de variables | Pendiente | Insumo disponible: OE1 con LASSO, Ridge y SHAP |
@@ -183,8 +183,10 @@ Comprobado contra el repositorio al incorporar este documento:
   con una población sintética calibrada solo con agregados, y datos
   propios), contrato de columnas canónicas que se valida y no se
   traduce (desaparece `COLUMNAS`), asterisco en toda salida simulada y
-  migración en siete pasos con prueba de equivalencia. Falta la
-  implementación.
+  migración en siete pasos con prueba de equivalencia. Pasos 1 a 3
+  hechos el mismo día: `src/simulacion/` con el contrato validado,
+  resultados idénticos a la versión anterior, módulo anterior borrado.
+  Faltan la cadena de respaldos, el asterisco y los dos modos.
 - **Prioridad 1 hecha el mismo día:**
   `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
   hogar, dos sorteos coinciden en el grupo el 34,4 % de las veces y en
@@ -201,7 +203,6 @@ Comprobado contra el repositorio al incorporar este documento:
   `LinearDRLearner`; se decide en la depuración (prioridad 6).
 - **Conteo de pruebas:** 138 en total; en GitHub Actions 131 pasan y 7 se
   saltan (sin datos); con los datos, pasan las 138.
-- **Regla de nombres fijos y `COLUMNAS` (prioridad 2):** el contrato de
-  columnas de `simulacion_semisintetica.py` permite hoy remapear nombres.
-  Con la regla del tutor, el módulo `src/simulacion/` debe exigir los
-  nombres canónicos y validar que estén, no renombrarlos.
+- **Regla de nombres fijos y `COLUMNAS` (prioridad 2):** resuelto el
+  2026-11-04. `COLUMNAS` desapareció; `src/simulacion/contrato.py` exige
+  los nombres canónicos y valida sus códigos, sin renombrar.

@@ -54,9 +54,9 @@ el efecto cuando hay confusión no observada
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | ✅ |
 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | ✅ con métricas por grupo |
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
-| **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ 2026-11-03, hasta la convergencia |
+| **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/validacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 145 pruebas; 26 de 26 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 176 pruebas; 29 de 29 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 

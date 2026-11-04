@@ -1,6 +1,6 @@
 # Pruebas
 
-145 pruebas en 14 archivos (2026-11-04). Casi todas usan datos
+176 pruebas en 16 archivos (2026-11-04). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -50,12 +50,14 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_reglas_focalizacion.py` | `validacion/reglas_focalizacion.py` | Brecha y efecto (proporcional y monto fijo), reducción esperada sobre los residuos, elección de los k mejores, errores de inclusión/exclusión ponderados por personas, la regla ideal nunca pierde, el proxy de medios sin el ingreso | |
 | `test_sensibilidad_semisintetica.py` | `validacion/sensibilidad_semisintetica.py` | RD difusa insesgada y con cobertura ≈95 % en 100 semillas; la RD nítida sobre participación difusa se atenúa; escenarios y versión sin regularizar del DML | |
 | `test_variabilidad_hotdeck.py` | `validacion/variabilidad_hotdeck.py` | Concordancia entre sorteos insesgada y convergente a la teórica de la celda; CV y error relativo por celda ponderados; contraste con efectos fijos igual a MCO con indicadoras; reglas de Rubin | |
-| `test_simulacion_semisintetica.py` | `validacion/simulacion_semisintetica.py` | Generador, Hot-Deck simulado, RD, MCSE | |
+| `test_simulacion_semisintetica.py` | `simulacion/*` | Generador, Hot-Deck simulado, RD, MCSE; efectos fijos con códigos de celda `int8` | Desborde con códigos de celda pequeños (2026-11-04) |
+| `test_simulacion_contrato.py` | `simulacion/contrato.py` | Falta cada columna obligatoria y el error la nombra; sin alias; códigos fuera de dominio (incluido "1.0"); faltantes; pisos del Sisbén frente a la GEIH; el registro solo revisa clasificados; opcionales; duplicadas | Volver a aceptar nombres distintos (regla del tutor) |
+| `test_simulacion_equivalencia.py` | `simulacion/evaluacion.py` | 3 repeticiones iguales a la versión anterior (`tests/referencia/`); columnas extra o en otro orden no cambian la base | Que una refactorización mueva los resultados publicados |
 
 ## Cómo se comprobó que las pruebas sirven
 
 1. **Mutación** (`tests/mutaciones.py`): se reintroduce cada error ya
-   documentado (26 en total; los 16 de la primera versión: los tres del mapeo de vivienda, la celda
+   documentado (29 en total; los 16 de la primera versión: los tres del mapeo de vivienda, la celda
    como número en el DML, dos de las cotas, una privación del Sisbén como
    predictor, el filtro por año exacto, el jefe equivocado, llaves sin
    normalizar, un corte de edad distinto, el prefijo de "No ocupados", sin
@@ -67,8 +69,9 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
    positiva sin efecto y el MTS en el extremo equivocado; y 2 de la RD
    difusa: instrumentar la participación consigo misma y un error
    estándar sin residuos; y 2 de la variabilidad del Hot-Deck: concordancia
-   con el estimador sesgado y Rubin sin el factor (1 + 1/m)). **Las 26 hacen
-   fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
+   con el estimador sesgado y Rubin sin el factor (1 + 1/m); y 3 del módulo de
+   simulación: celda `int8` desbordada, un alias de columna aceptado y el
+   contrato sin revisar dominios). **Las 29 hacen fallar alguna prueba.** Una prueba que pasa con el error de vuelta no
    protege nada.
 2. **Estabilidad:** la suite pasó 5 de 5 veces seguidas, cada archivo por
    separado y en orden inverso. Las pruebas con azar usan semillas fijas

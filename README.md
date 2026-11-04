@@ -154,7 +154,7 @@ Detalle completo de marco teórico, metodología y cronograma en
   `emparejamiento/`, `estimacion/` (DML/Causal Forest/Fréchet-Manski),
   `validacion/`, `utils/` (incluye Azure) y los scripts numerados `1_` a
   `7_` del flujo metodológico.
-- **`/tests`**: 145 pruebas automatizadas (`poetry run pytest tests/`),
+- **`/tests`**: 176 pruebas automatizadas (`poetry run pytest tests/`),
   casi todas con datos sintéticos; las que leen datos reales se saltan si
   no está el banco. Corren solas en GitHub Actions en cada push y PR
   (`.github/workflows/pruebas.yml`). Qué cubre cada una:
@@ -191,7 +191,7 @@ Detalle completo de marco teórico, metodología y cronograma en
    cotas de Fréchet-Manski sin suponer independencia condicional. ✅
 8. **Evaluación semisintética** (efecto conocido, tratamiento reconstruido
    por Hot-Deck; escenarios de asignación aleatoria, confusión observada y
-   no observada, solapamiento débil; `validacion/simulacion_semisintetica.py`).
+   no observada, solapamiento débil; `simulacion/`).
    ✅ hasta la convergencia (432 repeticiones): con Hot-Deck todo
    estimador devuelve ≈0 aunque el efecto verdadero sea +0,095; solo la
    RD con puntaje continuo y vínculo hogar por hogar resiste la confusión
