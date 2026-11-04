@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 24 de 24 mutaciones detectadas.
+Resultado del 2026-11-04: 26 de 26 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -85,6 +85,13 @@ MUTACIONES = [
      "tests/test_sensibilidad_semisintetica.py"),
     ("RD difusa: error estándar sin los residuos", "src/validacion/sensibilidad_semisintetica.py",
      "Zwe = Z * (w * e)[:, None]", "Zwe = Z * (w * 0.1)[:, None]", "tests/test_sensibilidad_semisintetica.py"),
+    # Variabilidad de la imputación del Hot-Deck
+    ("Variabilidad: concordancia con el estimador sesgado (incluye el par consigo mismo)",
+     "src/validacion/variabilidad_hotdeck.py",
+     "return (conteos * (conteos - 1)).sum(axis=1) / (r * (r - 1))", "return (conteos * conteos).sum(axis=1) / (r * r)",
+     "tests/test_variabilidad_hotdeck.py"),
+    ("Variabilidad: reglas de Rubin sin el factor (1 + 1/m)", "src/validacion/variabilidad_hotdeck.py",
+     "total = w + (1 + 1 / m) * b", "total = w + b", "tests/test_variabilidad_hotdeck.py"),
 ]
 
 resultados = []
