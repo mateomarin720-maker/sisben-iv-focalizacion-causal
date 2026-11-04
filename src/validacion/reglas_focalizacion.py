@@ -209,8 +209,6 @@ def metricas(d: pd.DataFrame, t: np.ndarray, tipo: str) -> dict:
 # --------------------------------------------------------------------------
 
 def una_repeticion(b: pd.DataFrame, rep: int) -> list[dict]:
-    import warnings
-    warnings.filterwarnings("ignore")
     rng = np.random.default_rng([SEED, rep])
     idx = rng.permutation(len(b))
     ev = b.iloc[idx[:N_EVAL]].reset_index(drop=True)                      # donde se aplican las reglas

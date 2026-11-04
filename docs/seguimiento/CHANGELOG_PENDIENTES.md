@@ -2,6 +2,19 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (18) — Prioridad 7 de la guía: pytest del proyecto y filtros de advertencias
+
+- `pyproject.toml`: `[tool.pytest.ini_options]` con `pythonpath = ["."]`.
+  `poetry run pytest` (ejecutable de pytest) no ponía la raíz en el path
+  y 5 archivos no cargaban `src.*`; ahora pasan las 138.
+- Quitado `warnings.filterwarnings("ignore")` de
+  `simulacion_semisintetica.py`, `reglas_focalizacion.py` y
+  `sensibilidad_semisintetica.py`. Sin el filtro, una repetición completa
+  de cada uno da 0 advertencias. Queda el de `prueba_ate_att_cate.py`
+  (exploratorio, fuera del pipeline) para la depuración.
+- Guía de la tesis: `docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md`
+  (commit `e415181`), con las reglas del tutor en `CLAUDE.md`.
+
 ## 2026-11-04 (17) — Sensibilidad de la simulación y solicitud del puntaje continuo
 
 ### Nuevo

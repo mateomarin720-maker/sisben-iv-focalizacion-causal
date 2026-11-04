@@ -178,6 +178,13 @@ Comprobado contra el repositorio al incorporar este documento:
   `seguimiento-readme`, `simulacion-identificacion` y
   `simulacion-identificacion-v2`. Revisar cuáles están integradas antes
   de archivarlas.
+- **Prioridad 7 hecha el mismo día:** `poetry run pytest` pasa (138) tras
+  agregar `pythonpath` en `pyproject.toml`; los tres scripts de
+  simulación ya no usan `warnings.filterwarnings("ignore")` (sin el
+  filtro, una repetición completa de cada uno da 0 advertencias: no
+  ocultaba nada). Queda uno en `src/estimacion/prueba_ate_att_cate.py`,
+  un script exploratorio del 21 de octubre fuera del pipeline que usa
+  `LinearDRLearner`; se decide en la depuración (prioridad 6).
 - **Conteo de pruebas:** 138 en total; en GitHub Actions 131 pasan y 7 se
   saltan (sin datos); con los datos, pasan las 138.
 - **Regla de nombres fijos y `COLUMNAS` (prioridad 2):** el contrato de

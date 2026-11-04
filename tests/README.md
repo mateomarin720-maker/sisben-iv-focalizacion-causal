@@ -5,9 +5,14 @@ sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
 ```bash
-poetry run pytest tests/                                            # suite completa (≈15 s)
+poetry run pytest                                                   # suite completa (≈15 s)
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py  # prueba de mutación (≈3 min)
 ```
+
+`poetry run pytest` funciona desde el 2026-11-04 (`[tool.pytest.ini_options]`
+en `pyproject.toml` pone la raíz del repositorio en el path; antes, 5
+archivos no cargaban `src.*`). Correr desde la raíz: las pruebas con datos
+reales buscan `data/` con rutas relativas a ella.
 
 ## Integración continua
 
