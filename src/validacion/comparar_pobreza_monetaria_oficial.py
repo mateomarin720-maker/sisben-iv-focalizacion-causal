@@ -35,6 +35,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from src.utils.variables_canonicas import normalizar_llave as _llave
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -46,8 +48,6 @@ LLAVE = ["llave_directorio", "llave_secuencia_p", "mes"]
 NUMERICAS = ["nper", "npersug", "ingtotug", "ingtotarr", "ingpcug", "lp", "li", "pobre", "indigente", "fex_c"]
 
 
-def _llave(s: pd.Series) -> pd.Series:
-    return pd.to_numeric(s, errors="coerce").astype("Int64").astype("string")
 
 
 def cargar_oficial(ruta: Path = OFICIAL) -> pd.DataFrame:

@@ -83,6 +83,12 @@ documentado y preferiblemente cubierto por pruebas.
     (los datos no se versionan en git).
   - `config.py`: carga `data/catalogo.yaml` y variables de entorno
     (`.env`) de forma centralizada para todos los scripts.
+  - `variables_canonicas.py`: reglas compartidas entre fuentes, en un
+    solo lugar (2026-11-04): `normalizar_llave`, `es_jefe` (jefe de hogar
+    por fuente) y `edad_a_ciclo` (edad en años → código de ciclo de vida
+    de `PER002`). Los módulos de armonización, el Hot-Deck, los
+    preprocesamientos y el contraste oficial lo usan en vez de copiar la
+    regla.
 
 - **`1_integracion.py`**
   - Script de integración de fuentes (ETL). Orquesta la ingesta de las

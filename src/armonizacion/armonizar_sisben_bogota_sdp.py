@@ -42,6 +42,8 @@ import sys
 from pathlib import Path
 import pandas as pd
 
+from src.utils.variables_canonicas import edad_a_ciclo, es_jefe
+
 OUT_DIR = Path("data/2_models")
 NACIONAL = OUT_DIR / "sisben_estandarizado_2024.parquet"
 FECHA_REF_EDAD = pd.Timestamp("2024-12-31")  # misma referencia que GEIH 2024
@@ -66,7 +68,7 @@ def armonizar_sisben_bogota(csv: str, modo: str = "vigencia") -> pd.DataFrame:
     df = pd.read_csv(csv, sep=";", usecols=COLS, dtype=str, encoding="utf-8-sig")
     k = ["ide_ficha_origen", "ide_hogar"]
     n_pers = df.groupby(k).size().rename("hog_num_personas").reset_index()
-    jefes_todos = df[df["tip_parentesco"] == "1"].drop_duplicates(k, keep="first")
+    jefes_todos = df[es_jefe(df, "sdp")].drop_duplicates(k, keep="first")
 
     fec_encuesta = pd.to_datetime(jefes_todos["fec_fin_encuesta"], errors="coerce")
     if modo == "vigencia":
@@ -100,8 +102,7 @@ def armonizar_sisben_bogota(csv: str, modo: str = "vigencia") -> pd.DataFrame:
         # Mismo CODIGO de ciclo de vida que PER002 del Sisbén nacional (corroborado
         # indirectamente, ver docs/DICCIONARIO_HOTDECK.md §5):
         # 3=12-17, 4=18-28, 5=29-59, 6=60+  (asi la celda del Hot-Deck es comparable)
-        "jefe_edad": pd.cut(((FECHA_REF_EDAD - nac).dt.days // 365.25), bins=[-1, 17, 28, 59, 200],
-                            labels=["3", "4", "5", "6"]).astype("object"),
+        "jefe_edad": edad_a_ciclo((FECHA_REF_EDAD - nac).dt.days // 365.25),
         "viv_paredes": h["tip_mat_paredes"],
         "viv_pisos": h["tip_mat_pisos"],
         "viv_cuartos": pd.to_numeric(h["num_cuartos_vivienda"], errors="coerce"),

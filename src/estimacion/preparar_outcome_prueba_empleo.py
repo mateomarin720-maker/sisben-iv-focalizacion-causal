@@ -27,6 +27,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.utils.variables_canonicas import es_jefe, normalizar_llave as _norm_llave
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -36,8 +38,6 @@ OUT = Path("data/2_models/muestra_estimacion_prueba.parquet")
 MESES = [f"{m:02d}" for m in range(1, 13)]
 
 
-def _norm_llave(serie: pd.Series) -> pd.Series:
-    return pd.to_numeric(serie, errors="coerce").astype("Int64").astype("string")
 
 
 def _outcome_mes(mes: str) -> pd.DataFrame | None:
@@ -51,7 +51,7 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
     k3 = ["DIRECTORIO", "SECUENCIA_P", "HOGAR"]
     for c in k3:
         cg[c] = _norm_llave(cg[c])
-    jefes = cg[_norm_llave(cg["P6050"]).astype("string") == "1"][[*k3, "ORDEN"]].copy()
+    jefes = cg[es_jefe(cg, "geih")][[*k3, "ORDEN"]].copy()
     jefes["ORDEN"] = _norm_llave(jefes["ORDEN"])
 
     if path_oc.exists():

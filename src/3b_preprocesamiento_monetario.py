@@ -33,9 +33,13 @@ de `3_preprocesamiento.py` + `ingreso_percapita`, `POBRE_MONETARIO`,
 from __future__ import annotations
 
 import logging
+import sys
 from pathlib import Path
 
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # raíz del repo: el script corre directo, no con -m
+from src.utils.variables_canonicas import normalizar_llave  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -73,11 +77,10 @@ def pegar_oficial(df: pd.DataFrame, oficial: pd.DataFrame) -> pd.DataFrame:
     normalizan antes del cruce (`mes` llega como "01" en la muestra y "1"
     en la base oficial)."""
     llave = ["llave_directorio", "llave_secuencia_p", "mes"]
-    norm = lambda s: pd.to_numeric(s, errors="coerce").astype("Int64").astype("string")  # noqa: E731
     o = oficial[[*llave, "pobre", "indigente"]].rename(
         columns={"pobre": "POBRE_MONETARIO_OFICIAL", "indigente": "POBRE_EXTREMO_OFICIAL"})
-    o[[f"_{c}" for c in llave]] = o[llave].apply(norm)
-    df = df.assign(**{f"_{c}": norm(df[c]) for c in llave})
+    o[[f"_{c}" for c in llave]] = o[llave].apply(normalizar_llave)
+    df = df.assign(**{f"_{c}": normalizar_llave(df[c]) for c in llave})
     o = o.drop(columns=llave)
     df = df.merge(o, on=[f"_{c}" for c in llave], how="left", validate="many_to_one")
     df = df.drop(columns=[f"_{c}" for c in llave])

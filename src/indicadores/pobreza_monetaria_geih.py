@@ -48,6 +48,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from src.utils.variables_canonicas import normalizar_llave as _norm_llave
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -86,8 +88,6 @@ ESCENARIOS = {
 }
 
 
-def _norm_llave(serie: pd.Series) -> pd.Series:
-    return pd.to_numeric(serie, errors="coerce").astype("Int64").astype("string")
 
 
 def _leer(mes: str, modulo: str, cols: list[str]) -> pd.DataFrame:
