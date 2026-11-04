@@ -189,8 +189,10 @@ Detalle completo de marco teórico, metodología y cronograma en
 8. **Evaluación semisintética** (efecto conocido, tratamiento reconstruido
    por Hot-Deck; escenarios de asignación aleatoria, confusión observada y
    no observada, solapamiento débil; `validacion/simulacion_semisintetica.py`).
-   ✅ primera versión: con Hot-Deck todo estimador que controla la celda
-   devuelve ≈0 aunque el efecto verdadero sea +0,095.
+   ✅ hasta la convergencia (432 repeticiones): con Hot-Deck todo
+   estimador devuelve ≈0 aunque el efecto verdadero sea +0,095; solo la
+   RD con puntaje continuo y vínculo hogar por hogar resiste la confusión
+   no observada.
 9. **Reporte** (`7_reporte/`): comparación FGT1 (OE3). ⏳ pendiente.
 
 Resultados interpretados de cada paso en
@@ -204,7 +206,7 @@ Resultados interpretados de cada paso en
 | Emparejamiento (Hot-Deck) | Asignar grupo Sisbén a GEIH | ✅ 99,98 % en celda exacta, celda con depto+edad+cuartos+pisos, código de edad (`PER002`) corroborado indirectamente. |
 | Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida, contrastada hogar por hogar con la base oficial del DANE (93,9 % de coincidencia). |
 | P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
-| P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. La evaluación semisintética tiene una primera versión; falta ampliarla (resultado binario, sensibilidad, más repeticiones). |
+| P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Evaluación semisintética (432 repeticiones): con Hot-Deck ningún estimador recupera un efecto conocido; haría falta vínculo hogar por hogar y RD con puntaje continuo. |
 | P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ⏳ No iniciado, depende de P1 y P2. |
 
 Detalle completo, hallazgos y pendientes técnicos en

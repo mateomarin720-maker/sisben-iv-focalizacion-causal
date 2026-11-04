@@ -30,7 +30,7 @@ def test_asignar_conserva_la_tasa_de_tratados_en_todos_los_escenarios():
     b = _base()
     pbar = (1 / (1 + np.exp(-b["logit_p_celda"]))).mean()
     for esc in ss.ESCENARIOS.values():
-        t = ss.asignar(b, esc, np.random.default_rng(1))
+        t = ss.asignar(b, esc, np.random.default_rng(1))[0]
         assert abs(t.mean() - pbar) < 0.03
 
 
@@ -45,7 +45,7 @@ def test_hotdeck_solo_sortea_donantes_de_la_misma_celda():
 def test_regresion_recupera_el_efecto_con_t_verdadero_y_se_anula_con_hotdeck():
     b = _base(n=20_000)
     rng = np.random.default_rng(3)
-    t = ss.asignar(b, ss.ESCENARIOS["confusion_observada"], rng)
+    t = ss.asignar(b, ss.ESCENARIOS["confusion_observada"], rng)[0]
     y = b["y0"].to_numpy() + b["tau"].to_numpy() * t
     Z = ss._diseno_x(b)
     celda = b["hotdeck_celda_cat"].to_numpy()
@@ -58,9 +58,37 @@ def test_regresion_recupera_el_efecto_con_t_verdadero_y_se_anula_con_hotdeck():
 
 def test_resumir_mide_sesgo_y_cobertura():
     r = pd.DataFrame({"rep": [0, 1], "escenario": "a", "vinculo": "oraculo", "estimador": "e",
-                      "ate_verdadero": [0.1, 0.1], "estimacion": [0.12, 0.08], "ic_lo": [0.05, 0.02],
+                      "outcome": "log_ingreso", "efecto_verdadero": [0.1, 0.1], "estimacion": [0.12, 0.08], "ic_lo": [0.05, 0.02],
                       "ic_hi": [0.15, 0.09], "pehe": None, "concordancia_t": 100.0})
     out = ss.resumir(r).iloc[0]
     assert abs(out["sesgo"]) < 1e-12
     assert abs(out["cobertura"] - 0.5) < 1e-12
     assert abs(out["rmse"] - 0.02) < 1e-12
+    assert abs(out["mcse_cobertura"] - 0.5 / np.sqrt(2)) < 1e-12
+    assert abs(out["mcse_sesgo"] - np.std([0.02, -0.02], ddof=1) / np.sqrt(2)) < 1e-12
+
+
+def test_regla_corte_asigna_por_puntaje_con_la_tasa_del_sisben():
+    b = _base()
+    t, puntaje, corte = ss.asignar(b, ss.ESCENARIOS["regla_corte"], np.random.default_rng(0))
+    assert ((puntaje >= corte) == (t == 1)).all()
+    pbar = (1 / (1 + np.exp(-b["logit_p_celda"]))).mean()
+    assert abs(t.mean() - pbar) < 0.01
+
+
+def test_discontinuidad_recupera_el_salto_aunque_haya_confusion():
+    rng = np.random.default_rng(1)
+    n = 40_000
+    u = rng.normal(0, 1, n)
+    puntaje = u + rng.normal(0, 0.5, n)
+    t = (puntaje >= 0).astype(float)
+    y = -0.8 * u + 0.1 * t + rng.normal(0, 0.3, n)  # confusión fuerte por U
+    est, lo, hi = ss.discontinuidad(y, puntaje, 0.0, 0.5)
+    assert lo <= 0.1 <= hi
+    assert ss.diferencia_medias(y, t.astype(int))[0] < -0.5
+
+
+def test_sortear_donante_devuelve_posiciones_de_la_misma_celda():
+    celda_don = np.array([2, 0, 1, 2, 0])
+    pos = ss.sortear_donante(np.array([0, 1, 2] * 20), celda_don, np.random.default_rng(0))
+    assert (celda_don[pos] == np.array([0, 1, 2] * 20)).all()

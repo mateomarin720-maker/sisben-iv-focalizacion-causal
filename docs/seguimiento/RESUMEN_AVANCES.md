@@ -18,8 +18,11 @@ datos reales, el DML sobre el grupo Sisbén imputado da ≈0, que es lo
 esperado: el Hot-Deck sortea al azar dentro de la celda y el contraste
 es un placebo. Las cotas de Fréchet-Manski no fijan ni el signo del
 efecto. **La evaluación semisintética** (guía del tutor del 2026-10-27)
-tiene primera versión: con hogares reales y efecto conocido, el Hot-Deck
-lleva cualquier estimación a ≈0 (`docs/resultados/SIMULACION_SEMISINTETICA.md`).
+corrió hasta la convergencia (432 repeticiones): con hogares reales y
+efecto conocido, el Hot-Deck lleva cualquier estimación a ≈0, y solo una
+discontinuidad con puntaje continuo y vínculo hogar por hogar recupera
+el efecto cuando hay confusión no observada
+(`docs/resultados/SIMULACION_SEMISINTETICA.md`).
 
 ## 1. Fuentes de datos
 
@@ -49,7 +52,7 @@ lleva cualquier estimación a ≈0 (`docs/resultados/SIMULACION_SEMISINTETICA.md
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | ✅ |
 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | ✅ con métricas por grupo |
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
-| **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ primera versión 2026-11-02 |
+| **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ 2026-11-03, hasta la convergencia |
 | Pruebas | `tests/` (`pytest`) | ✅ |
 
 ## 3. Resultados vigentes
@@ -134,13 +137,13 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
 
 ## 4. Pendientes, en orden
 
-1. **Evaluación semisintética: primera versión hecha 2026-11-02**
-   (`src/validacion/simulacion_semisintetica.py`,
-   `docs/resultados/SIMULACION_SEMISINTETICA.md`). Siguientes pasos:
-   outcome binario de pobreza, sensibilidad a gamma y a la fuerza del
-   efecto, más repeticiones de Causal Forest, Hot-Deck con la cadena
-   completa de respaldos, y un escenario con discontinuidad (puntaje
-   continuo) para mostrar qué recuperaría el efecto con vínculo.
+1. **Evaluación semisintética: hecha hasta la convergencia 2026-11-03**
+   (432 repeticiones; outcome de pobreza, efecto nulo, tres niveles de
+   confusión no observada y regla de corte con RD incluidos). Pendientes
+   menores: sensibilidad al tamaño del efecto, regla de corte difusa
+   (cumplimiento imperfecto), Hot-Deck con la cadena completa de
+   respaldos, y verificar la causa del sesgo pequeño de LinearDML
+   (≈−0,005; probablemente la regularización con 993 indicadoras).
 2. ~~Decidir el outcome monetario~~ **Resuelto 2026-11-02:** la
    reconstrucción es el outcome principal (todo el país) y la
    clasificación oficial (`POBRE_MONETARIO_OFICIAL`, 24 departamentos y

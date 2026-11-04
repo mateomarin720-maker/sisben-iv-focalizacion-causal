@@ -2,6 +2,30 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-03 (12) — Evaluación semisintética hasta la convergencia
+
+### Nuevo
+- `simulacion_semisintetica.py` corre en lotes paralelos hasta que el
+  error estándar Monte Carlo de cada celda queda bajo el umbral (Morris,
+  White y Crowther, 2019), guarda cada lote y reanuda si se interrumpe.
+- Outcome de pobreza monetaria (línea del dominio), escenarios de efecto
+  nulo, confusión no observada media (gamma 0,5) y regla de corte con RD
+  local lineal; Causal Forest hasta 200 repeticiones.
+- Figura `docs/resultados/simulacion_semisintetica_convergencia.png` y
+  tablas generadas del resumen (`docs/reports/simulacion_semisintetica_tablas.md`).
+
+### Cifras
+- 432 repeticiones (Causal Forest 216); 150 de 150 celdas convergieron,
+  10 de 16 de Causal Forest.
+- Hot-Deck: ≈0 en los ocho escenarios, los dos outcomes y los cinco
+  estimadores. Vínculo 50 %: la mitad del efecto.
+- Confusión no observada (oráculo): −0,29 / −0,53 / −0,78 en log-ingreso;
+  +0,021 / +0,066 / +0,138 en pobreza (signo invertido).
+- RD en la regla de corte, oráculo: +0,086 frente a +0,090 (cobertura
+  0,94); con Hot-Deck, ≈0.
+- LinearDML: sesgo de −0,004 a −0,008 en log-ingreso; cobertura 0,91-0,92
+  con efecto nulo (regresión con efectos fijos: 0,94-0,97).
+
 ## 2026-11-02 (11) — Pobreza monetaria oficial como robustez y evaluación semisintética
 
 ### Decidido
