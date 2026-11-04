@@ -1,0 +1,36 @@
+# Corre las pruebas en cada push a las dos ramas de trabajo y en cada PR.
+# Las pruebas que necesitan el banco de datos (Azure) se saltan solas: aquí
+# corren las que usan datos sintéticos y los diccionarios versionados.
+# Detalle de qué cubre cada una: tests/README.md.
+name: Pruebas
+
+on:
+  push:
+    branches: [main, ediciones-hotdeck-sdp]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-pruebas.txt
+
+      - name: Instalar dependencias de las pruebas
+        run: pip install -r requirements-pruebas.txt
+
+      - name: Pruebas
+        run: python -m pytest tests/ -q -rs
+
+      # Reintroduce cada error ya documentado y exige que alguna prueba falle.
+      - name: Prueba de mutación
+        run: python tests/mutaciones.py

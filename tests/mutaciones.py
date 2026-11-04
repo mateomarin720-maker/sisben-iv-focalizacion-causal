@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
-PY = str(ROOT / ".venv" / "Scripts" / "python.exe")
+PY = sys.executable  # el mismo intérprete que corre este script (local o en la integración continua)
 
 MUTACIONES = [
     ("Vivienda GEIH: paredes lee P4020 (error anterior)", "src/armonizacion/armonizar_geih_hogar_2024.py",

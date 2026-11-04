@@ -9,6 +9,21 @@ poetry run pytest tests/                                            # suite comp
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py  # prueba de mutación (≈3 min)
 ```
 
+## Integración continua
+
+`.github/workflows/pruebas.yml` corre la suite y la prueba de mutación
+en GitHub Actions en cada push a `main` o `ediciones-hotdeck-sdp` y en
+cada PR (Python 3.11, dependencias de `requirements-pruebas.txt`,
+fijadas a las versiones con las que pasan). Allí no está el banco de
+datos: **92 pruebas corren y 7 se saltan** (las que leen enero real de
+GEIH). Se comprobó antes de subirlo con un entorno limpio y un clon del
+repositorio sin datos: 92 pasan, 7 se saltan, 16 de 16 mutaciones
+detectadas.
+
+Si una prueba falla en GitHub, el PR queda marcado en rojo. Para agregar
+una dependencia nueva a las pruebas, sumarla a `requirements-pruebas.txt`
+con su versión, además de `pyproject.toml`.
+
 ## Qué cubre cada archivo
 
 Las de prioridad alta protegen contra errores que ya ocurrieron en el
@@ -68,7 +83,5 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 
 ## Pendiente
 
-- Integración continua: no hay `.github/workflows`; las pruebas solo
-  corren a mano.
 - Cobertura medida (`pytest-cov` no está instalado) y pruebas de
   regresión de las cifras documentadas.

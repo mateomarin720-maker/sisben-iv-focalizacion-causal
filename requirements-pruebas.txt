@@ -1,0 +1,14 @@
+# Lo mínimo para correr tests/ (integración continua, .github/workflows/pruebas.yml).
+# Versiones fijadas a las del .venv con el que pasan las 99 pruebas
+# (2026-11-04). El entorno completo del proyecto está en pyproject.toml.
+pandas==2.3.3
+numpy==2.4.6
+pyarrow==16.1.0
+openpyxl==3.1.5
+scikit-learn==1.9.1
+scipy==1.15.3
+econml==0.17.0
+shap==0.51.0
+networkx==3.6.1
+matplotlib==3.11.1
+pytest==8.4.2

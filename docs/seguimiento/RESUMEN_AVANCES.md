@@ -53,7 +53,7 @@ el efecto cuando hay confusión no observada
 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | ✅ con métricas por grupo |
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ 2026-11-03, hasta la convergencia |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 99 pruebas; 16 de 16 errores documentados detectados por mutación (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 99 pruebas; 16 de 16 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -161,8 +161,8 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
 7. Evaluar la marca de víctimas del DANE (`victimas_mpmd`) como
    covariable, en lugar del RUI.
 8. Actualizar el anteproyecto con el enfoque vigente.
-9. Pruebas: integración continua (GitHub Actions) para que corran en
-   cada PR y medir cobertura (`tests/README.md`, "Pendiente").
+9. Pruebas: medir cobertura (`tests/README.md`, "Pendiente"). La
+   integración continua corre desde el 2026-11-04.
 
 ## 5. Errores encontrados y corregidos (los que cambiaron resultados)
 

@@ -154,8 +154,11 @@ Detalle completo de marco teórico, metodología y cronograma en
   `emparejamiento/`, `estimacion/` (DML/Causal Forest/Fréchet-Manski),
   `validacion/`, `utils/` (incluye Azure) y los scripts numerados `1_` a
   `7_` del flujo metodológico.
-- **`/tests`**: Pruebas automatizadas (`poetry run pytest tests/`) sobre
-  las transformaciones críticas del pipeline, con datos reales.
+- **`/tests`**: 99 pruebas automatizadas (`poetry run pytest tests/`),
+  casi todas con datos sintéticos; las que leen datos reales se saltan si
+  no está el banco. Corren solas en GitHub Actions en cada push y PR
+  (`.github/workflows/pruebas.yml`). Qué cubre cada una:
+  [`tests/README.md`](tests/README.md).
 - **`.gitignore`**, **`pyproject.toml`** (Poetry, `package-mode = false`) y
   este **`README.md`**.
 

@@ -2,6 +2,28 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (14) — Integración continua
+
+### Nuevo
+- `.github/workflows/pruebas.yml`: GitHub Actions corre `pytest` y
+  `tests/mutaciones.py` en cada push a `main`/`ediciones-hotdeck-sdp` y en
+  cada PR.
+- `requirements-pruebas.txt`: las 11 dependencias de las pruebas,
+  fijadas a las versiones del `.venv` con el que pasan (no depende de que
+  `poetry.lock` esté al día).
+- `tests/mutaciones.py` usa el intérprete que lo ejecuta (antes, la ruta
+  de Windows del `.venv`).
+
+### Verificado antes de subir
+- Entorno limpio con solo `requirements-pruebas.txt`, sobre un clon del
+  repositorio sin datos (como en GitHub): 92 pasan, 7 se saltan (leen
+  enero real de GEIH), 16 de 16 mutaciones detectadas.
+
+### Commits de esta serie (sin autor agregado)
+- `6181c8b` Pruebas de prioridad alta, reglas compartidas entre fuentes y
+  prueba de mutación.
+- `db1727d` Verifica la armonización de Bogotá contra el crudo del SDP.
+
 ## 2026-11-04 (13) — Pruebas de prioridad alta y reglas compartidas entre fuentes
 
 ### Nuevo
