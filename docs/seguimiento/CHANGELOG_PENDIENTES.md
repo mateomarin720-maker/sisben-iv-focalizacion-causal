@@ -2,6 +2,23 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (20) — Prioridad 2 de la guía: diseño del módulo de simulación
+
+### Nuevo
+- `docs/metodologia/DISENO_MODULO_SIMULACION.md`: diseño de
+  `src/simulacion/` antes del código. Modo simulado (población sintética
+  desde parámetros agregados, casillas de menos de 30 hogares fusionadas)
+  y modo de datos propios; contrato de columnas canónicas por tabla con
+  dominios verificados contra la armonización; asterisco en las salidas
+  simuladas; migración desde `src/validacion/simulacion_semisintetica.py`
+  con equivalencia en 3 repeticiones; pruebas nuevas.
+
+### Decisiones abiertas
+- Umbral de protección de los parámetros (30 hogares).
+- Versionar P(T | celda) del Sisbén como agregado.
+- Estimación real del modo de datos propios limitada a la de
+  `5_estimacion.py`.
+
 ## 2026-11-04 (19) — Prioridad 1 de la guía: variabilidad de la imputación del Hot-Deck
 
 ### Nuevo
