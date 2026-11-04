@@ -1,0 +1,121 @@
+2026-11-04 12:04:02,856 INFO Lote reps 0-11 en 125 s | celdas sin converger: 70
+2026-11-04 12:05:50,330 INFO Lote reps 12-23 en 107 s | celdas sin converger: 68
+2026-11-04 12:07:42,693 INFO Lote reps 24-35 en 112 s | celdas sin converger: 64
+2026-11-04 12:09:37,593 INFO Lote reps 36-47 en 115 s | celdas sin converger: 60
+2026-11-04 12:11:47,486 INFO Lote reps 48-59 en 130 s | celdas sin converger: 49
+2026-11-04 12:14:09,949 INFO Lote reps 60-71 en 142 s | celdas sin converger: 32
+2026-11-04 12:16:19,752 INFO Lote reps 72-83 en 130 s | celdas sin converger: 19
+2026-11-04 12:17:53,930 INFO Lote reps 84-95 en 94 s | celdas sin converger: 15
+2026-11-04 12:19:05,847 INFO Lote reps 96-107 en 72 s | celdas sin converger: 13
+2026-11-04 12:20:16,193 INFO Lote reps 108-119 en 70 s | celdas sin converger: 12
+2026-11-04 12:21:26,740 INFO Lote reps 120-131 en 71 s | celdas sin converger: 10
+2026-11-04 12:22:42,775 INFO Lote reps 132-143 en 76 s | celdas sin converger: 9
+2026-11-04 12:23:58,804 INFO Lote reps 144-155 en 76 s | celdas sin converger: 7
+2026-11-04 12:25:15,127 INFO Lote reps 156-167 en 76 s | celdas sin converger: 5
+2026-11-04 12:26:38,748 INFO Lote reps 168-179 en 84 s | celdas sin converger: 3
+2026-11-04 12:28:04,130 INFO Lote reps 180-191 en 85 s | celdas sin converger: 2
+2026-11-04 12:29:20,436 INFO Lote reps 192-203 en 76 s | celdas sin converger: 1
+2026-11-04 12:30:36,207 INFO Lote reps 204-215 en 76 s | celdas sin converger: 1
+2026-11-04 12:31:52,094 INFO Lote reps 216-227 en 76 s | celdas sin converger: 0
+
+=== Sensibilidad semisintética: 228 repeticiones, 30,000 hogares reales ===
+
+--- efecto_nulo
+           vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+           oraculo    regresion_efectos_fijos   228               0.0     -0.0020 -0.0020     0.9561      0.0015  -1.3842                  NaN   0.003
+           oraculo                 linear_dml   228               0.0     -0.0057 -0.0057     0.9386      0.0016  -3.6874                  NaN   0.003
+           oraculo linear_dml_sin_regularizar   228               0.0     -0.0022 -0.0022     0.9430      0.0016  -1.3352                  NaN   0.003
+vinculo_parcial_50    regresion_efectos_fijos   228               0.0     -0.0004 -0.0004     0.9605      0.0014  -0.2978                  NaN   0.003
+vinculo_parcial_50                 linear_dml   228               0.0     -0.0056 -0.0056     0.9167      0.0017  -3.3971                  NaN   0.003
+vinculo_parcial_50 linear_dml_sin_regularizar   228               0.0     -0.0020 -0.0020     0.8947      0.0018  -1.1122                  NaN   0.003
+           hotdeck    regresion_efectos_fijos   228               0.0     -0.0003 -0.0003     0.9649      0.0014  -0.2202                  NaN   0.003
+           hotdeck                 linear_dml   228               0.0     -0.0070 -0.0070     0.9298      0.0016  -4.4644                  NaN   0.003
+           hotdeck linear_dml_sin_regularizar   228               0.0     -0.0033 -0.0033     0.9167      0.0017  -1.9264                  NaN   0.003
+
+--- confusion_observada_x0.5
+           vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+           oraculo    regresion_efectos_fijos   228            0.0475      0.0440 -0.0035     0.9254      0.0015  -2.3036               0.9257   0.003
+           oraculo                 linear_dml   228            0.0475      0.0411 -0.0064     0.8991      0.0017  -3.7409               0.8657   0.003
+           oraculo linear_dml_sin_regularizar   228            0.0475      0.0447 -0.0028     0.8947      0.0018  -1.4984               0.9421   0.003
+vinculo_parcial_50    regresion_efectos_fijos   228            0.0475      0.0207 -0.0268     0.7632      0.0014 -18.8513               0.4359   0.003
+vinculo_parcial_50                 linear_dml   228            0.0475      0.0166 -0.0309     0.6974      0.0016 -19.8793               0.3501   0.003
+vinculo_parcial_50 linear_dml_sin_regularizar   228            0.0475      0.0201 -0.0274     0.7544      0.0016 -16.6760               0.4239   0.003
+           hotdeck    regresion_efectos_fijos   228            0.0475     -0.0010 -0.0484     0.3772      0.0013 -38.4740              -0.0202   0.003
+           hotdeck                 linear_dml   228            0.0475     -0.0070 -0.0544     0.2851      0.0014 -38.6770              -0.1465   0.003
+           hotdeck linear_dml_sin_regularizar   228            0.0475     -0.0034 -0.0509     0.3509      0.0015 -33.6142              -0.0725   0.003
+
+--- confusion_observada_x1.0
+           vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+           oraculo    regresion_efectos_fijos   228            0.0949      0.0889 -0.0060     0.9386      0.0014  -4.2290               0.9368   0.003
+           oraculo                 linear_dml   228            0.0949      0.0875 -0.0074     0.9079      0.0016  -4.6429               0.9222   0.003
+           oraculo linear_dml_sin_regularizar   228            0.0949      0.0912 -0.0038     0.8991      0.0017  -2.1932               0.9605   0.003
+vinculo_parcial_50    regresion_efectos_fijos   228            0.0949      0.0427 -0.0522     0.2851      0.0015 -35.6145               0.4502   0.003
+vinculo_parcial_50                 linear_dml   228            0.0949      0.0376 -0.0573     0.2368      0.0016 -35.6635               0.3963   0.003
+vinculo_parcial_50 linear_dml_sin_regularizar   228            0.0949      0.0409 -0.0541     0.3026      0.0017 -31.8977               0.4304   0.003
+           hotdeck    regresion_efectos_fijos   228            0.0949     -0.0010 -0.0959     0.0044      0.0015 -65.3074              -0.0101   0.003
+           hotdeck                 linear_dml   228            0.0949     -0.0060 -0.1009     0.0044      0.0017 -60.8795              -0.0628   0.003
+           hotdeck linear_dml_sin_regularizar   228            0.0949     -0.0024 -0.0973     0.0175      0.0018 -55.2634              -0.0248   0.003
+
+--- confusion_observada_x2.0
+           vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo   z_sesgo  fraccion_recuperada  umbral
+           oraculo    regresion_efectos_fijos   228            0.1899      0.1829 -0.0070     0.9605      0.0014   -4.9450               0.9633   0.003
+           oraculo                 linear_dml   228            0.1899      0.1844 -0.0055     0.9342      0.0016   -3.4657               0.9710   0.003
+           oraculo linear_dml_sin_regularizar   228            0.1899      0.1881 -0.0018     0.9298      0.0017   -1.0797               0.9905   0.003
+vinculo_parcial_50    regresion_efectos_fijos   228            0.1899      0.0925 -0.0973     0.0088      0.0014  -67.9440               0.4873   0.003
+vinculo_parcial_50                 linear_dml   228            0.1899      0.0895 -0.1003     0.0044      0.0016  -64.3514               0.4716   0.003
+vinculo_parcial_50 linear_dml_sin_regularizar   228            0.1899      0.0930 -0.0969     0.0175      0.0016  -58.9795               0.4899   0.003
+           hotdeck    regresion_efectos_fijos   228            0.1899     -0.0000 -0.1899     0.0000      0.0014 -139.7653              -0.0002   0.003
+           hotdeck                 linear_dml   228            0.1899     -0.0060 -0.1958     0.0000      0.0016 -125.9131              -0.0315   0.003
+           hotdeck linear_dml_sin_regularizar   228            0.1899     -0.0029 -0.1928     0.0000      0.0017 -116.4181              -0.0153   0.003
+
+--- regla_corte_x0.5
+           vinculo               estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo   z_sesgo  fraccion_recuperada  umbral
+           oraculo regresion_efectos_fijos   228            0.0475     -1.7509 -1.7983     0.0000      0.0026 -699.6273             -36.8884   0.003
+           oraculo       discontinuidad_rd   228            0.0451      0.0426 -0.0026     0.9474      0.0018   -1.4183               0.9432   0.008
+vinculo_parcial_50 regresion_efectos_fijos   228            0.0475     -0.8695 -0.9170     0.0000      0.0025 -369.9560             -18.3199   0.003
+vinculo_parcial_50       discontinuidad_rd   228            0.0451      0.0193 -0.0259     0.9167      0.0031   -8.3166               0.4272   0.008
+           hotdeck regresion_efectos_fijos   228            0.0475     -0.0024 -0.0498     0.5658      0.0019  -25.8312              -0.0502   0.003
+           hotdeck       discontinuidad_rd   228            0.0451     -0.0034 -0.0486     0.8684      0.0045  -10.7632              -0.0764   0.008
+
+--- regla_corte_x1.0
+           vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo   z_sesgo  fraccion_recuperada  umbral
+           oraculo    regresion_efectos_fijos   228            0.0949     -1.7077 -1.8027     0.0000      0.0025 -728.9908             -17.9893   0.003
+           oraculo                 linear_dml   228            0.0949     -1.6893 -1.7842     0.0000      0.0028 -645.2810             -17.7949   0.003
+           oraculo linear_dml_sin_regularizar   228            0.0949     -1.7014 -1.7963     0.0000      0.0030 -601.2495             -17.9222   0.003
+           oraculo          discontinuidad_rd   228            0.0902      0.0854 -0.0048     0.9474      0.0017   -2.8484               0.9464   0.008
+vinculo_parcial_50    regresion_efectos_fijos   228            0.0949     -0.8473 -0.9422     0.0000      0.0021 -442.9723              -8.9252   0.003
+vinculo_parcial_50                 linear_dml   228            0.0949     -0.8194 -0.9143     0.0000      0.0024 -387.8955              -8.6312   0.003
+vinculo_parcial_50 linear_dml_sin_regularizar   228            0.0949     -0.8237 -0.9187     0.0000      0.0025 -361.6926              -8.6774   0.003
+vinculo_parcial_50          discontinuidad_rd   228            0.0902      0.0474 -0.0428     0.8596      0.0031  -13.7758               0.5253   0.008
+           hotdeck    regresion_efectos_fijos   228            0.0949      0.0008 -0.0941     0.0614      0.0019  -50.5510               0.0086   0.003
+           hotdeck                 linear_dml   228            0.0949      0.0041 -0.0909     0.1754      0.0021  -42.3125               0.0429   0.003
+           hotdeck linear_dml_sin_regularizar   228            0.0949      0.0079 -0.0871     0.2018      0.0023  -37.4105               0.0828   0.003
+           hotdeck          discontinuidad_rd   228            0.0902      0.0035 -0.0867     0.7237      0.0043  -20.2686               0.0393   0.008
+
+--- regla_corte_x2.0
+           vinculo               estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo   z_sesgo  fraccion_recuperada  umbral
+           oraculo regresion_efectos_fijos   228            0.1899     -1.6191 -1.8090     0.0000      0.0025 -737.4288              -8.5279   0.003
+           oraculo       discontinuidad_rd   228            0.1805      0.1789 -0.0017     0.9605      0.0017   -0.9967               0.9907   0.008
+vinculo_parcial_50 regresion_efectos_fijos   228            0.1899     -0.8053 -0.9952     0.0000      0.0021 -478.3611              -4.2414   0.003
+vinculo_parcial_50       discontinuidad_rd   228            0.1805      0.0874 -0.0932     0.5307      0.0034  -27.5018               0.4839   0.008
+           hotdeck regresion_efectos_fijos   228            0.1899     -0.0034 -0.1933     0.0000      0.0018 -108.0445              -0.0181   0.003
+           hotdeck       discontinuidad_rd   228            0.1805     -0.0021 -0.1826     0.1623      0.0041  -44.2536              -0.0114   0.008
+
+--- regla_corte_difusa
+           vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo   z_sesgo  fraccion_recuperada  umbral
+           oraculo    regresion_efectos_fijos   228            0.0950     -0.5594 -0.6544     0.0000      0.0017 -396.3361              -5.8916   0.003
+           oraculo                 linear_dml   228            0.0950     -0.5485 -0.6434     0.0000      0.0018 -364.2851              -5.7762   0.003
+           oraculo linear_dml_sin_regularizar   228            0.0950     -0.5491 -0.6441     0.0000      0.0019 -347.9856              -5.7832   0.003
+           oraculo          discontinuidad_rd   228            0.0903      0.0857 -0.0045     0.9649      0.0028   -1.6435               0.9496   0.008
+vinculo_parcial_50    regresion_efectos_fijos   228            0.0950     -0.2792 -0.3742     0.0000      0.0015 -249.8981              -2.9408   0.003
+vinculo_parcial_50                 linear_dml   228            0.0950     -0.2748 -0.3698     0.0000      0.0016 -227.3802              -2.8944   0.003
+vinculo_parcial_50 linear_dml_sin_regularizar   228            0.0950     -0.2741 -0.3691     0.0000      0.0017 -220.5811              -2.8871   0.003
+vinculo_parcial_50          discontinuidad_rd   228            0.0903      0.0444 -0.0459     0.9211      0.0054   -8.5781               0.4914   0.008
+           hotdeck    regresion_efectos_fijos   228            0.0950      0.0012 -0.0937     0.0088      0.0013  -72.5101               0.0129   0.003
+           hotdeck                 linear_dml   228            0.0950      0.0003 -0.0947     0.0132      0.0015  -63.8513               0.0028   0.003
+           hotdeck linear_dml_sin_regularizar   228            0.0950      0.0019 -0.0931     0.0132      0.0016  -59.8297               0.0197   0.003
+           hotdeck          discontinuidad_rd   228            0.0903      0.0070 -0.0833     0.8947      0.0072  -11.5282               0.0776   0.008
+
+Convergencia (MCSE del sesgo ≤ 0.003; RD ≤ 0.008): alcanzada
+Guardado: docs\reports\sensibilidad_semisintetica.csv
+Guardado: docs\reports\sensibilidad_semisintetica_resumen.csv

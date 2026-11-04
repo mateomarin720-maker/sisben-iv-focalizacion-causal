@@ -233,9 +233,10 @@ departamentos: de 0,4 % en Valle del Cauca a 12,8 % en Putumayo.
 
 ## 8. Pendientes
 
-1. Evaluación semisintética: hecha hasta la convergencia el 2026-11-03.
-   Quedan ajustes menores: sensibilidad al tamaño del efecto,
-   discontinuidad difusa y la causa del sesgo pequeño de LinearDML.
+1. Evaluación semisintética: hecha hasta la convergencia el 2026-11-03,
+   con sensibilidad el 2026-11-04 (tamaño del efecto, RD difusa, causa
+   del sesgo de LinearDML). Queda decidir si se baja la regularización
+   del DML en `5_estimacion.py`.
 2. Reglas de focalización (P3/OE3): hechas el 2026-11-04. Quedan
    presupuestos menores que la población pobre y heterogeneidad más
    fuerte.

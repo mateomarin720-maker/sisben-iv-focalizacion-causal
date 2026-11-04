@@ -54,7 +54,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/validacion/simulacion_semisintetica.py` | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/validacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 134 pruebas; 22 de 22 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 138 pruebas; 24 de 24 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -146,11 +146,15 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
 
 1. **Evaluación semisintética: hecha hasta la convergencia 2026-11-03**
    (432 repeticiones; outcome de pobreza, efecto nulo, tres niveles de
-   confusión no observada y regla de corte con RD incluidos). Pendientes
-   menores: sensibilidad al tamaño del efecto, regla de corte difusa
-   (cumplimiento imperfecto), Hot-Deck con la cadena completa de
-   respaldos, y verificar la causa del sesgo pequeño de LinearDML
-   (≈−0,005; probablemente la regularización con 993 indicadoras).
+   confusión no observada y regla de corte con RD incluidos).
+   **Sensibilidad hecha 2026-11-04**
+   (`src/validacion/sensibilidad_semisintetica.py`): la pérdida por
+   integración es proporcional al tamaño del efecto; la RD difusa (80 %
+   de participación) recupera el efecto en el corte con vínculo (0,086
+   frente a 0,090); el sesgo de LinearDML viene de la regularización de
+   los modelos auxiliares. **Decisión pendiente:** bajar esa
+   regularización en `5_estimacion.py`. Queda: Hot-Deck con la cadena
+   completa de respaldos.
 2. ~~Decidir el outcome monetario~~ **Resuelto 2026-11-02:** la
    reconstrucción es el outcome principal (todo el país) y la
    clasificación oficial (`POBRE_MONETARIO_OFICIAL`, 24 departamentos y
@@ -192,7 +196,7 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
 |---|---|
 | Sisbén IV (DNP-ANDA) | Resuelto |
 | Sisbén Bogotá (SDP) | Resuelto (corte 03/08/2026) |
-| Puntaje continuo del Sisbén (para RD) | No solicitado; es lo único que recuperaría el efecto en la simulación |
+| Puntaje continuo del Sisbén (para RD) | **Borrador de solicitud listo (2026-11-04)**, sin enviar: `docs/institucional/SOLICITUD_PUNTAJE_CONTINUO_SISBEN.md` (dos variantes, SDP y DNP). Es lo único que recuperaría el efecto en la simulación |
 
 ## 7. Documentación de referencia
 

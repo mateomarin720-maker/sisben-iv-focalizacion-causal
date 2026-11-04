@@ -2,6 +2,38 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (17) — Sensibilidad de la simulación y solicitud del puntaje continuo
+
+### Nuevo
+- `src/validacion/sensibilidad_semisintetica.py`: tamaño del efecto
+  (× 0,5, × 1, × 2), regla de corte difusa (80 % / 20 % de participación)
+  con RD difusa por dos etapas local, y LinearDML con y sin
+  regularización. 228 repeticiones hasta MCSE ≤ 0,003 (RD ≤ 0,008).
+- `docs/institucional/SOLICITUD_PUNTAJE_CONTINUO_SISBEN.md`: borrador
+  (sin enviar) de la solicitud del puntaje continuo, con variante para la
+  SDP (registros repetidos del mismo hogar en Bogotá) y para el DNP.
+- `tests/test_sensibilidad_semisintetica.py` (4 pruebas) y 2 mutaciones:
+  138 pruebas, 24 de 24 mutaciones detectadas.
+
+### Hallazgos
+- La pérdida por integración es proporcional: Hot-Deck ≈ 0 y vínculo del
+  50 % ≈ 44-49 % del efecto, con efectos de 0,047 a 0,190.
+- RD difusa con vínculo: 0,086 frente a 0,090 en el corte (cobertura
+  0,96); con Hot-Deck, 0,007.
+- Sesgo de LinearDML con efecto nulo: −0,006 (z −3,7 a −4,5) con la
+  regularización del proyecto, −0,002 (z −1,1 a −1,9) casi sin ella.
+  Decisión pendiente: bajar la regularización en `5_estimacion.py`.
+
+### Corregido en las pruebas
+- La primera prueba de la RD difusa exigía que una sola semilla cubriera
+  el valor verdadero con un IC al 95 %, lo que falla 1 de cada 20 veces
+  por diseño (falló con la semilla 0). Se reemplazó por sesgo y cobertura
+  sobre 100 semillas (medido en 200: media 0,1004, cobertura 0,96).
+
+### Commits de esta serie (sin autor agregado)
+- `09de1cb` Cotas de Fréchet-Manski con supuestos de monotonía (las dos
+  corridas de GitHub Actions pasaron).
+
 ## 2026-11-04 (16) — Cotas con supuestos de monotonía
 
 ### Nuevo

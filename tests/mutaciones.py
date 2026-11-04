@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 22 de 22 mutaciones detectadas.
+Resultado del 2026-11-04: 24 de 24 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -79,6 +79,12 @@ MUTACIONES = [
      "lo11_dep = np.maximum(lo11, p_y * p_t)", "lo11_dep = lo11", "tests/test_cotas_frechet_manski.py"),
     ("Cotas: MTS con la cota del contraste en el extremo equivocado", "src/estimacion/cotas_frechet_manski.py",
      "hi = np.minimum(hi, contraste(hi11))", "hi = np.minimum(hi, contraste(lo11_s))", "tests/test_cotas_frechet_manski.py"),
+    # Sensibilidad: RD difusa
+    ("RD difusa: la participación se instrumenta consigo misma (MCO)", "src/validacion/sensibilidad_semisintetica.py",
+     "Z = np.column_stack([np.ones_like(dd), z, dd, z * dd])", "Z = np.column_stack([np.ones_like(dd), tt, dd, z * dd])",
+     "tests/test_sensibilidad_semisintetica.py"),
+    ("RD difusa: error estándar sin los residuos", "src/validacion/sensibilidad_semisintetica.py",
+     "Zwe = Z * (w * e)[:, None]", "Zwe = Z * (w * 0.1)[:, None]", "tests/test_sensibilidad_semisintetica.py"),
 ]
 
 resultados = []
