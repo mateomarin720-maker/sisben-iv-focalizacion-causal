@@ -69,7 +69,7 @@ Fuente: `docs/resultados/` y `docs/reports/` del repositorio, corrida del 2 de n
 | Causa | Evidencia en el repositorio | Consecuencia |
 | --- | --- | --- |
 | El grupo Sisbén se imputa, no se observa | El Hot-Deck sortea un donante de la celda | El grupo es independiente del resultado dada la celda |
-| No hay puntaje continuo del Sisbén | El microdato solo trae el grupo A a D | No se puede aplicar discontinuidad en la regresión; hay un borrador de solicitud del puntaje en `docs/institucional/` |
+| No hay puntaje continuo del Sisbén | El microdato solo trae el grupo A a D | No se puede aplicar discontinuidad en la regresión con datos reales; no se solicitarán más datos, así que queda como limitación y la discontinuidad solo se evalúa en la simulación\* |
 | No hay participación en programas del DPS | Los cruces con Familias en Acción y similares no están en las fuentes | No se mide el paso de elegibilidad a participación y bienestar |
 | El resultado es una reconstrucción | Pobreza monetaria propia, 1,4 puntos sobre la oficial | Se usa la clasificación oficial del DANE como prueba de robustez |
 
@@ -159,7 +159,7 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
 | 5 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Anexo con evidencia de calidad |
 | 6 | Depuración del repositorio para el jurado y archivo de tres ramas obsoletas | Repositorio limpio para la entrega |
 | 7 | Arreglar `poetry run pytest` y quitar `warnings.filterwarnings` | Pruebas verdes con el comando del proyecto |
-| 8 | Enviar la solicitud del puntaje continuo (borrador en `docs/institucional/`) | Habilitar la discontinuidad con datos reales |
+| 8 | ~~Enviar la solicitud del puntaje continuo~~ **Descartada el 2026-11-04:** no se solicitarán más datos; la réplica usa solo las fuentes ya disponibles | — |
 | 9 | Documento escrito: primera versión el sábado 7 de noviembre; revisión del tutor el lunes o martes siguiente | Entrega a revisión |
 
 ## Notas de verificación (2026-11-04)

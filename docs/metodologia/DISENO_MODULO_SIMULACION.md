@@ -16,6 +16,10 @@ este proyecto. Hay dos modos:
 | **Simulado** | Cualquiera, sin microdatos | Nada (o un número de hogares y una semilla) | La evaluación semisintética completa sobre una población sintética\*: qué estimador recupera un efecto conocido y cuánto se pierde según el vínculo |
 | **Datos propios** | Una entidad con sus registros ya enlazados | Una tabla de hogares y, si la tiene, el registro con el grupo del Sisbén | La misma evaluación\* sobre sus hogares reales y, si su tabla trae el tratamiento observado, la estimación con datos reales (sin asterisco) |
 
+**Datos de la tesis:** no se solicitarán más datos. La réplica usa solo
+las fuentes que ya están en el banco de datos (GEIH 2024, Sisbén IV
+nacional y de Bogotá, IPM), y el módulo se diseña con lo que ellas traen.
+
 La simulación es una pieza del framework, no su fin: responde «¿con mis
 datos y mi forma de enlazarlos, se puede recuperar el efecto?» antes de
 estimar nada.
@@ -226,12 +230,11 @@ Cada error que se encuentre en la implementación agrega su mutación en
 ## 10. Decisiones abiertas
 
 1. **Umbral de protección del JSON (30 hogares).** Es el mínimo usual
-   para publicar celdas de encuesta; si el DNP o el DANE exigen otro, se
-   cambia en `calibrar.py`.
+   para publicar celdas de encuesta; se cambia en `calibrar.py` si hace
+   falta.
 2. **Si P(T | celda) del Sisbén puede versionarse** como agregado de las
    993 celdas (con la fusión de celdas pequeñas). Viene de microdatos
-   anonimizados públicos; se propone versionarlo y mencionarlo en la
-   solicitud institucional.
+   anonimizados públicos; se propone versionarlo.
 3. **Estimación real en el modo de datos propios.** Se limita a los
    estimadores de `5_estimacion.py` (DML con celda exacta y cotas de
    Fréchet-Manski); no se agregan otros en esta prioridad.
