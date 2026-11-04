@@ -16,7 +16,10 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 ### Decisión
 - No se solicitarán más datos: la réplica usa solo las fuentes del banco
   de datos. La prioridad 8 (enviar la solicitud del puntaje continuo) se
-  descarta y la falta del puntaje queda como limitación.
+  descarta y la falta del puntaje queda como limitación. Se borra el
+  borrador `docs/institucional/SOLICITUD_PUNTAJE_CONTINUO_SISBEN.md`, y
+  los 9 departamentos sin clasificación oficial de pobreza monetaria
+  quedan como limitación (`RESULTADOS_POBREZA_MONETARIA.md`).
 
 ### Decisiones abiertas
 - Umbral de protección de los parámetros (30 hogares).

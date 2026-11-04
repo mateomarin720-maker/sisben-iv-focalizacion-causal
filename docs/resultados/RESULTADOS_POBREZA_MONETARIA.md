@@ -162,16 +162,14 @@ identificar el signo; la oficial las angosta 0,04 porque su tasa de
 pobreza es algo menor. Salidas: `docs/reports/estimacion_ate_att_atu_cate.txt`
 (último bloque) y `docs/reports/cotas_frechet_manski_pobre_monetario_oficial.csv`.
 
-**Cómo complementarlo.** Si el DANE publica o entrega la clasificación de
-esos 9 departamentos (por ejemplo, por solicitud de microdatos con
-reserva o en una versión posterior de la base), basta con agregarla a
-`hogares_oficial_2024.parquet` con las mismas llaves (`directorio`,
-`secuencia_p`, `mes`): `pegar_oficial` la toma sin otros cambios y la
-prueba de robustez pasaría a cubrir todo el país. Otra opción, sin datos
-nuevos, es un ajuste de la reconstrucción en esos departamentos con la
-diferencia observada frente a la oficial en departamentos parecidos (por
-ejemplo, Caquetá, Meta, Chocó y La Guajira); no se hizo porque supone
-que el error de la reconstrucción se traslada entre regiones.
+**Limitación.** La prueba de robustez no cubre esos 9 departamentos: la
+base oficial no trae su clasificación y la tesis no solicitará más datos
+(la réplica usa solo las fuentes del banco de datos). Ahí solo vale la
+reconstrucción. Se podría ajustar la reconstrucción en esos departamentos
+con la diferencia observada frente a la oficial en departamentos
+parecidos (por ejemplo, Caquetá, Meta, Chocó y La Guajira); no se hizo
+porque supone que el error de la reconstrucción se traslada entre
+regiones.
 
 ## Pendiente
 
