@@ -28,8 +28,15 @@ jobs:
       - name: Instalar dependencias de las pruebas
         run: pip install -r requirements-pruebas.txt
 
+      # Cada prueba fallida queda también como anotación del job (visible
+      # sin permisos sobre los registros).
       - name: Pruebas
-        run: python -m pytest tests/ -q -rs
+        run: |
+          set -o pipefail
+          python -m pytest tests/ -q -rs -rf 2>&1 | tee pytest.log || {
+            grep -E "^(FAILED|ERROR) " pytest.log | sed 's/^/::error title=pytest::/'
+            exit 1
+          }
 
       # Reintroduce cada error ya documentado y exige que alguna prueba falle.
       - name: Prueba de mutación
