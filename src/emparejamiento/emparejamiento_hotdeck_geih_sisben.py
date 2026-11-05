@@ -96,6 +96,25 @@ def construir_celda(df: pd.DataFrame, edad_en_codigos: bool = False, incluir_viv
     return base + "|" + nivel_pisos(df, sisben=edad_en_codigos).astype(str)
 
 
+def claves_por_nivel(df: pd.DataFrame, edad_en_codigos: bool = False, incluir_vivienda: bool = True,
+                     incluir_pisos: bool = True) -> list[tuple[str, pd.Series]]:
+    """Cadena de respaldos: (nombre del nivel, clave de celda), de la más
+    fina a la más gruesa. La usan el Hot-Deck y la simulación
+    (`src/simulacion/vinculo.py`), para que sorteen igual. Después del
+    último nivel queda el sorteo en todo el registro (`pool_nacional`).
+    El primer nivel se llama siempre `celda_exacta`, aunque la celda de
+    sensibilidad no lleve pisos o vivienda."""
+    configs = []
+    if incluir_vivienda and incluir_pisos:
+        configs.append(("celda_exacta", dict(incluir_vivienda=True, incluir_pisos=True)))
+    if incluir_vivienda:
+        configs.append(("celda_exacta" if not configs else "sin_pisos", dict(incluir_vivienda=True, incluir_pisos=False)))
+    configs.append(("celda_exacta" if not configs else "solo_depto_edad", dict(incluir_vivienda=False)))
+    niveles = [(nombre, construir_celda(df, edad_en_codigos=edad_en_codigos, **kw)) for nombre, kw in configs]
+    niveles.append(("solo_depto", niveles[-1][1].str.split("|").str[0]))
+    return niveles
+
+
 def _sortear(grupos: dict, claves: pd.Series, rng) -> tuple[np.ndarray, np.ndarray]:
     """Para cada clave devuelve el indice (posicional) de un donante al azar;
     -1 si la clave no tiene donantes."""
@@ -121,17 +140,9 @@ def hotdeck(receptor: pd.DataFrame, donante: pd.DataFrame, seed: int = 42, inclu
     # los receptores sin donante en el anterior. `incluir_pisos=False`
     # reproduce la celda anterior y `incluir_vivienda=False` la de
     # depto + edad, para sensibilidad.
-    niveles = []
-    if incluir_vivienda and incluir_pisos:
-        niveles.append(("celda_exacta", dict(incluir_vivienda=True, incluir_pisos=True)))
-    if incluir_vivienda:
-        niveles.append(("celda_exacta" if not niveles else "sin_pisos",
-                        dict(incluir_vivienda=True, incluir_pisos=False)))
-    niveles.append(("celda_exacta" if not niveles else "solo_depto_edad", dict(incluir_vivienda=False)))
-
-    claves = [(nombre, construir_celda(receptor, **kw), construir_celda(donante, edad_en_codigos=True, **kw))
-              for nombre, kw in niveles]
-    claves.append(("solo_depto", claves[-1][1].str.split("|").str[0], claves[-1][2].str.split("|").str[0]))
+    kw = dict(incluir_vivienda=incluir_vivienda, incluir_pisos=incluir_pisos)
+    claves = [(nombre, cr, cd) for (nombre, cr), (_, cd) in
+              zip(claves_por_nivel(receptor, **kw), claves_por_nivel(donante, edad_en_codigos=True, **kw))]
 
     elegido = np.full(len(receptor), -1, dtype=np.int64)
     nivel = np.full(len(receptor), "", dtype=object)

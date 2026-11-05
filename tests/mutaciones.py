@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 29 de 29 mutaciones detectadas.
+Resultado del 2026-11-04: 30 de 30 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -89,6 +89,8 @@ MUTACIONES = [
     ("Simulación: código de celda int8 desborda los grados de libertad", "src/simulacion/estimadores.py",
      "gl = len(y) - D.shape[1] - (int(celda.max()) + 1)", "gl = len(y) - D.shape[1] - (celda.max() + 1)",
      "tests/test_simulacion_semisintetica.py"),
+    ("Simulación: sin donantes en la celda sortea en todo el registro (versión anterior)", "src/simulacion/vinculo.py",
+     "for k in range(r.shape[1]):", "for k in range(1):", "tests/test_simulacion_semisintetica.py"),
     ("Simulación: el contrato acepta un alias de columna", "src/simulacion/contrato.py",
      'faltan = [c for c in obligatorias if c not in tabla.columns]',
      'faltan = [c for c in obligatorias if c not in tabla.columns and c.replace("jefe_sexo", "sexo_jefe") not in tabla.columns]',
