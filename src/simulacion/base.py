@@ -1,9 +1,9 @@
 """De la tabla canónica de hogares a la tabla de trabajo de la simulación.
 
 Todo lo derivado se calcula aquí a partir de las columnas canónicas, nunca
-se recibe hecho: la celda del Hot-Deck con la misma regla del pipeline
-(`construir_celda`), zona urbana y jefe mujer 0/1, Y0 = log(1 + ingreso
-per cápita), la línea de pobreza del dominio, el logit de P_Sisbén(T |
+se recibe hecho: la celda del Hot-Deck y sus niveles de respaldo con la
+misma regla del pipeline (`claves_por_nivel`), zona urbana y jefe mujer
+0/1, Y0 = log(1 + ingreso per cápita), la línea de pobreza del dominio, el logit de P_Sisbén(T |
 celda), el componente no observado U y el efecto verdadero tau(X).
 """
 from __future__ import annotations
@@ -11,9 +11,14 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celda
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import claves_por_nivel
 from src.simulacion import contrato
 from src.simulacion.escenarios import TAU
+
+# Columna con el código de celda de cada nivel de la cadena de respaldos,
+# en el orden de `claves_por_nivel` (de la más fina a la más gruesa).
+NIVELES = {"celda_exacta": "hotdeck_celda_cat", "sin_pisos": "celda_sin_pisos_cat",
+           "solo_depto_edad": "celda_solo_depto_edad_cat", "solo_depto": "celda_solo_depto_cat"}
 
 
 def preparar_base(hogares: pd.DataFrame, p_t_celda: pd.Series) -> pd.DataFrame:
@@ -21,8 +26,12 @@ def preparar_base(hogares: pd.DataFrame, p_t_celda: pd.Series) -> pd.DataFrame:
     P_Sisbén(T | celda). `hogares` debe cumplir el contrato del rol
     `hogares`; `p_t_celda` va indexada por la celda del Hot-Deck."""
     contrato.validar(hogares, "hogares")
+    niveles = dict(claves_por_nivel(hogares))
+    if list(niveles) != list(NIVELES):
+        raise RuntimeError(f"La cadena de respaldos del pipeline cambió: {list(niveles)}")
     b = pd.DataFrame({
-        "celda": construir_celda(hogares).astype(str),
+        "celda": niveles["celda_exacta"].astype(str),
+        **{f"_{n}": niveles[n].astype(str) for n in list(NIVELES)[1:]},
         "depto": hogares["geo_depto"].astype(str),
         "geo_zona_urbana": (hogares["geo_zona"].astype(str) == "1").astype(int),
         "jefe_mujer": (hogares["jefe_sexo"].astype(str) == "2").astype(int),
@@ -36,9 +45,17 @@ def preparar_base(hogares: pd.DataFrame, p_t_celda: pd.Series) -> pd.DataFrame:
     # int64: los códigos de categoría vienen en int8/int16 y se desbordan
     # en aritmética con el tamaño de la muestra (regresion_efectos_fijos).
     b["hotdeck_celda_cat"] = b["celda"].astype("category").cat.codes.astype("int64")
+    for n in list(NIVELES)[1:]:
+        b[NIVELES[n]] = b.pop(f"_{n}").astype("category").cat.codes.astype("int64")
     b["u"] = componente_no_observado(b)
     b["tau"] = efecto_verdadero(b)
     return b
+
+
+def celdas_por_nivel(b: pd.DataFrame) -> np.ndarray:
+    """Códigos de celda por nivel de respaldo (una columna por nivel), para
+    `vinculo.sortear_donante`."""
+    return b[list(NIVELES.values())].to_numpy()
 
 
 def diseno_x(b: pd.DataFrame) -> np.ndarray:

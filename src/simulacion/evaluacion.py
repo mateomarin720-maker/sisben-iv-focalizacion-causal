@@ -24,7 +24,7 @@ import pandas as pd
 
 from src.simulacion import contrato, reportes
 from src.simulacion.asignacion import asignar
-from src.simulacion.base import diseno_x, preparar_base
+from src.simulacion.base import celdas_por_nivel, diseno_x, preparar_base
 from src.simulacion.escenarios import (B_X, ESCENARIOS, H_RD, LOTE, MAX_REPS, MAX_REPS_BOSQUE, MIN_REPS,
                                        MIN_REPS_BOSQUE, N_ENCUESTA, OUTCOMES, SEED, TAU, UMBRAL_COBERTURA,
                                        UMBRAL_SESGO, VINCULOS, VINCULOS_BOSQUE)
@@ -61,7 +61,10 @@ def una_repeticion(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA, con_bosque: b
         d = b.iloc[enc].reset_index(drop=True)
         celda = d["hotdeck_celda_cat"].to_numpy()
         tau = esc.get("factor_tau", 1.0) * d["tau"].to_numpy()
-        donante = reg[sortear_donante(celda, b["hotdeck_celda_cat"].to_numpy()[reg], rng)]
+        niveles = celdas_por_nivel(b)
+        donante, nivel = sortear_donante(niveles[enc], niveles[reg], rng, devolver_nivel=True)
+        donante = reg[donante]
+        pct_respaldo = float((nivel > 0).mean() * 100)  # donante fuera de la celda exacta
         ys = _outcomes(d, d["y0"].to_numpy(), tau, t_real[enc])
         Z = diseno_x(d)
         h = H_RD * float(np.std(puntaje))
@@ -75,7 +78,8 @@ def una_repeticion(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA, con_bosque: b
                 verdad = float(efecto_hogar.mean())
                 comun = dict(rep=rep, escenario=nombre_esc, vinculo=nombre_v, outcome=outcome,
                              pct_tratados=float(t_obs.mean() * 100),
-                             concordancia_t=float((t_obs == t_real[enc]).mean() * 100))
+                             concordancia_t=float((t_obs == t_real[enc]).mean() * 100),
+                             pct_respaldo=pct_respaldo)
                 res = {"diferencia_medias": (*diferencia_medias(y, t_obs), None),
                        "regresion_efectos_fijos": (*regresion_efectos_fijos(y, t_obs, Z, celda), None)}
                 a, lo, hi, _ = dml(d, y, t_obs, bosque=False)
@@ -126,10 +130,12 @@ def pendientes(res: pd.DataFrame, bosque: bool) -> pd.DataFrame:
 
 
 def _firma(n: int) -> str:
-    """Huella de la configuración; la misma que la versión anterior en
-    `src/validacion/`, para que las repeticiones guardadas sigan valiendo."""
+    """Huella de la configuración. Versión 3: el Hot-Deck simulado usa la
+    cadena de respaldos del pipeline (antes, sin donantes en la celda se
+    sorteaba en todo el registro); las repeticiones de la versión 2 no se
+    mezclan con las nuevas."""
     cfg = dict(ESCENARIOS=ESCENARIOS, VINCULOS=VINCULOS, OUTCOMES=OUTCOMES, B_X=B_X, TAU=TAU, H_RD=H_RD,
-               LINEAS=contrato.LINEAS, SEED=SEED, n=n, version=2)
+               LINEAS=contrato.LINEAS, SEED=SEED, n=n, version=3)
     return hashlib.sha1(json.dumps(cfg, sort_keys=True).encode()).hexdigest()[:12]
 
 

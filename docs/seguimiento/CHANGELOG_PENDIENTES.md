@@ -2,6 +2,26 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-04 (22) — Cadena de respaldos en el Hot-Deck simulado (paso 4 del diseño)
+
+### Cambiado
+- `claves_por_nivel` (módulo del Hot-Deck) define la cadena celda → sin
+  pisos → depto + edad → depto; la usan `hotdeck()` y la simulación. El
+  Hot-Deck del pipeline da el mismo resultado que antes.
+- `vinculo.sortear_donante` recibe una columna de celda por nivel y sube
+  por la cadena; antes, sin donantes en la celda, sorteaba en todo el
+  registro. `base.preparar_base` calcula los códigos de cada nivel.
+  La evaluación guarda `pct_respaldo` por repetición.
+- Firmas de configuración nuevas en la evaluación, la sensibilidad y las
+  reglas de focalización. Con los datos reales cambia el 0,03 % de la
+  encuesta; las cifras publicadas se regeneran con el asterisco (paso 5).
+- Prueba de equivalencia: excluye solo la combinación que usa respaldos
+  (repetición 2, `confusion_no_observada_leve`); lo demás, idéntico.
+
+### Pruebas
+- 2 nuevas en `test_simulacion_semisintetica.py` y 1 mutación. 178
+  pruebas, 30 de 30 mutaciones detectadas.
+
 ## 2026-11-04 (21) — Módulo `src/simulacion/`: contrato y traslado (pasos 1-3 del diseño)
 
 ### Nuevo

@@ -119,3 +119,44 @@ def test_preparar_base_deja_la_celda_en_int64():
 
     hogares, p_t = hogares_sinteticos(n=500)
     assert preparar_base(hogares, p_t)["hotdeck_celda_cat"].dtype == np.int64
+
+
+def test_respaldos_iguales_al_hotdeck_del_pipeline():
+    """Con celdas sin donantes, la simulación sube por la misma cadena que
+    el Hot-Deck real (antes sorteaba en todo el registro): cada receptor
+    usa el mismo nivel y recibe un donante de esa celda de respaldo."""
+    from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import claves_por_nivel, hotdeck
+    from src.simulacion.base import NIVELES
+
+    receptor = pd.DataFrame({  # GEIH: edad en años, pisos con códigos GEIH
+        "geo_depto": ["05", "05", "05", "05", "11"], "jefe_edad": [40, 40, 40, 70, 40],
+        "viv_cuartos": [2, 2, 4, 2, 2], "viv_pisos": ["1", "4", "4", "1", "1"]})
+    donante = pd.DataFrame({  # Sisbén: ciclo de vida y pisos con códigos del Sisbén
+        "geo_depto": ["05", "76"], "jefe_edad": ["5", "5"], "viv_cuartos": [2, 2], "viv_pisos": ["5", "5"],
+        "Grupo": ["A", "D"], "Nivel": ["A1", "D1"], "Clasificacion": ["A1", "D1"]})
+    esperado = ["celda_exacta", "sin_pisos", "solo_depto_edad", "solo_depto", "pool_nacional"]
+    assert hotdeck(receptor, donante)["_hotdeck_nivel"].tolist() == esperado
+
+    kr, kd = claves_por_nivel(receptor), claves_por_nivel(donante, edad_en_codigos=True)
+    assert [n for n, _ in kr] == list(NIVELES)
+    codigos = [pd.factorize(pd.concat([r, d], ignore_index=True))[0] for (_, r), (_, d) in zip(kr, kd)]
+    cr = np.column_stack([c[:len(receptor)] for c in codigos])
+    cd = np.column_stack([c[len(receptor):] for c in codigos])
+    pos, nivel = sortear_donante(cr, cd, np.random.default_rng(0), devolver_nivel=True)
+    assert [(list(NIVELES) + ["pool_nacional"])[k] for k in nivel] == esperado
+    assert pos[:4].tolist() == [0, 0, 0, 0]  # el único donante de Antioquia
+
+
+def test_sin_celdas_vacias_el_sorteo_no_cambia():
+    """Si todos los receptores tienen donante en su celda, los niveles de
+    respaldo no consumen números aleatorios: el sorteo y lo que sigue en la
+    repetición quedan iguales a la versión de un solo nivel."""
+    rng_don = np.random.default_rng(5)
+    celda_don = rng_don.integers(0, 30, 3000)
+    celda_rec = rng_don.integers(0, 30, 500)
+    respaldo = lambda c: np.column_stack([c, c // 3, c // 10, np.zeros_like(c)])  # noqa: E731
+    r1, r2 = np.random.default_rng(9), np.random.default_rng(9)
+    un_nivel = sortear_donante(celda_rec, celda_don, r1)
+    con_cadena, nivel = sortear_donante(respaldo(celda_rec), respaldo(celda_don), r2, devolver_nivel=True)
+    assert (un_nivel == con_cadena).all() and (nivel == 0).all()
+    assert r1.random() == r2.random()

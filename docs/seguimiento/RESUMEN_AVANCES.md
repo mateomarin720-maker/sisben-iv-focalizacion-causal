@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/validacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 176 pruebas; 29 de 29 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 178 pruebas; 30 de 30 errores documentados detectados por mutación; corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -161,8 +161,9 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
    de participación) recupera el efecto en el corte con vínculo (0,086
    frente a 0,090); el sesgo de LinearDML viene de la regularización de
    los modelos auxiliares. **Decisión pendiente:** bajar esa
-   regularización en `5_estimacion.py`. Queda: Hot-Deck con la cadena
-   completa de respaldos.
+   regularización en `5_estimacion.py`. La cadena de respaldos del
+   Hot-Deck simulado quedó en el código el 2026-11-04 (paso 4 del
+   módulo); las cifras se regeneran junto con el asterisco (paso 5).
 2. ~~Decidir el outcome monetario~~ **Resuelto 2026-11-02:** la
    reconstrucción es el outcome principal (todo el país) y la
    clasificación oficial (`POBRE_MONETARIO_OFICIAL`, 24 departamentos y

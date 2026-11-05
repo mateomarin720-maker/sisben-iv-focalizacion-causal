@@ -7,6 +7,13 @@ anterior, antes de mover el código, sobre la tabla sintética de
 `hogares_sinteticos` (columnas canónicas). El módulo nuevo debe dar las
 mismas filas: si una refactorización cambia un resultado, esta prueba lo
 detecta antes que la corrida completa.
+
+Única diferencia admitida: la cadena de respaldos del Hot-Deck simulado
+(paso 4 del diseño, 2026-11-04). La versión anterior sorteaba en todo el
+registro a los hogares sin donante en su celda; ahora suben por la cadena
+del pipeline. Por eso se excluyen las combinaciones con `pct_respaldo > 0`
+(en esta tabla, solo la repetición 2 de `confusion_no_observada_leve`, con
+7 de 2.000 hogares), y todo lo demás debe seguir idéntico.
 """
 from __future__ import annotations
 
@@ -62,6 +69,9 @@ def test_una_repeticion_igual_a_la_version_anterior():
     ref = pd.read_csv(REFERENCIA)
     claves = ["rep", "escenario", "vinculo", "outcome", "estimador"]
     pd.testing.assert_frame_equal(nueva[claves], ref[claves])
+    con_respaldo = nueva["pct_respaldo"] > 0
+    assert set(map(tuple, nueva.loc[con_respaldo, ["rep", "escenario"]].drop_duplicates().to_numpy())) ==         {(2, "confusion_no_observada_leve")}
+    nueva, ref = nueva[~con_respaldo], ref[~con_respaldo]
     # Tolerancia por estimador: los de forma cerrada deben coincidir casi
     # exacto; el DML (logística por lbfgs) y el Causal Forest dependen del
     # BLAS y del sistema operativo (en Linux difieren de Windows). Los

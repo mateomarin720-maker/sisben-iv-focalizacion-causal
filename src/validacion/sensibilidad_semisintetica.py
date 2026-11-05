@@ -43,7 +43,7 @@ from sklearn.pipeline import make_pipeline
 
 from src.simulacion import contrato
 from src.simulacion.asignacion import asignar
-from src.simulacion.base import diseno_x, preparar_base
+from src.simulacion.base import celdas_por_nivel, diseno_x, preparar_base
 from src.simulacion.escenarios import ESCENARIOS as ESCENARIOS_BASE
 from src.simulacion.escenarios import H_RD, N_ENCUESTA, TAU, VINCULOS
 from src.simulacion.estimadores import (discontinuidad, discontinuidad_difusa, estimacion5, pesos_rd,
@@ -115,7 +115,8 @@ def una_repeticion(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -> list[dict]
         celda = d["hotdeck_celda_cat"].to_numpy()
         tau = esc.get("factor_tau", 1.0) * d["tau"].to_numpy()
         y = d["y0"].to_numpy() + tau * t_real[enc]
-        donante = reg[sortear_donante(celda, b["hotdeck_celda_cat"].to_numpy()[reg], rng)]
+        niveles = celdas_por_nivel(b)
+        donante = reg[sortear_donante(niveles[enc], niveles[reg], rng)]
         Z = diseno_x(d)
         h = H_RD * float(np.std(puntaje))
         w_rd = pesos_rd(puntaje[enc], corte, h) if esc.get("corte") else None
@@ -157,7 +158,8 @@ def sin_converger(res: pd.DataFrame) -> pd.DataFrame:
 
 
 def _firma(n: int) -> str:
-    cfg = dict(ESCENARIOS=ESCENARIOS, PARTICIPACION=PARTICIPACION, SEED=SEED, n=n, TAU=TAU, version=1)
+    # Versión 2: el Hot-Deck simulado usa la cadena de respaldos del pipeline.
+    cfg = dict(ESCENARIOS=ESCENARIOS, PARTICIPACION=PARTICIPACION, SEED=SEED, n=n, TAU=TAU, version=2)
     return hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:12]
 
 

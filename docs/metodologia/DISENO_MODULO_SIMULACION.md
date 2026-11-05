@@ -182,7 +182,14 @@ resultados reales o cerca de ellos. En el módulo:
 
 ## 7. Migración desde `src/validacion/`
 
-**Estado (2026-11-04): pasos 1 a 3 hechos.** Comprobación: con los datos
+**Estado (2026-11-04): pasos 1 a 4 hechos.** Paso 4: la cadena se
+define una vez (`claves_por_nivel`, en el módulo del Hot-Deck) y la usan
+`hotdeck()` y `vinculo.sortear_donante`; el Hot-Deck del pipeline
+reproduce el Parquet guardado. Con la base real, el 0,03 % de la encuesta
+usa un respaldo. Si no hay celdas vacías, el sorteo es el mismo de antes
+(no consume más números aleatorios). Las firmas de configuración subieron
+de versión: las repeticiones guardadas no se mezclan con las nuevas.
+Pasos 1 a 3: Comprobación: con los datos
 reales, la tabla de trabajo (290.968 hogares) y las 150 filas de la
 repetición 0 son idénticas a las de la versión anterior; la repetición 0
 de la sensibilidad y de las reglas de focalización coincide con los CSV
@@ -207,7 +214,7 @@ silencio.
 | 6 | `calibrar.py`, `generador.py` y el modo simulado | Prueba de agregados (sección 8) |
 | 7 | Modo de datos propios con estimación real | Correrlo con la GEIH enlazada reproduce el DML de `5_estimacion.py` |
 
-El paso 4 cambia la simulación: hoy, una celda sin donantes sortea en
+El paso 4 cambia la simulación: antes, una celda sin donantes sorteaba en
 todo el registro; con la cadena, sortea en la celda de respaldo. Afecta
 a pocos hogares (0,02 % en el pipeline real), pero las cifras se
 regeneran y el cambio se documenta en `SIMULACION_SEMISINTETICA.md`.

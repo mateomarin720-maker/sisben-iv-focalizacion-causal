@@ -32,8 +32,8 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Tarea | Estado al 4 nov | Evidencia |
 | --- | --- | --- |
 | Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Pendiente | Aún no hay script ni reporte |
-| Simulación como módulo independiente, con modo de datos propios y modo simulado | En curso (pasos 1-3 de 7) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
-| Evaluación semisintética completa | En gran parte hecha | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Falta la cadena completa de respaldos del Hot-Deck simulado |
+| Simulación como módulo independiente, con modo de datos propios y modo simulado | En curso (pasos 1-4 de 7) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
+| Evaluación semisintética completa | En gran parte hecha | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Cadena de respaldos del Hot-Deck simulado en el código (4 nov); falta regenerar las cifras con ella y el asterisco |
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov | `RESULTADOS_REGLAS_FOCALIZACION.md` y `RESULTADOS_FRECHET_MANSKI.md` |
 | Recomendación de variables | Pendiente | Insumo disponible: OE1 con LASSO, Ridge y SHAP |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Pendiente | Aún no hay anexo |
@@ -186,7 +186,10 @@ Comprobado contra el repositorio al incorporar este documento:
   migración en siete pasos con prueba de equivalencia. Pasos 1 a 3
   hechos el mismo día: `src/simulacion/` con el contrato validado,
   resultados idénticos a la versión anterior, módulo anterior borrado.
-  Faltan la cadena de respaldos, el asterisco y los dos modos.
+  Paso 4 hecho el mismo día: la simulación usa la cadena de respaldos
+  del pipeline (definida en un solo lugar, `claves_por_nivel`); con los
+  datos reales afecta al 0,03 % de la encuesta. Faltan el asterisco, la
+  corrida que regenera las cifras y los dos modos.
 - **Prioridad 1 hecha el mismo día:**
   `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
   hogar, dos sorteos coinciden en el grupo el 34,4 % de las veces y en

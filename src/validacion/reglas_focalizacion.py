@@ -78,7 +78,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 from src.simulacion import contrato
 from src.simulacion.asignacion import asignar
-from src.simulacion.base import preparar_base
+from src.simulacion.base import celdas_por_nivel, preparar_base
 from src.simulacion.escenarios import ESCENARIOS, TAU
 from src.simulacion.estimadores import estimacion5
 from src.simulacion.evaluacion import HOGARES, REGISTRO, p_t_por_celda
@@ -229,7 +229,8 @@ def una_repeticion(b: pd.DataFrame, rep: int) -> list[dict]:
     # El mundo semisintético: T verdadero y T por Hot-Deck (donante de la celda).
     t_mundo, _, _ = asignar(b, ESCENARIOS[ESCENARIO], rng)
     t_en = t_mundo[idx[N_EVAL:N_EVAL + N_ENTRENA]]
-    donante = reg[sortear_donante(en["hotdeck_celda_cat"].to_numpy(), b["hotdeck_celda_cat"].to_numpy()[reg], rng)]
+    niveles = celdas_por_nivel(b)
+    donante = reg[sortear_donante(niveles[idx[N_EVAL:N_EVAL + N_ENTRENA]], niveles[reg], rng)]
     x_cols = estimacion5().X_COLS
     y0_en, tau_en, lp_en = en["y0"].to_numpy(), en["tau"].to_numpy(), en["lp"].to_numpy()
 
@@ -298,7 +299,7 @@ def pendientes(res: pd.DataFrame) -> list[str]:
 
 def _firma() -> str:
     cfg = dict(SEED=SEED, N_EVAL=N_EVAL, N_ENTRENA=N_ENTRENA, ESCENARIO=ESCENARIO, PMT_CATEGORICAS=PMT_CATEGORICAS,
-               PMT_NUMERICAS=PMT_NUMERICAS, REGLAS=REGLAS, TAU=TAU, TIPOS_EFECTO=TIPOS_EFECTO, version=2)
+               PMT_NUMERICAS=PMT_NUMERICAS, REGLAS=REGLAS, TAU=TAU, TIPOS_EFECTO=TIPOS_EFECTO, version=3)  # 3: cadena de respaldos del Hot-Deck
     return hashlib.sha1(json.dumps(cfg, sort_keys=True).encode()).hexdigest()[:12]
 
 

@@ -291,9 +291,13 @@ milésimas; hoy son un placebo ≈0).
 - Sin ajuste por diseño muestral. T sigue una logística de la celda y de
   tres variables de X; la regla de corte es nítida (cumplimiento
   perfecto), no difusa.
-- El Hot-Deck simulado sortea en la celda exacta (respaldo: todo el
-  registro), sin la cadena completa de respaldos del pipeline; con 993
-  celdas y ≈260.000 donantes por repetición casi nunca se usa el respaldo.
+- Las cifras de este documento se generaron con el Hot-Deck simulado
+  sin la cadena de respaldos del pipeline: el hogar sin donantes en su
+  celda recibía uno de todo el registro. Desde el 2026-11-04 el código usa
+  la cadena (celda → sin pisos → depto + edad → depto); con los datos
+  reales cambia el 0,03 % de la encuesta (en 5 repeticiones: 277 hogares
+  sin pisos, 74 depto + edad, 10 depto, ninguno en todo el registro). Las
+  cifras se regeneran con la próxima corrida (junto con el asterisco).
 - Causal Forest en 216 repeticiones (6 de sus 16 celdas sobre el umbral
   de MCSE, ver Convergencia).
 
