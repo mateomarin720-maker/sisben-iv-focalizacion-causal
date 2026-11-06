@@ -15,7 +15,7 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 
 ### Hallado
 - La GEIH trae participación declarada en programas (`P750S2`, `P1661S1`-`S3`);
-  matiz anotado en la guía. `Victimas_MPMD` no tiene origen documentado.
+  matiz anotado en la guía.
 
 ## 2026-11-04 (22) — Cadena de respaldos en el Hot-Deck simulado (paso 4 del diseño)
 

@@ -257,7 +257,8 @@ fuentes:
       Columnas: directorio, secuencia_p, orden, CD_PERI (aaaamm),
       es_victima, es_desplazado, FEX_VIC. Marca la condición de víctima
       con las llaves de GEIH: posible covariable sin necesidad del RUI
-      (ver la fuente rui). No se usa todavía.
+      (ver la fuente rui). Se usa como candidata en
+      src/estimacion/variables_candidatas_pobreza.py.
     variables_clave:
       - es_victima
       - es_desplazado
