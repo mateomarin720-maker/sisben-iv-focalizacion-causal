@@ -1,0 +1,94 @@
+
+=== Análisis posterior: aporte de cuenta y crédito (diferencias en puntos porcentuales) ===
+             modelo      referencia          metrica  delta  ic_lo  ic_hi  d_exclusion_temporal
+           +credito ficha_derivadas              auc  0.103  0.080  0.130                -0.186
+           +credito ficha_derivadas        exclusion -0.160 -0.282 -0.028                -0.186
+           +credito ficha_derivadas exclusion_urbano -0.248 -0.386 -0.091                -0.186
+           +credito ficha_derivadas  exclusion_rural  0.067 -0.091  0.298                -0.186
+            +cuenta ficha_derivadas              auc  0.590  0.534  0.649                -0.847
+            +cuenta ficha_derivadas        exclusion -0.858 -1.044 -0.606                -0.847
+            +cuenta ficha_derivadas exclusion_urbano -0.885 -1.135 -0.583                -0.847
+            +cuenta ficha_derivadas  exclusion_rural -0.790 -1.135 -0.320                -0.847
+   +credito+estrato ficha_derivadas              auc  0.391  0.345  0.436                -0.425
+   +credito+estrato ficha_derivadas        exclusion -0.630 -0.827 -0.435                -0.425
+   +credito+estrato ficha_derivadas exclusion_urbano -0.723 -0.928 -0.437                -0.425
+   +credito+estrato ficha_derivadas  exclusion_rural -0.392 -0.700 -0.081                -0.425
++financiero+estrato ficha_derivadas              auc  0.878  0.801  0.949                -1.029
++financiero+estrato ficha_derivadas        exclusion -1.237 -1.472 -0.983                -1.029
++financiero+estrato ficha_derivadas exclusion_urbano -1.359 -1.631 -1.023                -1.029
++financiero+estrato ficha_derivadas  exclusion_rural -0.920 -1.295 -0.485                -1.029
+
+=== % de hogares que declara transferencia ===
+{'ayuda_gobierno': 15.44, 'familias_en_accion': 4.81, 'jovenes_en_accion': 0.66, 'colombia_mayor': 6.79}
+
+=== % con cuenta de ahorros según transferencia ===
+poblacion  pct_con_ayuda  cuenta_con_ayuda  cuenta_sin_ayuda  cambio_ajustado_pp  p_ajustado
+    todos        15.4370           34.6745           68.4117              -6.526         0.0
+   pobres        29.1189           26.6713           41.5264              -6.526         0.0
+no_pobres        10.3691           42.9994           76.2871              -6.526         0.0
+
+=== LASSO estricto: frecuencia de selección en 30 mitades de la muestra ===
+                    variable  frecuencia_C_0.001  frecuencia_C_0.0001                grupo
+                 fin_ahorros               1.000                  1.0 inclusion_financiera
+                  hog_cocina               1.000                  1.0           referencia
+     hog_sanitario_exclusivo               1.000                  1.0           referencia
+                   n_menores               1.000                  1.0           referencia
+               tasa_ocupados               1.000                  1.0           referencia
+                 viv_paredes               1.000                  1.0           referencia
+                   viv_pisos               1.000                  1.0           referencia
+        adulto_educ_superior               1.000                  0.0           referencia
+                     estrato               1.000                  0.0              estrato
+                    geo_zona               1.000                  0.0           referencia
+            hog_num_personas               1.000                  0.0           referencia
+                hog_tenencia               1.000                  0.0           referencia
+                   jefe_edad               1.000                  0.0           referencia
+              jefe_ocupacion               1.000                  0.0           referencia
+                   jefe_sexo               1.000                  0.0           referencia
+           razon_dependencia               1.000                  0.0           referencia
+ sin_cotizacion_pension_jefe               1.000                  0.0           referencia
+                 viv_cuartos               1.000                  0.0           referencia
+                monoparental               0.767                  0.0           referencia
+               analfabetismo               0.000                  0.0           referencia
+   bajo_logro_educativo_jefe               0.000                  0.0           referencia
+           fin_corriente_cdt               0.000                  0.0 inclusion_financiera
+        fin_credito_vehiculo               0.000                  0.0 inclusion_financiera
+        fin_credito_vivienda               0.000                  0.0 inclusion_financiera
+         fin_libre_inversion               0.000                  0.0 inclusion_financiera
+                 fin_ninguno               0.000                  0.0 inclusion_financiera
+                    fin_otro               0.000                  0.0 inclusion_financiera
+                 fin_tarjeta               0.000                  0.0 inclusion_financiera
+                   geo_depto               0.000                  0.0           referencia
+                hacinamiento               0.000                  0.0           referencia
+                    hog_agua               0.000                  0.0           referencia
+                hog_animales               0.000                  0.0          autoconsumo
+                  hog_basura               0.000                  0.0           referencia
+             hog_combustible               0.000                  0.0           referencia
+              hog_desplazado               0.000                  0.0             victimas
+            hog_discapacidad               0.000                  0.0         discapacidad
+                  hog_huerta               0.000                  0.0          autoconsumo
+            hog_migrante_12m               0.000                  0.0            migracion
+             hog_migrante_5a               0.000                  0.0            migracion
+         hog_nacido_exterior               0.000                  0.0            migracion
+               hog_sanitario               0.000                  0.0           referencia
+               hog_trae_agua               0.000                  0.0          autoconsumo
+                 hog_victima               0.000                  0.0             victimas
+inasistencia_escolar_menores               0.000                  0.0           referencia
+                   jefe_afro               0.000                  0.0                etnia
+              jefe_campesino               0.000                  0.0            campesino
+    jefe_comunidad_campesina               0.000                  0.0            campesino
+           jefe_discapacidad               0.000                  0.0         discapacidad
+              jefe_educacion               0.000                  0.0           referencia
+           jefe_estado_civil               0.000                  0.0           referencia
+             jefe_extranjero               0.000                  0.0            migracion
+               jefe_indigena               0.000                  0.0                etnia
+             jefe_otra_etnia               0.000                  0.0                etnia
+                   n_mayores               0.000                  0.0           referencia
+     sin_aseguramiento_salud               0.000                  0.0           referencia
+               viv_acueducto               0.000                  0.0           referencia
+          viv_alcantarillado               0.000                  0.0           referencia
+                 viv_basuras               0.000                  0.0           referencia
+          viv_cuartos_dormir               0.000                  0.0           referencia
+                 viv_energia               0.000                  0.0           referencia
+                     viv_gas               0.000                  0.0           referencia
+             viv_num_hogares               0.000                  0.0           referencia
+                    viv_tipo               0.000                  0.0           referencia

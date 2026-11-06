@@ -64,6 +64,7 @@ historial de correcciones está en
 | 9 | Evaluación semisintética | `src/simulacion/` | [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md) |
 | 10 | Reglas de focalización (OE3) | `src/validacion/reglas_focalizacion.py` | [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md) |
 | 11 | Variabilidad de la imputación del Hot-Deck | `src/validacion/variabilidad_hotdeck.py` | [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](RESULTADOS_VARIABILIDAD_HOTDECK.md) |
+| 12 | Recomendación de variables | `src/estimacion/variables_candidatas_pobreza.py` | [`RECOMENDACION_VARIABLES_POBREZA.md`](RECOMENDACION_VARIABLES_POBREZA.md) |
 
 ## Resumen por paso
 
@@ -234,6 +235,19 @@ Con las fuentes actuales no hay efectos heterogéneos utilizables para
 focalizar; un proxy de medios con variables del hogar sí mejora la
 focalización. La regla vigente es la imputada por celda, no la del
 Sisbén real. Detalle en [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md).
+
+### 12. Recomendación de variables
+
+Con datos reales de la GEIH, sin Hot-Deck: qué variables que no están en el
+diccionario del Sisbén ayudan a identificar hogares pobres. Es una pregunta
+abierta, no una conclusión causal. Calcular la composición del hogar con lo
+que ya se recoge reduce el error de exclusión 5,40 puntos; todas las variables
+nuevas, 1,40. Solo la cuenta de ahorros (−0,86) tiene un aporte claro y estable;
+el estrato (−0,52) cumple el criterio por poco. Discapacidad, desplazamiento,
+migración, etnia y condición campesina casi no cambian a quién se identifica. El
+aporte puede estar sobreestimado: la GEIH no trae nevera, lavadora ni internet,
+que el Sisbén sí recoge. Detalle en
+[`RECOMENDACION_VARIABLES_POBREZA.md`](RECOMENDACION_VARIABLES_POBREZA.md).
 
 ## Limitaciones generales
 

@@ -31,14 +31,14 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 
 | Tarea | Estado al 4 nov | Evidencia |
 | --- | --- | --- |
-| Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Pendiente | Aún no hay script ni reporte |
+| Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Hecha el 4 nov | `RESULTADOS_VARIABILIDAD_HOTDECK.md` |
 | Simulación como módulo independiente, con modo de datos propios y modo simulado | En curso (pasos 1-4 de 7) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
 | Evaluación semisintética completa | En gran parte hecha | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Cadena de respaldos del Hot-Deck simulado en el código (4 nov); falta regenerar las cifras con ella y el asterisco |
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov | `RESULTADOS_REGLAS_FOCALIZACION.md` y `RESULTADOS_FRECHET_MANSKI.md` |
-| Recomendación de variables | Pendiente | Insumo disponible: OE1 con LASSO, Ridge y SHAP |
+| Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Pendiente | Aún no hay anexo |
 | Depuración del repositorio para el jurado | Pendiente | Tres ramas remotas obsoletas identificadas |
-| Pruebas | Hechas en su mayor parte | 131 pasan y 7 se saltan, con integración continua (sección Pruebas) |
+| Pruebas | Hechas en su mayor parte | 204 pruebas al 6 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
 
@@ -163,6 +163,20 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
 | 9 | Documento escrito: primera versión el sábado 7 de noviembre; revisión del tutor el lunes o martes siguiente | Entrega a revisión |
 
 ## Notas de verificación (2026-11-04)
+
+- **Prioridad 4, primera versión el 2026-11-06:**
+  `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`. No extiende el OE1, que
+  predice el grupo asignado: usa la pobreza de la GEIH como resultado.
+- **Participación en programas (matiz a la tabla "Por qué los datos reales no
+  identifican el efecto"):** faltan los cruces administrativos, pero la GEIH sí
+  trae participación **declarada**: `P750S2` (ayudas del gobierno) y `P1661S1`-`S3`
+  (Más Familias en Acción, Jóvenes en Acción, Colombia Mayor). El 15,4 % de los
+  hogares declara alguna ayuda. Está sin evaluar si sirve para algo más que la
+  revisión hecha en ese documento: se observa en la misma encuesta que el ingreso,
+  sin Hot-Deck, pero la participación no es aleatoria y el dinero recibido es parte
+  del ingreso.
+- **`Victimas_MPMD`:** el archivo está en `data/0_raw/` sin documentación de su
+  origen. Confirmar la fuente antes de citar las cifras de víctimas.
 
 Comprobado contra el repositorio al incorporar este documento:
 

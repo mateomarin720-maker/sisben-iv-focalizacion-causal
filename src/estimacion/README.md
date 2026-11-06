@@ -18,6 +18,9 @@ Esta carpeta (`src/estimacion/`) contiene dos cosas distintas:
 - `cotas_frechet_manski.py`: parte vigente del pipeline — cotas de
   robustez para el ATE que NO suponen independencia condicional (a
   diferencia del DML). Resultado: `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+- `variables_candidatas_pobreza.py`: qué variables podría incorporar el
+  Sisbén, con la pobreza de la GEIH como resultado. Predictivo, no causal.
+  Resultado: `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`.
 - `seleccion_variables_lasso_shap.py`: parte vigente, pero de OE1, no del
   pipeline causal — LASSO/Ridge/SHAP sobre el Sisbén para ver qué
   variables del hogar predicen mejor el `Grupo` (A-D). No estima ningún
