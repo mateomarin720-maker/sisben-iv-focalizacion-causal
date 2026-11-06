@@ -2,6 +2,21 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-06 (23) — Recomendación de variables para ampliar la medición de pobreza
+
+### Nuevo
+- `src/estimacion/variables_candidatas_pobreza.py`: modelos anidados sobre
+  la pobreza de la GEIH 2024 (lo que ya se recoge frente a 8 grupos de
+  candidatas), con criterio de decisión fijado antes de ver resultados.
+- `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`. Composición del hogar
+  −5,40 puntos de exclusión; cuenta de ahorros −0,86; estrato −0,52.
+- Pruebas: `test_variables_candidatas.py` y etiquetas en `test_armonizacion.py`;
+  8 mutaciones. 204 pruebas, 38 de 38 mutaciones detectadas.
+
+### Hallado
+- La GEIH trae participación declarada en programas (`P750S2`, `P1661S1`-`S3`);
+  matiz anotado en la guía. `Victimas_MPMD` no tiene origen documentado.
+
 ## 2026-11-04 (22) — Cadena de respaldos en el Hot-Deck simulado (paso 4 del diseño)
 
 ### Cambiado

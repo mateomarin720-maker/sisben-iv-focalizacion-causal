@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 30 de 30 mutaciones detectadas.
+Resultado del 2026-11-04: 38 de 38 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -91,6 +91,27 @@ MUTACIONES = [
      "tests/test_simulacion_semisintetica.py"),
     ("Simulación: sin donantes en la celda sortea en todo el registro (versión anterior)", "src/simulacion/vinculo.py",
      "for k in range(r.shape[1]):", "for k in range(1):", "tests/test_simulacion_semisintetica.py"),
+    # Variables candidatas
+    ("Candidatas: discapacidad cuenta \"alguna dificultad\"", "src/estimacion/variables_candidatas_pobreza.py",
+     'dificultad = p[DIFICULTADES].isin(["1", "2"]).any(axis=1)', 'dificultad = p[DIFICULTADES].isin(["1", "2", "3"]).any(axis=1)',
+     "tests/test_variables_candidatas.py"),
+    ("Candidatas: el ingreso entra como predictor", "src/estimacion/variables_candidatas_pobreza.py",
+     'DERIVADAS = ["n_menores",', 'DERIVADAS = ["ingreso_percapita", "n_menores",', "tests/test_variables_candidatas.py"),
+    ("Candidatas: categóricas como número", "src/estimacion/variables_candidatas_pobreza.py",
+     'CATEGORICAS = set(FICHA_CAT) | {"estrato"}', 'CATEGORICAS = set()', "tests/test_variables_candidatas.py"),
+    ("Candidatas: el IPM se predice con sus componentes", "src/estimacion/variables_candidatas_pobreza.py",
+     'fuera = MECANICAS_IPM if outcome == "POBRE_GEIH" else set()', 'fuera = set()', "tests/test_variables_candidatas.py"),
+    ("Candidatas: exclusión mide los elegidos no pobres", "src/estimacion/variables_candidatas_pobreza.py",
+     'return float(1 - aciertos / pobres), float(1 - aciertos / (w * elegidos).sum())',
+     'return float(1 - aciertos / (w * elegidos).sum()), float(1 - aciertos / pobres)', "tests/test_variables_candidatas.py"),
+    ("Candidatas: Holm sin corregir", "src/estimacion/variables_candidatas_pobreza.py",
+     'ajustados = (orden * (len(orden) - np.arange(len(orden)))).cummax().clip(upper=1)', 'ajustados = orden',
+     "tests/test_variables_candidatas.py"),
+    ("Candidatas: se recomienda sin exigir estabilidad", "src/estimacion/variables_candidatas_pobreza.py",
+     'if significativo and mejora_clara and estable:', 'if significativo and mejora_clara:', "tests/test_variables_candidatas.py"),
+    ("Candidatas: una vivienda en varios pliegues", "src/estimacion/variables_candidatas_pobreza.py",
+     'return np.random.default_rng(seed).permutation(len(unicos))[inv] % n',
+     'return np.random.default_rng(seed).permutation(len(grupos)) % n', "tests/test_variables_candidatas.py"),
     ("Simulación: el contrato acepta un alias de columna", "src/simulacion/contrato.py",
      'faltan = [c for c in obligatorias if c not in tabla.columns]',
      'faltan = [c for c in obligatorias if c not in tabla.columns and c.replace("jefe_sexo", "sexo_jefe") not in tabla.columns]',

@@ -57,6 +57,31 @@ def test_codigos_geih_coinciden_con_el_diccionario():
     assert set(ETIQUETA_GEIH) <= set(mapa.values()), "falta mapear una variable canónica"
 
 
+def test_variables_candidatas_leen_la_pregunta_correcta():
+    """`variables_candidatas_pobreza.py`: cada código contra la pregunta del
+    diccionario, incluida la lista de categorías cuando la trae."""
+    d = pd.read_excel(DIC_GEIH)
+    pregunta = {n: f"{e} {q}".lower() for n, e, q in zip(d["Nombre"], d["Etiqueta"], d["Pregunta"])}
+    esperado = {
+        "P5222S1": "cuenta corriente", "P5222S2": "cuenta de ahorros", "P5222S3": "cdt",
+        "P5222S4": "compra de vivienda", "P5222S5": "compra de vehículo", "P5222S6": "libre inversión",
+        "P5222S7": "tarjeta de crédito", "P5222S8": "8 otro", "P5222S9": "9 ninguno",
+        "P4030S1A1": "estrato", "P4000": "tipo de vivienda", "P4030S1": "energía eléctrica", "P4030S2": "gas natural",
+        "P4030S4": "recolección de basuras", "P70": "cuántos hogares", "P5020": "servicio sanitario",
+        "P5030": "uso exclusivo", "P5040": "basura", "P5050": "agua para consumo", "P5070": "preparan los alimentos",
+        "P5080": "combustible", "P5090": "vivienda ocupada", "P6070": "actualmente", "P6071": "cónyuge",
+        "P3042": "mayor nivel educativo", "P6430": "en este trabajo", "OCI": "ocupada",
+        "P6080": "1 indígena", "P2057": "campesino", "P2061": "comunidad en que vive",
+        "P1906S1": "oír", "P1906S3": "ver", "P1906S4": "caminar", "P1906S7": "comer",
+        "P3373": "dónde nació", "P3374": "nacionalidad", "P3382": "hace 5 años", "P3384": "hace 12 meses",
+        "P3092": "traer agua", "P3094": "huerta", "P3095": "criar animales",
+        "P750S2": "entidades del gobierno", "P1661S1": "familias en acción", "P1661S2": "jóvenes en acción",
+        "P1661S3": "colombia mayor",
+    }
+    for codigo, palabra in esperado.items():
+        assert palabra in pregunta[codigo], f"{codigo}: '{palabra}' no está en '{pregunta[codigo][:120]}'"
+
+
 def test_el_jefe_de_geih_es_p6050():
     etiquetas = _etiquetas(DIC_GEIH, "Nombre", "Etiqueta")
     assert (geih.FILTRO_JEFE_COL, geih.FILTRO_JEFE_VAL) == ("P6050", "1")

@@ -1,6 +1,6 @@
 # Pruebas
 
-178 pruebas en 16 archivos (2026-11-04). Casi todas usan datos
+204 pruebas en 17 archivos (2026-11-06). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -51,6 +51,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_sensibilidad_semisintetica.py` | `validacion/sensibilidad_semisintetica.py` | RD difusa insesgada y con cobertura ≈95 % en 100 semillas; la RD nítida sobre participación difusa se atenúa; escenarios y versión sin regularizar del DML | |
 | `test_variabilidad_hotdeck.py` | `validacion/variabilidad_hotdeck.py` | Concordancia entre sorteos insesgada y convergente a la teórica de la celda; CV y error relativo por celda ponderados; contraste con efectos fijos igual a MCO con indicadoras; reglas de Rubin | |
 | `test_simulacion_semisintetica.py` | `simulacion/*` | Generador, Hot-Deck simulado, RD, MCSE; efectos fijos con códigos de celda `int8`; cadena de respaldos igual a la del `hotdeck()` del pipeline y sorteo sin cambios cuando no hay celdas vacías | Desborde con códigos de celda pequeños (2026-11-04); sortear en todo el registro sin pasar por los respaldos |
+| `test_variables_candidatas.py` | `estimacion/variables_candidatas_pobreza.py` | Agregación de personas a hogares, códigos de discapacidad, métricas ponderadas, Holm, criterio de decisión, errores agrupados contra `statsmodels` | Predictores que miden el ingreso, categóricas como número, IPM predicho con sus componentes, recomendar sin estabilidad |
 | `test_simulacion_contrato.py` | `simulacion/contrato.py` | Falta cada columna obligatoria y el error la nombra; sin alias; códigos fuera de dominio (incluido "1.0"); faltantes; pisos del Sisbén frente a la GEIH; el registro solo revisa clasificados; opcionales; duplicadas | Volver a aceptar nombres distintos (regla del tutor) |
 | `test_simulacion_equivalencia.py` | `simulacion/evaluacion.py` | 3 repeticiones iguales a la versión anterior (`tests/referencia/`), salvo la única combinación que usa respaldos; columnas extra o en otro orden no cambian la base | Que una refactorización mueva los resultados publicados |
 
