@@ -175,8 +175,6 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
   revisión hecha en ese documento: se observa en la misma encuesta que el ingreso,
   sin Hot-Deck, pero la participación no es aleatoria y el dinero recibido es parte
   del ingreso.
-- **`Victimas_MPMD`:** el archivo está en `data/0_raw/` sin documentación de su
-  origen. Confirmar la fuente antes de citar las cifras de víctimas.
 
 Comprobado contra el repositorio al incorporar este documento:
 

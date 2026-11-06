@@ -50,7 +50,7 @@ oficial del DANE (24 departamentos) y con el IPM-GEIH.
 **Candidatas (8 grupos).** Inclusión financiera (`P5222`), estrato (`P4030S1A1`),
 discapacidad (`P1906`), autorreconocimiento étnico (`P6080`) y campesino (`P2057`,
 `P2061`), migración (`P3373`, `P3374`, `P3382`, `P3384`), víctimas y desplazamiento
-(archivo `Victimas_MPMD`) y autoconsumo (`P3092`, `P3094`, `P3095`).
+(base `Victimas_MPMD` del DANE) y autoconsumo (`P3092`, `P3094`, `P3095`).
 
 **Fuera por diseño.** Las variables en dinero (arriendo, valor de la vivienda,
 cuota, ingresos, subsidios), que entran en el ingreso o lo miden, e `I1`-`I15` y
@@ -241,10 +241,9 @@ política.
   primaria de muestreo). La agrupación por departamento en las pruebas Wald es una
   aproximación, con 33 grupos.
 - **Umbral de 0,5 puntos:** es una elección nuestra, no un estándar.
-- **`Victimas_MPMD`:** enlaza al 100 % con la GEIH y su distribución es plausible (más
-  casos en Chocó, Caquetá y Sucre), pero su origen no está documentado en el repositorio.
-  Solo trae víctimas, así que quien no aparece se toma como no víctima. **Confirmar la
-  fuente antes de citar esas cifras.**
+- **Víctimas:** la marca viene del DANE (base `Victimas_MPMD`, catálogo 874 de microdatos, el mismo de la pobreza monetaria;
+  ver `data/catalogo.yaml`). No es el Registro Único de Víctimas. Solo trae a las personas marcadas, así que
+  quien no aparece se toma como no víctima.
 - **Verificabilidad y costo:** no se evaluaron con datos. Si cada variable se puede
   comprobar en registros administrativos queda por confirmar.
 
