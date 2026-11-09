@@ -37,7 +37,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov | `RESULTADOS_REGLAS_FOCALIZACION.md` y `RESULTADOS_FRECHET_MANSKI.md` |
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
-| Depuración del repositorio para el jurado | En curso | Prueba exploratoria de octubre retirada; falta borrar las 11 ramas remotas viejas |
+| Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
 | Pruebas | Hechas en su mayor parte | 204 pruebas al 6 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
@@ -157,7 +157,7 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
 | 3 | Completar la semisintética: cadena de respaldos del Hot-Deck simulado y asterisco en todas las tablas | Evaluación cerrada |
 | 4 | Recomendación de variables con LASSO, Ridge y SHAP | Pregunta abierta y recomendación, sin lenguaje causal |
 | 5 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Anexo con evidencia de calidad |
-| 6 | Depuración del repositorio y archivo de las ramas obsoletas (falta borrar las ramas) | Repositorio limpio para la entrega |
+| 6 | ~~Depuración del repositorio y archivo de las ramas obsoletas~~ **Hecha el 2026-11-08** | Repositorio limpio para la entrega |
 | 7 | Arreglar `poetry run pytest` y quitar `warnings.filterwarnings` | Pruebas verdes con el comando del proyecto |
 | 8 | ~~Enviar la solicitud del puntaje continuo~~ **Descartada el 2026-11-04:** no se solicitarán más datos; la réplica usa solo las fuentes ya disponibles | — |
 | 9 | Documento escrito: primera versión el sábado 7 de noviembre; revisión del tutor el lunes o martes siguiente | Entrega a revisión |
@@ -166,9 +166,9 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
 
 - **Prioridad 6, revisión del 2026-11-08:** se retiró `prueba_ate_att_cate.py`, con su
   preparación y salida (siguen en el historial de git). De las 11 ramas remotas viejas,
-  8 están integradas; `simulacion-identificacion` y `arregla-lock-openpyxl` están
-  superadas en `main`, y `corrige-controles-celda` trae un documento propio que conviene
-  archivar en una etiqueta antes de borrarla. Las ramas siguen sin borrar.
+  8 estaban integradas; `simulacion-identificacion` y `arregla-lock-openpyxl`, superadas
+  en `main`. Las 11 se borraron; `corrige-controles-celda` traía un documento propio y
+  queda en la etiqueta `archivo/corrige-controles-celda`.
 
 - **Prioridad 4, primera versión el 2026-11-06:**
   `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`. No extiende el OE1, que

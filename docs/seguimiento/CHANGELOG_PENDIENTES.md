@@ -11,6 +11,8 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 ## 2026-11-08 (26) — Depuración del repositorio
 
 ### Cambiado
+- Quedan las ramas `main` y `ediciones-hotdeck-sdp`; `corrige-controles-celda` se
+  conserva en la etiqueta `archivo/corrige-controles-celda`.
 - Se retiran `prueba_ate_att_cate.py`, `preparar_outcome_prueba_empleo.py` y su salida:
   una prueba exploratoria con un outcome provisional y la celda anterior.
 
