@@ -132,7 +132,7 @@ La suite pasa en GitHub Actions: 214 pruebas al 8 de noviembre; 7 se saltan all�
 | Prueba de mutación | Se reintroducen 43 errores y los 43 hacen fallar alguna prueba |
 | Cobertura | Armonización contra los diccionarios oficiales, DML, cotas de Fréchet-Manski, reglas de focalización, simulación semisintética y su sensibilidad |
 | Estabilidad | Cinco corridas seguidas sin fallos; pruebas con azar usan semillas fijas |
-| Pendiente | `poetry run pytest` fallaba al importar en 4 archivos según el seguimiento del 3 de noviembre; por confirmar (agregar `pythonpath` en `pyproject.toml`); tres scripts de simulación aún usan `warnings.filterwarnings("ignore")` |
+| Comando del proyecto | `poetry run pytest` pasa desde el 4 de noviembre (`pythonpath` en `pyproject.toml`); ningún script usa ya `warnings.filterwarnings("ignore")` |
 
 El detalle de cada prueba está en `tests/README.md`.
 
@@ -152,13 +152,13 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
 
 | Prioridad | Tarea | Resultado esperado |
 | --- | --- | --- |
-| 1 | Variabilidad de la imputación del Hot-Deck: estabilidad por hogar, coeficiente de variación y error relativo por celda | Cifra para la pregunta del tutor |
-| 2 | Módulo `src/simulacion/` con dos modos (datos propios y simulado), con diseño previo en `docs/metodologia/` | Framework replicable por otras instituciones |
+| 1 | ~~Variabilidad de la imputación del Hot-Deck: estabilidad por hogar, coeficiente de variación y error relativo por celda~~ **Hecha el 2026-11-04** | Cifra para la pregunta del tutor |
+| 2 | Módulo `src/simulacion/` con dos modos (datos propios y simulado), con diseño previo en `docs/metodologia/`. Pasos 1 a 5 hechos; faltan los pasos 6 y 7 (los dos modos) | Framework replicable por otras instituciones |
 | 3 | ~~Completar la semisintética: cadena de respaldos del Hot-Deck simulado y asterisco en todas las tablas~~ **Hecha el 2026-11-08** | Evaluación cerrada |
-| 4 | Recomendación de variables con LASSO, Ridge y SHAP | Pregunta abierta y recomendación, sin lenguaje causal |
-| 5 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Anexo con evidencia de calidad |
+| 4 | ~~Recomendación de variables con LASSO, Ridge y SHAP~~ **Primera versión el 2026-11-06** | Pregunta abierta y recomendación, sin lenguaje causal |
+| 5 | ~~Arquitectura de datos (bronce, plata, oro) y guía de replicación~~ **Primera versión el 2026-11-08** | Anexo con evidencia de calidad |
 | 6 | ~~Depuración del repositorio y archivo de las ramas obsoletas~~ **Hecha el 2026-11-08** | Repositorio limpio para la entrega |
-| 7 | Arreglar `poetry run pytest` y quitar `warnings.filterwarnings` | Pruebas verdes con el comando del proyecto |
+| 7 | ~~Arreglar `poetry run pytest` y quitar `warnings.filterwarnings`~~ **Hecha el 2026-11-04** | Pruebas verdes con el comando del proyecto |
 | 8 | ~~Enviar la solicitud del puntaje continuo~~ **Descartada el 2026-11-04:** no se solicitarán más datos; la réplica usa solo las fuentes ya disponibles | — |
 | 9 | Documento escrito: primera versión el sábado 7 de noviembre; revisión del tutor el lunes o martes siguiente | Entrega a revisión |
 
@@ -206,8 +206,9 @@ Comprobado contra el repositorio al incorporar este documento:
   resultados idénticos a la versión anterior, módulo anterior borrado.
   Paso 4 hecho el mismo día: la simulación usa la cadena de respaldos
   del pipeline (definida en un solo lugar, `claves_por_nivel`); con los
-  datos reales afecta al 0,03 % de la encuesta. Faltan el asterisco, la
-  corrida que regenera las cifras y los dos modos.
+  datos reales afecta al 0,03 % de la encuesta. Faltaban el asterisco, la
+  corrida que regenera las cifras y los dos modos; los dos primeros se
+  hicieron el 2026-11-08.
 - **Prioridad 1 hecha el mismo día:**
   `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
   hogar, dos sorteos coinciden en el grupo el 34,4 % de las veces y en
