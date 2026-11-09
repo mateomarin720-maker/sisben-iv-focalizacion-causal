@@ -32,6 +32,17 @@ La estructura sigue la metodología estandarizada del **Consultorio de
 Estadística y Ciencia de Datos** de la USTA, garantizando reproducibilidad,
 colaboración y calidad en cada fase del ciclo de vida del proyecto.
 
+**Enfoque vigente (tutoría del 3 de noviembre de 2026).** La tesis es un framework de
+ingeniería y simulación para evaluar subsidios y transferencias, en tres bloques:
+
+| Bloque | Qué entrega | Dónde verlo |
+|---|---|---|
+| Arquitectura e ingeniería | Enlazar las bases y correr los modelos de forma reutilizable | [`ARQUITECTURA_Y_REPLICACION.md`](docs/metodologia/ARQUITECTURA_Y_REPLICACION.md) |
+| Simulación semisintética | Qué estimador recupera un efecto conocido según el vínculo entre fuentes | [`SIMULACION_SEMISINTETICA.md`](docs/resultados/SIMULACION_SEMISINTETICA.md) y `src/simulacion/` |
+| Discusión de focalización | Qué variables podría incorporar el Sisbén, como pregunta abierta y recomendación | [`RECOMENDACION_VARIABLES_POBREZA.md`](docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md) |
+
+Para revisar el proyecto, empezar por el [índice de resultados](docs/resultados/README.md).
+
 ### 2. Pregunta de investigación y objetivos
 
 **Pregunta general.** ¿Qué tan bien cumple el Sisbén IV su función de
@@ -131,11 +142,6 @@ Detalle completo de marco teórico, metodología y cronograma en
     poetry run python -m src.utils.restaurar_banco_datos_azure
     ```
 
-6. **Lanza Jupyter para explorar los notebooks**:
-    ```bash
-    jupyter lab
-    ```
-
 ### 5. Estructura del repositorio
 
 - **`/data`**: Datos en sus tres estados (`0_raw`, `1_processed`, `2_models`)
@@ -149,11 +155,10 @@ Detalle completo de marco teórico, metodología y cronograma en
   ([resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md) y
   [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md)) e institucional
   (anteproyecto).
-- **`/notebooks`**: Cuadernos de exploración y pruebas de identificación.
 - **`/src`**: Código fuente por etapa: `ingesta/`, `armonizacion/`,
   `emparejamiento/`, `estimacion/` (DML/Causal Forest/Fréchet-Manski),
   `validacion/`, `utils/` (incluye Azure) y los scripts numerados `1_` a
-  `7_` del flujo metodológico.
+  `5_` del flujo metodológico.
 - **`/tests`**: 214 pruebas automatizadas (`poetry run pytest tests/`),
   casi todas con datos sintéticos; las que leen datos reales se saltan si
   no está el banco. Corren solas en GitHub Actions en cada push y PR
@@ -196,7 +201,13 @@ Detalle completo de marco teórico, metodología y cronograma en
    estimador devuelve ≈0 aunque el efecto verdadero sea +0,095; solo la
    RD con puntaje continuo y vínculo hogar por hogar resiste la confusión
    no observada.
-9. **Reporte** (`7_reporte/`): comparación FGT1 (OE3). ⏳ pendiente.
+9. **Focalización** (`validacion/reglas_focalizacion.py`,
+   `estimacion/variables_candidatas_pobreza.py`,
+   `estimacion/incidencia_transferencias.py`): reglas de asignación simuladas\*,
+   recomendación de variables e incidencia de las ayudas declaradas, estas dos
+   con datos reales. ✅
+
+\* Resultado simulado.
 
 Resultados interpretados de cada paso en
 [`docs/resultados/`](docs/resultados/README.md) (empezar por su índice).
@@ -211,6 +222,7 @@ Resultados interpretados de cada paso en
 | P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
 | P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Evaluación semisintética (432 repeticiones): con Hot-Deck ningún estimador recupera un efecto conocido; haría falta vínculo hogar por hogar y RD con puntaje continuo. |
 | P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ✅ Simulado (2026-11-04): un proxy de medios logra 82-85 % de la reducción ideal de FGT1 frente a 60 % de la clasificación imputada; las reglas con CATE estimado son peores (72 %, y 44 % con Hot-Deck). Ver `docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`. |
+| Recomendación de variables e incidencia | Qué variables podría incorporar el Sisbén y a quién llegan las ayudas | ✅ Primera versión con datos reales, sin Hot-Deck (2026-11-08). No es una conclusión causal |
 
 Detalle completo, hallazgos y pendientes técnicos en
 [`docs/resultados/README.md`](docs/resultados/README.md) (resultados) y

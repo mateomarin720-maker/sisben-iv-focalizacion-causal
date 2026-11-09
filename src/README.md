@@ -60,8 +60,7 @@ documentado y preferiblemente cubierto por pruebas.
     `docs/metodologia/DISENO_MODULO_SIMULACION.md`.
 
 - **`validacion/`**
-  - Chequeos de calidad: `validar_cobertura_celdas_hotdeck.py`,
-    `verificar_esquema_armonizado.py`, `revisar_faltantes_modulos_geih.py`,
+  - Chequeos de calidad: `verificar_esquema_armonizado.py`, `revisar_faltantes_modulos_geih.py`,
     `verificar_codigos_edad_sisben.py` (corrobora los códigos de ciclo de
     vida de `PER002` contra variables de comportamiento), y
     `comparar_filtros_sdp.py` (corre el Hot-Deck con los dos filtros del
@@ -144,14 +143,6 @@ documentado y preferiblemente cubierto por pruebas.
     auxiliares como indicadoras. Con el grupo imputado por Hot-Deck el
     resultado es un **diagnóstico placebo** (ATE ≈0 esperado), no el
     efecto del Sisbén: ver `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
-
-- **`6_refutacion.py`**
-  - Pruebas de refutación y sensibilidad: placebo, random common cause,
-    data subset refuter, sensibilidad a confusores no observados.
-
-- **`7_reporte/`**
-  - Generación de reportes y visualizaciones reproducibles para
-    `docs/reports/`, incluyendo la comparación FGT1 (OE3).
 
 ## Estándares de código
 

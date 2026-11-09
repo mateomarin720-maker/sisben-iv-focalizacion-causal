@@ -285,7 +285,6 @@ sensibilidad individuales (D6).
 | Diccionario de ingreso | `docs/metodologia/pobreza_monetaria/01_diccionario_ingreso.md` | después de la revisión |
 | Script reproducible | `src/indicadores/pobreza_monetaria_geih.py` | después de la revisión |
 | Parquet | `data/2_models/muestra_pobreza_monetaria_reconstruida_2024.parquet` | después de la revisión |
-| Notebook de validación | `notebooks/validacion_pobreza_monetaria.ipynb` | después de la revisión |
 | Comparación oficial | `docs/reports/validacion_pobreza_monetaria.csv` | después de la revisión |
 | Reporte metodológico y de resultados | `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md` (reescrito) | después de la revisión |
 

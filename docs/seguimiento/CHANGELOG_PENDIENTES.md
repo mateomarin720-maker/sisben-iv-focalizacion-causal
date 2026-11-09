@@ -15,6 +15,11 @@ Formato: más reciente primero. Rama de trabajo: `main`.
   conserva en la etiqueta `archivo/corrige-controles-celda`.
 - Se retiran `prueba_ate_att_cate.py`, `preparar_outcome_prueba_empleo.py` y su salida:
   una prueba exploratoria con un outcome provisional y la celda anterior.
+- Se retiran `6_refutacion.py` y `7_reporte/` (sin implementar; lo previsto lo cubren
+  la simulación y las reglas de focalización), `src/preprocesamiento/` y `notebooks/`
+  (vacías), `validar_linkage.py` (esperaba columnas que no existen) y
+  `validar_cobertura_celdas_hotdeck.py` (diagnóstico puntual ya resuelto).
+- `README.md` presenta el enfoque vigente en tres bloques.
 
 ## 2026-11-08 (25) — Asterisco en los resultados simulados (paso 5 del diseño)
 

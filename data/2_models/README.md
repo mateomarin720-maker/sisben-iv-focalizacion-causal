@@ -21,15 +21,10 @@ estimación.
 
 **Preprocesamiento y estimación**
 - `muestra_estimacion_2024.parquet` — tabla final a nivel hogar: outcome
-  IPM-GEIH (`ipm_geih_score`/`POBRE_GEIH`, 4 de 15 privaciones),
+  IPM-GEIH (`ipm_geih_score`/`POBRE_GEIH`, 8 de 15 privaciones),
   tratamiento (`Grupo_hotdeck`) y covariables (`src/3_preprocesamiento.py`).
   Usada por `src/5_estimacion.py` (DML, Causal Forest) y
   `src/estimacion/cotas_frechet_manski.py`.
-- `muestra_estimacion_prueba.parquet` — outcome de prueba (empleo/ingreso
-  del jefe) que precedió al outcome oficial; ver `src/estimacion/README.md`.
-
-**Previsto**: modelos LASSO/Ridge y SHAP (P1/OE1), simulaciones de reglas
-de focalización FGT1 (P3/OE3, `src/6_refutacion.py`, `src/7_reporte/`).
 
 Los resultados interpretados de cada tabla están en
 [`docs/resultados/`](../../docs/resultados/README.md); los nombres de

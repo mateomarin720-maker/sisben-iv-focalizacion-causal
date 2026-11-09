@@ -47,7 +47,7 @@ carpeta responde a una pregunta distinta.
 
 ## `reports/`
 Los scripts de calidad de datos (`src/2_limpieza.py`, `src/utils/validar_geih.py`,
-`src/utils/validar_linkage.py`, `src/validacion/comparar_filtros_sdp.py`), las
+`src/validacion/comparar_filtros_sdp.py`), las
 pruebas exploratorias (`src/estimacion/`) y la estimación real (`src/5_estimacion.py`)
 escriben aquí sus salidas crudas (CSV, TXT). Esta es la única carpeta de
 reportes generados; los resultados interpretados van en `resultados/`.
