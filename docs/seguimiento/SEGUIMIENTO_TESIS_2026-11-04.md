@@ -36,7 +36,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Evaluación semisintética completa | En gran parte hecha | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Cadena de respaldos del Hot-Deck simulado en el código (4 nov); falta regenerar las cifras con ella y el asterisco |
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov | `RESULTADOS_REGLAS_FOCALIZACION.md` y `RESULTADOS_FRECHET_MANSKI.md` |
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
-| Arquitectura de datos (bronce, plata, oro) y guía de replicación | Pendiente | Aún no hay anexo |
+| Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | En curso | Prueba exploratoria de octubre retirada; falta borrar las 11 ramas remotas viejas |
 | Pruebas | Hechas en su mayor parte | 204 pruebas al 6 nov, con integración continua |
 

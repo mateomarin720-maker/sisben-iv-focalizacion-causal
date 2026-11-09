@@ -45,10 +45,8 @@ documentado y preferiblemente cubierto por pruebas.
     `comparar_celdas_hotdeck_vivienda.py`).
 
 - **`estimacion/`**
-  - Pruebas exploratorias de ATE/ATT/CATE que precedieron la corrida real
-    (`3_preprocesamiento.py` + `5_estimacion.py`) — ver
-    `src/estimacion/README.md`. Útil para entender el razonamiento, ya no
-    es la corrida vigente.
+  - Selección de variables, recomendación de variables e incidencia de las
+    ayudas declaradas — ver `src/estimacion/README.md`.
   - `cotas_frechet_manski.py` ✅: alternativa de robustez al DML — cotas
     de Fréchet-Manski sobre `P(Y|X)` (GEIH) y `P(T|X)` (Sisbén) por
     separado, sin suponer independencia condicional. Ver

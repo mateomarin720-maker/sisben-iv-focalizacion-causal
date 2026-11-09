@@ -2,6 +2,12 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-08 (27) — Anexo de arquitectura y replicación
+
+### Nuevo
+- `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md`: capas de datos con su volumen,
+  flujo, controles de calidad y tres rutas de réplica.
+
 ## 2026-11-08 (26) — Depuración del repositorio
 
 ### Cambiado

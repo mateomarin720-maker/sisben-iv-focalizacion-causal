@@ -7,6 +7,7 @@ carpeta responde a una pregunta distinta.
 |---|---|---|
 | [`insumos/`](insumos/) | Diccionarios, descripción de tablas, códigos y referencias | Consultar qué significa cada variable y de dónde sale |
 | [`metodologia/`](metodologia/) | Diseño metodológico de fases nuevas (p. ej. comparación de proxies del IPM, [módulo de simulación](metodologia/DISENO_MODULO_SIMULACION.md)) | Revisar definiciones antes de construir variables |
+| [`metodologia/ARQUITECTURA_Y_REPLICACION.md`](metodologia/ARQUITECTURA_Y_REPLICACION.md) | Capas de datos, controles de calidad y guía de replicación | Reproducir el proyecto o reutilizarlo |
 | [`resultados/`](resultados/) | Documentos cortos con los resultados de cada paso | Revisar resultados sin correr los scripts ni los cuadernos |
 | [`seguimiento/`](seguimiento/) | Resumen de avances y changelog | Saber en qué estado está el proyecto |
 | [`institucional/`](institucional/) | Anteproyecto | Documentos formales de la maestría |
