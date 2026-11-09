@@ -160,3 +160,33 @@ def test_sin_celdas_vacias_el_sorteo_no_cambia():
     con_cadena, nivel = sortear_donante(respaldo(celda_rec), respaldo(celda_don), r2, devolver_nivel=True)
     assert (un_nivel == con_cadena).all() and (nivel == 0).all()
     assert r1.random() == r2.random()
+
+
+def _resumen_simulado() -> pd.DataFrame:
+    from src.simulacion.escenarios import OUTCOMES
+    return pd.DataFrame([dict(escenario="aleatoria", vinculo=v, outcome=o, estimador="linear_dml", efecto_verdadero=0.1,
+                              estimacion=0.09, cobertura=0.95) for o in OUTCOMES for v in ("oraculo", "hotdeck")])
+
+
+def test_toda_cifra_simulada_lleva_asterisco(tmp_path):
+    """Regla del tutor: ninguna cifra de la tabla simulada puede salir sin marca."""
+    import re
+
+    from src.simulacion.reportes import NOTA_SIMULADO, tablas_markdown
+
+    texto = tablas_markdown(_resumen_simulado(), tmp_path / "t.md")
+    assert NOTA_SIMULADO in texto
+    filas = [f for f in texto.splitlines() if f.startswith("| ") and re.search(r"\d,\d", f)]
+    assert filas
+    for fila in filas:
+        assert not re.search(r"\d,\d{2,3}(?!\d|\\\*)", fila), f"cifra sin asterisco: {fila}"
+
+
+def test_los_csv_simulados_quedan_marcados_y_se_pueden_reanudar():
+    from src.simulacion.reportes import marcar_simulado, sin_marca
+
+    original = pd.DataFrame({"rep": [0, 1], "estimacion": [0.1, 0.2]})
+    marcada = marcar_simulado(original)
+    assert marcada["simulado"].all() and set(marcada["modo"]) == {"semisintetico"}
+    pd.testing.assert_frame_equal(sin_marca(marcada), original)
+    assert "simulado" not in original

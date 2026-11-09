@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 42 de 42 mutaciones detectadas.
+Resultado del 2026-11-04: 43 de 43 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -126,6 +126,8 @@ MUTACIONES = [
     ("Candidatas: los pobres que salen no se restan del neto", "src/estimacion/variables_candidatas_pobreza.py",
      'hogares_pobres_neto=h[entran].sum() - h[salen].sum(),', 'hogares_pobres_neto=h[entran].sum(),',
      "tests/test_variables_candidatas.py"),
+    ("Simulación: las cifras salen sin asterisco", "src/simulacion/reportes.py",
+     '''replace(".", ",") + "\\\\*"  # noqa''', '''replace(".", ",")  # noqa''', "tests/test_simulacion_semisintetica.py"),
     ("Simulación: el contrato acepta un alias de columna", "src/simulacion/contrato.py",
      'faltan = [c for c in obligatorias if c not in tabla.columns]',
      'faltan = [c for c in obligatorias if c not in tabla.columns and c.replace("jefe_sexo", "sexo_jefe") not in tabla.columns]',

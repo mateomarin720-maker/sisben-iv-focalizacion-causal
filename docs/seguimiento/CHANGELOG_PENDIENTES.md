@@ -2,6 +2,15 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-08 (25) — Asterisco en los resultados simulados (paso 5 del diseño)
+
+### Cambiado
+- `reportes.py`: asterisco en cada cifra de las tablas y en la figura, con nota al
+  pie; columnas `simulado` y `modo` en los CSV de la evaluación, la sensibilidad y
+  las reglas de focalización.
+- Pruebas: 2 en `test_simulacion_semisintetica.py` y 1 mutación. 214 pruebas, 43 de
+  43 mutaciones detectadas.
+
 ## 2026-11-08 (24) — Incidencia de ayudas declaradas y cantidades de población
 
 ### Nuevo

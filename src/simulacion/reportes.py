@@ -1,8 +1,5 @@
-"""Tablas y figura de la evaluación semisintética.
-
-Pendiente (paso 5 del diseño): asterisco (*) en cada cifra simulada y
-columna `simulado` en los CSV.
-"""
+"""Tablas y figura de la evaluación semisintética. Cada cifra simulada lleva
+asterisco (*) y los CSV la columna `simulado` (regla del tutor)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,6 +8,9 @@ import pandas as pd
 
 from src.simulacion.escenarios import ESCENARIOS, OUTCOMES, VINCULOS
 
+NOTA_SIMULADO = ("\\* Resultado simulado (semisintético): efecto verdadero fijado por el investigador; "
+                 "no es una estimación con datos reales.")
+COLUMNAS_MARCA = ["simulado", "modo"]
 FIGURA = Path("docs/resultados/simulacion_semisintetica_convergencia.png")
 OUT_TABLAS = Path("docs/reports/simulacion_semisintetica_tablas.md")
 PANELES = [  # (escenario, outcome, estimador)
@@ -27,6 +27,16 @@ TITULOS = {"confusion_observada": "Confusión observada", "confusion_no_observad
 ORDEN_EST = ["diferencia_medias", "regresion_efectos_fijos", "linear_dml", "causal_forest", "discontinuidad_rd"]
 NOMBRES_EST = {"diferencia_medias": "Dif. de medias", "regresion_efectos_fijos": "Regresión EF celda",
                "linear_dml": "LinearDML", "causal_forest": "Causal Forest", "discontinuidad_rd": "RD en el corte"}
+
+
+def marcar_simulado(tabla: pd.DataFrame) -> pd.DataFrame:
+    """Copia lista para guardar: toda fila de la evaluación es simulada."""
+    return tabla.assign(simulado=True, modo="semisintetico")
+
+
+def sin_marca(tabla: pd.DataFrame) -> pd.DataFrame:
+    """Quita la marca de una tabla leída del disco, para seguir acumulando."""
+    return tabla.drop(columns=COLUMNAS_MARCA, errors="ignore")
 
 
 def graficar_convergencia(traza: pd.DataFrame, ruta: Path = FIGURA) -> None:
@@ -66,7 +76,7 @@ def graficar_convergencia(traza: pd.DataFrame, ruta: Path = FIGURA) -> None:
         ax.set_ylabel("estimación media", fontsize=8, color=texto2)
         ax.margins(x=0.12)
     manijas, nombres = ejes.ravel()[0].get_legend_handles_labels()
-    fig.suptitle("Convergencia de la simulación semisintética (banda: ± 1,96 · MCSE)", y=0.985, fontsize=11,
+    fig.suptitle("Convergencia de la simulación semisintética* (banda: ± 1,96 · MCSE; * resultado simulado)", y=0.985, fontsize=11,
                  color=texto)
     fig.legend(manijas, nombres, loc="upper center", bbox_to_anchor=(0.5, 0.955), ncol=3, frameon=False,
                fontsize=9, labelcolor=texto)
@@ -80,7 +90,7 @@ def tablas_markdown(res: pd.DataFrame, ruta: Path = OUT_TABLAS) -> str:
     """Tablas del documento de resultados, generadas del resumen: media de
     la estimación (cobertura del IC 95 % entre paréntesis) por escenario,
     integración y estimador, una tabla por outcome."""
-    num = lambda v, fmt: format(v, fmt).replace(".", ",")  # noqa: E731
+    num = lambda v, fmt: format(v, fmt).replace(".", ",") + "\\*"  # noqa: E731  (toda cifra es simulada)
     partes = []
     for out in OUTCOMES:
         x = res[res["outcome"] == out]
@@ -108,6 +118,7 @@ def tablas_markdown(res: pd.DataFrame, ruta: Path = OUT_TABLAS) -> str:
     if not rd.empty:
         partes.append("Efecto verdadero en el corte (objetivo de la RD): " + ", ".join(
             f"{TITULOS.get(o, o)} {num(g['efecto_verdadero'].mean(), '+.3f')}" for o, g in rd.groupby("outcome", sort=False)))
+    partes.extend(["", NOTA_SIMULADO])
     texto = "\n".join(partes) + "\n"
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(texto, encoding="utf-8")

@@ -182,7 +182,7 @@ resultados reales o cerca de ellos. En el módulo:
 
 ## 7. Migración desde `src/validacion/`
 
-**Estado (2026-11-04): pasos 1 a 4 hechos.** Paso 4: la cadena se
+**Estado (2026-11-08): pasos 1 a 5 hechos** (el 5, asterisco en tablas y figura y columna `simulado` en los CSV). Paso 4: la cadena se
 define una vez (`claves_por_nivel`, en el módulo del Hot-Deck) y la usan
 `hotdeck()` y `vinculo.sortear_donante`; el Hot-Deck del pipeline
 reproduce el Parquet guardado. Con la base real, el 0,03 % de la encuesta

@@ -49,6 +49,7 @@ from src.simulacion.escenarios import H_RD, N_ENCUESTA, TAU, VINCULOS
 from src.simulacion.estimadores import (discontinuidad, discontinuidad_difusa, estimacion5, pesos_rd,
                                         regresion_efectos_fijos)
 from src.simulacion.evaluacion import HOGARES, REGISTRO, p_t_por_celda
+from src.simulacion.reportes import NOTA_SIMULADO, marcar_simulado, sin_marca
 from src.simulacion.vinculo import sortear_donante
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -169,7 +170,7 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA) -> pd.DataFrame:
     p_t = p_t_por_celda(pd.read_parquet(REGISTRO, columns=contrato.columnas("registro")))
     b = preparar_base(pd.read_parquet(HOGARES, columns=contrato.columnas("hogares")), p_t)
 
-    r = pd.read_csv(OUT) if (OUT.exists() and OUT_FIRMA.exists()
+    r = sin_marca(pd.read_csv(OUT)) if (OUT.exists() and OUT_FIRMA.exists()
                              and json.loads(OUT_FIRMA.read_text()).get("firma") == _firma(n)) else pd.DataFrame()
     if r.empty:
         OUT_FIRMA.write_text(json.dumps(dict(firma=_firma(n))))
@@ -182,14 +183,15 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA) -> pd.DataFrame:
         with parallel_config(backend="loky", inner_max_num_threads=1):
             partes = Parallel(n_jobs=n_jobs)(delayed(una_repeticion)(b, rep, n) for rep in range(hechas, hechas + LOTE))
         r = pd.concat([r, pd.DataFrame([f for p in partes for f in p])], ignore_index=True)
-        r.to_csv(OUT, index=False)
+        marcar_simulado(r).to_csv(OUT, index=False)
         logger.info("Lote reps %d-%d en %.0f s | celdas sin converger: %d", hechas, hechas + LOTE - 1, time.time() - t0,
                     len(sin_converger(resumir(r))))
 
     res = resumir(r)
-    res.to_csv(OUT_RESUMEN, index=False)
+    marcar_simulado(res).to_csv(OUT_RESUMEN, index=False)
     pd.set_option("display.width", 220)
-    print(f"\n=== Sensibilidad semisintética: {r['rep'].nunique()} repeticiones, {n:,} hogares reales ===")
+    print(f"\n{NOTA_SIMULADO}")
+    print(f"\n=== Sensibilidad semisintética*: {r['rep'].nunique()} repeticiones, {n:,} hogares reales ===")
     for esc, g in res.groupby("escenario", sort=False):
         print(f"\n--- {esc}")
         print(g.drop(columns="escenario").round(4).to_string(index=False))

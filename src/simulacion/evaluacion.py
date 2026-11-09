@@ -142,7 +142,7 @@ def _firma(n: int) -> str:
 def _previas(n: int) -> pd.DataFrame | None:
     """Repeticiones ya guardadas con la misma configuración (para reanudar)."""
     if OUT.exists() and OUT_FIRMA.exists() and json.loads(OUT_FIRMA.read_text()).get("firma") == _firma(n):
-        return pd.read_csv(OUT)
+        return reportes.sin_marca(pd.read_csv(OUT))
     return None
 
 
@@ -192,10 +192,10 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
             partes = Parallel(n_jobs=n_jobs)(delayed(una_repeticion)(b, rep, n, con_bosque) for rep in lote)
         nuevas = pd.DataFrame([f for p in partes for f in p])
         r = pd.concat([r, nuevas], ignore_index=True)
-        r.to_csv(OUT, index=False)
+        reportes.marcar_simulado(r).to_csv(OUT, index=False)
         res = resumir(r)
         traza.append(res.assign(reps_total=r["rep"].nunique()))
-        pd.concat(traza, ignore_index=True).to_csv(OUT_CONVERGENCIA, index=False)
+        reportes.marcar_simulado(pd.concat(traza, ignore_index=True)).to_csv(OUT_CONVERGENCIA, index=False)
         p, pb = pendientes(res, False), pendientes(res, True)
         logger.info("Lote reps %d-%d%s en %.0f s | celdas sin converger: %d (+ %d de Causal Forest) | "
                     "MCSE sesgo máx %.4f, cobertura máx %.3f",
@@ -203,14 +203,15 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
                     res["mcse_sesgo"].max(), res["mcse_cobertura"].max())
 
     res = resumir(r)
-    res.to_csv(OUT_RESUMEN, index=False)
+    reportes.marcar_simulado(res).to_csv(OUT_RESUMEN, index=False)
     reportes.graficar_convergencia(pd.read_csv(OUT_CONVERGENCIA))
     reportes.tablas_markdown(res)
     conv = len(pendientes(res, False)) == 0 and len(pendientes(res, True)) == 0
 
     pd.set_option("display.width", 250)
     pd.set_option("display.max_columns", 30)
-    print(f"\n=== Simulación semisintética: {r['rep'].nunique()} repeticiones "
+    print(f"\n{reportes.NOTA_SIMULADO}")
+    print(f"\n=== Simulación semisintética*: {r['rep'].nunique()} repeticiones "
           f"(Causal Forest en {r.loc[r['estimador'] == 'causal_forest', 'rep'].nunique()}), "
           f"encuesta de {n:,} hogares reales ===")
     print(f"Convergencia (MCSE sesgo ≤ {UMBRAL_SESGO}, cobertura ≤ {UMBRAL_COBERTURA}): "

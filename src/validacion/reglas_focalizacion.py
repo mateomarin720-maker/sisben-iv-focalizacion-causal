@@ -82,6 +82,7 @@ from src.simulacion.base import celdas_por_nivel, preparar_base
 from src.simulacion.escenarios import ESCENARIOS, TAU
 from src.simulacion.estimadores import estimacion5
 from src.simulacion.evaluacion import HOGARES, REGISTRO, p_t_por_celda
+from src.simulacion.reportes import NOTA_SIMULADO, marcar_simulado, sin_marca
 from src.simulacion.vinculo import sortear_donante
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -312,7 +313,7 @@ def main(n_jobs: int = 3) -> pd.DataFrame:
     b = preparar(pd.read_parquet(HOGARES, columns=columnas), p_t)
     logger.info("Base: %s hogares reales | A/B vigente %.1f %% de los hogares", f"{len(b):,}", 100 * b["vigente_ab"].mean())
 
-    r = pd.read_csv(OUT) if (OUT.exists() and OUT_FIRMA.exists()
+    r = sin_marca(pd.read_csv(OUT)) if (OUT.exists() and OUT_FIRMA.exists()
                              and json.loads(OUT_FIRMA.read_text()).get("firma") == _firma()) else pd.DataFrame()
     if r.empty:
         OUT_FIRMA.write_text(json.dumps(dict(firma=_firma())))
@@ -327,14 +328,15 @@ def main(n_jobs: int = 3) -> pd.DataFrame:
         with parallel_config(backend="loky", inner_max_num_threads=1):
             partes = Parallel(n_jobs=n_jobs)(delayed(una_repeticion)(b, rep) for rep in range(hechas, hechas + LOTE))
         r = pd.concat([r, pd.DataFrame([f for p in partes for f in p])], ignore_index=True)
-        r.to_csv(OUT, index=False)
+        marcar_simulado(r).to_csv(OUT, index=False)
         logger.info("Lote reps %d-%d en %.0f s | métricas sin converger: %d", hechas, hechas + LOTE - 1,
                     time.time() - t0, len(pendientes(resumir(r))))
 
     res = resumir(r)
-    res.to_csv(OUT_RESUMEN, index=False)
+    marcar_simulado(res).to_csv(OUT_RESUMEN, index=False)
     pd.set_option("display.width", 250)
-    print(f"\n=== Reglas de focalización (OE3): {r['rep'].nunique()} repeticiones, evaluación en {N_EVAL:,} "
+    print(f"\n{NOTA_SIMULADO}")
+    print(f"\n=== Reglas de focalización (OE3)*: {r['rep'].nunique()} repeticiones, evaluación en {N_EVAL:,} "
           f"hogares reales; presupuesto = hogares A/B vigentes ({r['k'].mean():,.0f} por muestra) ===")
     print(f"Sin programa: FGT0 {r['fgt0_pre'].mean():.4f} | FGT1 {r['fgt1_pre'].mean():.4f}")
     for tipo, g in r.groupby("efecto", sort=False):
