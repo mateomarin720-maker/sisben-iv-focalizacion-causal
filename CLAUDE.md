@@ -231,5 +231,10 @@ columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 - **No agregar `Co-Authored-By` ni narrar el proceso en los mensajes de
   commit** — mensajes cortos y directos, como si describieran el trabajo
   del equipo, no un registro de lo que hizo un asistente.
+- Los commits van a nombre de quien los hace. Activar una vez por copia
+  `git config core.hooksPath .githooks`: el hook `commit-msg` quita las
+  líneas de coautoría de Claude y rechaza un autor de Anthropic; CI revisa
+  todo el historial. El historial se limpió el 2026-11-09 (los commits que
+  figuraban a nombre de Claude quedaron a nombre de Juan Sebastián Fonseca).
 - Siempre `git pull --rebase` antes de `git push` — el repositorio tiene
   más de un colaborador activo.

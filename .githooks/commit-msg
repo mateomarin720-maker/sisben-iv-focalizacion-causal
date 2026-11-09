@@ -1,0 +1,14 @@
+#!/bin/sh
+# Los commits van a nombre de quien los hace: quita las líneas de coautoría
+# de asistentes de IA y rechaza un autor o committer de Anthropic.
+# Se activa una vez por copia: git config core.hooksPath .githooks
+for v in GIT_AUTHOR_IDENT GIT_COMMITTER_IDENT; do
+  if git var "$v" | grep -qi "noreply@anthropic.com"; then
+    echo "commit-msg: $v es de Anthropic; configura git user.name y user.email con tu nombre." >&2
+    exit 1
+  fi
+done
+tmp="$1.tmp"
+sed -E -e '/^[Cc]o-[Aa]uthored-[Bb]y:.*([Cc]laude|anthropic\.com)/d' \
+       -e '/^Claude-Session:/d' \
+       -e '/Generated with \[?Claude Code/d' "$1" | git stripspace > "$tmp" && mv "$tmp" "$1"
