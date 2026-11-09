@@ -2,6 +2,17 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-08 (24) — Incidencia de ayudas declaradas y cantidades de población
+
+### Nuevo
+- `src/estimacion/incidencia_transferencias.py`: a quién llegan las ayudas declaradas
+  en la GEIH (`P750S2`, `P1661S1`-`S3`), en hogares y personas. Descriptivo.
+- `variables_candidatas_pobreza.py ... poblacion`: hogares y personas con cada variable
+  y pobres que cada modelo gana y pierde con el mismo presupuesto.
+- Secciones nuevas en `RECOMENDACION_VARIABLES_POBREZA.md`.
+- Pruebas: `test_incidencia_transferencias.py` y 2 en `test_variables_candidatas.py`;
+  4 mutaciones. 212 pruebas, 42 de 42 mutaciones detectadas.
+
 ## 2026-11-06 (23) — Recomendación de variables para ampliar la medición de pobreza
 
 ### Nuevo

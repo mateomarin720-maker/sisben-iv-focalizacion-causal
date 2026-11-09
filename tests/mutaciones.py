@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 38 de 38 mutaciones detectadas.
+Resultado del 2026-11-04: 42 de 42 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -112,6 +112,20 @@ MUTACIONES = [
     ("Candidatas: una vivienda en varios pliegues", "src/estimacion/variables_candidatas_pobreza.py",
      'return np.random.default_rng(seed).permutation(len(unicos))[inv] % n',
      'return np.random.default_rng(seed).permutation(len(grupos)) % n', "tests/test_variables_candidatas.py"),
+    # Incidencia de las ayudas declaradas
+    ("Incidencia: el código de no sabe se cuenta como dinero", "src/estimacion/incidencia_transferencias.py",
+     'valido = p["P750S2"].eq(SI) & ~monto.isin(NO_SABE) & p["P6050"].ne(EMPLEADO_DOMESTICO)',
+     'valido = p["P750S2"].eq(SI) & p["P6050"].ne(EMPLEADO_DOMESTICO)', "tests/test_incidencia_transferencias.py"),
+    ("Incidencia: la ayuda anual se suma como mensual", "src/estimacion/incidencia_transferencias.py",
+     'p["ayuda_mes"] = monto.where(valido, 0.0).fillna(0.0) / MESES_ANIO', 'p["ayuda_mes"] = monto.where(valido, 0.0).fillna(0.0)',
+     "tests/test_incidencia_transferencias.py"),
+    ("Incidencia: personas contadas como hogares", "src/estimacion/incidencia_transferencias.py",
+     'personas_que_declaran=directos[programa],\n            hogares_receptores=h[r].sum(), personas_en_receptores=n[r].sum(),',
+     'personas_que_declaran=directos[programa],\n            hogares_receptores=h[r].sum(), personas_en_receptores=h[r].sum(),',
+     "tests/test_incidencia_transferencias.py"),
+    ("Candidatas: los pobres que salen no se restan del neto", "src/estimacion/variables_candidatas_pobreza.py",
+     'hogares_pobres_neto=h[entran].sum() - h[salen].sum(),', 'hogares_pobres_neto=h[entran].sum(),',
+     "tests/test_variables_candidatas.py"),
     ("Simulación: el contrato acepta un alias de columna", "src/simulacion/contrato.py",
      'faltan = [c for c in obligatorias if c not in tabla.columns]',
      'faltan = [c for c in obligatorias if c not in tabla.columns and c.replace("jefe_sexo", "sexo_jefe") not in tabla.columns]',

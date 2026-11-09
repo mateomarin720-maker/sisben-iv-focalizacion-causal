@@ -171,10 +171,10 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
   identifican el efecto"):** faltan los cruces administrativos, pero la GEIH sí
   trae participación **declarada**: `P750S2` (ayudas del gobierno) y `P1661S1`-`S3`
   (Más Familias en Acción, Jóvenes en Acción, Colombia Mayor). El 15,4 % de los
-  hogares declara alguna ayuda. Está sin evaluar si sirve para algo más que la
-  revisión hecha en ese documento: se observa en la misma encuesta que el ingreso,
-  sin Hot-Deck, pero la participación no es aleatoria y el dinero recibido es parte
-  del ingreso.
+  hogares declara alguna ayuda. Desde el 2026-11-08 se usa como evidencia descriptiva
+  de focalización, con cantidades de hogares y personas, en ese documento. No identifica
+  un efecto: la participación no es aleatoria y en Colombia Mayor sube gradualmente con
+  la edad, sin salto para una discontinuidad.
 
 Comprobado contra el repositorio al incorporar este documento:
 

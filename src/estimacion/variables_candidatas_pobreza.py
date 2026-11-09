@@ -33,7 +33,9 @@ ahorros es consecuencia de las transferencias, y qué queda sin ella).
 
 Uso:
     poetry run python -m src.estimacion.variables_candidatas_pobreza [n_jobs] [posterior]
-Con `posterior` corre solo esa parte, sobre la tabla ya construida.
+    poetry run python -m src.estimacion.variables_candidatas_pobreza [n_jobs] poblacion
+Con `posterior` corre solo esa parte, sobre la tabla ya construida. Con `poblacion`,
+las cantidades de hogares y personas de cada variable y de cada modelo.
 """
 from __future__ import annotations
 
@@ -62,6 +64,8 @@ OUT_DECISION = REPORTES / "variables_candidatas_decision.csv"
 OUT_POSTERIOR = REPORTES / "variables_candidatas_posterior.csv"
 OUT_TRANSFERENCIAS = REPORTES / "variables_candidatas_transferencias.csv"
 OUT_LASSO = REPORTES / "variables_candidatas_lasso_estricto.csv"
+OUT_POBLACION = REPORTES / "variables_candidatas_poblacion.csv"
+OUT_FLUJOS = REPORTES / "variables_candidatas_flujos.csv"
 MESES = [f"{m:02d}" for m in range(1, 13)]
 K3 = ["DIRECTORIO", "SECUENCIA_P", "HOGAR"]
 SEED = 2026
@@ -629,6 +633,79 @@ def analisis_posterior(n_jobs: int = 3) -> pd.DataFrame:
     return deltas
 
 
+def poblacion_por_atributo(t: pd.DataFrame, X: pd.DataFrame, h: np.ndarray, n: np.ndarray, pobre: np.ndarray,
+                           variables: list[str], mapa: dict[str, str]) -> pd.DataFrame:
+    """Hogares y personas con cada atributo, sin él, y cuántos de ellos son pobres."""
+    filas = []
+    for c in X.columns:
+        if mapa[c] not in variables:
+            continue
+        con = X[c].to_numpy() > 0
+        filas.append(dict(variable=c, hogares_con=h[con].sum(), personas_con=n[con].sum(),
+                          hogares_pobres_con=h[con & pobre].sum(), personas_pobres_con=n[con & pobre].sum(),
+                          hogares_sin=h[~con].sum(), personas_sin=n[~con].sum(),
+                          hogares_pobres_sin=h[~con & pobre].sum(), personas_pobres_sin=n[~con & pobre].sum(),
+                          pct_hogares_con=100 * h[con].sum() / h.sum(), pct_pobreza_con=100 * h[con & pobre].sum() / h[con].sum(),
+                          pct_pobreza_sin=100 * h[~con & pobre].sum() / h[~con].sum()))
+    return pd.DataFrame(filas)
+
+
+def flujo_entre_modelos(pobre: np.ndarray, sel_ref: np.ndarray, sel_mod: np.ndarray, h: np.ndarray, n: np.ndarray) -> dict[str, float]:
+    """Hogares y personas pobres que un modelo gana y pierde frente a la referencia."""
+    entran, salen = pobre & sel_mod & ~sel_ref, pobre & sel_ref & ~sel_mod
+    return dict(hogares_pobres_entran=h[entran].sum(), hogares_pobres_salen=h[salen].sum(),
+                hogares_pobres_neto=h[entran].sum() - h[salen].sum(),
+                personas_pobres_entran=n[entran].sum(), personas_pobres_salen=n[salen].sum(),
+                personas_pobres_neto=n[entran].sum() - n[salen].sum())
+
+
+def poblacion_afectada(n_jobs: int = 3) -> pd.DataFrame:
+    """Cantidades de un mes promedio: quién tiene cada variable y a cuántos hogares y
+    personas pobres cambia la selección cada modelo, con el mismo presupuesto."""
+    t = pd.read_parquet(TABLA)
+    X, mapa = matriz(t)
+    Xn = X.to_numpy(np.float32)
+    w = pd.to_numeric(t["fex"], errors="coerce").to_numpy(float)
+    h = w / 12
+    n = h * pd.to_numeric(t["hog_num_personas"], errors="coerce").to_numpy(float)
+    y = t[PRINCIPAL].to_numpy(float)
+    pobre = y == 1
+    urbano = t["geo_zona"].astype(str).eq("1").to_numpy()
+    viviendas = t["DIRECTORIO"].astype(str).to_numpy()
+    presupuesto = presupuesto_ab()
+    ref = "ficha_derivadas"
+    variables = [c for g in GRUPOS.values() for c in g] + ["monoparental", "adulto_educ_superior"]
+    atributos = poblacion_por_atributo(t, X, h, n, pobre, variables, mapa)
+
+    todas = especificaciones(PRINCIPAL)
+    specs = {k: v for k, v in todas.items() if not k.startswith("todo-") and k != "canonico"}
+    specs["+cuenta"] = todas[ref] + ["fin_ahorros", "fin_ninguno"]
+    specs["+financiero+estrato"] = todas[ref] + GRUPOS["inclusion_financiera"] + ["estrato"]
+    pred = predecir_cv(Xn, y, w, _columnas(specs, X, mapa), particion_por_grupo(viviendas, N_FOLDS), "logistica", n_jobs)
+    # La referencia frente a la ficha es lo que aportan las derivadas.
+    pares = [(s, ref) for s in specs if s not in (ref, "ficha")] + [(ref, "ficha")]
+    _, deltas = comparar(pred, y, w, urbano, viviendas, presupuesto, pares)
+    exclusion = deltas[deltas["metrica"] == "exclusion"].set_index(["modelo", "referencia"])
+    elegidos = {s: seleccionados(p, w, presupuesto) for s, p in pred.items()}
+    total_pobres = h[pobre].sum()
+    flujos = []
+    for s, r in pares:
+        fila = dict(modelo=s, referencia=r, **flujo_entre_modelos(pobre, elegidos[r], elegidos[s], h, n))
+        d = exclusion.loc[(s, r)]
+        fila.update(d_exclusion=d["delta"] * 100, d_exclusion_lo=d["ic_lo"] * 100, d_exclusion_hi=d["ic_hi"] * 100,
+                    hogares_neto_lo=-d["ic_hi"] * total_pobres, hogares_neto_hi=-d["ic_lo"] * total_pobres)
+        flujos.append(fila)
+    flujos = pd.DataFrame(flujos).sort_values("hogares_pobres_neto", ascending=False)
+    atributos.to_csv(OUT_POBLACION, index=False)
+    flujos.to_csv(OUT_FLUJOS, index=False)
+    pd.set_option("display.width", 250, "display.max_columns", 40, "display.max_rows", 200)
+    print(f"=== Un mes promedio: {h.sum():,.0f} hogares ({h[pobre].sum():,.0f} pobres), {n.sum():,.0f} personas ({n[pobre].sum():,.0f} en hogares pobres) ===")
+    print(atributos.round(1).to_string(index=False))
+    print("\n=== Pobres que cada modelo gana y pierde con el mismo presupuesto ===")
+    print(flujos.round(2).to_string(index=False))
+    return flujos
+
+
 def presupuesto_ab() -> float:
     """Fracción de hogares (ponderada) en los grupos A y B: el presupuesto con
     el que se compara, igual para todos los modelos. Solo se usa su tamaño."""
@@ -748,6 +825,9 @@ def main(n_jobs: int = 3) -> pd.DataFrame:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 3
-    if "posterior" not in sys.argv:
-        main(n)
-    analisis_posterior(n)
+    if "poblacion" in sys.argv:
+        poblacion_afectada(n)
+    else:
+        if "posterior" not in sys.argv:
+            main(n)
+        analisis_posterior(n)

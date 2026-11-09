@@ -246,7 +246,11 @@ nuevas, 1,40. Solo la cuenta de ahorros (−0,86) tiene un aporte claro y establ
 el estrato (−0,52) cumple el criterio por poco. Discapacidad, desplazamiento,
 migración, etnia y condición campesina casi no cambian a quién se identifica. El
 aporte puede estar sobreestimado: la GEIH no trae nevera, lavadora ni internet,
-que el Sisbén sí recoge. Detalle en
+que el Sisbén sí recoge. En cantidades, en un mes promedio: la composición del
+hogar identifica 261.400 hogares pobres más (796.700 personas) y la cuenta de
+ahorros 41.500. Las ayudas del gobierno declaradas llegan a 2,8 millones de hogares,
+con 78,5 % del dinero en los dos quintiles más pobres; 3,4 millones de hogares pobres
+no declaran ninguna (descriptivo, no es un efecto). Detalle en
 [`RECOMENDACION_VARIABLES_POBREZA.md`](RECOMENDACION_VARIABLES_POBREZA.md).
 
 ## Limitaciones generales

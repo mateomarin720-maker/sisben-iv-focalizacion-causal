@@ -21,6 +21,8 @@ Esta carpeta (`src/estimacion/`) contiene dos cosas distintas:
 - `variables_candidatas_pobreza.py`: qué variables podría incorporar el
   Sisbén, con la pobreza de la GEIH como resultado. Predictivo, no causal.
   Resultado: `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`.
+- `incidencia_transferencias.py`: a quién llegan las ayudas declaradas en la
+  GEIH, en hogares y personas. Descriptivo, no estima efectos.
 - `seleccion_variables_lasso_shap.py`: parte vigente, pero de OE1, no del
   pipeline causal — LASSO/Ridge/SHAP sobre el Sisbén para ver qué
   variables del hogar predicen mejor el `Grupo` (A-D). No estima ningún

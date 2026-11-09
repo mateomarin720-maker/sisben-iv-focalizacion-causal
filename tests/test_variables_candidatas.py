@@ -269,3 +269,24 @@ def test_cuenta_segun_transferencia_compara_dentro_de_cada_poblacion():
         assert tabla.loc[poblacion, "cuenta_sin_ayuda"] - tabla.loc[poblacion, "cuenta_con_ayuda"] == pytest.approx(15, abs=4)
     assert tabla["cambio_ajustado_pp"].iloc[0] == pytest.approx(-15, abs=4)
     assert tabla["p_ajustado"].iloc[0] < 0.05
+
+
+def test_poblacion_por_atributo_cuenta_hogares_y_personas():
+    X = pd.DataFrame({"fin_ahorros": [1.0, 1, 0, 0]})
+    h = np.array([10.0, 20, 30, 40])
+    n = h * np.array([2.0, 3, 4, 5])
+    pobre = np.array([True, False, True, False])
+    f = vc.poblacion_por_atributo(pd.DataFrame(), X, h, n, pobre, ["fin_ahorros"], {"fin_ahorros": "fin_ahorros"}).iloc[0]
+    assert (f["hogares_con"], f["personas_con"], f["hogares_pobres_con"], f["personas_pobres_con"]) == (30, 80, 10, 20)
+    assert (f["hogares_sin"], f["personas_sin"], f["hogares_pobres_sin"], f["personas_pobres_sin"]) == (70, 320, 30, 120)
+    assert f["pct_pobreza_con"] == pytest.approx(100 / 3)
+
+
+def test_flujo_entre_modelos_separa_a_quienes_entran_y_salen():
+    pobre = np.array([True, True, True, False])
+    ref = np.array([True, True, False, True])
+    mod = np.array([True, False, True, False])
+    h, n = np.array([1.0, 2, 5, 9]), np.array([3.0, 8, 25, 40])
+    f = vc.flujo_entre_modelos(pobre, ref, mod, h, n)
+    assert (f["hogares_pobres_entran"], f["hogares_pobres_salen"], f["hogares_pobres_neto"]) == (5, 2, 3)
+    assert (f["personas_pobres_entran"], f["personas_pobres_salen"], f["personas_pobres_neto"]) == (25, 8, 17)

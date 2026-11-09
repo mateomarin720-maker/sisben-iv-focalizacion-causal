@@ -76,7 +76,7 @@ def test_variables_candidatas_leen_la_pregunta_correcta():
         "P3373": "dónde nació", "P3374": "nacionalidad", "P3382": "hace 5 años", "P3384": "hace 12 meses",
         "P3092": "traer agua", "P3094": "huerta", "P3095": "criar animales",
         "P750S2": "entidades del gobierno", "P1661S1": "familias en acción", "P1661S2": "jóvenes en acción",
-        "P1661S3": "colombia mayor",
+        "P1661S3": "colombia mayor", "P750S2A1": "valor",
     }
     for codigo, palabra in esperado.items():
         assert palabra in pregunta[codigo], f"{codigo}: '{palabra}' no está en '{pregunta[codigo][:120]}'"

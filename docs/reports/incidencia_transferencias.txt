@@ -1,0 +1,40 @@
+=== Incidencia de ayudas declaradas: 17,904,663 hogares y 51,551,004 personas en un mes promedio ===
+Dinero declarado al año: 3,743.1 miles de millones de pesos
+
+                                          0                   1                  2               3
+programa                       alguna_ayuda  familias_en_accion  jovenes_en_accion  colombia_mayor
+personas_que_declaran             3177373.0            883296.0           123729.1       1415039.9
+hogares_receptores                2763947.3            860872.9           117290.9       1215112.4
+personas_en_receptores            9372302.1           3633579.6           444709.5       3372265.9
+hogares_pobres_receptores         1571795.1            575112.9            51418.3        650103.6
+personas_pobres_receptores        5707214.7           2523750.8           213003.1       1883415.8
+hogares_pobres_sin_programa       3430299.0           4426981.2          4950675.8       4351990.5
+personas_pobres_sin_programa     11860750.2          15044214.1         17354961.9      15684549.1
+hogares_no_pobres_receptores      1192152.2            285760.0            65872.7        565008.8
+personas_no_pobres_receptores     3665087.3           1109828.8           231706.4       1488850.0
+pct_receptores_pobres                  56.9                66.8               43.8            53.5
+pct_pobres_cubiertos                   31.4                11.5                1.0            13.0
+pct_no_pobres_cubiertos                 9.2                 2.2                0.5             4.4 
+
+                                           0                1
+linea                               pobreza  pobreza_extrema
+pct_hogares_con_ayuda                 27.03            10.37
+pct_hogares_sin_ayuda                 27.94            11.37
+hogares_con_ayuda                4839510.12       1855868.84
+hogares_sin_ayuda                5002094.12       2036606.49
+personas_con_ayuda              17107288.19       6449996.85
+personas_sin_ayuda              17567964.94       7007525.38
+hogares_sobre_linea_por_ayuda      162584.0        180737.65
+personas_sobre_linea_por_ayuda    460676.75        557528.54
+brecha_con_ayuda                      11.19             4.56
+brecha_sin_ayuda                      12.03             5.26 
+
+                                 0           1           2          3          4
+quintil                       1.0         2.0         3.0        4.0        5.0
+hogares                 3580952.2   3580984.4   3580872.8  3580938.4  3580915.4
+personas               12496228.0  11920113.6  10551439.4  8996433.3  7586789.8
+hogares_con_ayuda       1309854.5    819062.0    432728.7   162452.8    39849.3
+personas_con_ayuda      4732075.4   2772950.6   1320574.1   442155.3   104546.7
+pct_hogares_con_ayuda        36.6        22.9        12.1        4.5        1.1
+millones_al_anio        1908558.8   1028809.6    506683.9   199356.2    99727.7
+pct_dinero                   51.0        27.5        13.5        5.3        2.7
