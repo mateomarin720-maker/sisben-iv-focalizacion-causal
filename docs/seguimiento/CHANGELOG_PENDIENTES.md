@@ -2,6 +2,12 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-08 (26) — Depuración del repositorio
+
+### Cambiado
+- Se retiran `prueba_ate_att_cate.py`, `preparar_outcome_prueba_empleo.py` y su salida:
+  una prueba exploratoria con un outcome provisional y la celda anterior.
+
 ## 2026-11-08 (25) — Asterisco en los resultados simulados (paso 5 del diseño)
 
 ### Cambiado

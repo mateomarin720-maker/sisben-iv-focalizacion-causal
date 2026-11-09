@@ -20,10 +20,8 @@ reales buscan `data/` con rutas relativas a ella.
 en GitHub Actions en cada push a `main` o `ediciones-hotdeck-sdp` y en
 cada PR (Python 3.11, dependencias de `requirements-pruebas.txt`,
 fijadas a las versiones con las que pasan). Allí no está el banco de
-datos: **92 pruebas corren y 7 se saltan** (las que leen enero real de
-GEIH). Se comprobó antes de subirlo con un entorno limpio y un clon del
-repositorio sin datos: 92 pasan, 7 se saltan y se detectan todas las
-mutaciones.
+datos, así que se saltan las 7 pruebas que leen enero real de GEIH; las demás
+corren y se detectan todas las mutaciones.
 
 Si una prueba falla en GitHub, el PR queda marcado en rojo. Para agregar
 una dependencia nueva a las pruebas, sumarla a `requirements-pruebas.txt`

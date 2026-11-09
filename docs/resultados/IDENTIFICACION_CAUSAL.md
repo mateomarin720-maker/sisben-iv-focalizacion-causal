@@ -59,7 +59,7 @@ pena dejar explícito en el marco teórico-metodológico (ítem pendiente de la
 sección "Próximos pasos" del documento), porque el diagrama tal como está
 dibujado hoy no cierra solo.
 
-### Por qué la prueba empírica (2026-10-21, `src/estimacion/prueba_ate_att_cate.py`) no colapsó del todo para el ingreso
+### Por qué la prueba empírica (2026-10-21, script retirado; está en el historial de git) no colapsó del todo para el ingreso
 
 La Figura 2 define X como **depto + edad + vivienda**. El Hot-Deck
 implementado (`emparejamiento_hotdeck_geih_sisben.py`) arma la celda con
