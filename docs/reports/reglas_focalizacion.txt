@@ -1,54 +1,56 @@
-2026-11-04 11:15:16,914 INFO Base: 290,968 hogares reales | A/B vigente 46.7 % de los hogares
-2026-11-04 11:16:38,985 INFO Lote reps 0-11 en 82 s | métricas sin converger: 59
-2026-11-04 11:17:52,583 INFO Lote reps 12-23 en 74 s | métricas sin converger: 39
-2026-11-04 11:19:07,743 INFO Lote reps 24-35 en 75 s | métricas sin converger: 17
-2026-11-04 11:20:19,602 INFO Lote reps 36-47 en 72 s | métricas sin converger: 17
-2026-11-04 11:21:33,441 INFO Lote reps 48-59 en 74 s | métricas sin converger: 16
-2026-11-04 11:22:54,108 INFO Lote reps 60-71 en 81 s | métricas sin converger: 16
-2026-11-04 11:24:18,070 INFO Lote reps 72-83 en 84 s | métricas sin converger: 16
-2026-11-04 11:25:38,375 INFO Lote reps 84-95 en 80 s | métricas sin converger: 15
-2026-11-04 11:26:57,238 INFO Lote reps 96-107 en 79 s | métricas sin converger: 15
-2026-11-04 11:28:16,959 INFO Lote reps 108-119 en 80 s | métricas sin converger: 15
-2026-11-04 11:29:33,225 INFO Lote reps 120-131 en 76 s | métricas sin converger: 15
-2026-11-04 11:30:47,569 INFO Lote reps 132-143 en 74 s | métricas sin converger: 14
-2026-11-04 11:32:03,806 INFO Lote reps 144-155 en 76 s | métricas sin converger: 13
-2026-11-04 11:33:18,758 INFO Lote reps 156-167 en 75 s | métricas sin converger: 13
-2026-11-04 11:34:35,134 INFO Lote reps 168-179 en 76 s | métricas sin converger: 12
-2026-11-04 11:35:53,413 INFO Lote reps 180-191 en 78 s | métricas sin converger: 11
-2026-11-04 11:37:14,095 INFO Lote reps 192-203 en 81 s | métricas sin converger: 11
-2026-11-04 11:38:31,948 INFO Lote reps 204-215 en 78 s | métricas sin converger: 11
-2026-11-04 11:39:48,009 INFO Lote reps 216-227 en 76 s | métricas sin converger: 10
-2026-11-04 11:41:08,237 INFO Lote reps 228-239 en 80 s | métricas sin converger: 11
-2026-11-04 11:42:25,344 INFO Lote reps 240-251 en 77 s | métricas sin converger: 10
-2026-11-04 11:43:39,398 INFO Lote reps 252-263 en 74 s | métricas sin converger: 10
-2026-11-04 11:44:55,907 INFO Lote reps 264-275 en 76 s | métricas sin converger: 11
-2026-11-04 11:46:11,530 INFO Lote reps 276-287 en 76 s | métricas sin converger: 10
-2026-11-04 11:47:28,592 INFO Lote reps 288-299 en 77 s | métricas sin converger: 10
+2026-11-08 22:08:07,330 INFO Base: 290,968 hogares reales | A/B vigente 46.7 % de los hogares
+2026-11-08 22:09:04,204 INFO Lote reps 0-11 en 57 s | métricas sin converger: 59
+2026-11-08 22:09:49,149 INFO Lote reps 12-23 en 45 s | métricas sin converger: 40
+2026-11-08 22:10:31,820 INFO Lote reps 24-35 en 43 s | métricas sin converger: 19
+2026-11-08 22:11:16,284 INFO Lote reps 36-47 en 44 s | métricas sin converger: 17
+2026-11-08 22:11:58,490 INFO Lote reps 48-59 en 42 s | métricas sin converger: 16
+2026-11-08 22:12:41,086 INFO Lote reps 60-71 en 43 s | métricas sin converger: 16
+2026-11-08 22:13:23,303 INFO Lote reps 72-83 en 42 s | métricas sin converger: 15
+2026-11-08 22:14:11,244 INFO Lote reps 84-95 en 48 s | métricas sin converger: 15
+2026-11-08 22:15:03,396 INFO Lote reps 96-107 en 52 s | métricas sin converger: 15
+2026-11-08 22:15:51,015 INFO Lote reps 108-119 en 48 s | métricas sin converger: 15
+2026-11-08 22:16:40,764 INFO Lote reps 120-131 en 50 s | métricas sin converger: 15
+2026-11-08 22:17:30,457 INFO Lote reps 132-143 en 50 s | métricas sin converger: 15
+2026-11-08 22:18:17,883 INFO Lote reps 144-155 en 47 s | métricas sin converger: 14
+2026-11-08 22:19:06,480 INFO Lote reps 156-167 en 49 s | métricas sin converger: 13
+2026-11-08 22:19:53,583 INFO Lote reps 168-179 en 47 s | métricas sin converger: 12
+2026-11-08 22:20:38,395 INFO Lote reps 180-191 en 45 s | métricas sin converger: 11
+2026-11-08 22:21:32,922 INFO Lote reps 192-203 en 55 s | métricas sin converger: 11
+2026-11-08 22:22:22,384 INFO Lote reps 204-215 en 49 s | métricas sin converger: 11
+2026-11-08 22:23:06,738 INFO Lote reps 216-227 en 44 s | métricas sin converger: 10
+2026-11-08 22:23:49,930 INFO Lote reps 228-239 en 43 s | métricas sin converger: 11
+2026-11-08 22:24:34,162 INFO Lote reps 240-251 en 44 s | métricas sin converger: 10
+2026-11-08 22:25:16,787 INFO Lote reps 252-263 en 43 s | métricas sin converger: 10
+2026-11-08 22:26:00,141 INFO Lote reps 264-275 en 43 s | métricas sin converger: 11
+2026-11-08 22:26:43,920 INFO Lote reps 276-287 en 44 s | métricas sin converger: 10
+2026-11-08 22:27:25,829 INFO Lote reps 288-299 en 42 s | métricas sin converger: 10
 
-=== Reglas de focalización (OE3): 300 repeticiones, evaluación en 30,000 hogares reales; presupuesto = hogares A/B vigentes (13,992 por muestra) ===
+\* Resultado simulado (semisintético): efecto verdadero fijado por el investigador; no es una estimación con datos reales.
+
+=== Reglas de focalización (OE3)*: 300 repeticiones, evaluación en 30,000 hogares reales; presupuesto = hogares A/B vigentes (13,992 por muestra) ===
 Sin programa: FGT0 0.3318 | FGT1 0.1350
-ATE del Causal Forest (proporcional): con T verdadero +0.0872, con T por Hot-Deck -0.0085 (verdadero +0.0949)
-ATE del Causal Forest (monto_fijo): con T verdadero +0.0831, con T por Hot-Deck -0.0106 (verdadero +0.0949)
+ATE del Causal Forest (proporcional): con T verdadero +0.0872, con T por Hot-Deck -0.0078 (verdadero +0.0949)
+ATE del Causal Forest (monto_fijo): con T verdadero +0.0831, con T por Hot-Deck -0.0099 (verdadero +0.0949)
 
 --- Efecto proporcional
              regla  reps  error_inclusion  error_exclusion  fgt0_post  fgt1_post  reduccion_fgt1  pct_ideal  mcse_error_inclusion  mcse_error_exclusion  mcse_fgt0_post  mcse_fgt1_post  mcse_reduccion_fgt1  mcse_pct_ideal
    vigente_hotdeck   300           0.5811           0.4346     0.3088     0.1234          0.0116    59.6549                0.0004                0.0005          0.0003          0.0002               0.0000          0.0629
-         aleatoria   300           0.6681           0.5330     0.3121     0.1259          0.0091    46.7124                0.0004                0.0006          0.0003          0.0002               0.0000          0.0673
-       pmt_ingreso   300           0.4845           0.1861     0.3015     0.1191          0.0160    82.1136                0.0005                0.0005          0.0003          0.0001               0.0000          0.0531
-        pmt_brecha   300           0.4837           0.1969     0.3028     0.1195          0.0155    79.6644                0.0005                0.0005          0.0003          0.0001               0.0000          0.0577
-   pmt_brecha_cate   300           0.5178           0.2606     0.3041     0.1209          0.0141    72.6363                0.0019                0.0034          0.0003          0.0002               0.0001          0.4003
-pmt_brecha_cate_hd   300           0.6819           0.5549     0.3127     0.1264          0.0086    44.5358                0.0059                0.0084          0.0004          0.0002               0.0001          0.7265
-             ideal   300           0.3429           0.0000     0.2894     0.1156          0.0194   100.0000                0.0005                0.0000          0.0003          0.0001               0.0000          0.0000
+         aleatoria   300           0.6685           0.5342     0.3120     0.1259          0.0091    46.6350                0.0005                0.0006          0.0003          0.0002               0.0000          0.0709
+       pmt_ingreso   300           0.4845           0.1861     0.3015     0.1191          0.0160    82.1138                0.0005                0.0005          0.0003          0.0001               0.0000          0.0531
+        pmt_brecha   300           0.4837           0.1969     0.3028     0.1195          0.0155    79.6645                0.0005                0.0005          0.0003          0.0001               0.0000          0.0577
+   pmt_brecha_cate   300           0.5178           0.2606     0.3041     0.1209          0.0141    72.6366                0.0019                0.0034          0.0003          0.0002               0.0001          0.4003
+pmt_brecha_cate_hd   300           0.6768           0.5488     0.3127     0.1263          0.0087    44.6236                0.0061                0.0086          0.0004          0.0002               0.0001          0.7554
+             ideal   300           0.3426           0.0000     0.2894     0.1156          0.0194   100.0000                0.0005                0.0000          0.0003          0.0001               0.0000          0.0000
 
 --- Efecto monto_fijo
              regla  reps  error_inclusion  error_exclusion  fgt0_post  fgt1_post  reduccion_fgt1  pct_ideal  mcse_error_inclusion  mcse_error_exclusion  mcse_fgt0_post  mcse_fgt1_post  mcse_reduccion_fgt1  mcse_pct_ideal
    vigente_hotdeck   300           0.5811           0.4346     0.3065     0.1152          0.0199    60.8132                0.0004                0.0005          0.0003          0.0001               0.0000          0.0578
-         aleatoria   300           0.6684           0.5338     0.3104     0.1198          0.0152    46.5993                0.0005                0.0006          0.0003          0.0001               0.0000          0.0656
-       pmt_ingreso   300           0.4845           0.1862     0.2985     0.1074          0.0276    84.5374                0.0005                0.0005          0.0003          0.0001               0.0000          0.0462
-        pmt_brecha   300           0.4791           0.1904     0.3002     0.1080          0.0270    82.5761                0.0005                0.0005          0.0003          0.0001               0.0000          0.0514
-   pmt_brecha_cate   300           0.5244           0.2805     0.3025     0.1115          0.0235    71.9332                0.0025                0.0041          0.0003          0.0002               0.0002          0.4614
-pmt_brecha_cate_hd   300           0.6801           0.5522     0.3110     0.1206          0.0144    44.1895                0.0059                0.0083          0.0004          0.0003               0.0002          0.7528
-             ideal   300           0.3424           0.0000     0.2859     0.1024          0.0327   100.0000                0.0005                0.0000          0.0003          0.0001               0.0000          0.0000
+         aleatoria   300           0.6684           0.5341     0.3105     0.1198          0.0152    46.5956                0.0005                0.0006          0.0003          0.0001               0.0000          0.0659
+       pmt_ingreso   300           0.4845           0.1862     0.2985     0.1074          0.0276    84.5373                0.0005                0.0005          0.0003          0.0001               0.0000          0.0462
+        pmt_brecha   300           0.4791           0.1904     0.3002     0.1080          0.0270    82.5766                0.0005                0.0005          0.0003          0.0001               0.0000          0.0514
+   pmt_brecha_cate   300           0.5244           0.2805     0.3025     0.1115          0.0235    71.9312                0.0025                0.0041          0.0003          0.0002               0.0002          0.4615
+pmt_brecha_cate_hd   300           0.6799           0.5529     0.3111     0.1206          0.0144    44.0714                0.0057                0.0080          0.0004          0.0003               0.0002          0.7279
+             ideal   300           0.3427           0.0000     0.2859     0.1024          0.0327   100.0000                0.0005                0.0000          0.0003          0.0001               0.0000          0.0000
 
 Convergencia: NO alcanzada: proporcional/pmt_brecha_cate:error_exclusion, proporcional/pmt_brecha_cate_hd:error_inclusion, proporcional/pmt_brecha_cate_hd:error_exclusion, proporcional/pmt_brecha_cate_hd:pct_ideal, monto_fijo/pmt_brecha_cate:error_inclusion, monto_fijo/pmt_brecha_cate:error_exclusion, monto_fijo/pmt_brecha_cate_hd:error_inclusion, monto_fijo/pmt_brecha_cate_hd:error_exclusion, monto_fijo/pmt_brecha_cate_hd:reduccion_fgt1, monto_fijo/pmt_brecha_cate_hd:pct_ideal
 Guardado: docs\reports\reglas_focalizacion.csv

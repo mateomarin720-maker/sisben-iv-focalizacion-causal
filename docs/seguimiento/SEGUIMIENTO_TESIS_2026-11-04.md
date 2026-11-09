@@ -33,7 +33,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | --- | --- | --- |
 | Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Hecha el 4 nov | `RESULTADOS_VARIABILIDAD_HOTDECK.md` |
 | Simulación como módulo independiente, con modo de datos propios y modo simulado | En curso (pasos 1-4 de 7) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
-| Evaluación semisintética completa | En gran parte hecha | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Cadena de respaldos del Hot-Deck simulado en el código (4 nov); falta regenerar las cifras con ella y el asterisco |
+| Evaluación semisintética completa | Hecha el 8 nov | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Regenerada con la cadena de respaldos del Hot-Deck y con asterisco |
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov | `RESULTADOS_REGLAS_FOCALIZACION.md` y `RESULTADOS_FRECHET_MANSKI.md` |
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
@@ -98,14 +98,14 @@ Usa los hogares reales de la GEIH y simula solo el tratamiento y el efecto (+0,0
 
 - Con el tratamiento verdadero y confusión observable, los estimadores recuperan el efecto (0,089 a 0,094 en log-ingreso; −0,031 a −0,033 en pobreza)\*.
 - Con Hot-Deck, todo estimador devuelve cerca de cero en los ocho escenarios y los dos resultados\*.
-- Con un vínculo parcial del 50 %, el efecto se reduce a la mitad (0,041 a 0,048)\*.
+- Con un vínculo parcial del 50 %, el efecto se reduce a la mitad (0,040 a 0,048)\*.
 - Con confusión no observada ningún estimador la corrige, y en pobreza el signo se invierte (+0,138 con confusión fuerte)\*.
 - Solo la discontinuidad en el corte la resiste (+0,086 frente a +0,090), y solo con vínculo hogar por hogar; con Hot-Deck también da cero\*. La versión difusa, con 80 % de participación entre elegibles, recupera 0,086 frente a 0,090\*.
 - La pérdida es proporcional al tamaño del efecto: con Hot-Deck se pierde todo, y con vínculo del 50 % algo menos de la mitad\*.
 
 La lectura para la tesis: recuperar el efecto exige a la vez un vínculo hogar por hogar y un diseño que resista la confusión no observada. Para una entidad que integre sus propios registros, conviene medir la fracción de hogares bien vinculados antes de estimar.
 
-Fuente: `SIMULACION_SEMISINTETICA.md` (corrida del 3 de noviembre y sensibilidad del 4 de noviembre).
+Fuente: `SIMULACION_SEMISINTETICA.md` (corrida y sensibilidad regeneradas el 8 de noviembre).
 
 ## Reglas de focalización (OE3)\*
 
@@ -113,12 +113,12 @@ Un proxy de medios con variables del hogar logra 82 % de la reducción ideal de 
 
 | Regla | Error de inclusión | Error de exclusión | % de la reducción ideal de FGT1 |
 | --- | --- | --- | --- |
-| Vigente (Hot-Deck) | 58,1 % | 43,5 % | 59,7 |
-| Aleatoria | 66,8 % | 53,3 % | 46,7 |
-| PMT por ingreso | 48,5 % | 18,6 % | 82,1 |
-| PMT + CATE (vínculo) | 51,8 % | 26,1 % | 72,6 |
-| PMT + CATE (Hot-Deck) | 68,2 % | 55,5 % | 44,5 |
-| Ideal | 34,3 % | 0 % | 100 |
+| Vigente (Hot-Deck) | 58,1 %\* | 43,5 %\* | 59,7\* |
+| Aleatoria | 66,9 %\* | 53,3 %\* | 46,7\* |
+| PMT por ingreso | 48,5 %\* | 18,6 %\* | 82,1\* |
+| PMT + CATE (vínculo) | 51,8 %\* | 26,1 %\* | 72,6\* |
+| PMT + CATE (Hot-Deck) | 67,7 %\* | 54,9 %\* | 44,6\* |
+| Ideal | 34,3 %\* | 0 %\* | 100\* |
 
 El grupo imputado solo lleva la información de la celda, así que su desempeño no es el del Sisbén real. Fuente: `RESULTADOS_REGLAS_FOCALIZACION.md`.
 
@@ -154,7 +154,7 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
 | --- | --- | --- |
 | 1 | Variabilidad de la imputación del Hot-Deck: estabilidad por hogar, coeficiente de variación y error relativo por celda | Cifra para la pregunta del tutor |
 | 2 | Módulo `src/simulacion/` con dos modos (datos propios y simulado), con diseño previo en `docs/metodologia/` | Framework replicable por otras instituciones |
-| 3 | Completar la semisintética: cadena de respaldos del Hot-Deck simulado y asterisco en todas las tablas | Evaluación cerrada |
+| 3 | ~~Completar la semisintética: cadena de respaldos del Hot-Deck simulado y asterisco en todas las tablas~~ **Hecha el 2026-11-08** | Evaluación cerrada |
 | 4 | Recomendación de variables con LASSO, Ridge y SHAP | Pregunta abierta y recomendación, sin lenguaje causal |
 | 5 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Anexo con evidencia de calidad |
 | 6 | ~~Depuración del repositorio y archivo de las ramas obsoletas~~ **Hecha el 2026-11-08** | Repositorio limpio para la entrega |

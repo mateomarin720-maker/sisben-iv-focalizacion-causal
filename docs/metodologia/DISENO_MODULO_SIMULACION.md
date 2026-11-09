@@ -216,8 +216,8 @@ silencio.
 
 El paso 4 cambia la simulación: antes, una celda sin donantes sorteaba en
 todo el registro; con la cadena, sortea en la celda de respaldo. Afecta
-a pocos hogares (0,02 % en el pipeline real), pero las cifras se
-regeneran y el cambio se documenta en `SIMULACION_SEMISINTETICA.md`.
+a pocos hogares (0,02 % en el pipeline real). Las cifras se regeneraron
+el 2026-11-08 y el cambio está documentado en `SIMULACION_SEMISINTETICA.md`.
 
 ## 8. Pruebas nuevas
 

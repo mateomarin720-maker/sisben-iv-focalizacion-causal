@@ -163,7 +163,8 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
    los modelos auxiliares. **Decisión pendiente:** bajar esa
    regularización en `5_estimacion.py`. La cadena de respaldos del
    Hot-Deck simulado quedó en el código el 2026-11-04 (paso 4 del
-   módulo); las cifras se regeneran junto con el asterisco (paso 5).
+   módulo); las cifras se regeneraron con ella y con asterisco el
+   2026-11-08 (paso 5), sin cambios en las conclusiones.
 2. ~~Decidir el outcome monetario~~ **Resuelto 2026-11-02:** la
    reconstrucción es el outcome principal (todo el país) y la
    clasificación oficial (`POBRE_MONETARIO_OFICIAL`, 24 departamentos y

@@ -10,6 +10,8 @@ historial de correcciones está en
 
 ## Lo esencial
 
+Las cifras con asterisco (\*) son simuladas; las demás, datos reales.
+
 1. **El Hot-Deck vincula GEIH y Sisbén solo a nivel de celda.** Dentro de
    cada celda el grupo se sortea al azar, así que el grupo imputado no
    lleva información del hogar receptor.
@@ -19,20 +21,20 @@ historial de correcciones está en
 3. **Sin suponer que el sorteo reproduce la realidad, los datos no fijan
    ni el signo del efecto** (cotas de Fréchet-Manski, §5). Es el
    resultado de identificación central con las fuentes actuales.
-4. **Evaluación semisintética (§9), corrida hasta la convergencia (432
-   repeticiones):** con hogares reales y un efecto conocido (+0,095 en
-   log-ingreso, −0,033 en pobreza), todo estimador devuelve ≈0 cuando el
+4. **Evaluación semisintética\* (§9), corrida hasta la convergencia (432
+   repeticiones):** con hogares reales y un efecto conocido (+0,095\* en
+   log-ingreso, −0,033\* en pobreza), todo estimador devuelve ≈0 cuando el
    tratamiento viene del Hot-Deck, en los ocho escenarios. Con el
    tratamiento verdadero, regresión, DML y Causal Forest recuperan el
    efecto si la confusión es observable, y ninguno si no lo es; solo la
    discontinuidad en el corte resiste la confusión no observada, y
    necesita vínculo hogar por hogar.
-5. **Reglas de focalización (OE3, §10), en el mismo mundo simulado:**
-   un proxy de medios con variables del hogar logra 82-85 % de la
+5. **Reglas de focalización\* (OE3, §10), en el mismo mundo simulado:**
+   un proxy de medios con variables del hogar logra 82-85 %\* de la
    reducción ideal de la brecha (FGT1) y baja el error de exclusión de
-   43,5 % a 18,6 % frente a la clasificación imputada (60 %). Informar la
-   regla con el CATE estimado la empeora (72 %), y con el CATE desde el
-   Hot-Deck queda peor que el azar (44 % frente a 47 %).
+   43,5 %\* a 18,6 %\* frente a la clasificación imputada (60 %\*). Informar la
+   regla con el CATE estimado la empeora (72 %\*), y con el CATE desde el
+   Hot-Deck queda peor que el azar (44 %\* frente a 47 %\*).
 6. **Variabilidad de la imputación (§11, datos reales):** dos sorteos
    del Hot-Deck coinciden en el grupo de un hogar solo el 34 % de las
    veces (63 % en A/B), pero la distribución nacional varía menos de 0,2
@@ -179,7 +181,7 @@ Con datos sintéticos de efecto conocido: el Hot-Deck con contraste
 dentro de la celda devuelve ≈0 sea cual sea el efecto verdadero; solo
 una discontinuidad con puntaje continuo lo recupera.
 
-### 9. Evaluación semisintética
+### 9. Evaluación semisintética\*
 
 Covariables, celda, ingreso y línea de pobreza reales de GEIH;
 tratamiento y efecto simulados (P(T | celda) del Sisbén real). 432
@@ -188,11 +190,11 @@ celdas quedó bajo el umbral (Causal Forest: 216).
 
 | Estimación media | Verdadero | Oráculo | Vínculo 50 % | Hot-Deck |
 |---|---|---|---|---|
-| Confusión observada, LinearDML, log-ingreso | +0,095 | +0,089 | +0,041 | −0,006 |
-| Confusión observada, LinearDML, pobreza | −0,033 | −0,031 | −0,015 | +0,002 |
-| Confusión no observada fuerte, LinearDML, log-ingreso | +0,095 | −0,778 | −0,387 | −0,003 |
-| Confusión no observada fuerte, LinearDML, pobreza | −0,033 | +0,138 | +0,070 | +0,002 |
-| Regla de corte, RD, log-ingreso (efecto en el corte) | +0,090 | +0,086 | +0,042 | −0,001 |
+| Confusión observada, LinearDML, log-ingreso | +0,095\* | +0,089\* | +0,040\* | −0,006\* |
+| Confusión observada, LinearDML, pobreza | −0,033\* | −0,031\* | −0,014\* | +0,002\* |
+| Confusión no observada fuerte, LinearDML, log-ingreso | +0,095\* | −0,778\* | −0,390\* | −0,003\* |
+| Confusión no observada fuerte, LinearDML, pobreza | −0,033\* | +0,138\* | +0,070\* | +0,002\* |
+| Regla de corte, RD, log-ingreso (efecto en el corte) | +0,090\* | +0,086\* | +0,042\* | −0,001\* |
 
 Con Hot-Deck se pierde el efecto completo; con vínculo parcial se atenúa
 en proporción a los hogares mal vinculados. Con confusión no observada
@@ -203,6 +205,8 @@ proporcional al tamaño del efecto (× 0,5 a × 2); la RD difusa, con 80 %
 de participación, recupera el efecto en el corte con vínculo (0,086
 frente a 0,090); el sesgo de LinearDML viene de la regularización de los
 modelos auxiliares. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
+
+\* Resultado simulado.
 
 ### 11. Variabilidad de la imputación del Hot-Deck
 
@@ -218,23 +222,25 @@ reales.
 
 Detalle en [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](RESULTADOS_VARIABILIDAD_HOTDECK.md).
 
-### 10. Reglas de focalización (OE3)
+### 10. Reglas de focalización (OE3)\*
 
 Mismo mundo semisintético; todas las reglas con el mismo presupuesto
 (los hogares A/B vigentes, 46,7 %). 300 repeticiones.
 
 | Regla | Error de exclusión | % de la reducción ideal de FGT1 (proporcional / monto fijo) |
 |---|---|---|
-| Vigente (Hot-Deck) | 43,5 % | 60 / 61 |
-| Aleatoria | 53,3 % | 47 / 47 |
-| Proxy de medios por ingreso | 18,6 % | 82 / 85 |
-| Proxy + CATE con vínculo | 26,1 % | 73 / 72 |
-| Proxy + CATE con Hot-Deck | 55,5 % | 45 / 44 |
+| Vigente (Hot-Deck) | 43,5 %\* | 60\* / 61\* |
+| Aleatoria | 53,3 %\* | 47\* / 47\* |
+| Proxy de medios por ingreso | 18,6 %\* | 82\* / 85\* |
+| Proxy + CATE con vínculo | 26,1 %\* | 73\* / 72\* |
+| Proxy + CATE con Hot-Deck | 54,9 %\* | 45\* / 44\* |
 
 Con las fuentes actuales no hay efectos heterogéneos utilizables para
 focalizar; un proxy de medios con variables del hogar sí mejora la
 focalización. La regla vigente es la imputada por celda, no la del
 Sisbén real. Detalle en [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md).
+
+\* Resultado simulado.
 
 ### 12. Recomendación de variables
 

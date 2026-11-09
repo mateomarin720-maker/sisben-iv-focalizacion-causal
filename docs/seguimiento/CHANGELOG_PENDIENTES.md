@@ -2,6 +2,17 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-08 (28) — Simulación regenerada con la cadena de respaldos
+
+### Cambiado
+- Se regeneran la evaluación semisintética, las reglas de focalización y la sensibilidad
+  con la cadena de respaldos del Hot-Deck y las marcas de resultado simulado.
+- Ninguna conclusión cambia. La estimación que más se mueve en las tablas principales
+  cambia 0,003; la exclusión de PMT + CATE con Hot-Deck pasa de 55,5 % a 54,9 %.
+- Se matiza la causa del sesgo de LinearDML: casi sin regularizar deja de ser
+  significativo con oráculo y vínculo del 50 %, pero no con Hot-Deck (z −2,6).
+- Asterisco en las tablas y cifras simuladas de los documentos de resultados.
+
 ## 2026-11-08 (27) — Anexo de arquitectura y replicación
 
 ### Nuevo

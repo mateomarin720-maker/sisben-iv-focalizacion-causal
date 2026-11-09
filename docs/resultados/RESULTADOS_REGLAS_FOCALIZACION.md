@@ -1,6 +1,7 @@
 # Reglas de focalización (P3/OE3)
 
-Generado 2026-11-04 por `src/validacion/reglas_focalizacion.py`. 300
+Generado por `src/validacion/reglas_focalizacion.py`; corrida vigente:
+2026-11-08, con la cadena de respaldos del Hot-Deck. 300
 repeticiones, evaluación en 30.000 hogares reales por repetición. Salidas
 en `docs/reports/`: `reglas_focalizacion.txt` (consola),
 `reglas_focalizacion_resumen.csv` (métricas con su error Monte Carlo) y
@@ -55,17 +56,17 @@ reduce hoy la pobreza el Sisbén.
 
 ## Resultados
 
-Sin programa: FGT0 = 33,2 %, FGT1 = 0,1350.
+Sin programa (datos reales): FGT0 = 33,2 %, FGT1 = 0,1350. \* Resultado simulado.
 
 | Regla | Error de inclusión | Error de exclusión | Reducción de FGT1, proporcional | % del ideal | Reducción de FGT1, monto fijo | % del ideal |
 |---|---|---|---|---|---|---|
-| Vigente (Hot-Deck) | 58,1 % | 43,5 % | 0,0116 | 59,7 | 0,0199 | 60,8 |
-| Aleatoria | 66,8 % | 53,3 % | 0,0091 | 46,7 | 0,0152 | 46,6 |
-| **PMT por ingreso** | **48,5 %** | **18,6 %** | **0,0160** | **82,1** | **0,0276** | **84,5** |
-| PMT por brecha | 48,4 % | 19,7 % | 0,0155 | 79,7 | 0,0270 | 82,6 |
-| PMT + CATE (vínculo) | 51,8 % | 26,1 % | 0,0141 | 72,6 | 0,0235 | 71,9 |
-| PMT + CATE (Hot-Deck) | 68,2 % | 55,5 % | 0,0086 | 44,5 | 0,0144 | 44,2 |
-| Ideal | 34,3 % | 0 % | 0,0194 | 100 | 0,0327 | 100 |
+| Vigente (Hot-Deck) | 58,1 %\* | 43,5 %\* | 0,0116\* | 59,7\* | 0,0199\* | 60,8\* |
+| Aleatoria | 66,9 %\* | 53,3 %\* | 0,0091\* | 46,7\* | 0,0152\* | 46,6\* |
+| PMT por ingreso | 48,5 %\* | 18,6 %\* | 0,0160\* | 82,1\* | 0,0276\* | 84,5\* |
+| PMT por brecha | 48,4 %\* | 19,7 %\* | 0,0155\* | 79,7\* | 0,0270\* | 82,6\* |
+| PMT + CATE (vínculo) | 51,8 %\* | 26,1 %\* | 0,0141\* | 72,6\* | 0,0235\* | 71,9\* |
+| PMT + CATE (Hot-Deck) | 67,7 %\* | 54,9 %\* | 0,0087\* | 44,6\* | 0,0144\* | 44,1\* |
+| Ideal | 34,3 %\* | 0 %\* | 0,0194\* | 100\* | 0,0327\* | 100\* |
 
 Los errores de inclusión y exclusión son los del efecto proporcional.
 Con monto fijo son iguales en las reglas sin CATE y cambian hasta 2
@@ -75,8 +76,8 @@ puntos en las reglas con CATE (exclusión 28,1 % con vínculo).
 estándar Monte Carlo es ≤ 0,0006 en las tasas y ≤ 0,07 puntos en el % del
 ideal. Las dos reglas con CATE no convergieron en 300 repeticiones: su
 resultado cambia mucho de una repetición a otra porque depende del ruido
-de cada estimación del Causal Forest. Sus errores son ≤ 0,008 en las
-tasas y ≤ 0,75 puntos en el % del ideal, suficientes para ordenar las
+de cada estimación del Causal Forest. Sus errores son ≤ 0,009 en las
+tasas y ≤ 0,76 puntos en el % del ideal, suficientes para ordenar las
 reglas, pero esa volatilidad es en sí un hallazgo (punto 3).
 
 **Piso del error de inclusión.** El presupuesto (44,8 % de las personas)
@@ -109,7 +110,7 @@ errores de inclusión se leen frente a ese piso.
 
 4. **Con el CATE estimado desde el Hot-Deck, la regla es peor que el
    azar** (44 % frente a 47 % del ideal, exclusión 55 %). Ese CATE es
-   ruido alrededor de cero (ATE estimado −0,009 frente a +0,095) y a
+   ruido alrededor de cero (ATE estimado −0,008 a −0,010 frente a +0,095) y a
    veces negativo, lo que invierte el orden de los hogares. Es la
    consecuencia práctica de P2: con las fuentes actuales no hay efectos
    heterogéneos utilizables para focalizar.
@@ -130,7 +131,7 @@ errores de inclusión se leen frente a ese piso.
   observable con Hot-Deck a un proxy de medios con variables del hogar
   los reduciría en 10 y 25 puntos. Informar la regla con efectos
   heterogéneos estimados no los reduce más: los aumenta (3-10 puntos con
-  vínculo hogar por hogar, 20-37 puntos con Hot-Deck).
+  vínculo hogar por hogar, 19-37 puntos con Hot-Deck).
 - **Brecha de pobreza (FGT1):** la mejor regla factible (PMT por
   ingreso) logra 82-85 % de la reducción ideal; la vigente imputada
   60 %; las informadas por CATE 72 % (con vínculo) y 44 % (con Hot-Deck).

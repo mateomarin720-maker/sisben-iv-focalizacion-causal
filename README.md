@@ -198,7 +198,7 @@ Detalle completo de marco teórico, metodología y cronograma en
    por Hot-Deck; escenarios de asignación aleatoria, confusión observada y
    no observada, solapamiento débil; `simulacion/`).
    ✅ hasta la convergencia (432 repeticiones): con Hot-Deck todo
-   estimador devuelve ≈0 aunque el efecto verdadero sea +0,095; solo la
+   estimador devuelve ≈0\* aunque el efecto verdadero sea +0,095\*; solo la
    RD con puntaje continuo y vínculo hogar por hogar resiste la confusión
    no observada.
 9. **Focalización** (`validacion/reglas_focalizacion.py`,
@@ -221,7 +221,7 @@ Resultados interpretados de cada paso en
 | Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida, contrastada hogar por hogar con la base oficial del DANE (93,9 % de coincidencia). |
 | P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
 | P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Evaluación semisintética (432 repeticiones): con Hot-Deck ningún estimador recupera un efecto conocido; haría falta vínculo hogar por hogar y RD con puntaje continuo. |
-| P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ✅ Simulado (2026-11-04): un proxy de medios logra 82-85 % de la reducción ideal de FGT1 frente a 60 % de la clasificación imputada; las reglas con CATE estimado son peores (72 %, y 44 % con Hot-Deck). Ver `docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`. |
+| P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ✅ Simulado\* (2026-11-08): un proxy de medios logra 82-85 %\* de la reducción ideal de FGT1 frente a 60 %\* de la clasificación imputada; las reglas con CATE estimado son peores (72 %\*, y 44 %\* con Hot-Deck). Ver `docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`. |
 | Recomendación de variables e incidencia | Qué variables podría incorporar el Sisbén y a quién llegan las ayudas | ✅ Primera versión con datos reales, sin Hot-Deck (2026-11-08). No es una conclusión causal |
 
 Detalle completo, hallazgos y pendientes técnicos en
