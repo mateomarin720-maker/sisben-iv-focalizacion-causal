@@ -188,6 +188,29 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
 8. Actualizar el anteproyecto con el enfoque vigente.
 9. Pruebas: medir cobertura (`tests/README.md`, "Pendiente"). La
    integración continua corre desde el 2026-11-04.
+10. **Entrega del repositorio y del documento** (anotaciones del director
+    sobre el borrador, 2026-11-11; los demás puntos ya están en
+    `docs/anexos_tesis/`):
+    - Generar el DOI en Zenodo: conectar el repositorio, publicar una
+      versión y agregar el DOI a `CITATION.cff` y al documento.
+    - Agregar el archivo `LICENSE`: `pyproject.toml` declara MIT, pero el
+      archivo no existe. Lo deciden los autores.
+    - Escribir la declaración de uso de IA del documento.
+    - Armar la tabla de peticiones a las entidades (sección 8.2). Cada
+      petición va atada a un resultado y se verifican las normas que se
+      citen. Las de la hoja de notas del director son:
+      - GEIH y Sisbén enlazados con llave seudonimizada en sala segura
+        (DANE y DNP): sin enlace, el efecto estimado es cero
+        (Proposición 1).
+      - Puntaje continuo del Sisbén IV (DNP): solo la RD resiste la
+        confusión no observada.
+      - Tasas y calidad del enlace del Registro Social de Hogares (DNP):
+        la señal cae en proporción al enlace faltante (Proposición 2).
+      - Pregunta sobre el grupo Sisbén en la GEIH o la ECV (DANE).
+      - Tabulados oficiales de grupo Sisbén por pobreza, por celda (DANE
+        y DNP): estrechan las cotas sin entregar microdatos.
+      - Registros de pagos efectivos (DPS): distinguen ser elegible de
+        recibir el programa.
 
 ## 5. Errores encontrados y corregidos (los que cambiaron resultados)
 
