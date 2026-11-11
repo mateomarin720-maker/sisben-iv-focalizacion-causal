@@ -13,7 +13,7 @@ on:
 jobs:
   pruebas:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60  # la prueba de mutación (53 errores) pasa de 30 minutos
     env:
       PYTHONIOENCODING: utf-8
     steps:
