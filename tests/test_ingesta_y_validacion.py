@@ -154,3 +154,15 @@ def test_chequeos_de_identificacion_de_todos_los_dag():
     }
     # el criterio de la puerta trasera no acepta un descendiente del tratamiento
     assert not dag.ajuste_valido(dag.grafo_simulacion(gamma=False), "T", "Y", {"X", "Z", "Y"})
+
+
+def test_representatividad_con_los_hogares_de_un_mes_promedio():
+    """La GEIH anual junta 12 muestras mensuales, cada una expandida a toda
+    la población: los hogares son la suma de fex dividida por los meses."""
+    from src.validacion.verificar_representatividad_sisben import calcular_cobertura
+    geih = pd.DataFrame({"geo_depto": ["05", "05", "05", "05"], "mes": ["01", "01", "02", "02"],
+                         "fex": [600.0, 400.0, 500.0, 500.0]})          # 1.000 hogares cada mes
+    sisben = pd.DataFrame({"geo_depto": ["05"] * 250, "Clasificacion": ["A1"] * 250})
+    r = calcular_cobertura(geih, sisben)
+    assert r.loc[0, "geih_hogares_expandidos"] == 1000
+    assert r.loc[0, "razon_cobertura"] == pytest.approx(0.25)

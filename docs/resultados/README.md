@@ -95,7 +95,7 @@ es el resultado principal (cubre los 33 departamentos); la clasificación
 oficial, la prueba de robustez.
 
 **Representatividad.** La cobertura del Sisbén frente a la GEIH varía 32
-veces entre departamentos (0,4 % Valle a 12,8 % Putumayo): el registro
+veces entre departamentos (4,8 % Valle a 154 % Putumayo; 17,3 % nacional): el registro
 no es una muestra uniforme.
 
 **Variabilidad de la imputación** (100 semillas; la 42 reproduce el

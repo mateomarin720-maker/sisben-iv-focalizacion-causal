@@ -18,14 +18,28 @@ cualquier resultado que compare ambas fuentes.
 ## Resultado
 
 Razón de cobertura = hogares registrados en el Sisbén (con `Clasificacion`
-observada, el pool donante real del Hot-Deck) ÷ hogares expandidos de GEIH
-(población total, ponderada por `FEX_C18`), por departamento.
+observada, el pool donante real del Hot-Deck) ÷ hogares de la GEIH en un
+mes promedio (expandidos con `FEX_C18`), por departamento.
 
 | | Razón de cobertura | Departamento (código DIVIPOLA) |
 |---|---|---|
-| Mínima | 0,4 % | 76 — Valle del Cauca |
-| Máxima | 12,8 % | 86 — Putumayo |
-| Nacional (agregada) | 1,4 % | — |
+| Mínima | 4,8 % | 76 — Valle del Cauca |
+| Máxima | 154 % | 86 — Putumayo |
+| Nacional (agregada) | 17,3 % | — |
+
+**Corrección del 2026-11-10.** Hasta esa fecha el denominador sumaba los
+factores de expansión de los 12 meses de la GEIH, y cada mes se expande a
+toda la población: los hogares salían 12 veces más (214,9 millones en vez
+de 17,9) y las coberturas 12 veces menores (0,4 % a 12,8 %, nacional
+1,4 %). El factor de variación entre departamentos no cambia, porque
+todos estaban multiplicados por lo mismo. Prueba y mutación en
+`tests/test_ingesta_y_validacion.py`.
+
+**Coberturas mayores al 100 %.** En Putumayo (154 %) y Vichada (97 %) el
+registro tiene tantos o más hogares que los que estima la GEIH, que
+expande ahí a pocos hogares (19 mil y 5.600 en un mes promedio). En esos
+departamentos la razón compara marcos distintos y no debe leerse como
+cobertura.
 
 **Factor de variación: 32,3x** entre el departamento con menor y mayor
 cobertura relativa. Los departamentos con cobertura más baja son

@@ -208,7 +208,7 @@ Detalle en [`SIMULACION_SEMISINTETICA.md`](../resultados/3_simulacion/SIMULACION
 ### 5.7 Representatividad del Sisbén
 
 La cobertura frente a la población de la GEIH varía 32 veces entre
-departamentos: de 0,4 % en Valle del Cauca a 12,8 % en Putumayo.
+departamentos: de 4,8 % en Valle del Cauca a 154 % en Putumayo (corregido el 2026-11-10; antes se sumaban los 12 meses de la GEIH).
 
 ## 6. Lectura de conjunto
 

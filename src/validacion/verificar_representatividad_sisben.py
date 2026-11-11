@@ -7,7 +7,7 @@ Sisbén no representa automáticamente a todos los hogares de GEIH, porque
 no todos los hogares de la encuesta necesariamente están inscritos").
 
 Este script compara, por departamento:
-  - la población total de GEIH (hogares expandidos por `FEX_C18`)
+  - los hogares de la GEIH en un mes promedio (expandidos por `FEX_C18`)
   - los hogares efectivamente registrados en el Sisbén (con `Clasificacion`
     observada, el pool donante real del Hot-Deck)
 y calcula la razón de cobertura. Si esa razón fuera pareja entre
@@ -37,12 +37,21 @@ SISBEN_PATH = Path("data/2_models/sisben_estandarizado_2024_con_bogota.parquet")
 REPORT = Path("docs/reports/representatividad_sisben_por_depto.csv")
 
 
-def calcular_cobertura() -> pd.DataFrame:
-    geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "fex"])
-    geih["fex"] = pd.to_numeric(geih["fex"], errors="coerce").fillna(0)
-    geih_pop = geih.groupby("geo_depto")["fex"].sum().rename("geih_hogares_expandidos")
+def calcular_cobertura(geih: pd.DataFrame | None = None, sisben: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Hogares de la GEIH (expandidos) y registrados en el Sisbén, por
+    departamento. La GEIH anual junta 12 muestras mensuales y cada una se
+    expande a toda la población: la suma de `fex` del año son 12 veces los
+    hogares. Se divide por el número de meses de la muestra (hogares de un
+    mes promedio). Hasta el 2026-11-10 no se dividía y las coberturas
+    salían 12 veces menores."""
+    if geih is None:
+        geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "fex", "mes"])
+    if sisben is None:
+        sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "Clasificacion"])
+    geih = geih.assign(fex=pd.to_numeric(geih["fex"], errors="coerce").fillna(0))
+    meses = geih["mes"].nunique()
+    geih_pop = (geih.groupby("geo_depto")["fex"].sum() / meses).rename("geih_hogares_expandidos")
 
-    sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "Clasificacion"])
     sisben = sisben[sisben["Clasificacion"].notna()]
     sisben_n = sisben.groupby("geo_depto").size().rename("sisben_hogares_registrados")
 

@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-10: 52 de 52 mutaciones detectadas.
+Resultado del 2026-11-10: 53 de 53 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -93,6 +93,8 @@ MUTACIONES = [
     ("DAG: la simulación sin la arista de confusión no observada", "src/4_dag_identificacion.py",
      '    if gamma:\n        g.add_edge("U", "T", condicional=True)', '    if False:\n        g.add_edge("U", "T", condicional=True)',
      "tests/test_ingesta_y_validacion.py"),
+    ("Representatividad: hogares GEIH sumando los 12 meses", "src/validacion/verificar_representatividad_sisben.py",
+     '["fex"].sum() / meses)', '["fex"].sum())', "tests/test_ingesta_y_validacion.py"),
     # Cotas con supuestos de monotonía
     ("Cotas: la dependencia positiva no recorta P11", "src/diagnostico/cotas_frechet_manski.py",
      "lo11_dep = np.maximum(lo11, p_y * p_t)", "lo11_dep = lo11", "tests/test_cotas_frechet_manski.py"),
