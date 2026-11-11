@@ -15,10 +15,11 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 - La comparación de proxies del IPM queda marcada como insumo (fases 3 a 5 no ejecutadas).
 - Salida de consola de los DAG regenerada.
 
-### Pendiente
-- `pyproject.toml` declara dependencias que el código no usa (`dowhy`, `causal-learn`,
-  `graphviz`, `seaborn`, `xgboost`, `jupyterlab`). Quitarlas exige regenerar `poetry.lock`
-  con Poetry, que no está en este entorno.
+- `pyproject.toml` sin las dependencias que el código no usa (`dowhy`, `causal-learn`,
+  `graphviz`, `seaborn`, `xgboost`, `jupyterlab`). `poetry.lock` regenerado: de 152 a 54
+  paquetes, sin cambio de versión en ninguno de los que quedan.
+- Límite de 60 minutos en la integración continua: con 53 errores, la prueba de mutación
+  pasa de 30 minutos.
 
 ## 2026-11-10 (35) — Representatividad del Sisbén con los hogares de un mes promedio
 
