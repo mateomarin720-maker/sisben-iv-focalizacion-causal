@@ -129,3 +129,28 @@ def test_d_separacion_del_diseno_con_hot_deck():
                                         ("elegibilidad_receptor", "elegibilidad_donante"))
     assert literal == {"d_separado_dado_X": False, "d_separado_dado_X_mas_elegibilidad_real": True}
     assert refinado["d_separado_dado_X"] is True
+
+
+def test_chequeos_de_identificacion_de_todos_los_dag():
+    """Cada afirmación del proyecto, en su grafo: el ajuste por la celda
+    basta para el placebo, la elegibilidad real no se identifica, el
+    registro solo es ignorable si no depende de U, y en la simulación el
+    ajuste por X y Z solo sirve sin confusión no observada."""
+    spec = importlib.util.spec_from_file_location("dag_4", ROOT / "src" / "4_dag_identificacion.py")
+    dag = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(dag)
+    assert dag.chequeos() == {
+        "literal_grupo_indep_y_dado_X": False,
+        "literal_grupo_indep_y_dado_X_y_elegibilidad": True,
+        "refinado_grupo_indep_y_dado_X": True,
+        "refinado_grupo_indep_y_sin_ajuste": False,
+        "refinado_elegibilidad_identificada_dado_X_Z": False,
+        "fusion_registro_ignorable_con_U": False,
+        "fusion_registro_ignorable_sin_U": True,
+        "simulacion_ajuste_X_Z_con_gamma": False,
+        "simulacion_ajuste_X_Z_sin_gamma": True,
+        "simulacion_hotdeck_indep_y_dado_X": True,
+        "una_tabla_regla_exogena": True,
+    }
+    # el criterio de la puerta trasera no acepta un descendiente del tratamiento
+    assert not dag.ajuste_valido(dag.grafo_simulacion(gamma=False), "T", "Y", {"X", "Z", "Y"})

@@ -1,112 +1,105 @@
-# Identificación causal — diseño principal y diseño de una sola tabla
+# Identificación causal: los DAG del proyecto
 
-Generado por `src/4_dag_identificacion.py` a partir de las Figuras 2 y 3 de
-Roncancio y Fonseca (2026), *Pipeline de datos y modelos para estimar el
-efecto causal del Sisbén IV...*. Diagramas: `dag_diseno_principal.png`
-(literal), `dag_diseno_principal_refinado.png`, `dag_una_tabla.png` (esta
-misma carpeta).
+Generado por `src/4_dag_identificacion.py`. Cada afirmación de
+identificación se comprueba con d-separación en su grafo
+(`networkx.is_d_separator`); las pruebas están en
+`tests/test_ingesta_y_validacion.py`. Colores: azul, observado en la GEIH;
+naranja, en el Sisbén; verde, en las dos fuentes; verde oscuro, el grupo
+imputado por el Hot-Deck; morado, fijado por la simulación; borde
+punteado, no observado.
 
-## 1. Diseño principal (GEIH + Sisbén + IPM)
-
-Tratamiento: elegibilidad A/B del Sisbén (lo que se observa en GEIH es
-`grupo_hotdeck`, asignado por `src/emparejamiento/`). Resultado: IPM /
-bienestar del hogar. Covariables X: `geo_depto`, `jefe_edad` (ciclo de
-vida), vivienda.
-
-**Chequeo formal de d-separación** (`networkx.is_d_separator`) — se probó el
-grafo de la Figura 2 tal como la describe el documento (un solo nodo
-`elegibilidad_real`) y una versión refinada (ver más abajo):
-
-| Grafo | Condicionando en | ¿`grupo_hotdeck` ⊥ `resultado_y`? |
+| Diagrama | Archivo | Para qué sirve |
 |---|---|---|
-| Literal (Fig. 2) | Solo X | **False** |
-| Literal (Fig. 2) | X + elegibilidad_real | True |
-| Refinado | Solo X | **True** |
-| Refinado | X + ambas elegibilidades | True |
+| Diseño principal (Figura 2 del documento) | `dag_diseno_principal.png` | Muestra por qué el diagrama original no sostiene su propia afirmación |
+| Diseño principal refinado | `dag_diseno_principal_refinado.png` | El que usa la estimación: conjunto de ajuste y placebo del Hot-Deck |
+| Fusión de fuentes | `dag_fusion_fuentes.png` | Qué observa cada base; supuesto de las cotas de Fréchet y de los errores de focalización |
+| Generador de la simulación | `dag_simulacion.png` | Qué confunde la asignación en cada escenario |
+| Una sola tabla (Sisbén III a IV) | `dag_una_tabla.png` | Diseño alternativo del documento; no se ejecuta con los datos del proyecto |
 
-### El grafo literal de la Figura 2 NO sostiene formalmente su propia afirmación
+## 1. Diseño principal, como en la Figura 2
 
-El documento dice "dado X, el grupo del Hot-Deck no depende de Y". Puesto el
-grafo exactamente como lo describe la Figura 2 (`elegibilidad_real` como un
-solo nodo con aristas hacia `grupo_hotdeck` *y* hacia `participacion_dps`),
-`networkx.is_d_separator` dice que **NO** quedan d-separados condicionando
-solo en X. La razón es un camino que el texto no menciona:
-`grupo_hotdeck <- elegibilidad_real -> participacion_dps -> resultado_y`.
-`elegibilidad_real` es una bifurcación (fork) en ese camino — conectar X a
-`elegibilidad_real` no cierra la bifurcación; hay que condicionar en
-`elegibilidad_real` misma (imposible: no se observa) o en algo que bloquee
-ese camino específico.
+| Pregunta | Condicionando en | Respuesta |
+|---|---|---|
+| ¿El grupo del Hot-Deck es independiente de Y? | X | **No** |
+| | X y la elegibilidad | Sí |
 
-### Por qué el diseño sí funciona en la práctica: hay que separar receptor de donante
+El documento afirma que, dado X, el grupo del Hot-Deck no depende de Y.
+Con un solo nodo de elegibilidad, el grafo no lo sostiene: queda abierto
+el camino grupo ← elegibilidad → participación → Y, y la elegibilidad no
+se observa en la GEIH.
 
-El Hot-Deck real no copia la elegibilidad del hogar receptor (no la
-conoce) — copia la de un **hogar donante** sorteado al azar dentro de la
-misma celda de X. Son dos variables distintas que la Figura 2 colapsa en un
-solo nodo. Separándolas (`dag_diseno_principal_refinado.png`):
-`elegibilidad_donante` determina `grupo_hotdeck` pero no tiene ninguna
-arista hacia `participacion_dps` ni `resultado_y` del receptor;
-`elegibilidad_receptor` sí las tiene, pero no determina `grupo_hotdeck`. Con
-esa separación, **condicionar solo en X sí basta** (ver tabla: Refinado /
-Solo X = True) — el camino problemático desaparece porque ya
-no comparten el nodo intermedio. `U` (capacidad de generar ingresos) afecta
-a `elegibilidad_receptor` y a `resultado_y`, pero no tiene arista hacia
-`grupo_hotdeck`, así que tampoco abre un camino adicional.
+## 2. Diseño principal refinado (el que usa la estimación)
 
-**Conclusión práctica:** la afirmación del documento es correcta, pero su
-justificación formal depende de distinguir "elegibilidad del hogar" de
-"elegibilidad del donante que le tocó en el sorteo" — un matiz que vale la
-pena dejar explícito en el marco teórico-metodológico (ítem pendiente de la
-sección "Próximos pasos" del documento), porque el diagrama tal como está
-dibujado hoy no cierra solo.
+El Hot-Deck no copia la elegibilidad del hogar receptor, que no conoce,
+sino la de un donante sorteado en su misma celda. Además, la celda X
+(departamento, ciclo de vida del jefe, cuartos, nivel de pisos) se separa
+de Z (zona, sexo del jefe, paredes), que modifican el efecto pero no
+entran al sorteo.
 
-### Por qué la prueba empírica (2026-10-21, script retirado; está en el historial de git) no colapsó del todo para el ingreso
+| Pregunta | Condicionando en | Respuesta |
+|---|---|---|
+| ¿El grupo del Hot-Deck es independiente de Y? | X (celda) | **Sí** |
+| | Nada | No |
+| ¿Se identifica el efecto de la elegibilidad del propio hogar? | X y Z | No |
 
-La Figura 2 define X como **depto + edad + vivienda**. El Hot-Deck
-implementado (`emparejamiento_hotdeck_geih_sisben.py`) arma la celda con
-**solo depto + ciclo de vida del jefe** — vivienda NO está en la celda
-todavía (es justamente el primer punto de "Próximos pasos" del documento:
-"sumar variables de vivienda a la celda"). La prueba exploratoria de ATE/CATE
-controló por depto+edad (el X *implementado*), no por el X *completo* que
-pide la Figura 2. El residuo de -2,3 % en log(ingreso) y la importancia alta
-de `viv_cuartos`/`viv_paredes` en el Causal Forest son exactamente lo
-esperable si falta esa parte de X — no una contradicción del diseño, sino la
-confirmación empírica de por qué ese paso está en la lista de pendientes.
+Lectura:
+- **El conjunto de ajuste es la celda, y basta.** Por eso el DML usa la
+  celda exacta como indicadoras (`W_CELDA` en `5_estimacion.py`), y Z va
+  en las X del Causal Forest solo para la heterogeneidad.
+- **Dado X, el grupo imputado es independiente de Y: el DML sobre ese
+  grupo es un placebo del emparejamiento**, no el efecto del Sisbén. El
+  ≈0 que da (`RESULTADOS_DML_ATE_ATT_ATU.md`) es lo que predice el grafo.
+- **El efecto de la elegibilidad real no se identifica** con variables
+  observadas: el camino elegibilidad ← U → Y no se cierra. Por eso, con
+  datos reales, solo se acota (`RESULTADOS_FRECHET_MANSKI.md`).
 
-> **Actualización 2026-11-02:** con la celda completa (depto + edad +
-> cuartos, y desde ese día también pisos) controlada como indicadoras en
-> los modelos auxiliares, el residuo desaparece (ATE ≈0 en los cuatro
-> outcomes, `DIAGNOSTICO_W_CELDA_EXACTA.md`), como predice el grafo
-> refinado.
+## 3. Fusión de fuentes
 
-### Limitación que el grafo no resuelve
+La GEIH trae X, Z e Y; el Sisbén trae X, Z y el grupo T, solo de los
+hogares registrados (S). Ningún hogar tiene T e Y a la vez, así que su
+conjunta solo se acota celda por celda (cotas de Fréchet).
 
-`U` (capacidad de generar ingresos) es un confusor de `elegibilidad_receptor`
-y `resultado_y`, y no es observado. Esto **no** bloquea la identificación de
-`grupo_hotdeck -> resultado_y` (ver arriba — `U` no tiene arista hacia
-`grupo_hotdeck`), pero sí bloquea la identificación del efecto de la
-**elegibilidad real del propio hogar** si en algún momento se quisiera
-estimar esa versión del tratamiento directamente (en vez del grupo asignado
-por Hot-Deck) — el backdoor por X no es suficiente ahí porque existe el
-camino `elegibilidad_receptor <- U -> resultado_y` sin forma de cerrarlo
-con variables observadas.
+| Pregunta | Mundo | Respuesta |
+|---|---|---|
+| ¿T es independiente del registro, dado X y Z? | El registro depende de U | **No** |
+| | El registro no depende de U | Sí |
 
-## 2. Diseño de una sola tabla (transición Sisbén III -> IV)
+Las cotas del efecto (`RESULTADOS_FRECHET_MANSKI.md`) y los errores de
+focalización (`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`) toman la
+proporción de A/B de los registrados como la de toda la celda. El grafo
+dice cuándo vale: solo si lo que lleva a un hogar a registrarse no está
+relacionado con su elegibilidad más allá de X y Z. La cobertura del
+registro varía 32 veces entre departamentos
+(`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`), así que es un supuesto que se
+declara, no que se verifica.
 
-Evita cruzar GEIH con Sisbén. La identificación depende de que `regla_nueva`
-sea exógena a las condiciones del hogar (`X -> regla_nueva` NO existe en el
-grafo: el cambio de regla es nacional, no decidido por hogar) — si eso se
-sostiene, el cambio de clasificación atribuible solo a `regla_nueva` (no a
-`X`) aísla una fuente de variación limpia. **Bloqueador actual: no tenemos
-el corte Sisbén III** — este diseño queda sin poder correrse hasta
-conseguirlo. `resultado_y` sigue sin definir (no puede ser `I1`-`I15` ni
-`H_5`, ver `docs/insumos/DICCIONARIO_HOTDECK.md` §7, por circularidad).
+## 4. Generador de la simulación semisintética
 
-## 3. Qué sigue (según la Tabla 1 del documento)
+Hogares reales de la GEIH (X, Z, U e Y0 reales) y una asignación
+simulada: score = logit P_Sisbén(T | celda) + Z·b + gamma·U, por sorteo o
+por corte del puntaje; Y = Y0 + tau(Z)·T (`src/simulacion/`).
 
-Identificado el diseño, lo que falta para llegar a estimación:
-- LASSO/Ridge/SHAP sobre el Sisbén solo (determinantes de clasificación, P1/OE1) — planeado, no implementado.
-- DML y Causal Forest sobre `grupo_hotdeck -> resultado_y` con X completo (P2/OE2) — planeado; requiere primero construir `resultado_y` (IPM desde GEIH) y sumar vivienda a la celda del Hot-Deck.
-- RD en frontera B/C — en duda (no hay puntaje continuo en la microdata).
-- Estudio de eventos Sisbén III/IV — bloqueado por falta del corte III.
-- Cotas de Fréchet-Manski — por explorar.
-- Vecino más cercano (Gower) — pendiente, prueba de robustez del Hot-Deck.
+| Pregunta | Escenario | Respuesta |
+|---|---|---|
+| ¿Ajustar por X y Z identifica el efecto de T? | gamma = 0 (confusión observada) | **Sí** |
+| | gamma > 0 (confusión no observada) | **No** |
+| ¿El T del Hot-Deck es independiente de Y, dado X? | Cualquiera | Sí |
+
+Es la estructura que la simulación pone a prueba
+(`SIMULACION_SEMISINTETICA.md`): con confusión observada, regresión, DML
+y Causal Forest recuperan el efecto; con confusión no observada, ninguno;
+con el T del Hot-Deck, todos dan ≈0\*, como dice la última fila.
+
+\* Resultado simulado.
+
+## 5. Diseño de una sola tabla (Sisbén III a IV)
+
+| Pregunta | Respuesta |
+|---|---|
+| ¿La regla nueva es independiente de las condiciones del hogar? | Sí |
+
+Si la regla del Sisbén IV es nacional (no se decide hogar por hogar), el
+cambio de clasificación que produce aísla una variación limpia. Requiere
+los dos cortes del Sisbén para los mismos hogares; con los datos del
+proyecto (solo el Sisbén IV) no se ejecuta. El resultado no puede ser una
+privación calculada por el propio Sisbén (`I1`-`I15`, `H_5`).

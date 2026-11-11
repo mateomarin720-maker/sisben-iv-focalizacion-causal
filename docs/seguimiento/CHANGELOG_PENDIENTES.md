@@ -2,6 +2,22 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-10 (33) — DAG del proyecto rehechos
+
+### Cambiado
+- `src/4_dag_identificacion.py`: diagramas con cajas ajustadas al texto, colores por fuente
+  (GEIH, Sisbén, ambas, Hot-Deck, simulación), borde punteado para lo no observado, leyenda
+  y flechas que no cruzan cajas. El diagrama literal resalta el camino que X no bloquea.
+- Diseño refinado: la celda X (depto, ciclo de vida, cuartos, pisos) se separa de Z (zona,
+  sexo del jefe, paredes); el resultado incluye pobreza monetaria, IPM e ingreso.
+
+### Agregado
+- `dag_fusion_fuentes.png`: qué observa cada base y el registro en el Sisbén. El registro solo
+  es ignorable si no depende de U: es el supuesto de las cotas y de los errores de focalización.
+- `dag_simulacion.png`: el generador semisintético; ajustar por X y Z identifica el efecto solo
+  sin confusión no observada, y el T del Hot-Deck es independiente de Y dada la celda.
+- `IDENTIFICACION_CAUSAL.md` regenerado con los 11 chequeos de d-separación; prueba y mutación.
+
 ## 2026-11-10 (32) — Errores de inclusión y exclusión con datos reales
 
 ### Agregado

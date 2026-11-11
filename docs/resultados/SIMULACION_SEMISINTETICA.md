@@ -57,7 +57,10 @@ EVALUACIÓN       sesgo, RMSE, cobertura del IC 95 %, ancho, PEHE (error del CAT
   basta una tabla con las columnas canónicas que exige
   `src/simulacion/contrato.py`.
 
-**Papel de cada variable** (en el DAG del generador):
+**Papel de cada variable** (en el DAG del generador, `dag_simulacion.png`;
+chequeos formales en `IDENTIFICACION_CAUSAL.md` §4):
+
+![DAG del generador de la simulación](dag_simulacion.png)
 
 | Variable | Papel | Dónde entra |
 |---|---|---|
