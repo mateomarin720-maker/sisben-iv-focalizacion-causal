@@ -10,36 +10,30 @@
 - **Profesor**: Carlos Isaac Zainea Maya
 - **Año**: 2026
 
-### 1. Descripción General
+### 1. Descripción general
 
-Este repositorio contiene los artefactos y el código del proyecto de grado
-**"Efecto causal del Sisbén IV en la identificación de la pobreza y el
-bienestar multidimensional en hogares colombianos"**. El proyecto evalúa
-el efecto causal de la clasificación del Sisbén IV sobre el bienestar
-multidimensional de hogares colombianos, mediante técnicas de **Causal
-Forest** y **Double Machine Learning (DML)**, integrando fuentes GEIH,
-Sisbén IV (nacional y Bogotá), IPM y, según el escenario de acceso, DPS.
-Como no existe una llave común entre GEIH y Sisbén, ambas se vinculan por
-**emparejamiento estadístico (Hot-Deck)**.
+Este repositorio contiene el código y los resultados del proyecto de
+grado **"Efecto causal del Sisbén IV en la identificación de la pobreza y
+el bienestar multidimensional en hogares colombianos"**.
 
-A diferencia de un enfoque puramente predictivo, el proyecto se centra en
-**inferencia causal**: estimar el efecto de la clasificación Sisbén IV
-sobre indicadores de bienestar real, bajo supuestos de identificación
-explícitos, con el fin de entender las causas estructurales detrás de los
-errores de inclusión y exclusión reportados (DNP-BID, 2022).
+La GEIH dice qué hogares son pobres; el Sisbén IV, cuáles quedan en los
+grupos A y B. No comparten llave de hogar, así que se vinculan por
+emparejamiento estadístico (Hot-Deck) a nivel de celda. El proyecto
+muestra qué se puede y qué no se puede concluir con esa vinculación, y
+lo convierte en un **framework de ingeniería y simulación para evaluar
+subsidios y transferencias** (enfoque acordado en la tutoría del 3 de
+noviembre de 2026).
 
-La estructura sigue la metodología estandarizada del **Consultorio de
-Estadística y Ciencia de Datos** de la USTA, garantizando reproducibilidad,
-colaboración y calidad en cada fase del ciclo de vida del proyecto.
+**La tesis en una base y tres componentes**
 
-**Enfoque vigente (tutoría del 3 de noviembre de 2026).** La tesis es un framework de
-ingeniería y simulación para evaluar subsidios y transferencias, en tres bloques:
+| Parte | Pregunta | Hallazgo principal | Código | Resultados |
+|---|---|---|---|---|
+| Base: datos y enlace | ¿Las fuentes están bien medidas y cómo se vinculan? | Pobreza monetaria reconstruida (33,2 % frente a 31,8 % oficial) e IPM-GEIH; el Hot-Deck vincula solo por celda | `src/ingesta/`, `armonizacion/`, `emparejamiento/`, `indicadores/`, `validacion/` | [`1_datos_y_enlace/`](docs/resultados/README.md#base-datos-y-enlace-entre-fuentes) |
+| 1. Diagnóstico con datos reales | ¿Qué permiten decir los datos sobre la clasificación, la pobreza y el efecto? | El DML sobre el grupo imputado es un placebo (≈0); sin el supuesto del vínculo, ninguna cota excluye el cero; al menos 39 % de los A/B no son pobres monetarios | `src/4_dag_identificacion.py`, `5_estimacion.py`, `diagnostico/` | [`2_diagnostico_datos_reales/`](docs/resultados/README.md#componente-1-diagnóstico-con-datos-reales) |
+| 2. Simulación semisintética | ¿Qué estimador recupera un efecto conocido según el vínculo entre fuentes? | Con el Hot-Deck todo estimador devuelve ≈0\* aunque el efecto sea +0,095\* | `src/simulacion/` | [`3_simulacion/`](docs/resultados/README.md#componente-2-simulación-semisintética) |
+| 3. Reglas de focalización | ¿Cómo cambian los errores de focalización con otras reglas? | Un proxy de medios logra 82-85 %\* de la reducción ideal de la brecha frente a 60 %\* de la clasificación imputada; el CATE estimado no ayuda | `src/focalizacion/` | [`4_focalizacion/`](docs/resultados/README.md#componente-3-reglas-de-focalización) |
 
-| Bloque | Qué entrega | Dónde verlo |
-|---|---|---|
-| Arquitectura e ingeniería | Enlazar las bases y correr los modelos de forma reutilizable | [`ARQUITECTURA_Y_REPLICACION.md`](docs/metodologia/ARQUITECTURA_Y_REPLICACION.md) |
-| Simulación semisintética | Qué estimador recupera un efecto conocido según el vínculo entre fuentes | [`SIMULACION_SEMISINTETICA.md`](docs/resultados/3_simulacion/SIMULACION_SEMISINTETICA.md) y `src/simulacion/` |
-| Discusión de focalización | Qué variables podría incorporar el Sisbén, como pregunta abierta y recomendación | [`RECOMENDACION_VARIABLES_POBREZA.md`](docs/resultados/2_diagnostico_datos_reales/RECOMENDACION_VARIABLES_POBREZA.md) |
+\* Resultado simulado.
 
 Para revisar el proyecto, empezar por el [índice de resultados](docs/resultados/README.md).
 
@@ -103,14 +97,14 @@ Detalle completo de marco teórico, metodología y cronograma en
 
 - **Lenguaje principal**: Python ≥ 3.11
 - **Gestor de dependencias**: Poetry
-- **Librerías centrales**:
-  - Manipulación de datos: `pandas`, `numpy` (2.x), `pyarrow`
+- **Librerías que usa el código**:
+  - Manipulación de datos: `pandas`, `numpy` (2.x), `pyarrow`, `openpyxl`
   - Banco de datos: Azure Blob Storage (`azure-storage-blob`)
-  - Modelado ML base: `scikit-learn` (≥1.9), `xgboost`
-  - Inferencia causal: `dowhy`, `econml` (≥0.17), `causal-learn`, `networkx`
+  - Modelos: `scikit-learn` (≥1.9), `scipy`
+  - Inferencia causal: `econml` (≥0.17), `networkx` (DAG y d-separación)
   - Interpretabilidad: `shap` (≥0.51)
-  - Visualización: `matplotlib`, `seaborn`, `graphviz`
-  - Entorno exploratorio: `jupyterlab`
+  - Visualización: `matplotlib`
+  - Pruebas: `pytest`
 
 ### 4. Cómo empezar
 
@@ -144,92 +138,51 @@ Detalle completo de marco teórico, metodología y cronograma en
 
 ### 5. Estructura del repositorio
 
-- **`/data`**: Datos en sus tres estados (`0_raw`, `1_processed`, `2_models`)
-  y el catálogo de fuentes ([`data/catalogo.yaml`](data/catalogo.yaml)).
-  **Los datos no se versionan**: el banco de datos principal es Azure Blob
-  Storage (contenedor `datos-inferencia-causal`); ver `.gitignore`.
-- **`/docs`**: Documentación, agrupada por para qué sirve (ver
-  [`docs/README.md`](docs/README.md)) — insumos (diccionarios de datos),
-  [resultados](docs/resultados/README.md) (un documento por paso del
-  pipeline, con índice y hallazgos consolidados), seguimiento
-  ([resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md) y
-  [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md)) e institucional
-  (anteproyecto).
-- **`/src`**: Código fuente por etapa: `ingesta/`, `armonizacion/`,
-  `emparejamiento/`, `estimacion/` (DML/Causal Forest/Fréchet-Manski),
-  `validacion/`, `utils/` (incluye Azure) y los scripts numerados `1_` a
-  `5_` del flujo metodológico.
-- **`/tests`**: 214 pruebas automatizadas (`poetry run pytest tests/`),
-  casi todas con datos sintéticos; las que leen datos reales se saltan si
-  no está el banco. Corren solas en GitHub Actions en cada push y PR
-  (`.github/workflows/pruebas.yml`). Qué cubre cada una:
-  [`tests/README.md`](tests/README.md).
-- **`.gitignore`**, **`pyproject.toml`** (Poetry, `package-mode = false`) y
-  este **`README.md`**.
+| Carpeta | Contenido |
+|---|---|
+| `src/` | Código organizado como la tesis: base (`ingesta/`, `armonizacion/`, `emparejamiento/`, `indicadores/`, `validacion/`, `utils/`), `diagnostico/`, `simulacion/` y `focalizacion/`, más los scripts numerados `1_` a `5_`. Mapa en [`src/README.md`](src/README.md) |
+| `docs/resultados/` | Un documento por paso, en cuatro carpetas que siguen la misma estructura, con [índice](docs/resultados/README.md) |
+| `docs/reports/` | Salidas crudas de cada script (tablas y consola) |
+| `docs/metodologia/` | [Arquitectura y replicación](docs/metodologia/ARQUITECTURA_Y_REPLICACION.md), diseño del módulo de simulación y metodología de la pobreza monetaria |
+| `docs/insumos/` | Diccionarios oficiales, ficha del Sisbén IV y homologaciones entre fuentes |
+| `docs/seguimiento/` | [Guía de la tesis](docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md), [resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md) y [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md) |
+| `data/` | Estructura de las capas (`0_raw`, `1_processed`, `2_models`) y [catálogo de fuentes](data/catalogo.yaml). Los datos no se versionan: viven en Azure Blob Storage |
+| `tests/` | 242 pruebas (`poetry run pytest tests/`) y una prueba de mutación que reintroduce 52 errores conocidos y comprueba que alguna prueba falle. Corren en GitHub Actions en cada push. Mapa en [`tests/README.md`](tests/README.md) |
 
-### 6. Flujo metodológico (resumen)
+### 6. Orden de ejecución
 
-1. **Integración / ingesta** (`1_integracion.py`, `ingesta/`): fuentes
-   crudas → Parquet (GEIH 12 meses 2024, IPM 2024, Sisbén IV nacional y
-   Bogotá-SDP). ✅
-2. **Limpieza** (`2_limpieza.py`): tipado, duplicados y faltantes
-   estructurales documentados. ✅
-3. **Armonización** (`armonizacion/`): esquema canónico por hogar (jefe de
-   hogar) común a GEIH y Sisbén. ✅
-4. **Emparejamiento estadístico** (`emparejamiento/`): Hot-Deck GEIH ←
-   Sisbén por celdas (departamento + ciclo de vida del jefe + tramo de
-   cuartos + material de pisos homologado). Válido solo a nivel poblacional; no identifica
-   el mismo hogar. ✅
-5. **Outcomes** (`3_preprocesamiento.py`, `indicadores/pobreza_monetaria_geih.py`,
-   `3b_preprocesamiento_monetario.py`): IPM-GEIH con 8 de las 15
-   privaciones oficiales, y pobreza monetaria reconstruida con la
-   metodología del DANE (unidad de gasto, líneas por dominio, arriendo
-   imputado: 33,2 % frente a 31,8 % oficial; misma clasificación que la
-   base oficial del DANE en el 93,9 % de los hogares). Nunca las variables propias
-   del Sisbén `I1`–`I15`, `H_5`. ✅
-6. **Especificación causal** (`4_dag_identificacion.py`): los dos diseños
-   del proyecto (principal, y de una sola tabla) como DAG, con chequeo
-   formal de d-separación. ✅
-7. **Estimación sobre datos reales** (`5_estimacion.py`,
-   `diagnostico/cotas_frechet_manski.py`): DML y Causal Forest como
-   diagnóstico placebo del emparejamiento (ATE ≈0, como se espera), y
-   cotas de Fréchet-Manski sin suponer independencia condicional. ✅
-8. **Evaluación semisintética** (efecto conocido, tratamiento reconstruido
-   por Hot-Deck; escenarios de asignación aleatoria, confusión observada y
-   no observada, solapamiento débil; `simulacion/`).
-   ✅ hasta la convergencia (432 repeticiones): con Hot-Deck todo
-   estimador devuelve ≈0\* aunque el efecto verdadero sea +0,095\*; solo la
-   RD con puntaje continuo y vínculo hogar por hogar resiste la confusión
-   no observada.
-9. **Focalización** (`focalizacion/reglas_focalizacion.py`,
-   `diagnostico/variables_candidatas_pobreza.py`,
-   `diagnostico/incidencia_transferencias.py`): reglas de asignación simuladas\*,
-   recomendación de variables e incidencia de las ayudas declaradas, estas dos
-   con datos reales. ✅
+1. **Base.** Ingesta (`1_integracion.py`), limpieza (`2_limpieza.py`),
+   armonización al esquema canónico por hogar, Hot-Deck por celdas,
+   outcomes (`3_preprocesamiento.py`, `indicadores/pobreza_monetaria_geih.py`,
+   `3b_preprocesamiento_monetario.py`) y chequeos de `validacion/`. Nunca
+   se usan como resultado las privaciones del propio Sisbén (`I1`-`I15`,
+   `H_5`).
+2. **Diagnóstico con datos reales.** DAG y chequeos de identificación
+   (`4_dag_identificacion.py`), DML y Causal Forest como placebo
+   (`5_estimacion.py`), cotas de Fréchet-Manski, errores de focalización,
+   variabilidad del Hot-Deck y selección y recomendación de variables
+   (`diagnostico/`).
+3. **Simulación semisintética** (`python -m src.simulacion`) y su
+   sensibilidad.
+4. **Reglas de focalización** (`focalizacion/`).
 
-\* Resultado simulado.
-
-Resultados interpretados de cada paso en
-[`docs/resultados/`](docs/resultados/README.md) (empezar por su índice).
+Comandos completos y orden exacto: `CLAUDE.md` (sección "Validación").
+Cada paso debe reproducir las cifras de `docs/resultados/`.
 
 ### 7. Estado del proyecto
 
-| Objetivo | Qué cubre | Estado |
-|---|---|---|
-| Fuentes de datos | GEIH, IPM, Sisbén nacional y Bogotá | ✅ Las cuatro obtenidas, armonizadas y validadas. DPS y RUI quedan fuera del alcance vigente o pendientes de gestión (ver §8 y `data/README.md`). |
-| Emparejamiento (Hot-Deck) | Asignar grupo Sisbén a GEIH | ✅ 99,98 % en celda exacta, celda con depto+edad+cuartos+pisos, código de edad (`PER002`) corroborado indirectamente. |
-| Outcomes | IPM-GEIH y pobreza monetaria | ✅ IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida, contrastada hogar por hogar con la base oficial del DANE (93,9 % de coincidencia). |
-| P1 / OE1 — Determinantes y validez (LASSO, SHAP) | Validez de clasificación del Sisbén frente a IPM/GEIH | 🔧 Determinantes hechos (LASSO/Ridge/SHAP con métricas por grupo). Falta la concordancia con la pobreza, que con el Hot-Deck solo puede medirse por celda. |
-| P2 / OE2 — Causalidad | Efecto de la elegibilidad A/B sobre el bienestar | 🔧 Con datos reales: DML/Causal Forest ≈0 (placebo esperado) y cotas de Fréchet-Manski sin signo definido. Evaluación semisintética (432 repeticiones): con Hot-Deck ningún estimador recupera un efecto conocido; haría falta vínculo hogar por hogar y RD con puntaje continuo. |
-| P3 / OE3 — Reglas de focalización (FGT1) | Comparar reglas actuales vs. alternativas | ✅ Simulado\* (2026-11-08): un proxy de medios logra 82-85 %\* de la reducción ideal de FGT1 frente a 60 %\* de la clasificación imputada; las reglas con CATE estimado son peores (72 %\*, y 44 %\* con Hot-Deck). Ver `docs/resultados/4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md`. |
-| Recomendación de variables e incidencia | Qué variables podría incorporar el Sisbén y a quién llegan las ayudas | ✅ Primera versión con datos reales, sin Hot-Deck (2026-11-08). No es una conclusión causal |
+| Parte | Estado |
+|---|---|
+| Fuentes | ✅ GEIH 2024 (12 meses), IPM, Sisbén IV nacional y de Bogotá, armonizadas y validadas contra los diccionarios oficiales. No se solicitarán más datos: la réplica usa solo estas fuentes |
+| Base: enlace y outcomes | ✅ Hot-Deck con 99,98 % en celda exacta; IPM-GEIH y pobreza monetaria contrastada con la base oficial (93,9 % de coincidencia) |
+| 1. Diagnóstico con datos reales | ✅ DML y Causal Forest (placebo), cotas por parámetro, errores de focalización por celda, selección (OE1) y recomendación de variables |
+| 2. Simulación semisintética | ✅ Hasta la convergencia (432 repeticiones) y sensibilidad. El módulo `src/simulacion/` tiene hechos los pasos 1 a 5 de 7 de su diseño; faltan los dos modos de uso |
+| 3. Reglas de focalización | ✅ Con el mismo número de hogares, con el mismo dinero y con heterogeneidad ampliada |
+| Documento escrito | En revisión del tutor |
 
-Detalle completo, hallazgos y pendientes técnicos en
-[`docs/resultados/README.md`](docs/resultados/README.md) (resultados) y
-[`docs/seguimiento/RESUMEN_AVANCES.md`](docs/seguimiento/RESUMEN_AVANCES.md) (estado y pendientes).
-Seguimiento consolidado (cambios, correcciones, resultados y pendientes desde agosto):
-[`docs/seguimiento/README.md`](docs/seguimiento/README.md). Corte del 2 de noviembre:
-[`docs/seguimiento/README_AVANCE_2026-11-02.md`](docs/seguimiento/README_AVANCE_2026-11-02.md).
+Estado detallado y pendientes:
+[`docs/seguimiento/RESUMEN_AVANCES.md`](docs/seguimiento/RESUMEN_AVANCES.md)
+y la [guía de la tesis](docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md).
 
 ### 8. Consideraciones éticas y de datos
 
