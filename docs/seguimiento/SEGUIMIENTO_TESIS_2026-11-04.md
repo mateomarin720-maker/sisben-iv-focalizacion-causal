@@ -34,7 +34,8 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Hecha el 4 nov | `RESULTADOS_VARIABILIDAD_HOTDECK.md` |
 | Simulación como módulo independiente, con modo de datos propios y modo simulado | En curso (pasos 1-4 de 7) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
 | Evaluación semisintética completa | Hecha el 8 nov | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Regenerada con la cadena de respaldos del Hot-Deck y con asterisco |
-| Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov | `RESULTADOS_REGLAS_FOCALIZACION.md` y `RESULTADOS_FRECHET_MANSKI.md` |
+| Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov; mismo dinero y heterogeneidad ampliada el 9 nov | `RESULTADOS_REGLAS_FOCALIZACION.md`, `RESULTADOS_HETEROGENEIDAD_AMPLIADA.md` y `RESULTADOS_FRECHET_MANSKI.md` |
+| Cotas de Fréchet por parámetro y errores de focalización con datos reales | Hechas el 9 y 10 nov | `RESULTADOS_FRECHET_MANSKI.md` y `RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md` |
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
@@ -59,6 +60,8 @@ El DML da efectos de cero en todos los resultados, y las cotas no fijan ni el si
 | Pobreza monetaria (personas) | 33,2 % frente a 31,8 % oficial; FGT1 13,5 % frente a 12,6 %; igual clasificación en 93,9 % de 275.057 hogares | El arriendo imputado es la decisión que más pesa: sin él la tasa sube a 38,8 % |
 | DML, ATE con celda exacta | Puntaje IPM-GEIH −0,0021 [−0,0092; +0,0051]; pobreza monetaria −0,0002 [−0,0036; +0,0033] | Efectos despreciables; es un placebo |
 | Cotas de Fréchet-Manski (921 celdas) | `POBRE_GEIH` [−0,261; +0,380]; `POBRE_MONETARIO` [−0,418; +0,648] | Ninguna celda excluye el 0. Con los tres supuestos de monotonía, pobreza monetaria queda en [−0,405; 0] |
+| Cotas de Fréchet por parámetro | ATE, ATT, ATU y CATE por zona, sexo del jefe y paredes, en los cinco resultados | Ninguno de los 50 parámetros excluye el 0; las cotas son 140 a 210 veces más anchas que los IC del DML |
+| Errores de focalización (A/B frente a pobreza monetaria, cotas por celda) | Exclusión [0,9 %; 75,0 %]; inclusión [38,6 %; 84,5 %] | Al menos 39 % de los A/B no son pobres monetarios; la exclusión solo tiene piso en Putumayo, San Andrés y Bogotá |
 | OE1: LASSO, Ridge y SHAP | Exactitud 0,53 frente a 0,30 de la línea base; `viv_pisos` es la variable más importante | Predice el grupo asignado, no la pobreza real |
 | Representatividad del Sisbén | Cobertura de 0,4 % (Valle del Cauca) a 12,8 % (Putumayo), 32 veces | El registro no es una muestra uniforme de la GEIH |
 

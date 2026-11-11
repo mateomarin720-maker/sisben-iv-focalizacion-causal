@@ -153,11 +153,14 @@ poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
 poetry run python -m src.estimacion.cotas_frechet_manski
+poetry run python -m src.estimacion.cotas_frechet_modelos
+poetry run python -m src.estimacion.errores_focalizacion_frechet
 poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 poetry run python -m src.estimacion.variables_candidatas_pobreza 6
 poetry run python -m src.estimacion.incidencia_transferencias
 poetry run python -m src.simulacion
 poetry run python -m src.validacion.reglas_focalizacion
+poetry run python -m src.validacion.heterogeneidad_ampliada
 poetry run python -m src.validacion.sensibilidad_semisintetica
 poetry run python -m src.validacion.variabilidad_hotdeck 2
 ```

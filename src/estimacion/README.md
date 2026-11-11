@@ -17,6 +17,12 @@ Esta carpeta (`src/estimacion/`) contiene dos cosas distintas:
 - `cotas_frechet_manski.py`: parte vigente del pipeline — cotas de
   robustez para el ATE que NO suponen independencia condicional (a
   diferencia del DML). Resultado: `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+- `cotas_frechet_modelos.py`: una cota de Fréchet por cada parámetro de
+  los modelos (ATE, ATT, ATU y CATE por subgrupo), en los cinco
+  resultados, incluidos los continuos. Mismo documento de resultados.
+- `errores_focalizacion_frechet.py`: errores de inclusión y exclusión del
+  Sisbén con datos reales, como cotas de Fréchet por celda (nacional y
+  por departamento). Resultado: `docs/resultados/RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`.
 - `variables_candidatas_pobreza.py`: qué variables podría incorporar el
   Sisbén, con la pobreza de la GEIH como resultado. Predictivo, no causal.
   Resultado: `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`.
@@ -50,6 +56,8 @@ el razonamiento que llevó a la corrida oficial.
 
 ```bash
 poetry run python -m src.estimacion.cotas_frechet_manski
+poetry run python -m src.estimacion.cotas_frechet_modelos
+poetry run python -m src.estimacion.errores_focalizacion_frechet
 poetry run python -m src.estimacion.seleccion_variables_lasso_shap
 ```
 

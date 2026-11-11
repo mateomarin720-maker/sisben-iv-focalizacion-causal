@@ -51,6 +51,11 @@ documentado y preferiblemente cubierto por pruebas.
     de Fréchet-Manski sobre `P(Y|X)` (GEIH) y `P(T|X)` (Sisbén) por
     separado, sin suponer independencia condicional. Ver
     `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+  - `cotas_frechet_modelos.py`: la misma cota para cada parámetro del DML
+    y del Causal Forest (ATE, ATT, ATU, CATE por subgrupo), con
+    resultados binarios y continuos.
+  - `errores_focalizacion_frechet.py`: errores de inclusión y exclusión
+    con datos reales, como cotas de Fréchet por celda.
 
 - **`simulacion/`** (módulo del framework, 2026-11-04)
   - Evaluación semisintética reutilizable: qué estimador recupera un

@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-04: 43 de 43 mutaciones detectadas.
+Resultado del 2026-11-10: 51 de 51 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -71,9 +71,25 @@ MUTACIONES = [
     ("OE3: la reducción esperada ignora la incertidumbre del proxy", "src/validacion/reglas_focalizacion.py",
      "y = media[:, None] + residuos[None, :]", "y = media[:, None] + 0 * residuos[None, :]",
      "tests/test_reglas_focalizacion.py"),
+    ("OE3: el presupuesto en dinero no limita el gasto", "src/validacion/reglas_focalizacion.py",
+     "<= presupuesto * (1 + 1e-9)]] = 1", "<= np.inf]] = 1", "tests/test_reglas_focalizacion.py"),
+    ("OE3: el presupuesto en dinero pierde un hogar por redondeo", "src/validacion/reglas_focalizacion.py",
+     "<= presupuesto * (1 + 1e-9)]] = 1", "< presupuesto]] = 1", "tests/test_reglas_focalizacion.py"),
+    ("OE3: el monto fijo no se multiplica por las personas", "src/validacion/reglas_focalizacion.py",
+     "return tau * lp * personas", "return tau * lp", "tests/test_reglas_focalizacion.py"),
+    ("Heterogeneidad: el efecto no se estandariza", "src/validacion/heterogeneidad_ampliada.py",
+     "TAU_DESVIACION * (h - h.mean()) / h.std()", "TAU_DESVIACION * (h - h.mean())", "tests/test_heterogeneidad_ampliada.py"),
+    ("Heterogeneidad: piso de tierra con el código del Sisbén", "src/validacion/heterogeneidad_ampliada.py",
+     '== "1").astype(float)  # GEIH P4020', '== "5").astype(float)  # GEIH P4020', "tests/test_heterogeneidad_ampliada.py"),
+    ("Bosque: los modelos auxiliares ubican la celda con las 3 X de base", "src/validacion/reglas_focalizacion.py",
+     "    columnas = x_cols + w_cols", "    columnas = est5.X_COLS + w_cols", "tests/test_heterogeneidad_ampliada.py"),
     ("OE3: el monto fijo se aplica como proporcional", "src/validacion/reglas_focalizacion.py",
      "    return ingreso_relativo(y0, lp) + efecto\n", "    return ingreso_relativo(y0 + efecto, lp)\n",
      "tests/test_reglas_focalizacion.py"),
+    ("Cotas por parámetro: la cola toma más peso del que tiene el hogar", "src/estimacion/cotas_frechet_modelos.py",
+     "np.clip(q * total - previo, 0, w)", "np.clip(q * total - previo, 0, None)", "tests/test_cotas_frechet_modelos.py"),
+    ("Errores de focalización: la cota de exclusión usa e en vez de 1 − e", "src/estimacion/errores_focalizacion_frechet.py",
+     "excl_hi=np.minimum(p, 1 - e)", "excl_hi=np.minimum(p, e)", "tests/test_errores_focalizacion_frechet.py"),
     # Cotas con supuestos de monotonía
     ("Cotas: la dependencia positiva no recorta P11", "src/estimacion/cotas_frechet_manski.py",
      "lo11_dep = np.maximum(lo11, p_y * p_t)", "lo11_dep = lo11", "tests/test_cotas_frechet_manski.py"),

@@ -2,6 +2,54 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-10 (32) — Errores de inclusión y exclusión con datos reales
+
+### Agregado
+- `src/estimacion/errores_focalizacion_frechet.py`: errores de focalización del Sisbén con
+  datos reales, como cotas de Fréchet por celda sumadas con los factores de expansión de la
+  GEIH, a nivel nacional y por departamento (comentario del director).
+- A/B frente a pobreza monetaria: exclusión [0,9 %; 75,0 %], inclusión [38,6 %; 84,5 %].
+  Al menos 39 % de los A/B no son pobres monetarios. La exclusión solo tiene piso en
+  Putumayo (19,5 %), San Andrés (24,9 %) y Bogotá (5,2 %).
+- Resultados: `RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`. Pruebas y una mutación.
+
+## 2026-11-09 (31) — Una cota de Fréchet por cada parámetro de los modelos
+
+### Agregado
+- `src/estimacion/cotas_frechet_modelos.py`: cota del ATE, ATT y ATU del DML y del CATE
+  por subgrupo del Causal Forest (zona, sexo del jefe, paredes), en los cinco resultados,
+  incluidos el IPM continuo y el log-ingreso.
+- Ninguno de los 50 parámetros excluye el cero; las cotas son 140 a 210 veces más anchas
+  que los IC del DML. Las binarias del ATE reproducen las publicadas.
+- Sexo del jefe verificado con la ficha del Sisbén IV (pregunta 47) y GEIH (`P3271`):
+  1 = hombre, 2 = mujer en las dos fuentes.
+
+## 2026-11-09 (30) — Heterogeneidad ampliada del efecto en las reglas de focalización
+
+### Agregado
+- `src/validacion/heterogeneidad_ampliada.py`: las reglas con un efecto de desviación
+  0,06 (el doble) y cinco modificadores más (ampliado) o con interacción, forma no lineal
+  y departamentos (complejo). El CATE sigue empeorando la focalización (4 a 11 puntos\*).
+
+### Corregido
+- `ajustar_bosque` armaba el codificador de los modelos auxiliares para las 3 X de base:
+  con más X, la celda (el confusor) quedaba fuera sin dar error (ATE −0,25\* en vez de
+  +0,095\*). Prueba con confusión por celda y mutación. El nivel básico no cambia.
+
+## 2026-11-09 (29) — Mismo dinero en las reglas de focalización y ajustes de redacción
+
+### Agregado
+- Presupuesto en dinero (monto fijo): todas las reglas gastan lo mismo que la vigente.
+  El orden no cambia; el proxy de medios baja de 85\* a 80\* % del ideal. Columna
+  `gasto_rel`. Las filas con el mismo número de hogares se reproducen exactamente.
+
+### Cambiado
+- `SIMULACION_SEMISINTETICA.md`: papel de cada variable en el DAG y alcance de la
+  evaluación (controlada, no una validación universal).
+- Índice de resultados: separa el modelo que predice el grupo del Sisbén (§7) del que
+  predice la pobreza (§12).
+- `RESULTADOS_REGLAS_FOCALIZACION.md`: qué representa el CATE con monto fijo.
+
 ## 2026-11-08 (28) — Simulación regenerada con la cadena de respaldos
 
 ### Cambiado

@@ -59,7 +59,8 @@ Las cifras con asterisco (\*) son simuladas; las demás, datos reales.
 | 4 | DML: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) |
 | 4b | Causal Forest: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) |
 | 4c | Diagnóstico de `W` | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md) |
-| 5 | Cotas de Fréchet-Manski | `src/estimacion/cotas_frechet_manski.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) |
+| 5 | Cotas de Fréchet-Manski | `src/estimacion/cotas_frechet_manski.py`, `src/estimacion/cotas_frechet_modelos.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) |
+| 5b | Errores de inclusión y exclusión con datos reales | `src/estimacion/errores_focalizacion_frechet.py` | [`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`](RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md) |
 | 6 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
 | 7 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) |
 | 8 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) |
@@ -161,6 +162,23 @@ monótona), queda en **[−0,405; 0]**: el ancho baja de 1,40 a 0,41, pero
 el signo lo pone el supuesto y la magnitud sigue sin identificarse (entre
 0 y 40 puntos menos de pobreza). `POBRE_GEIH`: [−0,367; 0].
 
+**Una cota por cada número de los modelos (2026-11-09).** Cada ATE, ATT
+y ATU del DML y cada CATE por subgrupo del Causal Forest (zona, sexo del
+jefe, paredes), en los cinco resultados, tiene ahora su cota de Fréchet
+al lado. Ninguno de los 50 parámetros excluye el cero, y las cotas son
+entre 140 y 210 veces más anchas que los IC del DML: en el IPM, el efecto
+va de −1,4 a +1,6 privaciones. La incertidumbre se concentra en lo rural
+(`POBRE_GEIH`: cota de ancho 1,07 frente a 0,34 en lo urbano).
+
+**Errores de focalización con datos reales (2026-11-10,
+[`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`](RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md)).**
+Cotas de Fréchet por celda, sumadas con los factores de expansión de la
+GEIH (A/B frente a pobreza monetaria). Error de exclusión: [0,9 %; 75,0 %].
+Error de inclusión: [38,6 %; 84,5 %]. Al menos 39 % de los hogares A/B no
+son pobres monetarios, sin ningún supuesto dentro de la celda. La
+exclusión solo tiene piso donde hay menos A/B que pobres: Putumayo
+(≥ 19,5 %), San Andrés (≥ 24,9 %) y Bogotá (≥ 5,2 %).
+
 ### 6. Representatividad
 
 La cobertura del Sisbén frente a GEIH varía 32 veces entre departamentos
@@ -174,6 +192,19 @@ variable más importante en los tres métodos. Exactitud ≈53 % (línea base
 0,39 (LASSO) o 0,22 (RandomForest) en D, que se confunde con C. Con
 partición por municipio el F1 macro cae de 0,50 a 0,44. Predice el grupo
 asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+
+Son dos problemas predictivos distintos, y solo el segundo dice algo sobre
+errores de focalización:
+
+| Modelo | Objetivo | Qué responde | Dónde |
+|---|---|---|---|
+| Clasificación | Grupo del Sisbén (A-D) | Qué características reproducen la clasificación | §7 |
+| Pobreza | Pobreza monetaria de la GEIH, independiente del Sisbén | Qué características identifican hogares pobres | §12 |
+
+La concordancia entre el grupo y la pobreza de un mismo hogar no se puede
+medir: el grupo en la GEIH es imputado por celda (§1). Comparar reglas de
+asignación con la pobreza como referencia solo se hace en el mundo
+simulado (§10).
 
 ### 8. Simulación de identificación
 
@@ -239,6 +270,19 @@ Con las fuentes actuales no hay efectos heterogéneos utilizables para
 focalizar; un proxy de medios con variables del hogar sí mejora la
 focalización. La regla vigente es la imputada por celda, no la del
 Sisbén real. Detalle en [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md).
+
+**Mismo dinero (2026-11-09).** Con el mismo número de hogares, el proxy
+de medios transfiere 13 %\* más que la vigente (monto fijo). Con el mismo
+dinero baja de 85\* a 80\* % del ideal y sigue 19\* puntos por encima de
+la vigente: el orden de las reglas no cambia.
+
+**Heterogeneidad ampliada (2026-11-09,
+[`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`](RESULTADOS_HETEROGENEIDAD_AMPLIADA.md)).**
+Con el doble de variación del efecto (desviación 0,06\*), cinco
+modificadores más y el Causal Forest viéndolos todos, la regla con CATE
+sigue 4 a 11 puntos\* por debajo de la misma regla con efecto constante.
+El error del CATE por hogar crece con la heterogeneidad (2,2 a 2,9 veces
+su desviación\*).
 
 \* Resultado simulado.
 
