@@ -119,10 +119,10 @@ poder reportar el número angosto del DML?".
 
 ## Qué NO hace este análisis (alcance de esta primera corrida)
 
-- Solo cubre outcomes binarios (`POBRE_GEIH`, `POBRE_MONETARIO`). Las
-  cotas de Fréchet-Hoeffding para un outcome continuo (`ipm_geih_score`,
-  `log_ingreso_percapita`) requieren acotar la CDF conjunta completa —
-  más trabajo, no implementado todavía.
+- Esta primera corrida cubre solo outcomes binarios. Los continuos
+  (`ipm_geih_score`, `log_ingreso_percapita`) y los demás parámetros de
+  los modelos se agregaron el 2026-11-09 (sección "Una cota por cada
+  número de los modelos").
 - Los supuestos de monotonía se agregaron el 2026-11-04 (sección
   siguiente).
 
@@ -196,6 +196,103 @@ siempre dentro de su cota, que cada supuesto angosta o deja igual la
 cota y que el contraste coincide con las cotas de Fréchet. Dos
 mutaciones (dependencia positiva sin efecto y MTS mal aplicado) hacen
 fallar las pruebas.
+
+## Una cota por cada número de los modelos (2026-11-09)
+
+Hasta aquí, la cota acompañaba solo al ATE de los resultados binarios.
+`src/estimacion/cotas_frechet_modelos.py` pone una cota al lado de
+**cada parámetro que reportan el DML y el Causal Forest**, en los cinco
+resultados. Así se ve, número por número, cuánto aportan los datos y
+cuánto el supuesto del Hot-Deck. Salida: `docs/reports/cotas_frechet_modelos.csv`.
+
+**Qué se acota.** Lo mismo que estima el DML con la celda: el contraste
+E[Y | A/B, celda] − E[Y | resto, celda], agregado como cada parámetro.
+Se mantiene el supuesto de que dentro de la celda no hay confusión, y se
+quita solo el del vínculo: qué hogares de la GEIH son los A/B.
+
+| Parámetro | Agregación de las cotas por celda |
+|---|---|
+| ATE | peso de la celda en GEIH |
+| ATT | peso × P(A/B \| celda): dónde están los A/B |
+| ATU | peso × P(resto \| celda) |
+| CATE por subgrupo | celda × subgrupo, con P(A/B) del Sisbén en ese mismo subgrupo |
+
+Los subgrupos son las X del Causal Forest, con el mismo código en las dos
+fuentes:
+- zona: 1 = urbano en ambas;
+- sexo del jefe: 1 = hombre y 2 = mujer, en la ficha del Sisbén IV
+  (pregunta 47) y en GEIH (`P3271`);
+- paredes: en la escala común de `HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`.
+
+**Resultados continuos.** En cada celda, el acople extremo pone a los A/B
+en una cola de la distribución de Y y al resto en la otra (media de la
+fracción P(A/B) más alta menos media del resto más bajo, y al revés). Con
+Y binaria coincide con la fórmula de Fréchet de arriba (prueba en
+`tests/test_cotas_frechet_modelos.py`). Las cotas binarias del ATE
+reproducen exactamente las de las secciones anteriores.
+
+### Lado a lado con los modelos (celda exacta)
+
+| Resultado | Parámetro | DML [IC 95 %] | Cota de Fréchet | Ancho de la cota / ancho del IC |
+|---|---|---|---|---|
+| `ipm_geih_score` (0-8) | ATE | −0,002 [−0,009; +0,005] | [−1,43; +1,60] | ≈210 |
+| | ATT | −0,002 | [−1,65; +1,71] | |
+| | ATU | −0,003 | [−1,25; +1,51] | |
+| `POBRE_GEIH` | ATE | −0,003 [−0,005; −0,000] | [−0,26; +0,38] | ≈140 |
+| | ATT | −0,003 | [−0,37; +0,45] | |
+| | ATU | −0,002 | [−0,18; +0,33] | |
+| `log_ingreso_percapita` | ATE | +0,001 [−0,013; +0,014] | [−2,04; +1,85] | ≈145 |
+| | ATT | +0,001 | [−1,77; +1,87] | |
+| | ATU | +0,001 | [−2,26; +1,83] | |
+| `POBRE_MONETARIO` | ATE | −0,000 [−0,004; +0,003] | [−0,42; +0,65] | ≈155 |
+| | ATT | −0,000 | [−0,53; +0,61] | |
+| | ATU | −0,000 | [−0,33; +0,68] | |
+| `POBRE_MONETARIO_OFICIAL` | ATE | −0,001 [−0,004; +0,003] | [−0,41; +0,62] | ≈145 |
+
+Cifras del DML: `RESULTADOS_DML_ATE_ATT_ATU.md`; sus IC no incluyen la
+varianza del sorteo del Hot-Deck (`RESULTADOS_VARIABILIDAD_HOTDECK.md`).
+
+### CATE por subgrupo (las X del Causal Forest)
+
+| Subgrupo | `POBRE_GEIH` | `POBRE_MONETARIO` | `ipm_geih_score` | `log_ingreso_percapita` |
+|---|---|---|---|---|
+| Urbana | [−0,15; +0,19] | [−0,36; +0,69] | [−1,15; +1,29] | [−2,17; +1,82] |
+| Rural | [−0,38; +0,69] | [−0,58; +0,51] | [−1,73; +1,72] | [−1,61; +1,85] |
+| Jefe hombre | [−0,25; +0,43] | [−0,38; +0,66] | [−1,39; +1,75] | [−1,98; +1,79] |
+| Jefe mujer | [−0,27; +0,34] | [−0,45; +0,68] | [−1,36; +1,43] | [−2,12; +1,91] |
+| Paredes de ladrillo | [−0,25; +0,34] | [−0,40; +0,66] | [−1,35; +1,54] | [−2,08; +1,79] |
+| Tapia o bahareque | [−0,30; +0,67] | [−0,51; +0,60] | [−1,63; +1,75] | [−1,50; +2,03] |
+| Paredes precarias | [−0,25; +0,71] | [−0,55; +0,59] | [−1,81; +1,93] | [−1,71; +2,29] |
+
+El Causal Forest da CATE de ±0,01 en todos estos subgrupos
+(`RESULTADOS_CAUSALFOREST_CATE.md`).
+
+**Celdas pequeñas.** Con pocos hogares en una celda, P(Y) sale 0 o 1 y
+la cota se cierra en [0; 0] por azar de muestreo. Repetido solo con
+celdas de al menos 30 hogares en cada fuente (547 de 921 celdas, 98,5 %
+del peso), las cotas de la población cambian menos de 0,005. Las de
+paredes precarias y tapia, con 60-70 % del peso, se ensanchan un poco.
+Las cotas no se angostan de forma artificial.
+
+### Lectura
+
+1. **Ninguno de los 50 parámetros acotados excluye el cero** (5
+   resultados × ATE, ATT, ATU y 7 subgrupos). La conclusión de la
+   sección anterior no depende del parámetro, del resultado ni del
+   subgrupo.
+2. **Toda la precisión de los modelos viene del supuesto del vínculo.**
+   Las cotas son entre 140 y 210 veces más anchas que los IC del DML. En
+   el IPM, el efecto puede ir de 1,4 privaciones menos a 1,6 más; en el
+   ingreso per cápita, de dividirlo por casi 8 a multiplicarlo por 6.
+3. **El ATT tiene la cota más ancha en pobreza** porque pesa más las
+   celdas con muchos A/B, donde P(A/B) está más cerca de 0,5 y el acople
+   es más libre.
+4. **Lo urbano es lo menos incierto:** en `POBRE_GEIH` la cota urbana
+   mide 0,34 y la rural 1,07. La incertidumbre del vínculo se concentra
+   en lo rural.
+5. **El CATE del Causal Forest no informa sobre heterogeneidad real.**
+   Sus diferencias entre subgrupos (±0,01) son del orden de 1 % del ancho
+   de las cotas de cada subgrupo.
 
 ## Limitaciones
 
