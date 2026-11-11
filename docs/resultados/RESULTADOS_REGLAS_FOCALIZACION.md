@@ -85,6 +85,38 @@ es mayor que la población pobre (33,2 %), así que incluso la regla ideal
 trata a no pobres: el error de inclusión mínimo posible es ≈ 34 %. Los
 errores de inclusión se leen frente a ese piso.
 
+### Mismo dinero (2026-11-09)
+
+Con el mismo número de hogares, las reglas no gastan lo mismo: el PMT por
+ingreso elige hogares más grandes y, con monto fijo, transfiere 13 %\*
+más que la vigente. Para separar la mejor focalización del mayor gasto,
+con monto fijo se repiten las reglas con **el mismo dinero que la
+vigente**. Cada regla trata hogares en su orden hasta agotar ese
+presupuesto. Las que ordenan por reducción esperada de la brecha pasan a
+ordenar por reducción por peso. La columna `gasto_rel` del CSV es el
+gasto de cada regla frente al de la vigente.
+
+| Regla (monto fijo) | Gasto con los mismos hogares | % del ideal, mismos hogares | % del ideal, mismo dinero |
+|---|---|---|---|
+| Vigente (Hot-Deck) | 1,00\* | 60,8\* | 60,8\* |
+| Aleatoria | 1,05\* | 46,6\* | 44,5\* |
+| PMT por ingreso | 1,13\* | 84,5\* | 79,7\* |
+| PMT por brecha | 1,13\* | 82,6\* | 77,4\* |
+| PMT + CATE (vínculo) | 1,12\* | 71,9\* | 68,5\* |
+| PMT + CATE (Hot-Deck) | 1,03\* | 44,1\* | 43,5\* |
+
+Con el mismo dinero, el PMT por ingreso pierde unos 5 puntos, pero sigue
+19\* por encima de la vigente, y su error de exclusión sube de 18,6 %\* a
+24,4 %\*. **El orden de las reglas no cambia:** la ventaja del proxy de
+medios no venía de gastar más. Con efecto proporcional no se repite,
+porque el costo (lo que sube el ingreso) solo se conoce después de
+transferir; ahí el PMT gasta 25 %\* menos que la vigente y aun así reduce
+más la brecha.
+
+Las filas con el mismo número de hogares no cambian al agregar este
+presupuesto: el reparto con el mismo dinero usa su propio generador
+aleatorio, y las cifras de la tabla de arriba se reproducen exactamente.
+
 ## Lectura
 
 1. **Un proxy de medios con las variables del hogar focaliza mucho mejor
@@ -141,11 +173,26 @@ errores de inclusión se leen frente a ese piso.
   Forest no llega; con el tratamiento imputado por Hot-Deck, no hay
   heterogeneidad que estimar.
 
+### ¿Qué representa el CATE con monto fijo?
+
+Con monto fijo, el planificador conoce cuánto transfiere. La regla con
+CATE representa a un planificador que no conoce **cuánto sube el ingreso
+de cada hogar** con esa transferencia: en el diseño coinciden, pero en la
+realidad pueden diferir (cambios en el trabajo o en otras ayudas). Por
+eso la regla con CATE se mantiene también con monto fijo, y la ideal usa
+el efecto verdadero.
+
 ## Limitaciones
 
-- Efecto simulado (dos modelos, la misma heterogeneidad que P2). Con una
-  heterogeneidad más fuerte, o con más hogares, el CATE podría servir: la
-  regla ideal muestra cuánto habría por ganar (15-18 puntos sobre el PMT).
+- Efecto simulado (dos modelos). Con el doble de heterogeneidad y el
+  Causal Forest viendo todos los modificadores, el CATE sigue empeorando
+  la focalización, aunque la desventaja se reduce
+  (`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`). Con una heterogeneidad
+  todavía mayor, o con más hogares, podría servir: la regla ideal muestra
+  cuánto habría por ganar (15-18 puntos sobre el PMT).
+- Los errores de inclusión y exclusión de esta página son simulados. Con
+  datos reales solo se pueden acotar, celda por celda
+  (`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`).
 - La regla vigente es la clasificación imputada por celda, no la del
   Sisbén real hogar por hogar (que GEIH no trae).
 - Presupuesto fijo en el tamaño de A/B; con un presupuesto menor que la

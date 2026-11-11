@@ -54,7 +54,24 @@ EVALUACIÓN       sesgo, RMSE, cobertura del IC 95 %, ancho, PEHE (error del CAT
   de los hogares cercanos al corte (+0,090 en log-ingreso, −0,038 en
   pobreza), no el ATE.
 - Para usarla con otra fuente (registros administrativos de una entidad)
-  basta una tabla con las columnas de `COLUMNAS` en el script.
+  basta una tabla con las columnas canónicas que exige
+  `src/simulacion/contrato.py`.
+
+**Papel de cada variable** (en el DAG del generador):
+
+| Variable | Papel | Dónde entra |
+|---|---|---|
+| Celda del Hot-Deck (departamento, edad del jefe, cuartos, pisos) | Confusora observada y estrato del emparejamiento | Asignación (P(T \| celda) del Sisbén real) y `W` de los estimadores |
+| Zona, sexo del jefe, paredes | Confusoras observadas y modificadoras del efecto | Asignación (X·b), efecto tau(X) y `X` de los estimadores |
+| U (residuo del ingreso real) | Confusora no observada | Solo la asignación, con fuerza gamma; ningún estimador la ve |
+| Puntaje con ruido y corte | Regla de asignación | Solo en la regla de corte; variable de la RD |
+| Y0 (log-ingreso real) y línea de pobreza | Resultado sin tratamiento | Outcome; nunca entra como covariable |
+
+Que zona, sexo del jefe y paredes modifiquen el efecto es una decisión del
+diseño, no un hallazgo: la simulación comprueba si un estimador recupera una
+estructura conocida, no qué variables modifican el efecto de una
+transferencia real. Con una heterogeneidad más amplia o más compleja, ver
+`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`.
 
 ## Convergencia ("saciedad")
 
@@ -290,6 +307,12 @@ milésimas; hoy son un placebo ≈0).
 - **Para una entidad que integre sus propios registros:** medir la
   fracción de hogares bien vinculados antes de estimar; la concordancia
   del tratamiento imputado no sirve como indicador.
+- **Alcance.** Es una evaluación controlada de identificación y de la
+  degradación por integración imperfecta, no una validación general de DML
+  o Causal Forest. Tampoco dice que el Hot-Deck sea inútil: sirve para
+  caracterizar hogares y para análisis por celda (`RESULTADOS_HOTDECK.md`,
+  `RESULTADOS_VARIABILIDAD_HOTDECK.md`). Lo que no puede es recuperar un
+  efecto hogar por hogar, porque el tratamiento se sortea dentro de la celda.
 
 ## Limitaciones
 

@@ -77,3 +77,31 @@ def test_la_regla_ideal_reduce_la_brecha_al_menos_como_cualquier_otra():
 
 def test_el_proxy_de_medios_no_usa_el_ingreso():
     assert not {"y0", "ingreso_percapita", "POBRE_MONETARIO"} & set(rf.PMT_CATEGORICAS + rf.PMT_NUMERICAS)
+
+
+def test_costo_del_monto_fijo_es_tau_lineas_por_persona():
+    d = _hogares([100_000, 900_000], tau=[0.1, 0.2])
+    d["personas"] = [1.0, 4.0]
+    assert rf.costo(d, "monto_fijo").tolist() == pytest.approx([0.1 * LP, 0.2 * LP * 4])
+    prop = rf.costo(d, "proporcional")  # el aumento del ingreso de la unidad de gasto
+    assert prop.tolist() == pytest.approx([100_000 * np.expm1(0.1), 900_000 * 4 * np.expm1(0.2)])
+
+
+def test_elegir_por_dinero_respeta_el_presupuesto_y_el_orden():
+    costo = np.array([5.0, 1.0, 2.0, 3.0])
+    t = rf.elegir_por_dinero(np.array([0.9, 0.8, 0.7, 0.1]), costo, 6.0, np.random.default_rng(0))
+    assert t.tolist() == [1, 1, 0, 0]  # 5 + 1 = 6; el siguiente (2) ya no cabe
+    assert costo @ t <= 6.0
+    todos = rf.elegir_por_dinero(np.zeros(4), costo, 1e9, np.random.default_rng(0))
+    assert todos.tolist() == [1, 1, 1, 1]
+
+
+def test_con_el_mismo_dinero_la_vigente_trata_a_los_mismos_hogares():
+    """El presupuesto en dinero es el gasto de la vigente: ordenada por su
+    propio indicador, debe tratar exactamente a sus hogares (sin perder uno
+    por el redondeo de la suma)."""
+    rng = np.random.default_rng(3)
+    costo = rng.uniform(1e5, 3e6, 500)
+    vigente = (rng.random(500) < 0.45).astype(int)
+    t = rf.elegir_por_dinero(vigente.astype(float), costo, float(costo @ vigente), rng)
+    assert t.tolist() == vigente.tolist()
