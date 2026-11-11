@@ -1,6 +1,6 @@
 # Pruebas
 
-252 pruebas en 22 archivos (2026-11-11). Casi todas usan datos
+255 pruebas en 23 archivos (2026-11-11). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -35,6 +35,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 
 | Archivo | Módulo | Qué fija | Error que evita |
 |---|---|---|---|
+| `test_anexo_trazabilidad.py` | `utils/anexo_trazabilidad.py` | Cada cifra del anexo sale de su reporte en `docs/reports/`; las simuladas llevan asterisco y las reales no; coma decimal | Un reporte que cambia de formato o una cifra que desaparece de su fuente |
 | `test_armonizacion.py` | `armonizacion/*`, `seleccion_variables_lasso_shap.py` | Cada código de GEIH y del Sisbén contra la etiqueta del diccionario oficial; que cada variable de vivienda salga de su columna; jefe por `P6050`/`PER003`/`tip_parentesco`; Bogotá filtrada por vigencia, no por año exacto; OE1 sin `I1`-`I15` ni `H_5` | Mapeo de vivienda equivocado (hasta 2026-10-28); sesgo hacia actualizaciones recientes del SDP; circularidad |
 | `test_estimacion_dml.py` | `5_estimacion.py` | Categóricas como indicadoras; propensión = P(T \| celda) (correlación > 0,99); el error anterior no la reproduce (< 0,6); LinearDML recupera 0 y 0,5 con confusión entre celdas | Celda como número en la propensión (ATE falsos de +0,02, hasta 2026-11-02) |
 | `test_cotas_frechet_manski.py` | `diagnostico/cotas_frechet_manski.py` | Con supuestos de monotonía: la cota contiene el ATE de toda población que cumple el supuesto (25 configuraciones) y cada supuesto la angosta o la deja igual. Casos exactos (P(Y) = 0 o 1 → [0; 0]); la cota contiene el efecto de toda distribución conjunta compatible y alcanza sus extremos (2.000 conjuntas × 5 semillas); ATE ponderado por peso de celda; cada probabilidad de su fuente | El resultado de identificación central no tenía pruebas |

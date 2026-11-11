@@ -223,7 +223,7 @@ Mismo mundo semisintético; presupuesto = los hogares A/B vigentes
 | Regla | Error de exclusión | % de la reducción ideal de FGT1 (proporcional / monto fijo) |
 |---|---|---|
 | Vigente (Hot-Deck) | 43,5 %\* | 60\* / 61\* |
-| Aleatoria | 53,3 %\* | 47\* / 47\* |
+| Aleatoria | 53,4 %\* | 47\* / 47\* |
 | Proxy de medios por ingreso | 18,6 %\* | 82\* / 85\* |
 | Proxy + CATE con vínculo | 26,1 %\* | 73\* / 72\* |
 | Proxy + CATE con Hot-Deck | 54,9 %\* | 45\* / 44\* |

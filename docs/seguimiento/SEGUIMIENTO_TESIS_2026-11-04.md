@@ -39,7 +39,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
-| Pruebas | Hechas | 252 pruebas y 56 mutaciones al 11 nov, con integración continua |
+| Pruebas | Hechas | 255 pruebas y 56 mutaciones al 11 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
 
@@ -117,7 +117,7 @@ Un proxy de medios con variables del hogar logra 82 % de la reducción ideal de 
 | Regla | Error de inclusión | Error de exclusión | % de la reducción ideal de FGT1 |
 | --- | --- | --- | --- |
 | Vigente (Hot-Deck) | 58,1 %\* | 43,5 %\* | 59,7\* |
-| Aleatoria | 66,9 %\* | 53,3 %\* | 46,7\* |
+| Aleatoria | 66,9 %\* | 53,4 %\* | 46,6\* |
 | PMT por ingreso | 48,5 %\* | 18,6 %\* | 82,1\* |
 | PMT + CATE (vínculo) | 51,8 %\* | 26,1 %\* | 72,6\* |
 | PMT + CATE (Hot-Deck) | 67,7 %\* | 54,9 %\* | 44,6\* |
@@ -127,7 +127,7 @@ El grupo imputado solo lleva la información de la celda, así que su desempeño
 
 ## Pruebas y calidad del código
 
-La suite pasa en GitHub Actions: 252 pruebas al 11 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
+La suite pasa en GitHub Actions: 255 pruebas al 11 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
 
 | Aspecto | Estado |
 | --- | --- |

@@ -9,6 +9,7 @@ Toda la documentación del proyecto, agrupada por para qué sirve.
 | [`metodologia/`](metodologia/) | [Arquitectura y replicación](metodologia/ARQUITECTURA_Y_REPLICACION.md), [diseño del módulo de simulación](metodologia/DISENO_MODULO_SIMULACION.md), metodología de la pobreza monetaria y comparación de proxies del IPM | Reproducir el proyecto o reutilizarlo; revisar definiciones antes de construir variables |
 | [`insumos/`](insumos/) | Diccionarios oficiales, ficha del Sisbén IV, homologaciones y referencias | Consultar qué significa cada variable y de dónde sale |
 | [`seguimiento/`](seguimiento/) | Guía de la tesis, resumen de avances y changelog | Saber en qué estado está el proyecto y qué cambió |
+| [`anexos_tesis/`](anexos_tesis/README.md) | Anexo de trazabilidad, contrato de datos, método predictivo, bibliografía verificada y figuras del documento | Corregir el documento escrito con cifras que salen del repositorio |
 | [`institucional/`](institucional/) | Anteproyecto | Documentos formales de la maestría |
 
 ## `insumos/`

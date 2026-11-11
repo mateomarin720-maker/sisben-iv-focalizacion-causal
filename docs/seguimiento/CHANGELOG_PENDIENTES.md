@@ -2,6 +2,23 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-11 (38) — Apoyo al documento escrito y dos cifras corregidas
+
+### Agregado
+- `docs/anexos_tesis/`: anexo de trazabilidad (cada cifra con su archivo y comando),
+  contrato de datos como tabla, modelo base y validación de los ejercicios predictivos,
+  bibliografía verificada con DOI y cinco figuras (arquitectura, cotas por celda, errores
+  de exclusión por departamento, atenuación con el vínculo y propensión por celda).
+- `src/utils/anexo_trazabilidad.py` y `src/utils/figuras_tesis.py` los generan desde
+  `docs/reports/`; el anexo falla si una cifra no está en su fuente. Prueba en
+  `tests/test_anexo_trazabilidad.py`.
+
+### Corregido
+- Regla aleatoria: error de exclusión 53,4 % (no 53,3 %) y 46,6 % del ideal con efecto
+  proporcional (no 46,7 %), en el índice, la guía y el documento de reglas.
+- "Con monto fijo son iguales en las reglas sin CATE": el proxy por brecha, sin CATE,
+  también cambia (exclusión 19,0 % frente a 19,7 %).
+
 ## 2026-11-11 (37) — Módulo de simulación completo y regularización como sensibilidad
 
 ### Agregado

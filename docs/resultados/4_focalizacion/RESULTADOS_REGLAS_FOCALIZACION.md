@@ -61,7 +61,7 @@ Sin programa (datos reales): FGT0 = 33,2 %, FGT1 = 0,1350. \* Resultado simulado
 | Regla | Error de inclusión | Error de exclusión | Reducción de FGT1, proporcional | % del ideal | Reducción de FGT1, monto fijo | % del ideal |
 |---|---|---|---|---|---|---|
 | Vigente (Hot-Deck) | 58,1 %\* | 43,5 %\* | 0,0116\* | 59,7\* | 0,0199\* | 60,8\* |
-| Aleatoria | 66,9 %\* | 53,3 %\* | 0,0091\* | 46,7\* | 0,0152\* | 46,6\* |
+| Aleatoria | 66,9 %\* | 53,4 %\* | 0,0091\* | 46,6\* | 0,0152\* | 46,6\* |
 | PMT por ingreso | 48,5 %\* | 18,6 %\* | 0,0160\* | 82,1\* | 0,0276\* | 84,5\* |
 | PMT por brecha | 48,4 %\* | 19,7 %\* | 0,0155\* | 79,7\* | 0,0270\* | 82,6\* |
 | PMT + CATE (vínculo) | 51,8 %\* | 26,1 %\* | 0,0141\* | 72,6\* | 0,0235\* | 71,9\* |
@@ -69,8 +69,10 @@ Sin programa (datos reales): FGT0 = 33,2 %, FGT1 = 0,1350. \* Resultado simulado
 | Ideal | 34,3 %\* | 0 %\* | 0,0194\* | 100\* | 0,0327\* | 100\* |
 
 Los errores de inclusión y exclusión son los del efecto proporcional.
-Con monto fijo son iguales en las reglas sin CATE y cambian hasta 2
-puntos en las reglas con CATE (exclusión 28,1 % con vínculo).
+Con monto fijo son iguales en la vigente, la aleatoria y el proxy por
+ingreso, que no dependen del modelo del efecto. Cambian hasta 2 puntos en
+las que ordenan por la reducción esperada de la brecha: exclusión 19,0 %
+en el proxy por brecha y 28,1 % con CATE y vínculo.
 
 **Error de simulación.** Las reglas sin CATE convergieron: el error
 estándar Monte Carlo es ≤ 0,0006 en las tasas y ≤ 0,07 puntos en el % del

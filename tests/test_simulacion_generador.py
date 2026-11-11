@@ -132,3 +132,10 @@ def test_datos_propios_con_hotdeck_es_placebo_y_exige_el_grupo(parametros):
     assert estimacion_observada(hogares, p_t)["lectura"].str.startswith("placebo").all()
     with pytest.raises(contrato.ErrorContrato):
         estimacion_observada(hogares.drop(columns=["vinculo"]), p_t)
+
+
+def test_tabla_del_contrato_tiene_todas_las_columnas():
+    tabla = contrato.tabla_markdown()
+    for rol, (obligatorias, opcionales) in contrato.ROLES.items():
+        for c in {**obligatorias, **opcionales}:
+            assert f"| `{c}` | {rol} |" in tabla
