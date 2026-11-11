@@ -10,11 +10,8 @@ Módulos de conexión a fuentes de datos.
 - **`local_csv_parser.py`**: ingesta de microdatos locales (CSV) por
   chunks — para GEIH y Sisbén IV, que llegan como archivos entregados
   directamente por DANE/DNP (no vía API), a veces pesados o repartidos en
-  varios archivos por departamento/mes. Adaptado del patrón real usado en
-  el repo de referencia `desarrollo_social_y_economico`
-  (`src/ingesta/bronze/parsers/parser_csv_secop.py` y
-  `parser_csv_cnpv.py`, rama `trabajo-final`), que lee CSV de hasta ~10GB
-  por lotes con PyArrow en vez de cargarlos completos en RAM.
+  varios archivos por departamento/mes. Lee por lotes con PyArrow en vez
+  de cargarlos completos en RAM.
   - `parse_csv_a_parquet(...)`: para un solo archivo.
   - `parse_carpeta_csv_a_parquet(...)`: para varios archivos en una
     carpeta (p. ej. GEIH repartida por mes).

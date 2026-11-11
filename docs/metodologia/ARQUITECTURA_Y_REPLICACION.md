@@ -183,10 +183,11 @@ minutos; reglas de focalización, unos 35; evaluación semisintética, de 1,5 a 
 - **La ruta C no se ha ejecutado completa en un entorno limpio.** Cada etapa se corrió en el
   equipo del proyecto y GitHub Actions corre las pruebas sin datos, pero no hay una corrida
   de punta a punta desde bronce.
-- **El módulo de simulación aún no tiene sus dos modos completos.** El modo simulado y el modo
-  de datos propios están diseñados (`DISENO_MODULO_SIMULACION.md`), pero no implementados:
-  hoy, otra institución necesitaría sus datos con el esquema canónico y correr la evaluación
-  semisintética.
+- **Los dos modos del módulo de simulación no se han corrido con datos de otra institución.**
+  El modo simulado (`calibrar.py`, `generador.py`) y el de datos propios (`datos_propios.py`)
+  están implementados y probados con la GEIH y el Sisbén del proyecto
+  (`DISENO_MODULO_SIMULACION.md`); con datos enlazados de otra entidad, que no existen aún,
+  solo se ha comprobado que el contrato de columnas canónicas los valida.
 - **El acceso al Sisbén es institucional:** la réplica desde fuentes depende de esa entrega.
 - **Sin ajuste por diseño muestral** en los estimadores, y el factor de expansión solo pondera
   agregados descriptivos y los modelos de focalización.

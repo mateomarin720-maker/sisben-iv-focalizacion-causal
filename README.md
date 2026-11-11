@@ -176,7 +176,7 @@ Cada paso debe reproducir las cifras de `docs/resultados/`.
 | Fuentes | ✅ GEIH 2024 (12 meses), IPM, Sisbén IV nacional y de Bogotá, armonizadas y validadas contra los diccionarios oficiales. No se solicitarán más datos: la réplica usa solo estas fuentes |
 | Base: enlace y outcomes | ✅ Hot-Deck con 99,98 % en celda exacta; IPM-GEIH y pobreza monetaria contrastada con la base oficial (93,9 % de coincidencia) |
 | 1. Diagnóstico con datos reales | ✅ DML y Causal Forest (placebo), cotas por parámetro, errores de focalización por celda, selección (OE1) y recomendación de variables |
-| 2. Simulación semisintética | ✅ Hasta la convergencia (432 repeticiones) y sensibilidad. El módulo `src/simulacion/` tiene hechos los pasos 1 a 5 de 7 de su diseño; faltan los dos modos de uso |
+| 2. Simulación semisintética | ✅ Hasta la convergencia (432 repeticiones) y sensibilidad. El módulo `src/simulacion/` tiene hechos los 7 pasos de su diseño, incluidos el modo simulado y el de datos propios |
 | 3. Reglas de focalización | ✅ Con el mismo número de hogares, con el mismo dinero y con heterogeneidad ampliada |
 | Documento escrito | En revisión del tutor |
 

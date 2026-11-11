@@ -1,6 +1,6 @@
 # Seguimiento de la tesis: tutoría y avances al 4 de noviembre de 2026
 
-Fecha de corte: 2026-11-04. Autores: Mateo Roncancio y Juan Sebastián Fonseca. Tutor: Carlos Isaac Zainea Maya.
+Fecha de corte: 2026-11-04 (estado de las pruebas y del módulo de simulación actualizado al 2026-11-11). Autores: Mateo Roncancio y Juan Sebastián Fonseca. Tutor: Carlos Isaac Zainea Maya.
 
 > **Documento guía vigente** de la tesis desde el 2026-11-04 (enfoque
 > acordado en la tutoría del 2026-11-03). Las reglas del tutor están
@@ -32,7 +32,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Tarea | Estado al 4 nov | Evidencia |
 | --- | --- | --- |
 | Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Hecha el 4 nov | `RESULTADOS_VARIABILIDAD_HOTDECK.md` |
-| Simulación como módulo independiente, con modo de datos propios y modo simulado | En curso (pasos 1-4 de 7) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
+| Simulación como módulo independiente, con modo de datos propios y modo simulado | Hecho (7 de 7 pasos) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
 | Evaluación semisintética completa | Hecha el 8 nov | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Regenerada con la cadena de respaldos del Hot-Deck y con asterisco |
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov; mismo dinero y heterogeneidad ampliada el 9 nov | `RESULTADOS_REGLAS_FOCALIZACION.md`, `RESULTADOS_HETEROGENEIDAD_AMPLIADA.md` y `RESULTADOS_FRECHET_MANSKI.md` |
 | Cotas de Fréchet por parámetro y errores de focalización con datos reales | Hechas el 9 y 10 nov | `RESULTADOS_FRECHET_MANSKI.md` y `RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md` |
@@ -156,7 +156,7 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
 | Prioridad | Tarea | Resultado esperado |
 | --- | --- | --- |
 | 1 | ~~Variabilidad de la imputación del Hot-Deck: estabilidad por hogar, coeficiente de variación y error relativo por celda~~ **Hecha el 2026-11-04** | Cifra para la pregunta del tutor |
-| 2 | Módulo `src/simulacion/` con dos modos (datos propios y simulado), con diseño previo en `docs/metodologia/`. Pasos 1 a 5 hechos; faltan los pasos 6 y 7 (los dos modos) | Framework replicable por otras instituciones |
+| 2 | Módulo `src/simulacion/` con dos modos (datos propios y simulado), con diseño previo en `docs/metodologia/`. Los 7 pasos están hechos, incluidos los dos modos | Framework replicable por otras instituciones |
 | 3 | ~~Completar la semisintética: cadena de respaldos del Hot-Deck simulado y asterisco en todas las tablas~~ **Hecha el 2026-11-08** | Evaluación cerrada |
 | 4 | ~~Recomendación de variables con LASSO, Ridge y SHAP~~ **Primera versión el 2026-11-06** | Pregunta abierta y recomendación, sin lenguaje causal |
 | 5 | ~~Arquitectura de datos (bronce, plata, oro) y guía de replicación~~ **Primera versión el 2026-11-08** | Anexo con evidencia de calidad |
@@ -211,7 +211,8 @@ Comprobado contra el repositorio al incorporar este documento:
   del pipeline (definida en un solo lugar, `claves_por_nivel`); con los
   datos reales afecta al 0,03 % de la encuesta. Faltaban el asterisco, la
   corrida que regenera las cifras y los dos modos; los dos primeros se
-  hicieron el 2026-11-08.
+  hicieron el 2026-11-08 y los modos (`calibrar.py`, `generador.py`,
+  `datos_propios.py`) el 2026-11-10.
 - **Prioridad 1 hecha el mismo día:**
   `docs/resultados/1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
   hogar, dos sorteos coinciden en el grupo el 34,4 % de las veces y en

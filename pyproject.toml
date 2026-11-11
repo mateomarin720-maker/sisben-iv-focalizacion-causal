@@ -3,8 +3,8 @@ name = "sisben_causal"
 version = "0.1.0"
 description = "Inferencia causal sobre la clasificación en el Sisbén IV — Proyecto de grado, Maestría en Ciencia de Datos, USTA."
 authors = [
-    "Juan Sebastián Fonseca Arévalo <tu.email@usantotomas.edu.co>",
-    "José Mateo Roncancio Marín <tu.email@usantotomas.edu.co>"
+    "Juan Sebastián Fonseca Arévalo <juan.arevalofon@usantotomas.edu.co>",
+    "José Mateo Roncancio Marín <jose.marinron@usantotomas.edu.co>"
 ]
 license = "MIT"
 readme = "README.md"

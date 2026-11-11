@@ -17,7 +17,6 @@ ningún resultado existente.
 | Producto | Archivo |
 |---|---|
 | Matriz de homologación (documento) | [`01_matriz_homologacion.md`](01_matriz_homologacion.md) |
-| Matriz de homologación (tabla) | [`01_matriz_homologacion.csv`](01_matriz_homologacion.csv) |
 | Inventario de variables GEIH | [`docs/reports/inventario_variables_geih.csv`](../../reports/inventario_variables_geih.csv) |
 | Diagnóstico de insumos por privación | [`docs/reports/diagnostico_insumos_homologacion.csv`](../../reports/diagnostico_insumos_homologacion.csv) |
 | Scripts | `src/indicadores/inventario_variables_geih.py`, `src/indicadores/homologacion_ipm.py` |

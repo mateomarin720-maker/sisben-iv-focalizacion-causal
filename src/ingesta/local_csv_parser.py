@@ -1,10 +1,8 @@
 """
 Ingesta de microdatos locales (CSV) hacia data/0_raw/, por lotes (chunks).
 
-Adaptado del patrón usado en el repo de referencia
-`desarrollo_social_y_economico` (`src/ingesta/bronze/parsers/parser_csv_secop.py`
-y `parser_csv_cnpv.py`, rama `trabajo-final`) para las fuentes de acceso
-restringido de este proyecto: GEIH y Sisbén IV llegan como archivos CSV
+Pensado para las fuentes de acceso restringido de este proyecto: GEIH y
+Sisbén IV llegan como archivos CSV
 locales (entregados por DANE/DNP tras la solicitud institucional, no vía
 API), a veces muy pesados o repartidos en varios archivos (p. ej. por
 departamento o por mes). Leer todo con `pd.read_csv` de una sola vez puede
