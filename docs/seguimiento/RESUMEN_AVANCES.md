@@ -191,11 +191,18 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
 10. **Entrega del repositorio y del documento** (anotaciones del director
     sobre el borrador, 2026-11-11; los demás puntos ya están en
     `docs/anexos_tesis/`):
-    - Generar el DOI en Zenodo: conectar el repositorio, publicar una
-      versión y agregar el DOI a `CITATION.cff` y al documento.
+    - Generar el DOI en Zenodo (requiere la cuenta de un autor): entrar a
+      zenodo.org con GitHub, activar el repositorio en la configuración de
+      GitHub de Zenodo (debe ser público), publicar una versión en GitHub
+      (por ejemplo `v1.0.0`) y agregar el DOI que asigna Zenodo a
+      `CITATION.cff` y al documento. Conviene agregar antes el `LICENSE`,
+      porque Zenodo publica la licencia con el DOI.
     - Agregar el archivo `LICENSE`: `pyproject.toml` declara MIT, pero el
       archivo no existe. Lo deciden los autores.
-    - Escribir la declaración de uso de IA del documento.
+    - Declaración de uso de IA: la del repositorio está en
+      `docs/anexos_tesis/DECLARACION_USO_IA.md`. Falta la del documento
+      escrito (redacción, traducción del resumen, corrección de estilo),
+      que solo pueden declarar los autores.
     - Armar la tabla de peticiones a las entidades (sección 8.2). Cada
       petición va atada a un resultado y se verifican las normas que se
       citen. Las de la hoja de notas del director son:

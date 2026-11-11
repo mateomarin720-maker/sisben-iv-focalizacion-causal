@@ -9,6 +9,7 @@ repositorio, así que no puede diferir de él.
 | [`ANEXO_TRAZABILIDAD.md`](ANEXO_TRAZABILIDAD.md) | Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el comando que lo produce | `python -m src.utils.anexo_trazabilidad` |
 | [`CONTRATO_DATOS.md`](CONTRATO_DATOS.md) | Columnas, tipos y dominios que exige el módulo de simulación | `python -m src.utils.anexo_trazabilidad` (sale de `src/simulacion/contrato.py`) |
 | [`PROPOSICIONES.md`](PROPOSICIONES.md) | Proposiciones 1 a 3 del enlace por celdas, con prueba, y la derivación del ancho de la cota de la sección 4.4 (1 + 2Δ = 1,40) | A mano; la comprobación numérica sale de `python -m src.diagnostico.proposiciones` |
+| [`DECLARACION_USO_IA.md`](DECLARACION_USO_IA.md) | Uso del asistente de programación en el repositorio: en qué se usó, qué no hizo y qué controles lo respaldan | A mano |
 | [`METODO_PREDICTIVO.md`](METODO_PREDICTIVO.md) | Modelo base, partición y factores de expansión de la recomendación de variables y de las reglas de focalización (Tabla 5) | A mano |
 | [`BIBLIOGRAFIA_VERIFICADA.md`](BIBLIOGRAFIA_VERIFICADA.md) | Referencias verificadas, con DOI donde existe, y las que hay que retirar | A mano |
 | [`figuras/`](figuras/) | Figuras para el documento (ver abajo) | `python -m src.utils.figuras_tesis` |
