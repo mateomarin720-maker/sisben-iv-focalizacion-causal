@@ -134,6 +134,14 @@ W_PROXY = (["geo_depto_cat", "pisos_nivel_cat"], ["jefe_edad", "viv_cuartos"])  
 W_CELDA = (["hotdeck_celda_cat"], [])  # celda EXACTA del Hot-Deck (igual al sorteo real)
 X_COLS = ["geo_zona_urbana", "jefe_mujer", "viv_paredes"]  # NO usadas en la celda
 X_CATEGORICAS = ["viv_paredes"]  # código de material: indicadoras en los modelos auxiliares
+# Regularización de los modelos auxiliares: Ridge alpha = 1 y logística
+# C = 10. Encoge un poco los efectos de las ~1.000 indicadoras de celda y
+# deja un sesgo pequeño en LinearDML (−0,006 con efecto nulo en la
+# simulación); casi sin regularizar cae a la mitad o menos
+# (`SIMULACION_SEMISINTETICA.md`, sensibilidad 3). Se conserva la vigente
+# porque las cifras publicadas salen de ella; la otra es la sensibilidad.
+ALPHA_Y, C_T = 1.0, 10.0
+CASI_SIN_REGULARIZAR = dict(alpha=1e-6, c=1e6, max_iter=5000)
 
 
 def _preparar(df: pd.DataFrame) -> pd.DataFrame:
@@ -170,16 +178,21 @@ def _codificador(columnas: list[str], categoricas: list[str], continuas: list[st
     return ColumnTransformer(partes, sparse_threshold=1.0)
 
 
-def _modelos_auxiliares(w_spec: tuple[list[str], list[str]], con_x: bool = True):
+def _modelos_auxiliares(w_spec: tuple[list[str], list[str]], con_x: bool = True, alpha: float | None = None,
+                        c: float | None = None, max_iter: int = 2000):
     """model_y: regresión con efectos fijos (celda o departamento) + splines;
     model_t: logística sobre las mismas indicadoras. Con indicadoras de la
-    celda, la propensión es P(T | celda), que es lo que fija el sorteo."""
+    celda, la propensión es P(T | celda), que es lo que fija el sorteo.
+    `alpha` y `c`: regularización (por defecto la vigente; la de la
+    sensibilidad está en `CASI_SIN_REGULARIZAR`)."""
+    alpha = ALPHA_Y if alpha is None else alpha
+    c = C_T if c is None else c
     w_cat, w_num = w_spec
     columnas = (X_COLS if con_x else []) + w_cat + w_num
     categoricas = (X_CATEGORICAS if con_x else []) + w_cat
-    modelo_y = make_pipeline(_codificador(columnas, categoricas, w_num), Ridge(alpha=1.0))
+    modelo_y = make_pipeline(_codificador(columnas, categoricas, w_num), Ridge(alpha=alpha))
     modelo_t = make_pipeline(_codificador(columnas, categoricas, w_num),
-                             LogisticRegression(C=10.0, max_iter=2000))
+                             LogisticRegression(C=c, max_iter=max_iter))
     return modelo_y, modelo_t
 
 

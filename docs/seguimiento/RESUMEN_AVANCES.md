@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 243 pruebas; 53 de 53 errores documentados detectados por mutación (2026-11-10); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 252 pruebas; 56 de 56 errores documentados detectados por mutación (2026-11-11); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -160,8 +160,9 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
    integración es proporcional al tamaño del efecto; la RD difusa (80 %
    de participación) recupera el efecto en el corte con vínculo (0,086
    frente a 0,090); el sesgo de LinearDML viene de la regularización de
-   los modelos auxiliares. **Decisión pendiente:** bajar esa
-   regularización en `5_estimacion.py`. La cadena de respaldos del
+   los modelos auxiliares. **Decisión (2026-11-11):** se conserva la
+   regularización del proyecto, de la que salen las cifras publicadas; la
+   casi nula queda como sensibilidad. La cadena de respaldos del
    Hot-Deck simulado quedó en el código el 2026-11-04 (paso 4 del
    módulo); las cifras se regeneraron con ella y con asterisco el
    2026-11-08 (paso 5), sin cambios en las conclusiones.

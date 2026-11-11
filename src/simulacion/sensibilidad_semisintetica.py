@@ -38,8 +38,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression, Ridge
-from sklearn.pipeline import make_pipeline
 
 from src.simulacion import contrato
 from src.simulacion.asignacion import asignar
@@ -78,24 +76,13 @@ ESCENARIOS = {
 }
 
 
-def _modelos_poco_regularizados():
-    """Los mismos codificadores de `5_estimacion.py`, casi sin
-    regularización: Ridge alpha=1e-6 y logística C=1e6."""
-    est5 = estimacion5()
-    w_cat, w_num = est5.W_CELDA
-    columnas = est5.X_COLS + w_cat + w_num
-    categoricas = est5.X_CATEGORICAS + w_cat
-    modelo_y = make_pipeline(est5._codificador(columnas, categoricas, w_num), Ridge(alpha=1e-6))
-    modelo_t = make_pipeline(est5._codificador(columnas, categoricas, w_num),
-                             LogisticRegression(C=1e6, max_iter=5000))
-    return modelo_y, modelo_t
-
-
 def linear_dml(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, regularizado: bool) -> tuple[float, float, float]:
     from econml.dml import LinearDML
 
     est5 = estimacion5()
-    modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA) if regularizado else _modelos_poco_regularizados()
+    # `regularizado`: la del proyecto (alpha 1, C 10); si no, casi nula.
+    extra = {} if regularizado else est5.CASI_SIN_REGULARIZAR
+    modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA, **extra)
     m = LinearDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, random_state=SEED)
     X = d[est5.X_COLS].to_numpy(float)
     m.fit(y, t, X=X, W=d[est5.W_CELDA[0]].to_numpy(float))

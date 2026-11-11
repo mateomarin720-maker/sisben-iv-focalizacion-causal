@@ -290,9 +290,13 @@ efecto distinto de cero queda además un sesgo común a la regresión y al
 DML sin regularizar (−0,004 a −0,006 con el efecto de base) que crece
 con el efecto (−0,0035, −0,006 y −0,007 con × 0,5, × 1 y × 2): es la
 ponderación desigual de un efecto heterogéneo por la varianza del
-tratamiento, no confusión. **Pendiente de decisión:** bajar la
-regularización en `5_estimacion.py` (cambiaría los ATE de datos reales en
-milésimas; hoy son un placebo ≈0).
+tratamiento, no confusión. **Decisión (2026-11-11):** se conserva la
+regularización del proyecto (alpha = 1, C = 10), porque de ella salen
+todas las cifras publicadas; la versión casi sin regularizar queda como
+esta sensibilidad (`CASI_SIN_REGULARIZAR` en `5_estimacion.py`). Con
+datos reales, bajarla movería los ATE en milésimas (log-ingreso con la
+celda: de +0,0006 a +0,0008; pobreza monetaria igual) sin cambiar
+ninguna conclusión.
 
 \* Resultado simulado.
 

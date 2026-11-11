@@ -93,3 +93,12 @@ def test_linear_dml_con_la_celda_recupera_el_efecto(seed, efecto):
     ate, lo, hi = _ate(_datos(seed, efecto=efecto))
     assert abs(ate - efecto) < 0.06
     assert lo - 0.02 <= efecto <= hi + 0.02
+
+
+def test_regularizacion_vigente_y_la_de_sensibilidad():
+    """Las cifras publicadas salen de alpha 1 y C 10; la versión casi sin
+    regularizar (sensibilidad) se pide explícitamente."""
+    modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA)
+    assert (modelo_y[-1].alpha, modelo_t[-1].C) == (1.0, 10.0)
+    modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA, **est5.CASI_SIN_REGULARIZAR)
+    assert modelo_y[-1].alpha <= 1e-4 and modelo_t[-1].C >= 1e4

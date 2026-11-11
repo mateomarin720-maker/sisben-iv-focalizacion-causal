@@ -46,7 +46,12 @@ def test_escenarios_de_sensibilidad():
     assert se.PARTICIPACION[0] < se.PARTICIPACION[1]
 
 
-def test_la_version_sin_regularizar_cambia_solo_la_regularizacion():
-    modelo_y, modelo_t = se._modelos_poco_regularizados()
-    assert modelo_y[-1].alpha == pytest.approx(1e-6)
-    assert modelo_t[-1].C == pytest.approx(1e6)
+def test_las_dos_versiones_de_linear_dml_cambian_solo_la_regularizacion():
+    """`linear_dml` compara la regularización del proyecto (alpha 1, C 10)
+    con la casi nula, con los mismos codificadores."""
+    est5 = se.estimacion5()
+    vigente = est5._modelos_auxiliares(est5.W_CELDA)
+    casi_nula = est5._modelos_auxiliares(est5.W_CELDA, **est5.CASI_SIN_REGULARIZAR)
+    assert (vigente[0][-1].alpha, vigente[1][-1].C) == (1.0, 10.0)
+    assert (casi_nula[0][-1].alpha, casi_nula[1][-1].C) == (pytest.approx(1e-6), pytest.approx(1e6))
+    assert [p for p, _ in vigente[0].steps] == [p for p, _ in casi_nula[0].steps]

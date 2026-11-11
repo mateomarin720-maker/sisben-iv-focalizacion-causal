@@ -205,8 +205,8 @@ def ajustar_bosque(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, x_cols: list[s
     # largo dejaba la celda (el confusor) fuera de los modelos auxiliares.
     columnas = x_cols + w_cols
     categoricas = [c for c in x_cols if c in {*est5.X_CATEGORICAS, *X_CATEGORICAS_EXTRA}] + w_cols
-    modelo_y = make_pipeline(est5._codificador(columnas, categoricas, []), Ridge(alpha=1.0))
-    modelo_t = make_pipeline(est5._codificador(columnas, categoricas, []), LogisticRegression(C=10.0, max_iter=2000))
+    modelo_y = make_pipeline(est5._codificador(columnas, categoricas, []), Ridge(alpha=est5.ALPHA_Y))
+    modelo_t = make_pipeline(est5._codificador(columnas, categoricas, []), LogisticRegression(C=est5.C_T, max_iter=2000))
     m = CausalForestDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, n_estimators=200,
                         min_samples_leaf=50, random_state=SEED, n_jobs=1)
     m.fit(y, t, X=d[x_cols].to_numpy(float), W=d[w_cols].to_numpy(float))
