@@ -215,6 +215,8 @@ poetry run python -m src.focalizacion.reglas_focalizacion
 poetry run python -m src.focalizacion.heterogeneidad_ampliada
 poetry run python -m src.simulacion.sensibilidad_semisintetica
 poetry run python -m src.diagnostico.variabilidad_hotdeck 2
+poetry run python -m src.diagnostico.proposiciones
+poetry run python -m src.utils.anexo_trazabilidad
 poetry run pytest tests/
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
 ```

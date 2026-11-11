@@ -2,6 +2,31 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-11 (39) — Anotaciones del director sobre el borrador
+
+### Agregado
+- `docs/anexos_tesis/PROPOSICIONES.md`: Proposiciones 1 a 3 con su prueba (el T imputado
+  da efecto cero; la señal cae a L × efecto con una fracción L enlazada, y la fórmula con
+  enlaces falsos; con imputación total la mitad de la varianza viene del sorteo) y la
+  derivación del ancho de la cota sin supuestos con fuentes no enlazadas, 1 + 2Δ = 1,40.
+- `src/diagnostico/proposiciones.py` las comprueba por Monte Carlo y con el archivo de
+  cotas publicado (`docs/reports/proposiciones.txt`); `tests/test_proposiciones.py`.
+- Figuras de la estabilidad del Hot-Deck (por celda y por hogar) y de la importancia de
+  las variables del OE1.
+- Anexo de trazabilidad: fracción de Rubin por resultado (48,9 %, 48,8 %, 54,5 %), pobreza
+  extrema, FGT1 y Gini frente a la oficial, Δ de la cota, conteo de las 166 celdas de la
+  simulación y fuerza γ de la confusión no observada.
+- `CITATION.cff`. `tests/test_dependencias.py`: las versiones de `requirements-pruebas.txt`
+  deben ser las que resolvió `poetry.lock` (un solo origen de versiones).
+- Bibliografía: estado de las referencias que el borrador marca (Engstrom et al., Kasy y
+  Sautmann, Roth et al., McBride y Nichols, BID, DNP-BID, DANE, Mora et al., Fedesarrollo,
+  Castañeda) y las que faltan para las proposiciones.
+
+### Hallazgo
+- El rango 49 %-55 % de la varianza que viene del sorteo no son tres resultados: con
+  M = 100 sorteos la fracción estimada varía unos ±3 puntos alrededor de 0,5
+  (Proposición 3; en poblaciones sintéticas va de 0,45 a 0,58).
+
 ## 2026-11-11 (38) — Apoyo al documento escrito y dos cifras corregidas
 
 ### Agregado

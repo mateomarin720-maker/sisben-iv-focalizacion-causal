@@ -110,6 +110,14 @@ def cifras(contar_pruebas: bool = True) -> list[Cifra]:
                    "filas `fgt0_reconstruida` y `fgt0_oficial`, columna nacional", cmd_po))
     c.append(Cifra(s, "Hogares con la misma clasificación que la base oficial", f"{misma} % de {n_ofi} hogares", po,
                    "fila `pct_hogares_misma_clasificacion`, columna nacional", cmd_po))
+    pm = "pobreza_monetaria_geih.txt"
+    nac = linea(pm, r"^\s+nacional\s+(\d+(?:\s+[\d.]+){9})\s*$").split()
+    c.append(Cifra(s, "Pobreza extrema, brecha (FGT1) y Gini: reconstruida frente a oficial",
+                   f"extrema {nac[6].replace('.', ',')} % frente a {nac[7].replace('.', ',')} %; "
+                   f"FGT1 {nac[3].replace('.', ',')} frente a {nac[4].replace('.', ',')}; "
+                   f"Gini {num(float(nac[8]), 3)} frente a {num(float(nac[9]), 3)}", pm,
+                   "fila `nacional`: `fgt0_extrema`, `fgt1_pobreza`, `gini` y sus columnas `_oficial`",
+                   f"{PY} -m src.indicadores.pobreza_monetaria_geih"))
     rep = pd.read_csv(R / "representatividad_sisben_por_depto.csv")
     nal = rep["sisben_hogares_registrados"].sum() / rep["geih_hogares_expandidos"].sum()
     c.append(Cifra(s, "Cobertura del Sisbén frente a los hogares de la GEIH (mín.–máx.; nacional)",
@@ -119,9 +127,9 @@ def cifras(contar_pruebas: bool = True) -> list[Cifra]:
                    f"{PY} -m src.validacion.verificar_representatividad_sisben"))
     v = pd.read_csv(R / "variabilidad_hotdeck_estimacion.csv").set_index("outcome")
     cmd_v = f"{PY} -m src.diagnostico.variabilidad_hotdeck 2"
-    c.append(Cifra(s, "Parte de la varianza del contraste que viene de la imputación (100 sorteos)",
-                   f"{num(v['fraccion_info_imputacion'].min(), 1, pct=True)} – {num(v['fraccion_info_imputacion'].max(), 1, pct=True)}",
-                   "variabilidad_hotdeck_estimacion.csv", "`fraccion_info_imputacion`, tres resultados", cmd_v))
+    c.append(Cifra(s, "Parte de la varianza del contraste que viene de la imputación (100 sorteos), por resultado",
+                   "; ".join(f"`{o}` {num(v.loc[o, 'fraccion_info_imputacion'], 1, pct=True)}" for o in v.index),
+                   "variabilidad_hotdeck_estimacion.csv", "`fraccion_info_imputacion`, una fila por resultado", cmd_v))
     g = v.loc["POBRE_GEIH"]
     c.append(Cifra(s, "Contraste placebo de `POBRE_GEIH` combinado con Rubin",
                    f"{num(g['estimacion'], 5, signo=True)} {ic(g['ic_lo'], g['ic_hi'], 4)}",
@@ -142,6 +150,11 @@ def cifras(contar_pruebas: bool = True) -> list[Cifra]:
         r = mono[(mono["outcome"] == "POBRE_MONETARIO") & (mono["supuesto"] == sup)].iloc[0]
         c.append(Cifra(s, f"{que}, pobreza monetaria", f"{ic(r['cota_lo'], r['cota_hi'])} (ancho {num(r['ancho'], 2)})",
                        "cotas_frechet_manski_monotonia.csv", f"`POBRE_MONETARIO`, supuesto `{sup}`", cmd_c))
+    delta = float(linea("proposiciones.txt", r"Δ medio ponderado ([\d.]+)"))
+    c.append(Cifra(s, "Ancho de la cota sin supuestos = 1 + 2Δ (Δ: ancho medio de Fréchet de P(Y=1, T=1))",
+                   f"Δ = {num(delta, 3)}; 1 + 2Δ = {num(1 + 2 * delta, 2)}", "proposiciones.txt",
+                   "línea «Δ medio ponderado» (sale de `cotas_frechet_manski_pobre_monetario.csv`)",
+                   f"{PY} -m src.diagnostico.proposiciones"))
     mod = pd.read_csv(R / "cotas_frechet_modelos.csv")
     mod = mod[mod["muestra"] == "todas"]  # el archivo repite cada cota con las celdas de al menos 30 hogares
     c.append(Cifra(s, "Parámetros de los modelos (ATE, ATT, ATU y CATE por subgrupo) cuya cota excluye el cero",
@@ -189,6 +202,21 @@ def cifras(contar_pruebas: bool = True) -> list[Cifra]:
     c.append(Cifra(s, "Repeticiones (Causal Forest) y celdas de resultados",
                    f"{int(sim['reps'].max())} ({int(sim.loc[sim['estimador'] == 'causal_forest', 'reps'].max())}); {len(sim)} celdas",
                    "simulacion_semisintetica_resumen.csv", "columna `reps`; filas del archivo", cmd_s, True))
+    comb = sim[["escenario", "vinculo", "outcome"]].drop_duplicates()
+    por_est = sim.groupby("estimador").size()
+    comunes = [e for e in por_est.index if por_est[e] == len(comb)]
+    resto = " + ".join(f"{por_est[e]} `{e}`" for e in por_est.index if e not in comunes)
+    c.append(Cifra(s, "Cómo se cuentan las celdas de resultados",
+                   f"{sim['escenario'].nunique()} escenarios × {sim['vinculo'].nunique()} vínculos × "
+                   f"{sim['outcome'].nunique()} resultados = {len(comb)} combinaciones × {len(comunes)} estimadores "
+                   f"= {len(comb) * len(comunes)}, + {resto} = {len(sim)}",
+                   "simulacion_semisintetica_resumen.csv", "columnas `escenario`, `vinculo`, `outcome`, `estimador`",
+                   cmd_s))
+    from src.simulacion.escenarios import ESCENARIOS
+    gam = " · ".join(f"{k.removeprefix('confusion_no_observada').strip('_') or 'fuerte'} {num(v['gamma'], 2)}"
+                     for k, v in ESCENARIOS.items() if k.startswith("confusion_no_observada"))
+    c.append(Cifra(s, "Fuerza de la confusión no observada (γ, peso de U en la asignación)", gam,
+                   "src/simulacion/escenarios.py", "`ESCENARIOS`, clave `gamma`", cmd_s))
     for out, que in [("log_ingreso", "log-ingreso"), ("pobre_monetario", "pobreza monetaria")]:
         r = celda("confusion_observada", "oraculo", out, "linear_dml")
         c.append(Cifra(s, f"Efecto verdadero, {que}", num(r["efecto_verdadero"], 4, signo=True) + "\\*",

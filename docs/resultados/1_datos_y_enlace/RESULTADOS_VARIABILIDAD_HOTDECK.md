@@ -102,6 +102,12 @@ varianza entre sorteos.
   de `5_estimacion.py`, no la incluyen: en `POBRE_GEIH` el error que
   corresponde es 0,0018 y el de un solo sorteo 0,0013 (un 28 % más
   angosto; el correcto es un 40 % mayor).
+  Por resultado: `POBRE_MONETARIO` 48,9 %, `POBRE_GEIH` 48,8 % y
+  `log_ingreso_percapita` 54,5 %. Que sea cerca de la mitad no es
+  casualidad: con imputación total, la varianza entre sorteos iguala a la
+  de dentro del sorteo (Proposición 3, `docs/anexos_tesis/PROPOSICIONES.md`).
+  Con 100 sorteos, la fracción estimada varía unos ±3 puntos alrededor de
+  0,5, así que las tres cifras son el mismo resultado.
 
 ## Respuesta a la pregunta del tutor
 

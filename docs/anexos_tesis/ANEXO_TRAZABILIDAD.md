@@ -14,8 +14,9 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 | Grupo asignado por Hot-Deck (ponderado) | A 14,2 % · B 29,4 % · C 34,4 % · D 22,0 % | `comparacion_filtros_sdp.csv` | fila `vigencia_31dic2024`, `grupo_nacional_*_pct` | `poetry run python -m src.validacion.comparar_filtros_sdp` |
 | Pobreza monetaria (FGT0 por personas): reconstruida frente a oficial | 33,24 % frente a 31,83 % | `comparacion_pobreza_monetaria_oficial.txt` | filas `fgt0_reconstruida` y `fgt0_oficial`, columna nacional | `poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial` |
 | Hogares con la misma clasificación que la base oficial | 93,93 % de 275.057 hogares | `comparacion_pobreza_monetaria_oficial.txt` | fila `pct_hogares_misma_clasificacion`, columna nacional | `poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial` |
+| Pobreza extrema, brecha (FGT1) y Gini: reconstruida frente a oficial | extrema 12,5 % frente a 11,7 %; FGT1 13,5 frente a 12,6; Gini 0,565 frente a 0,551 | `pobreza_monetaria_geih.txt` | fila `nacional`: `fgt0_extrema`, `fgt1_pobreza`, `gini` y sus columnas `_oficial` | `poetry run python -m src.indicadores.pobreza_monetaria_geih` |
 | Cobertura del Sisbén frente a los hogares de la GEIH (mín.–máx.; nacional) | 4,8 % – 154 %; 17,3 % | `representatividad_sisben_por_depto.csv` | `razon_cobertura`; nacional = suma de registrados / suma de hogares | `poetry run python -m src.validacion.verificar_representatividad_sisben` |
-| Parte de la varianza del contraste que viene de la imputación (100 sorteos) | 48,8 % – 54,5 % | `variabilidad_hotdeck_estimacion.csv` | `fraccion_info_imputacion`, tres resultados | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
+| Parte de la varianza del contraste que viene de la imputación (100 sorteos), por resultado | `POBRE_MONETARIO` 48,9 %; `POBRE_GEIH` 48,8 %; `log_ingreso_percapita` 54,5 % | `variabilidad_hotdeck_estimacion.csv` | `fraccion_info_imputacion`, una fila por resultado | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
 | Contraste placebo de `POBRE_GEIH` combinado con Rubin | −0,00003 [−0,0036; +0,0036] | `variabilidad_hotdeck_estimacion.csv` | fila `POBRE_GEIH` | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
 
 ## Componente 1: diagnóstico con datos reales
@@ -30,6 +31,7 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 | Cota del contraste A/B frente al resto, sin el supuesto del vínculo, pobreza monetaria | [−0,418; +0,648] (ancho 1,07) | `cotas_frechet_manski_monotonia.csv` | `POBRE_MONETARIO`, supuesto `contraste` | `poetry run python -m src.diagnostico.cotas_frechet_manski` |
 | Cota del ATE sin supuestos (peor caso), pobreza monetaria | [−0,571; +0,829] (ancho 1,40) | `cotas_frechet_manski_monotonia.csv` | `POBRE_MONETARIO`, supuesto `ate_sin_supuestos` | `poetry run python -m src.diagnostico.cotas_frechet_manski` |
 | Cota del ATE con selección y respuesta monótonas, pobreza monetaria | [−0,405; +0,000] (ancho 0,41) | `cotas_frechet_manski_monotonia.csv` | `POBRE_MONETARIO`, supuesto `ate_mts_mtr_dep_positiva` | `poetry run python -m src.diagnostico.cotas_frechet_manski` |
+| Ancho de la cota sin supuestos = 1 + 2Δ (Δ: ancho medio de Fréchet de P(Y=1, T=1)) | Δ = 0,200; 1 + 2Δ = 1,40 | `proposiciones.txt` | línea «Δ medio ponderado» (sale de `cotas_frechet_manski_pobre_monetario.csv`) | `poetry run python -m src.diagnostico.proposiciones` |
 | Parámetros de los modelos (ATE, ATT, ATU y CATE por subgrupo) cuya cota excluye el cero | 0 de 50 | `cotas_frechet_modelos.csv` | filas con `muestra` = `todas`, columna `excluye_0` | `poetry run python -m src.diagnostico.cotas_frechet_modelos` |
 | Error de exclusión (A/B frente a pobreza monetaria), cota por celda agregada | [0,9 %; 75,0 %] | `errores_focalizacion_frechet.csv` | fila nacional, elegible `A-B`, `exclusion_lo` / `exclusion_hi` | `poetry run python -m src.diagnostico.errores_focalizacion_frechet` |
 | Error de inclusión, cota por celda agregada | [38,6 %; 84,5 %] | `errores_focalizacion_frechet.csv` | fila nacional, elegible `A-B`, `inclusion_lo` / `inclusion_hi` | `poetry run python -m src.diagnostico.errores_focalizacion_frechet` |
@@ -44,6 +46,8 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
 | Repeticiones (Causal Forest) y celdas de resultados | 432 (216); 166 celdas | `simulacion_semisintetica_resumen.csv` | columna `reps`; filas del archivo | `poetry run python -m src.simulacion` |
+| Cómo se cuentan las celdas de resultados | 8 escenarios × 3 vínculos × 2 resultados = 48 combinaciones × 3 estimadores = 144, + 16 `causal_forest` + 6 `discontinuidad_rd` = 166 | `simulacion_semisintetica_resumen.csv` | columnas `escenario`, `vinculo`, `outcome`, `estimador` | `poetry run python -m src.simulacion` |
+| Fuerza de la confusión no observada (γ, peso de U en la asignación) | leve 0,25 · media 0,50 · fuerte 1,00 | `src/simulacion/escenarios.py` | `ESCENARIOS`, clave `gamma` | `poetry run python -m src.simulacion` |
 | Efecto verdadero, log-ingreso | +0,0949\* | `simulacion_semisintetica_resumen.csv` | `efecto_verdadero`, outcome `log_ingreso` | `poetry run python -m src.simulacion` |
 | Efecto verdadero, pobreza monetaria | −0,0328\* | `simulacion_semisintetica_resumen.csv` | `efecto_verdadero`, outcome `pobre_monetario` | `poetry run python -m src.simulacion` |
 | Confusión observada, LinearDML, log_ingreso | oráculo +0,089\* (cob. 0,91\*); vínculo 50 % +0,040\* (cob. 0,32\*); Hot-Deck −0,006\* (cob. 0,00\*) | `simulacion_semisintetica_resumen.csv` | escenario `confusion_observada`, estimador `linear_dml`, `estimacion` y `cobertura` | `poetry run python -m src.simulacion` |
@@ -73,5 +77,5 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
-| Pruebas automáticas | 255 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
+| Pruebas automáticas | 262 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
 | Errores conocidos reintroducidos por la prueba de mutación | 56 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |

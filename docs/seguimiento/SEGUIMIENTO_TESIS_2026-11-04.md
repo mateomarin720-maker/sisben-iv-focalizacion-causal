@@ -39,7 +39,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
-| Pruebas | Hechas | 255 pruebas y 56 mutaciones al 11 nov, con integración continua |
+| Pruebas | Hechas | 262 pruebas y 56 mutaciones al 11 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
 
@@ -127,7 +127,7 @@ El grupo imputado solo lleva la información de la celda, así que su desempeño
 
 ## Pruebas y calidad del código
 
-La suite pasa en GitHub Actions: 255 pruebas al 11 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
+La suite pasa en GitHub Actions: 262 pruebas al 11 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
 
 | Aspecto | Estado |
 | --- | --- |

@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "Si usa este software, cítelo con estos metadatos."
+title: "Focalización del Sisbén IV con fuentes no enlazables: framework de enlace estadístico, identificación parcial y simulación semisintética"
+type: software
+authors:
+  - family-names: "Fonseca Arévalo"
+    given-names: "Juan Sebastián"
+    affiliation: "Universidad Santo Tomás"
+  - family-names: "Roncancio Marín"
+    given-names: "José Mateo"
+    affiliation: "Universidad Santo Tomás"
+contributors:
+  - family-names: "Zainea Maya"
+    given-names: "Carlos Isaac"
+    affiliation: "Universidad Santo Tomás"
+repository-code: "https://github.com/mateomarin720-maker/sisben-iv-focalizacion-causal"
+keywords:
+  - Sisbén IV
+  - statistical matching
+  - Hot-Deck
+  - identificación parcial
+  - cotas de Fréchet
+  - double machine learning
+  - simulación semisintética
+  - focalización

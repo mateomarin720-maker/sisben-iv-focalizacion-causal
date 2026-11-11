@@ -157,7 +157,10 @@ El CATE medio también es ≈0.
 - **Con supuestos de monotonía**, la cota del ATE de pobreza monetaria
   queda en **[−0,405; 0]**. Los supuestos son: los A/B son al menos tan
   pobres y el programa no aumenta la pobreza de nadie. El ancho baja de
-  1,40 a 0,41, pero el signo lo pone el supuesto.
+  1,40 a 0,41, pero el signo lo pone el supuesto. El ancho 1,40 es
+  1 + 2Δ: la cota de Manski (ancho 1) más el doble del ancho medio de
+  Fréchet de la conjunta no observada, Δ = 0,20
+  (`docs/anexos_tesis/PROPOSICIONES.md`).
 - **Una cota por cada parámetro de los modelos:** son entre 140 y 210
   veces más anchas que los IC del DML. En el IPM, el efecto va de −1,4 a
   +1,6 privaciones. La incertidumbre se concentra en lo rural.

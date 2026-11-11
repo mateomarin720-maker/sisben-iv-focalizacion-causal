@@ -1,6 +1,6 @@
 # Pruebas
 
-255 pruebas en 23 archivos (2026-11-11). Casi todas usan datos
+262 pruebas en 25 archivos (2026-11-11). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -24,8 +24,9 @@ datos, así que se saltan las 7 pruebas que leen enero real de GEIH; las demás
 corren y se detectan todas las mutaciones.
 
 Si una prueba falla en GitHub, el PR queda marcado en rojo. Para agregar
-una dependencia nueva a las pruebas, sumarla a `requirements-pruebas.txt`
-con su versión, además de `pyproject.toml`.
+una dependencia nueva a las pruebas, sumarla a `pyproject.toml`, actualizar
+`poetry.lock` y copiar a `requirements-pruebas.txt` la versión que resolvió el
+lock: `test_dependencias.py` falla si no coinciden.
 
 ## Qué cubre cada archivo
 
@@ -40,6 +41,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_estimacion_dml.py` | `5_estimacion.py` | Categóricas como indicadoras; propensión = P(T \| celda) (correlación > 0,99); el error anterior no la reproduce (< 0,6); LinearDML recupera 0 y 0,5 con confusión entre celdas | Celda como número en la propensión (ATE falsos de +0,02, hasta 2026-11-02) |
 | `test_cotas_frechet_manski.py` | `diagnostico/cotas_frechet_manski.py` | Con supuestos de monotonía: la cota contiene el ATE de toda población que cumple el supuesto (25 configuraciones) y cada supuesto la angosta o la deja igual. Casos exactos (P(Y) = 0 o 1 → [0; 0]); la cota contiene el efecto de toda distribución conjunta compatible y alcanza sus extremos (2.000 conjuntas × 5 semillas); ATE ponderado por peso de celda; cada probabilidad de su fuente | El resultado de identificación central no tenía pruebas |
 | `test_cotas_frechet_modelos.py` | `diagnostico/cotas_frechet_modelos.py` | Con Y binaria coincide con la fórmula de Fréchet; con Y continua y pesos, el contraste verdadero de poblaciones al azar cae en la cota y el acople extremo la alcanza (5 semillas); agregación del ATE, ATT y ATU; subgrupos con el código común (paredes 2 = ladrillo en GEIH, tapia en el Sisbén) | Colas que toman más peso del que tiene el hogar |
+| `test_proposiciones.py` | `diagnostico/proposiciones.py` | Proposiciones 1 a 3 por Monte Carlo (imputado da 0; atenuación L con enlace parcial y la fórmula con enlaces falsos; fracción de Rubin ≈ 0,5) y ancho de la cota sin supuestos = 1 + 2Δ, también con el archivo publicado (1,40) | Presentar el placebo como efecto; leer el rango 49-55 % como tres resultados distintos; una cota sin derivación |
 | `test_errores_focalizacion_frechet.py` | `diagnostico/errores_focalizacion_frechet.py` | Las tasas verdaderas de poblaciones al azar (dependencia arbitraria dentro de la celda, 5 semillas) caen en la cota; las cotas se alcanzan; mismas definiciones que las reglas simuladas; e por la cadena de respaldos del Hot-Deck | Cota de exclusión con e en vez de 1 − e |
 | `test_simulacion_generador.py` | `simulacion/calibrar.py`, `generador.py`, `datos_propios.py` | Ningún grupo de los parámetros con menos de 30 hogares; la población sintética cumple el contrato, reproduce las marginales y los efectos de X en el ingreso y es reproducible con la semilla; P(T \| celda) con la cadena de respaldos; con el grupo observado por llave el DML recupera un efecto conocido, y con Hot-Deck se rotula como placebo | Guardar grupos pequeños; Hot-Deck presentado como efecto |
 | `test_variables_canonicas.py` | `utils/variables_canonicas.py` | Llaves con formatos distintos ("01", "1.0", " 1 "); jefe por fuente; cortes del ciclo de vida de `PER002`; GEIH y Sisbén en los mismos tramos del Hot-Deck | `mes` "01" frente a "1" (2026-11-02); celdas que no empatan entre fuentes |
@@ -56,6 +58,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_variables_candidatas.py` | `diagnostico/variables_candidatas_pobreza.py` | Agregación de personas a hogares, códigos de discapacidad, métricas ponderadas, Holm, criterio de decisión, errores agrupados contra `statsmodels` | Predictores que miden el ingreso, categóricas como número, IPM predicho con sus componentes, recomendar sin estabilidad |
 | `test_incidencia_transferencias.py` | `diagnostico/incidencia_transferencias.py` | Monto sin códigos de no sabe ni empleados domésticos, hogares y personas por programa, pobreza con y sin ayuda, quintiles | Contar el monto anual como mensual, o personas como hogares |
 | `test_simulacion_contrato.py` | `simulacion/contrato.py` | Falta cada columna obligatoria y el error la nombra; sin alias; códigos fuera de dominio (incluido "1.0"); faltantes; pisos del Sisbén frente a la GEIH; el registro solo revisa clasificados; opcionales; duplicadas | Volver a aceptar nombres distintos (regla del tutor) |
+| `test_dependencias.py` | `requirements-pruebas.txt`, `poetry.lock` | Cada versión que fija la integración continua es una de las que resolvió el lock | Que CI pruebe con versiones distintas a las del entorno del proyecto |
 | `test_simulacion_equivalencia.py` | `simulacion/evaluacion.py` | 3 repeticiones iguales a la versión anterior (`tests/referencia/`), salvo la única combinación que usa respaldos; columnas extra o en otro orden no cambian la base | Que una refactorización mueva los resultados publicados |
 
 ## Cómo se comprobó que las pruebas sirven

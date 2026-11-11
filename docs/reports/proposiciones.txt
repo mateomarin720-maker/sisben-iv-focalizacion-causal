@@ -1,0 +1,28 @@
+=== Comprobación numérica de las proposiciones (población sintética) ===
+Efecto verdadero: 0.1. Ver docs/anexos_tesis/PROPOSICIONES.md
+
+Proposición 1. Contraste con efectos fijos de celda: T verdadero frente a T imputado (media de 200 sorteos)
+ confusion  efecto  contraste_t_verdadero  media_imputado  error_mc
+      0.00     0.1                 0.1149         -0.0005    0.0011
+      0.15     0.1                 0.7740         -0.0005    0.0011
+
+Proposición 2. Factor de atenuación (contraste / efecto) según la fracción enlazada (100 réplicas)
+               resto  enlazados  factor_simulado  factor_esperado  error_mc
+imputado en la celda       0.00           -0.017            0.000     0.018
+imputado en la celda       0.25            0.227            0.250     0.017
+imputado en la celda       0.50            0.469            0.500     0.017
+imputado en la celda       0.75            0.752            0.750     0.017
+imputado en la celda       1.00            0.998            1.000     0.016
+        enlace falso       0.00            0.028            0.000     0.014
+        enlace falso       0.25            0.235            0.203     0.013
+        enlace falso       0.50            0.440            0.422     0.015
+        enlace falso       0.75            0.701            0.677     0.014
+        enlace falso       1.00            0.998            1.000     0.016
+
+Proposición 3. Rubin con imputación total (100 sorteos en cada una de 20 poblaciones)
+ efecto   m  poblaciones  razon_entre_dentro  fraccion_media  fraccion_min  fraccion_max  fraccion_teorica
+    0.0 100           20              1.0034          0.5016        0.4526        0.5791            0.5025
+    0.1 100           20              1.0039          0.5017        0.4489        0.5785            0.5025
+
+Cota del ATE sin supuestos, pobreza monetaria (cotas_frechet_manski_pobre_monetario.csv)
+celdas 921 | Δ medio ponderado 0.2003 | 1 + 2Δ = 1.4005 | ancho publicado 1.4005

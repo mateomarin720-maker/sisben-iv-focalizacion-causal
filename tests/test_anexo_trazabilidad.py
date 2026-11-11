@@ -7,7 +7,7 @@ from src.utils import anexo_trazabilidad as at
 def test_cada_cifra_sale_de_su_reporte():
     c = at.cifras(contar_pruebas=False)
     assert len(c) > 40
-    assert all(x.valor and (at.R / x.archivo).exists() or x.archivo.startswith("tests") for x in c)
+    assert all(x.valor and (at.R / x.archivo).exists() or x.archivo.startswith(("tests", "src")) for x in c)
     # toda cifra simulada lleva asterisco; ninguna real
     for x in c:
         assert (r"\*" in x.valor) == (x.simulada and "Repeticiones" not in x.que), x.que

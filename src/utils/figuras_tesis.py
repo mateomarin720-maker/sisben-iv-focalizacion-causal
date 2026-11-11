@@ -9,8 +9,12 @@
                                 empírica: indicadoras de celda y la celda como
                                 número (el error corregido el 2026-11-02)
   fig_arquitectura.png          flujo de datos y componentes del repositorio
+  fig_estabilidad_hotdeck.png   el Hot-Deck es estable por celda e inestable por
+                                hogar (100 sorteos)
+  fig_importancia_variables_oe1 importancia de las variables en el grupo del
+                                Sisbén (LASSO, Ridge, SHAP)
 
-Las cuatro primeras salen de `docs/reports/`; la de propensión lee la
+Todas menos la de propensión salen de `docs/reports/`; la de propensión lee la
 muestra de estimación (`data/2_models/`, no versionada).
 
 Uso:
@@ -212,9 +216,71 @@ def arquitectura() -> Path:
     return _guardar(fig, "fig_arquitectura.png")
 
 
+def estabilidad_hotdeck() -> Path:
+    """Estable por celda, inestable por hogar (100 sorteos del Hot-Deck)."""
+    c = pd.read_csv(R / "variabilidad_hotdeck_celdas.csv")
+    texto = (R / "variabilidad_hotdeck.txt").read_text(encoding="utf-8")
+    conc = float(texto.split("concordancia_ab:")[1].split()[0])
+    fig, (a, b) = plt.subplots(1, 2, figsize=(10, 4.2), gridspec_kw=dict(width_ratios=[1, 1.15]))
+    grande = c["hogares"] >= 30
+    a.errorbar(c.loc[grande, "pi_ab_donantes"] * 100, c.loc[grande, "prop_ab_media"] * 100,
+               yerr=2 * c.loc[grande, "prop_ab_sd"] * 100, fmt="o", color=AZUL, ecolor=REJILLA, markersize=2.5,
+               elinewidth=0.8, label="Celda (media ± 2 d.e. de los sorteos)")
+    a.plot([0, 100], [0, 100], color=TENUE, linewidth=1, linestyle="--", label="Igual a los donantes")
+    a.set_xlim(0, 100)
+    a.set_ylim(0, 100)
+    a.set_xlabel("A/B entre los donantes del Sisbén en la celda (%)")
+    a.set_ylabel("A/B imputado a los hogares GEIH de la celda (%)")
+    a.set_title("Por celda: la proporción se reproduce")
+    a.legend(loc="upper left", fontsize=8)
+    a.text(98, 3, f"{int(grande.sum())} celdas con 30 hogares o más", ha="right", fontsize=7.5, color=TINTA_2)
+    # Un hogar de una celda con proporción p coincide en A/B entre dos sorteos con probabilidad p² + (1 − p)².
+    p = c["pi_ab_donantes"]
+    b.hist((p**2 + (1 - p) ** 2) * 100, bins=np.linspace(50, 100, 26), weights=c["peso"] / c["peso"].sum() * 100,
+           color=NARANJA, rwidth=0.92)
+    b.axvline(conc * 100, color=TINTA, linewidth=1, linestyle="--")
+    b.text(conc * 100 + 1, b.get_ylim()[1] * 0.92, f"Promedio: {conc * 100:.1f} %".replace(".", ","), fontsize=8,
+           color=TINTA)
+    b.set_xlim(50, 100)
+    b.set_xlabel("Probabilidad de que dos sorteos den el mismo A/B (%)")
+    b.set_ylabel("Hogares GEIH (% ponderado)")
+    b.set_title("Por hogar: dos sorteos coinciden poco")
+    b.text(51, -b.get_ylim()[1] * 0.25, "50 %: igual que lanzar una moneda; 100 %: el sorteo no cambia el grupo.",
+           fontsize=7.5, color=TINTA_2)
+    fig.tight_layout()
+    return _guardar(fig, "fig_estabilidad_hotdeck.png")
+
+
+ETIQUETAS_OE1 = {"geo_depto": "Departamento", "viv_pisos": "Material de pisos", "hog_num_personas": "Personas del hogar",
+                 "viv_alcantarillado": "Alcantarillado", "viv_paredes": "Material de paredes", "jefe_sexo": "Sexo del jefe",
+                 "viv_cuartos": "Cuartos", "viv_acueducto": "Acueducto", "geo_zona": "Zona (urbano/rural)",
+                 "jefe_edad": "Edad del jefe"}
+
+
+def importancia_oe1() -> Path:
+    """Importancia normalizada de cada variable al predecir el grupo del Sisbén."""
+    d = pd.read_csv(R / "seleccion_variables_lasso_ridge_shap.csv").sort_values("promedio")
+    fig, ax = plt.subplots(figsize=(7, 4.6))
+    y = np.arange(len(d))
+    alto = 0.26
+    for k, (col, nom, color) in enumerate([("lasso_norm", "LASSO", AZUL), ("ridge_norm", "Ridge", NARANJA),
+                                           ("shap_norm", "SHAP (bosque aleatorio)", AGUA)]):
+        ax.barh(y + (k - 1) * alto, d[col], height=alto - 0.04, color=color, label=nom)
+    ax.set_yticks(y, [ETIQUETAS_OE1.get(v, v) + (" (control)" if g else "") for v, g in
+                      zip(d["variable"], d["es_control_geografico"])])
+    ax.set_xlim(0, 1.05)
+    ax.set_xlabel("Importancia normalizada (1 = la mayor de cada método)")
+    _coma(ax, "x", 1)
+    ax.grid(axis="y", visible=False)
+    ax.set_title("Qué variables explican el grupo del Sisbén (OE1)")
+    ax.legend(loc="lower right", fontsize=8)
+    return _guardar(fig, "fig_importancia_variables_oe1.png")
+
+
 def main(con_datos: bool = True) -> None:
     _estilo()
-    rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura()]
+    rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), estabilidad_hotdeck(),
+             importancia_oe1()]
     if con_datos:
         rutas.append(propension_celda())
     print("\n".join(f"Guardado: {r}" for r in rutas))
