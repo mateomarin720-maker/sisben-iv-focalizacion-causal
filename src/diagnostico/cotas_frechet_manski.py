@@ -1,7 +1,7 @@
 """Cotas de Fréchet–Manski para el ATE — alternativa al Hot-Deck que NO
 supone independencia condicional (CIA).
 
-Item "por explorar" de la Tabla 1 del documento de pipeline (Roncancio y
+Ítem de la Tabla 1 del documento de pipeline (Roncancio y
 Fonseca, 2026): el Hot-Deck asume que, dada la celda X, el grupo Sisbén
 asignado es como-si-aleatorio (ver `docs/resultados/2_diagnostico_datos_reales/IDENTIFICACION_CAUSAL.md`).
 Si esa suposición falla, el DML (`src/5_estimacion.py`) puede estar sesgado

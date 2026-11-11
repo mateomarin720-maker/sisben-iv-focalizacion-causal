@@ -2,6 +2,35 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-10 (36) — Auditoría del repositorio para el jurado
+
+### Cambiado
+- README raíz, `docs/README.md` e índice de resultados organizados en la base y los tres
+  componentes; `src/README.md` y `src/diagnostico/README.md` reescritos.
+- Conteos al día (243 pruebas, 53 mutaciones) en README, guía, resumen, arquitectura,
+  `tests/README.md` y `requirements-pruebas.txt`.
+- Sin frases que propongan pedir datos nuevos: DPS figura como fuera del alcance, y la
+  discontinuidad con puntaje continuo y el diseño Sisbén III a IV como no aplicables con
+  datos reales.
+- La comparación de proxies del IPM queda marcada como insumo (fases 3 a 5 no ejecutadas).
+- Salida de consola de los DAG regenerada.
+
+### Pendiente
+- `pyproject.toml` declara dependencias que el código no usa (`dowhy`, `causal-learn`,
+  `graphviz`, `seaborn`, `xgboost`, `jupyterlab`). Quitarlas exige regenerar `poetry.lock`
+  con Poetry, que no está en este entorno.
+
+## 2026-11-10 (35) — Representatividad del Sisbén con los hogares de un mes promedio
+
+### Corregido
+- `verificar_representatividad_sisben.py` sumaba los factores de expansión de los 12 meses
+  de la GEIH (214,9 millones de hogares en vez de 17,9). Las coberturas salían 12 veces
+  menores: ahora 4,8 % (Valle) a 154 % (Putumayo), 17,3 % nacional, en vez de 0,4 % a
+  12,8 % y 1,4 %. El factor de variación (32 veces) no cambia. Prueba y mutación.
+- En Putumayo y Vichada la GEIH expande a pocos hogares y la razón supera o roza el 100 %;
+  ahí compara marcos distintos y no se lee como cobertura.
+- Los demás scripts ya dividían por 12 o solo usan proporciones.
+
 ## 2026-11-10 (34) — Código y resultados organizados por componente
 
 ### Cambiado

@@ -180,7 +180,7 @@ ver justificación completa en
 | Fuente | Variables previstas | Estado |
 |---|---|---|
 | GEIH (DANE) | ingreso per cápita, condición de ocupación, informalidad laboral, composición del hogar | ✅ Integrada (12 meses 2024, 8 módulos); armonizada a nivel hogar |
-| DPS | participación en Familias en Acción, Ingreso Solidario | ⏳ Por gestionar — condiciona el escenario de primera etapa (OE2) |
+| DPS | participación en Familias en Acción, Ingreso Solidario | Fuera del alcance: el proyecto no solicitará más datos |
 | RUI (UARIV) | condición de víctima del conflicto armado | ⏳ Fuera del alcance replanteado; por confirmar con el tutor |
 
 ---

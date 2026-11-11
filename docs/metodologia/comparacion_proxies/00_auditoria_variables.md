@@ -1,6 +1,13 @@
 # Auditoría de variables para los proxies de pobreza multidimensional
 
-*2026-11-02 · Rama `comparacion-proxies-ipm` · Fases 1 y 2 de la comparación de proxies.*
+*2026-11-02 · Fases 1 y 2 de la comparación de proxies.*
+
+> **Estado al 2026-11-10:** las fases 3 a 5 no se ejecutaron. El proyecto
+> tomó la pobreza monetaria reconstruida como resultado principal y el
+> IPM-GEIH de 8 privaciones como complemento. Esta auditoría y la matriz
+> de homologación quedan como insumo: la matriz sigue generándose con
+> `src/indicadores/homologacion_ipm.py` y su prueba verifica los códigos
+> contra los diccionarios oficiales.
 
 Esta entrega cubre la **auditoría** (Fase 1) y la **matriz de homologación**
 (Fase 2), para revisión antes de construir indicadores nuevos. No se

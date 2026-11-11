@@ -39,8 +39,8 @@ menores en A′ (≈ +0,2); ver el archivo de salida.
 
 | # | Diseño | Qué necesita | Qué demuestra esta simulación | Estado en el repo |
 |---|---|---|---|---|
-| 1 | Discontinuidad de regresión en la frontera de elegibilidad | Puntaje continuo + resultado (llave o vínculo) | Recupera el efecto (C) | Bloqueado: la microdata no trae puntaje continuo; hay que solicitarlo (DNP/SDP) |
-| 2 | Cambio metodológico Sisbén III → IV (diferencias en diferencias / event study) | Corte del Sisbén III + vínculo de hogares entre cortes | No simulado aquí; la fuente de variación es la reclasificación por el cambio de metodología, no la necesidad | Pendiente: falta el corte III |
+| 1 | Discontinuidad de regresión en la frontera de elegibilidad | Puntaje continuo + resultado (llave o vínculo) | Recupera el efecto (C) | No aplicable con datos reales: la microdata no trae puntaje continuo. Se evalúa solo en la simulación |
+| 2 | Cambio metodológico Sisbén III → IV (diferencias en diferencias / event study) | Corte del Sisbén III + vínculo de hogares entre cortes | No simulado aquí; la fuente de variación es la reclasificación por el cambio de metodología, no la necesidad | No aplicable: el proyecto no tiene el corte del Sisbén III |
 | 3 | Vinculación con llave real (DPS/RUI) + RD o IV | Registros administrativos con identificador | B y C: con llave se puede hacer RD; sin diseño causal la llave sola no basta | Pendiente: sin acceso a DPS |
 | 4 | Cotas de identificación parcial (Fréchet-Manski + supuestos de monotonía) | Solo lo que ya hay | Acota el efecto sin suponer CIA; más informativa con supuestos creíbles (los elegibles son más necesitados) | Fréchet-Manski ya implementado (`cotas_frechet_manski.py`); falta sumar monotonía |
 | 5 | Sensibilidad a variables omitidas (Cinelli-Hazlett / E-value) | Solo lo que ya hay | Cuánto tendría que pesar un factor no observado para anular el resultado | No implementado |

@@ -109,6 +109,13 @@ abierta y recomendación, no como conclusión causal). Reglas del tutor:
   8. Verificar con los datos (cruce con otra variable) antes de usar un
   código por su letra.
 
+- **La GEIH anual junta 12 muestras mensuales, cada una expandida a toda
+  la población:** la suma de `fex` del año son 12 veces los hogares
+  (214,9 millones en vez de 17,9). Para un total de hogares o personas,
+  dividir por el número de meses (mes promedio); proporciones y tasas no
+  cambian. Hasta el 2026-11-10 `verificar_representatividad_sisben.py`
+  no dividía y las coberturas salían 12 veces menores. No da error.
+
 - **Agosto 2024 de GEIH se carga desde `.DTA`** (7 de 8 módulos).
   Hasta el 2026-11-02, `parse_stata_a_parquet` dejaba los códigos como
   `"1.0"` y los faltantes como `"nan"`, y toda comparación de texto
@@ -222,7 +229,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 51 de 51 el 2026-11-10). Antes de mapear una
+cuando el error vuelve; 53 de 53 el 2026-11-10). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

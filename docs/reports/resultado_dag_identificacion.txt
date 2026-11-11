@@ -1,11 +1,13 @@
-=== Diseño principal LITERAL (un solo nodo elegibilidad_real) ===
-  d_separado_dado_X: False
-  d_separado_dado_X_mas_elegibilidad_real: True
-=== Diseño principal REFINADO (elegibilidad donante != receptor) ===
-  d_separado_dado_X: True
-  d_separado_dado_X_mas_elegibilidad_receptor_elegibilidad_donante: True
+  literal_grupo_indep_y_dado_X: False
+  literal_grupo_indep_y_dado_X_y_elegibilidad: True
+  refinado_grupo_indep_y_dado_X: True
+  refinado_grupo_indep_y_sin_ajuste: False
+  refinado_elegibilidad_identificada_dado_X_Z: False
+  fusion_registro_ignorable_con_U: False
+  fusion_registro_ignorable_sin_U: True
+  simulacion_ajuste_X_Z_con_gamma: False
+  simulacion_ajuste_X_Z_sin_gamma: True
+  simulacion_hotdeck_indep_y_dado_X: True
+  una_tabla_regla_exogena: True
 
-Guardado: docs\resultados\IDENTIFICACION_CAUSAL.md
-Guardado: docs\resultados\dag_diseno_principal.png
-Guardado: docs\resultados\dag_diseno_principal_refinado.png
-Guardado: docs\resultados\dag_una_tabla.png
+Guardado: docs\resultados\2_diagnostico_datos_reales\IDENTIFICACION_CAUSAL.md y 5 diagramas

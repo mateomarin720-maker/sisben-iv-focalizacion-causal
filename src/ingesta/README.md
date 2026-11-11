@@ -42,7 +42,7 @@ Módulos de conexión a fuentes de datos.
 | IPM 2024 | ✅ Ingestado |
 | Sisbén IV nacional (ANDA-DNP) | ✅ Ingestado |
 | Sisbén IV Bogotá (SDP, CSV) | ✅ Armonizado directamente desde el CSV (`src/armonizacion/armonizar_sisben_bogota_sdp.py`, filtrado a hogares vigentes — el archivo es un registro continuo, no un corte único) |
-| DPS | ⏳ Por gestionar; escribir el conector cuando se defina el canal de entrega |
+| DPS | Fuera del alcance: el proyecto no solicitará más datos |
 
 La armonización entre fuentes y el emparejamiento no pertenecen a esta
 carpeta: ver `src/armonizacion/` y `src/emparejamiento/`.
