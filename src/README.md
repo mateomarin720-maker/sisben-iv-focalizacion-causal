@@ -44,6 +44,8 @@ Detalle de esta carpeta: `diagnostico/README.md`.
 | Ruta | Qué hace |
 |---|---|
 | `simulacion/` | Módulo del framework: hogares reales de la GEIH, tratamiento y efecto simulados, y qué estimador recupera el efecto según el vínculo entre fuentes. Exige las columnas canónicas (`contrato.py`). `python -m src.simulacion [n_jobs]` |
+| `simulacion/calibrar.py`, `simulacion/generador.py` | Modo simulado: parámetros agregados de la GEIH y el Sisbén (sin grupos de menos de 30 hogares) y población sintética con las columnas canónicas |
+| `simulacion/datos_propios.py` | Modo de datos propios: con el grupo observado, DML con la celda exacta y cota de Fréchet; con Hot-Deck, rotulado como placebo |
 | `simulacion/sensibilidad_semisintetica.py` | Sensibilidad de la evaluación a la confusión no observada y al solapamiento |
 | `simulacion/simulacion_identificacion.py` | Simulación sintética previa: por qué el Hot-Deck da un placebo |
 
