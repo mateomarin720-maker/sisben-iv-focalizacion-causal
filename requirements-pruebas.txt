@@ -1,6 +1,6 @@
 # Lo mínimo para correr tests/ (integración continua, .github/workflows/pruebas.yml).
 # Versiones fijadas a las del .venv con el que pasan las pruebas
-# (2026-11-04; 243 pruebas al 2026-11-10). El entorno completo del proyecto está en pyproject.toml.
+# (2026-11-04; 252 pruebas al 2026-11-11). El entorno completo del proyecto está en pyproject.toml.
 pandas==2.3.3
 numpy==2.4.6
 pyarrow==16.1.0

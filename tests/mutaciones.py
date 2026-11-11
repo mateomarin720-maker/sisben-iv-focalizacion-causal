@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-10: 53 de 53 mutaciones detectadas.
+Resultado del 2026-11-10: 56 de 56 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -95,6 +95,12 @@ MUTACIONES = [
      "tests/test_ingesta_y_validacion.py"),
     ("Representatividad: hogares GEIH sumando los 12 meses", "src/validacion/verificar_representatividad_sisben.py",
      '["fex"].sum() / meses)', '["fex"].sum())', "tests/test_ingesta_y_validacion.py"),
+    ("DML: la regularización vigente cambia sin aviso", "src/5_estimacion.py",
+     "ALPHA_Y, C_T = 1.0, 10.0", "ALPHA_Y, C_T = 1e-6, 1e6", "tests/test_estimacion_dml.py"),
+    ('Modo simulado: guarda grupos con menos hogares que el umbral', 'src/simulacion/calibrar.py',
+     '            if len(g) < UMBRAL:\n', '            if len(g) < 1:\n', 'tests/test_simulacion_generador.py'),
+    ('Datos propios: el Hot-Deck no se rotula como placebo', 'src/simulacion/datos_propios.py',
+     '    if (vinculo == "hotdeck").any():', '    if False:', 'tests/test_simulacion_generador.py'),
     # Cotas con supuestos de monotonía
     ("Cotas: la dependencia positiva no recorta P11", "src/diagnostico/cotas_frechet_manski.py",
      "lo11_dep = np.maximum(lo11, p_y * p_t)", "lo11_dep = lo11", "tests/test_cotas_frechet_manski.py"),

@@ -2,6 +2,29 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-11 (37) — Módulo de simulación completo y regularización como sensibilidad
+
+### Agregado
+- Paso 6 del diseño, modo simulado: `src/simulacion/calibrar.py` resume la GEIH y el Sisbén
+  en `parametros/poblacion_2024.json` (solo agregados; ningún grupo de menos de 30 hogares)
+  y `generador.py` produce hogares sintéticos con las columnas canónicas. Reproduce zona,
+  sexo del jefe, ingreso y P(T | celda); la pobreza sale en 30,0 % frente a 28,0 % y la
+  relación entre P(T | celda) y pobreza se atenúa (0,24 frente a 0,29).
+- Paso 7, modo de datos propios: `datos_propios.py` estima con el grupo observado (DML con
+  la celda exacta y cota de Fréchet) y rotula el Hot-Deck como placebo. Con la GEIH
+  enlazada reproduce exactamente `5_estimacion.py` y las cotas publicadas.
+- `python -m src.simulacion simulado | propios --salida CARPETA`; sin subcomando, la corrida
+  de la tesis igual que antes (misma firma, mismas salidas).
+- Pruebas en `tests/test_simulacion_generador.py` y dos mutaciones.
+
+### Cambiado
+- La regularización de los modelos auxiliares (alpha 1, C 10) queda como parámetro de
+  `_modelos_auxiliares`; la casi nula (`CASI_SIN_REGULARIZAR`) es la sensibilidad. Se probó
+  como vigente y se revirtió para que las cifras del documento sigan trazables:
+  `5_estimacion.py` reproduce su reporte publicado línea por línea. Prueba y mutación.
+- `RESULTADOS_CAUSALFOREST_CATE.md`: la heterogeneidad no es pequeña, no es identificable
+  con estas fuentes (cotas por subgrupo).
+
 ## 2026-11-10 (36) — Auditoría del repositorio para el jurado
 
 ### Cambiado

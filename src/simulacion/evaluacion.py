@@ -129,20 +129,34 @@ def pendientes(res: pd.DataFrame, bosque: bool) -> pd.DataFrame:
     return r[falla]
 
 
-def _firma(n: int) -> str:
+def _firma(n: int, **origen) -> str:
     """Huella de la configuración. Versión 3: el Hot-Deck simulado usa la
     cadena de respaldos del pipeline (antes, sin donantes en la celda se
     sorteaba en todo el registro); las repeticiones de la versión 2 no se
-    mezclan con las nuevas."""
+    mezclan con las nuevas. `origen` distingue los modos simulado y de
+    datos propios (vacío en la corrida de la tesis)."""
     cfg = dict(ESCENARIOS=ESCENARIOS, VINCULOS=VINCULOS, OUTCOMES=OUTCOMES, B_X=B_X, TAU=TAU, H_RD=H_RD,
-               LINEAS=contrato.LINEAS, SEED=SEED, n=n, version=3)
+               LINEAS=contrato.LINEAS, SEED=SEED, n=n, version=3, **origen)
     return hashlib.sha1(json.dumps(cfg, sort_keys=True).encode()).hexdigest()[:12]
 
 
-def _previas(n: int) -> pd.DataFrame | None:
+def rutas(salida: Path | None = None) -> dict[str, Path]:
+    """Dónde se guardan las salidas: las de la tesis (`docs/`) o, en los
+    modos simulado y de datos propios, una carpeta propia."""
+    if salida is None:
+        return dict(out=OUT, resumen=OUT_RESUMEN, convergencia=OUT_CONVERGENCIA, firma=OUT_FIRMA,
+                    figura=reportes.FIGURA, tablas=reportes.OUT_TABLAS)
+    salida = Path(salida)
+    salida.mkdir(parents=True, exist_ok=True)
+    return dict(out=salida / "evaluacion.csv", resumen=salida / "evaluacion_resumen.csv",
+                convergencia=salida / "evaluacion_convergencia.csv", firma=salida / "evaluacion_config.json",
+                figura=salida / "evaluacion_convergencia.png", tablas=salida / "evaluacion_tablas.md")
+
+
+def _previas(n: int, r: dict[str, Path], firma: str) -> pd.DataFrame | None:
     """Repeticiones ya guardadas con la misma configuración (para reanudar)."""
-    if OUT.exists() and OUT_FIRMA.exists() and json.loads(OUT_FIRMA.read_text()).get("firma") == _firma(n):
-        return reportes.sin_marca(pd.read_csv(OUT))
+    if r["out"].exists() and r["firma"].exists() and json.loads(r["firma"].read_text()).get("firma") == firma:
+        return reportes.sin_marca(pd.read_csv(r["out"]))
     return None
 
 
@@ -160,21 +174,33 @@ def cargar_base(hogares: Path = HOGARES, registro: Path = REGISTRO) -> pd.DataFr
     return preparar_base(pd.read_parquet(hogares, columns=contrato.columnas("hogares")), p_t)
 
 
-def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro: Path = REGISTRO) -> pd.DataFrame:
+def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro: Path = REGISTRO,
+         base: pd.DataFrame | None = None, salida: Path | None = None, origen: dict | None = None,
+         max_reps: int = MAX_REPS) -> pd.DataFrame:
+    """Evaluación hasta la convergencia. Sin `base` ni `salida`, es la
+    corrida de la tesis (hogares de la GEIH, salidas en `docs/`). Los modos
+    del framework pasan su propia `base`, una carpeta de `salida` y su
+    `origen` (para no mezclar repeticiones de poblaciones distintas)."""
     from joblib import Parallel, delayed, parallel_config
 
-    logger.info("Cargando %s y P(T | celda) de %s", hogares, registro)
-    b = cargar_base(hogares, registro)
-    logger.info("Base: %s hogares reales, %s celdas | tau medio %.4f", f"{len(b):,}", b["celda"].nunique(),
+    if base is None:
+        logger.info("Cargando %s y P(T | celda) de %s", hogares, registro)
+        b = cargar_base(hogares, registro)
+    else:
+        b = base
+    n = min(n, len(b) // 2)  # la otra mitad es el registro del que salen los donantes
+    logger.info("Base: %s hogares, %s celdas | tau medio %.4f", f"{len(b):,}", b["celda"].nunique(),
                 b["tau"].mean())
+    rr = rutas(salida)
+    firma = _firma(n, **(origen or {}))
 
-    r = _previas(n)
+    r = _previas(n, rr, firma)
     if r is not None:
         logger.info("Reanudando: %d repeticiones ya guardadas", r["rep"].nunique())
     else:
         r = pd.DataFrame()
-        OUT_FIRMA.write_text(json.dumps(dict(firma=_firma(n), n=n)))
-    traza = [] if r.empty or not OUT_CONVERGENCIA.exists() else [pd.read_csv(OUT_CONVERGENCIA)]
+        rr["firma"].write_text(json.dumps(dict(firma=firma, n=n)))
+    traza = [] if r.empty or not rr["convergencia"].exists() else [pd.read_csv(rr["convergencia"])]
 
     while True:
         hechas = 0 if r.empty else r["rep"].nunique()
@@ -183,7 +209,7 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
         falta = hechas < MIN_REPS or len(pendientes(res, bosque=False)) > 0
         falta_bosque = reps_bosque < MIN_REPS_BOSQUE or (res is not None and len(pendientes(res, bosque=True)) > 0)
         falta_bosque = falta_bosque and reps_bosque < MAX_REPS_BOSQUE
-        if (not falta and not falta_bosque) or hechas >= MAX_REPS:
+        if (not falta and not falta_bosque) or hechas >= max_reps:
             break
         lote = list(range(hechas, hechas + LOTE))
         con_bosque = falta_bosque
@@ -192,10 +218,10 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
             partes = Parallel(n_jobs=n_jobs)(delayed(una_repeticion)(b, rep, n, con_bosque) for rep in lote)
         nuevas = pd.DataFrame([f for p in partes for f in p])
         r = pd.concat([r, nuevas], ignore_index=True)
-        reportes.marcar_simulado(r).to_csv(OUT, index=False)
+        reportes.marcar_simulado(r).to_csv(rr["out"], index=False)
         res = resumir(r)
         traza.append(res.assign(reps_total=r["rep"].nunique()))
-        reportes.marcar_simulado(pd.concat(traza, ignore_index=True)).to_csv(OUT_CONVERGENCIA, index=False)
+        reportes.marcar_simulado(pd.concat(traza, ignore_index=True)).to_csv(rr["convergencia"], index=False)
         p, pb = pendientes(res, False), pendientes(res, True)
         logger.info("Lote reps %d-%d%s en %.0f s | celdas sin converger: %d (+ %d de Causal Forest) | "
                     "MCSE sesgo máx %.4f, cobertura máx %.3f",
@@ -203,9 +229,9 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
                     res["mcse_sesgo"].max(), res["mcse_cobertura"].max())
 
     res = resumir(r)
-    reportes.marcar_simulado(res).to_csv(OUT_RESUMEN, index=False)
-    reportes.graficar_convergencia(pd.read_csv(OUT_CONVERGENCIA))
-    reportes.tablas_markdown(res)
+    reportes.marcar_simulado(res).to_csv(rr["resumen"], index=False)
+    reportes.graficar_convergencia(pd.read_csv(rr["convergencia"]), rr["figura"])
+    reportes.tablas_markdown(res, rr["tablas"])
     conv = len(pendientes(res, False)) == 0 and len(pendientes(res, True)) == 0
 
     pd.set_option("display.width", 250)
@@ -213,7 +239,7 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
     print(f"\n{reportes.NOTA_SIMULADO}")
     print(f"\n=== Simulación semisintética*: {r['rep'].nunique()} repeticiones "
           f"(Causal Forest en {r.loc[r['estimador'] == 'causal_forest', 'rep'].nunique()}), "
-          f"encuesta de {n:,} hogares reales ===")
+          f"encuesta de {n:,} hogares{' reales' if base is None else ''} ===")
     print(f"Convergencia (MCSE sesgo ≤ {UMBRAL_SESGO}, cobertura ≤ {UMBRAL_COBERTURA}): "
           f"{'alcanzada en todas las celdas' if conv else 'NO alcanzada en todas (ver pendientes abajo)'}")
     cols = ["vinculo", "estimador", "reps", "efecto_verdadero", "estimacion", "sesgo", "mcse_sesgo", "rmse",
@@ -225,6 +251,5 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
         print("\nCeldas sin converger:")
         print(pd.concat([pendientes(res, False), pendientes(res, True)])[CELDA + ["reps", "mcse_sesgo",
                                                                                  "mcse_cobertura"]].to_string(index=False))
-    print(f"\nGuardado: {OUT}\nGuardado: {OUT_RESUMEN}\nGuardado: {OUT_CONVERGENCIA}\nGuardado: {reportes.FIGURA}"
-          f"\nGuardado: {reportes.OUT_TABLAS}")
+    print("\n" + "\n".join(f"Guardado: {rr[k]}" for k in ("out", "resumen", "convergencia", "figura", "tablas")))
     return res

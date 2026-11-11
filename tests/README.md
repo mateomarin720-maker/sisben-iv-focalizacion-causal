@@ -1,6 +1,6 @@
 # Pruebas
 
-243 pruebas en 21 archivos (2026-11-10). Casi todas usan datos
+252 pruebas en 22 archivos (2026-11-11). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -40,6 +40,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_cotas_frechet_manski.py` | `diagnostico/cotas_frechet_manski.py` | Con supuestos de monotonía: la cota contiene el ATE de toda población que cumple el supuesto (25 configuraciones) y cada supuesto la angosta o la deja igual. Casos exactos (P(Y) = 0 o 1 → [0; 0]); la cota contiene el efecto de toda distribución conjunta compatible y alcanza sus extremos (2.000 conjuntas × 5 semillas); ATE ponderado por peso de celda; cada probabilidad de su fuente | El resultado de identificación central no tenía pruebas |
 | `test_cotas_frechet_modelos.py` | `diagnostico/cotas_frechet_modelos.py` | Con Y binaria coincide con la fórmula de Fréchet; con Y continua y pesos, el contraste verdadero de poblaciones al azar cae en la cota y el acople extremo la alcanza (5 semillas); agregación del ATE, ATT y ATU; subgrupos con el código común (paredes 2 = ladrillo en GEIH, tapia en el Sisbén) | Colas que toman más peso del que tiene el hogar |
 | `test_errores_focalizacion_frechet.py` | `diagnostico/errores_focalizacion_frechet.py` | Las tasas verdaderas de poblaciones al azar (dependencia arbitraria dentro de la celda, 5 semillas) caen en la cota; las cotas se alcanzan; mismas definiciones que las reglas simuladas; e por la cadena de respaldos del Hot-Deck | Cota de exclusión con e en vez de 1 − e |
+| `test_simulacion_generador.py` | `simulacion/calibrar.py`, `generador.py`, `datos_propios.py` | Ningún grupo de los parámetros con menos de 30 hogares; la población sintética cumple el contrato, reproduce las marginales y los efectos de X en el ingreso y es reproducible con la semilla; P(T \| celda) con la cadena de respaldos; con el grupo observado por llave el DML recupera un efecto conocido, y con Hot-Deck se rotula como placebo | Guardar grupos pequeños; Hot-Deck presentado como efecto |
 | `test_variables_canonicas.py` | `utils/variables_canonicas.py` | Llaves con formatos distintos ("01", "1.0", " 1 "); jefe por fuente; cortes del ciclo de vida de `PER002`; GEIH y Sisbén en los mismos tramos del Hot-Deck | `mes` "01" frente a "1" (2026-11-02); celdas que no empatan entre fuentes |
 | `test_ingesta_y_validacion.py` | `ingesta/geih_loader.py`, `validacion/comparar_pobreza_monetaria_oficial.py`, `4_dag_identificacion.py` | Los 8 módulos de los 12 meses con las variantes reales ("No ocupado" en marzo, agosto desde `.DTA`, carpetas vacías); Latin-1; cruce uno a uno con la base oficial; chequeos de identificación de los cinco DAG (placebo del Hot-Deck, registro en el Sisbén, confusión de la simulación) | Meses incompletos sin aviso; cruce vacío con la base oficial |
 | `test_hotdeck_celda.py` | `emparejamiento/…` | Celda con nivel de pisos; falla si falta `viv_pisos` | Celda que cae al respaldo sin avisar |

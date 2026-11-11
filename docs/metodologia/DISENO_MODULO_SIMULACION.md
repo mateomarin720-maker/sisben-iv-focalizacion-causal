@@ -150,11 +150,16 @@ src/simulacion/
 Línea de comandos:
 
 ```bash
-# Modo simulado (sin datos)
-poetry run python -m src.simulacion simulado --hogares 300000 --semilla 2026
+# Corrida de la tesis (salidas en docs/)
+poetry run python -m src.simulacion [n_jobs]
 
-# Modo datos propios
-poetry run python -m src.simulacion propios --hogares ruta/hogares.parquet [--registro ruta/registro.parquet]
+# Modo simulado (sin datos)
+poetry run python -m src.simulacion simulado --salida CARPETA [--hogares 300000] [--semilla 2026]
+
+# Modo datos propios (Parquet o CSV con las columnas canónicas)
+poetry run python -m src.simulacion propios --hogares ruta/hogares.parquet --salida CARPETA [--registro ruta/registro.parquet]
+
+# En los dos modos: [--procesos 3] [--repeticiones N] [--encuesta 30000]
 ```
 
 Lo que **sí** es configurable (el «resto del framework»): escenarios,
@@ -182,7 +187,29 @@ resultados reales o cerca de ellos. En el módulo:
 
 ## 7. Migración desde `src/validacion/`
 
-**Estado (2026-11-08): pasos 1 a 5 hechos** (el 5, asterisco en tablas y figura y columna `simulado` en los CSV). Paso 4: la cadena se
+**Estado (2026-11-11): pasos 1 a 7 hechos.**
+
+- **Paso 6, modo simulado.** `calibrar.py` resume la GEIH y el Sisbén
+  en `parametros/poblacion_2024.json` (239 KB, solo proporciones y
+  momentos; ningún grupo de menos de 30 hogares; P(T | celda) de las
+  993 celdas). `generador.py` sortea hogares con las columnas canónicas.
+  Con 290.968 hogares sintéticos se reproducen la zona (87,1 %), el
+  sexo del jefe (49,3 %), el ingreso medio (13,44 en log) y su
+  dispersión, P(T | celda) (0,468 frente a 0,467) y el efecto medio. La
+  pobreza sale en 30,0 % frente a 28,0 %, y la correlación entre
+  P(T | celda) y la pobreza baja de 0,29 a 0,24, porque la cadena no
+  modela la dependencia fina dentro de la celda. Sirve para probar el
+  procedimiento sin microdatos, no para reemplazar a los hogares reales.
+- **Paso 7, modo de datos propios.** `datos_propios.py` estima con el
+  grupo observado: LinearDML con la celda exacta (los mismos modelos de
+  `5_estimacion.py`) y la cota de Fréchet del mismo contraste; con
+  `vinculo = hotdeck` lo rotula como placebo. Comprobación: con la GEIH
+  enlazada por Hot-Deck reproduce exactamente el DML de
+  `5_estimacion.py` (log-ingreso +0,0006 [−0,0128; +0,0141]; pobreza
+  monetaria −0,0002 [−0,0036; +0,0033]) y las cotas publicadas.
+- Pruebas en `tests/test_simulacion_generador.py`, con dos mutaciones.
+
+**Estado anterior (2026-11-08): pasos 1 a 5 hechos** (el 5, asterisco en tablas y figura y columna `simulado` en los CSV). Paso 4: la cadena se
 define una vez (`claves_por_nivel`, en el módulo del Hot-Deck) y la usan
 `hotdeck()` y `vinculo.sortear_donante`; el Hot-Deck del pipeline
 reproduce el Parquet guardado. Con la base real, el 0,03 % de la encuesta

@@ -39,7 +39,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
-| Pruebas | Hechas | 243 pruebas y 53 mutaciones al 10 nov, con integración continua |
+| Pruebas | Hechas | 252 pruebas y 56 mutaciones al 11 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
 
@@ -127,12 +127,12 @@ El grupo imputado solo lleva la información de la celda, así que su desempeño
 
 ## Pruebas y calidad del código
 
-La suite pasa en GitHub Actions: 243 pruebas al 10 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
+La suite pasa en GitHub Actions: 252 pruebas al 11 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
 
 | Aspecto | Estado |
 | --- | --- |
 | Integración continua | `.github/workflows/pruebas.yml` corre la suite y la prueba de mutación en cada push a `main` y en cada PR (Python 3.11). Últimas corridas en verde |
-| Prueba de mutación | Se reintroducen 53 errores y los 53 hacen fallar alguna prueba |
+| Prueba de mutación | Se reintroducen 56 errores y los 56 hacen fallar alguna prueba |
 | Cobertura | Armonización contra los diccionarios oficiales, DML, cotas de Fréchet-Manski, reglas de focalización, simulación semisintética y su sensibilidad |
 | Estabilidad | Cinco corridas seguidas sin fallos; pruebas con azar usan semillas fijas |
 | Comando del proyecto | `poetry run pytest` pasa desde el 4 de noviembre (`pythonpath` en `pyproject.toml`); ningún script usa ya `warnings.filterwarnings("ignore")` |
