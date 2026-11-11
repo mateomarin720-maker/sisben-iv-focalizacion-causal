@@ -21,12 +21,12 @@ En los niveles nuevos, tau = 0,095 + 0,06 · h estandarizado (media igual
 a la del generador, desviación más del doble), con un piso de 0,005, y el
 Causal Forest ve todos los modificadores (X): es el caso favorable al
 CATE. Papel de cada variable: modificadora del efecto; la asignación y la
-confusión no cambian (`docs/resultados/SIMULACION_SEMISINTETICA.md`).
+confusión no cambian (`docs/resultados/3_simulacion/SIMULACION_SEMISINTETICA.md`).
 
 Las cifras son simuladas (*).
 
 Uso:
-    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.heterogeneidad_ampliada [n_jobs] [nivel]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.heterogeneidad_ampliada [n_jobs] [nivel]
 Salidas (por nivel):
     docs/reports/heterogeneidad_<nivel>{.csv,_resumen.csv,_config.json}
 """
@@ -39,7 +39,7 @@ import numpy as np
 import pandas as pd
 
 from src.simulacion.escenarios import TAU
-from src.validacion import reglas_focalizacion as rf
+from src.focalizacion import reglas_focalizacion as rf
 
 NIVELES = ("ampliado", "complejo")
 TAU_MEDIA, TAU_DESVIACION, TAU_PISO = 0.095, 0.06, 0.005

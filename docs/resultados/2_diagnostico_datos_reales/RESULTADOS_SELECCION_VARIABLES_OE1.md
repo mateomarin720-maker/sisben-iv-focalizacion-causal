@@ -1,7 +1,7 @@
 # Resultados — Selección de variables: LASSO, Ridge y SHAP (OE1)
 
 Generado 2026-11-02 por
-`src/estimacion/seleccion_variables_lasso_shap.py`. Salida completa:
+`src/diagnostico/seleccion_variables_lasso_shap.py`. Salida completa:
 `docs/reports/seleccion_variables_lasso_ridge_shap.txt` (consola) y
 `docs/reports/seleccion_variables_lasso_ridge_shap.csv` (tabla
 combinada) y `docs/reports/seleccion_variables_metricas_por_clase.csv`
@@ -170,11 +170,11 @@ de exactitud no mide la validez del Sisbén frente a la pobreza.
 - No es un modelo causal: una variable importante para PREDECIR el
   `Grupo` no implica que el Sisbén la use con una dirección "correcta"
   de política, ni dice nada sobre el bienestar del hogar — ver
-  `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` y
+  `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md` y
   `RESULTADOS_CAUSALFOREST_CATE.md` para la parte causal del proyecto.
 
 ## Cómo reproducirlo
 
 ```bash
-poetry run python -m src.estimacion.seleccion_variables_lasso_shap
+poetry run python -m src.diagnostico.seleccion_variables_lasso_shap
 ```

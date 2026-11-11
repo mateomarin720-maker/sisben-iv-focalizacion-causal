@@ -1,6 +1,6 @@
 # Resultados — Errores de inclusión y exclusión del Sisbén con datos reales
 
-Generado el 2026-11-10 por `src/estimacion/errores_focalizacion_frechet.py`.
+Generado el 2026-11-10 por `src/diagnostico/errores_focalizacion_frechet.py`.
 Detalle nacional y por departamento: `docs/reports/errores_focalizacion_frechet.csv`;
 salida de consola: `docs/reports/errores_focalizacion_frechet.txt`.
 

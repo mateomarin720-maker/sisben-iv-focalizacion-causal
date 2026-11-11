@@ -1,11 +1,11 @@
-"""Heterogeneidad ampliada del efecto (`src/validacion/heterogeneidad_ampliada.py`)."""
+"""Heterogeneidad ampliada del efecto (`src/focalizacion/heterogeneidad_ampliada.py`)."""
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from src.validacion import heterogeneidad_ampliada as ha
+from src.focalizacion import heterogeneidad_ampliada as ha
 
 
 def _base(n: int = 4000, semilla: int = 0) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -66,7 +66,7 @@ def test_el_bosque_controla_la_celda_con_cualquier_x(x_cols):
     """La celda confunde (sube T y Y a la vez); con X de 3 o de 9 columnas,
     el ATE del bosque debe quedar cerca del verdadero. Con el codificador
     armado para 3 X, la celda quedaba fuera y el ATE salía negativo."""
-    from src.validacion import reglas_focalizacion as rf
+    from src.focalizacion import reglas_focalizacion as rf
     b, _ = _base(6000, semilla=1)
     rng = np.random.default_rng(2)
     b["hotdeck_celda_cat"] = rng.integers(0, 12, len(b)).astype(float)

@@ -3,7 +3,7 @@
 Estado: **Fase 1 revisada; decisiones D1-D7 cerradas el 2026-11-02.** La
 construcción está en `01_diccionario_ingreso.md` y
 `src/indicadores/pobreza_monetaria_geih.py`; los resultados, en
-`docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`. Este documento se
+`docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`. Este documento se
 conserva como auditoría. **Corrección:** `P6430` = 7 es jornalero, no
 "sin remuneración" (ver §1.1).
 
@@ -286,7 +286,7 @@ sensibilidad individuales (D6).
 | Script reproducible | `src/indicadores/pobreza_monetaria_geih.py` | después de la revisión |
 | Parquet | `data/2_models/muestra_pobreza_monetaria_reconstruida_2024.parquet` | después de la revisión |
 | Comparación oficial | `docs/reports/validacion_pobreza_monetaria.csv` | después de la revisión |
-| Reporte metodológico y de resultados | `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md` (reescrito) | después de la revisión |
+| Reporte metodológico y de resultados | `docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md` (reescrito) | después de la revisión |
 
 ---
 
@@ -340,8 +340,8 @@ son incorrectas:
   imputar.
 
 Archivos con la afirmación: `src/3b_preprocesamiento_monetario.py`,
-`src/README.md`, `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`,
-`docs/resultados/README.md`, `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`,
+`src/README.md`, `docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`,
+`docs/resultados/README.md`, `docs/resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md`,
 `docs/seguimiento/RESUMEN_AVANCES.md`,
 `docs/seguimiento/CHANGELOG_PENDIENTES.md`. Se corrigen al construir la
 nueva versión, que reemplaza ese texto. Mientras tanto,

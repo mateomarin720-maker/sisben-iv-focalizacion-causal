@@ -60,9 +60,9 @@ como pendientes y quedan fuera del alcance.
 | 4. Emparejamiento | `src/emparejamiento/` | GEIH ← Sisbén, por celda | `RESULTADOS_HOTDECK.md` |
 | 5. Resultados | `src/3_preprocesamiento.py`, `src/indicadores/`, `src/3b_preprocesamiento_monetario.py` | Tabla de estimación | `RESULTADOS_POBREZA_MONETARIA.md` |
 | 6. Identificación | `src/4_dag_identificacion.py` | DAG | `IDENTIFICACION_CAUSAL.md` |
-| 7. Estimación | `src/5_estimacion.py`, `src/estimacion/` | Diagnóstico y cotas | `RESULTADOS_DML_ATE_ATT_ATU.md`, `RESULTADOS_FRECHET_MANSKI.md` |
+| 7. Estimación | `src/5_estimacion.py`, `src/diagnostico/` | Diagnóstico y cotas | `RESULTADOS_DML_ATE_ATT_ATU.md`, `RESULTADOS_FRECHET_MANSKI.md` |
 | 8. Simulación | `src/simulacion/`, `src/validacion/` | Evaluación semisintética\* | `SIMULACION_SEMISINTETICA.md`, `RESULTADOS_REGLAS_FOCALIZACION.md` |
-| 9. Focalización | `src/estimacion/variables_candidatas_pobreza.py`, `incidencia_transferencias.py` | Recomendación e incidencia | `RECOMENDACION_VARIABLES_POBREZA.md` |
+| 9. Focalización | `src/diagnostico/variables_candidatas_pobreza.py`, `incidencia_transferencias.py` | Recomendación e incidencia | `RECOMENDACION_VARIABLES_POBREZA.md` |
 
 Los reportes crudos van a `docs/reports/`, y su interpretación, a `docs/resultados/`.
 
@@ -152,17 +152,17 @@ poetry run python src/3_preprocesamiento.py
 poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
-poetry run python -m src.estimacion.cotas_frechet_manski
-poetry run python -m src.estimacion.cotas_frechet_modelos
-poetry run python -m src.estimacion.errores_focalizacion_frechet
-poetry run python -m src.estimacion.seleccion_variables_lasso_shap
-poetry run python -m src.estimacion.variables_candidatas_pobreza 6
-poetry run python -m src.estimacion.incidencia_transferencias
+poetry run python -m src.diagnostico.cotas_frechet_manski
+poetry run python -m src.diagnostico.cotas_frechet_modelos
+poetry run python -m src.diagnostico.errores_focalizacion_frechet
+poetry run python -m src.diagnostico.seleccion_variables_lasso_shap
+poetry run python -m src.diagnostico.variables_candidatas_pobreza 6
+poetry run python -m src.diagnostico.incidencia_transferencias
 poetry run python -m src.simulacion
-poetry run python -m src.validacion.reglas_focalizacion
-poetry run python -m src.validacion.heterogeneidad_ampliada
-poetry run python -m src.validacion.sensibilidad_semisintetica
-poetry run python -m src.validacion.variabilidad_hotdeck 2
+poetry run python -m src.focalizacion.reglas_focalizacion
+poetry run python -m src.focalizacion.heterogeneidad_ampliada
+poetry run python -m src.simulacion.sensibilidad_semisintetica
+poetry run python -m src.diagnostico.variabilidad_hotdeck 2
 ```
 
 Los scripts numerados se ejecutan directamente: un módulo no puede empezar por dígito. En

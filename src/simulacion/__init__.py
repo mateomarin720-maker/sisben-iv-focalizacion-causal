@@ -3,7 +3,7 @@ estimadores e integración de fuentes, reutilizable por otras
 instituciones con las columnas canónicas (`contrato.py`).
 
 Diseño: `docs/metodologia/DISENO_MODULO_SIMULACION.md`. Resultados con
-los hogares de la GEIH 2024: `docs/resultados/SIMULACION_SEMISINTETICA.md`.
+los hogares de la GEIH 2024: `docs/resultados/3_simulacion/SIMULACION_SEMISINTETICA.md`.
 
     contrato     columnas exigidas por tabla, dominios y validar()
     base         tabla canónica -> tabla de trabajo (celda, X, Y0, U, tau)

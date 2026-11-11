@@ -150,5 +150,5 @@ W = CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)
 Cómo leer esto: el grupo imputado se sortea al azar dentro de la celda,
 así que con la celda controlada el efecto esperado es ≈0 (placebo del
 emparejamiento, no efecto del Sisbén) — ver
-docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md.
+docs/resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md.
 ======================================================================

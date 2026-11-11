@@ -55,7 +55,7 @@ canónico ya armonizado en `sisben_estandarizado_2024_con_bogota.parquet`
   lineales no capturan.
 
 Uso:
-    poetry run python -m src.estimacion.seleccion_variables_lasso_shap
+    poetry run python -m src.diagnostico.seleccion_variables_lasso_shap
 Salida: docs/reports/seleccion_variables_lasso_ridge_shap.csv + resumen
 impreso en consola.
 """

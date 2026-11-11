@@ -45,7 +45,7 @@ una subpoblación (tratados o no tratados); error de inclusión/exclusión
 es un concepto de focalización (clasificar como pobre/no pobre a quien no
 lo es) que no se calcula en este script. No había cómputo erróneo, solo
 una etiqueta engañosa — corregida aquí y en
-`docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`.
+`docs/resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md`.
 
   (Se descartó `LinearDRLearner` para ATT/ATU — daba valores absurdos por
   inestabilidad del estimador doblemente robusto; ver docstring de
@@ -53,7 +53,7 @@ una etiqueta engañosa — corregida aquí y en
 
 Cada modelo corre con DOS especificaciones de `W`, para diagnosticar una
 discrepancia detectada el 2026-11-02 (ver
-`docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`):
+`docs/resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md`):
   - **`W_PROXY`** = `{geo_depto, nivel de pisos, jefe_edad,
     viv_cuartos}`: `jefe_edad`/`viv_cuartos` CONTINUOS como proxy de los
     tramos discretos que el Hot-Deck usa de verdad para el sorteo
@@ -84,7 +84,7 @@ la celda.
 ⚠️ Cómo leer los resultados: son un **diagnóstico de sensibilidad**, no
 efectos causales. El tratamiento se sortea al azar dentro de la celda,
 así que dentro de la celda T no depende de nada del hogar receptor; la
-simulación (`docs/resultados/SIMULACION_IDENTIFICACION.md`) muestra que
+simulación (`docs/resultados/3_simulacion/SIMULACION_IDENTIFICACION.md`) muestra que
 este contraste da ≈0 sea cual sea el efecto verdadero.
 
 ⚠️ Limitaciones — las mismas de siempre, sin excepción:
@@ -277,7 +277,7 @@ def main() -> None:
     print("Cómo leer esto: el grupo imputado se sortea al azar dentro de la celda,")
     print("así que con la celda controlada el efecto esperado es ≈0 (placebo del")
     print("emparejamiento, no efecto del Sisbén) — ver")
-    print("docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md.")
+    print("docs/resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md.")
     print("=" * 70)
 
 

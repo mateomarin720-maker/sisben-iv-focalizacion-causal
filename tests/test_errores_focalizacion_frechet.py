@@ -1,11 +1,11 @@
-"""Errores de focalización con cotas de Fréchet (`src/estimacion/errores_focalizacion_frechet.py`)."""
+"""Errores de focalización con cotas de Fréchet (`src/diagnostico/errores_focalizacion_frechet.py`)."""
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from src.estimacion import errores_focalizacion_frechet as ef
+from src.diagnostico import errores_focalizacion_frechet as ef
 
 
 def _poblacion(rng, n_celdas=30):

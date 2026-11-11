@@ -14,8 +14,8 @@ Las cantidades son de un mes promedio de 2024: el factor de expansión de cada m
 reproduce la población, así que se divide por 12.
 
 Uso:
-    poetry run python -m src.estimacion.incidencia_transferencias
-Interpretación: `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`.
+    poetry run python -m src.diagnostico.incidencia_transferencias
+Interpretación: `docs/resultados/2_diagnostico_datos_reales/RECOMENDACION_VARIABLES_POBREZA.md`.
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.estimacion.variables_candidatas_pobreza import K3, MESES, SI, _leer
+from src.diagnostico.variables_candidatas_pobreza import K3, MESES, SI, _leer
 from src.utils.variables_canonicas import normalizar_llave
 
 logger = logging.getLogger(__name__)

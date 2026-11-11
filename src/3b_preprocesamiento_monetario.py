@@ -5,7 +5,7 @@ unidad de gasto y la clasificación de pobreza **reconstruidos** por
 `src/indicadores/pobreza_monetaria_geih.py` (escenario base, decisiones
 D1-D7 del 2026-11-02). La metodología y la validación contra el DANE
 están en `docs/metodologia/pobreza_monetaria/01_diccionario_ingreso.md` y
-`docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+`docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`.
 
 Es una reconstrucción con microdatos públicos, no la cifra oficial: el
 DANE cruza GEIH con registros administrativos que no son públicos.

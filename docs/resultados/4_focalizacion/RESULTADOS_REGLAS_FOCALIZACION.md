@@ -1,6 +1,6 @@
 # Reglas de focalización (P3/OE3)
 
-Generado por `src/validacion/reglas_focalizacion.py`; corrida vigente:
+Generado por `src/focalizacion/reglas_focalizacion.py`; corrida vigente:
 2026-11-08, con la cadena de respaldos del Hot-Deck. 300
 repeticiones, evaluación en 30.000 hogares reales por repetición. Salidas
 en `docs/reports/`: `reglas_focalizacion.txt` (consola),
@@ -206,7 +206,7 @@ el efecto verdadero.
 ## Para reproducir
 
 ```bash
-PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.reglas_focalizacion 3 > docs/reports/reglas_focalizacion.txt 2>&1
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.reglas_focalizacion 3 > docs/reports/reglas_focalizacion.txt 2>&1
 poetry run pytest tests/test_reglas_focalizacion.py
 ```
 

@@ -3,7 +3,7 @@ supone independencia condicional (CIA).
 
 Item "por explorar" de la Tabla 1 del documento de pipeline (Roncancio y
 Fonseca, 2026): el Hot-Deck asume que, dada la celda X, el grupo Sisbén
-asignado es como-si-aleatorio (ver `docs/resultados/IDENTIFICACION_CAUSAL.md`).
+asignado es como-si-aleatorio (ver `docs/resultados/2_diagnostico_datos_reales/IDENTIFICACION_CAUSAL.md`).
 Si esa suposición falla, el DML (`src/5_estimacion.py`) puede estar sesgado
 sin que su IC95% lo refleje — el IC mide error de muestreo, no error de la
 suposición de independencia.
@@ -32,7 +32,7 @@ quedan fuera de este corte. Los hogares sin `POBRE_MONETARIO` (sin
 personas, ingreso per cápita indefinido) se excluyen de su cálculo.
 
 Uso (requiere 3b_preprocesamiento_monetario.py):
-    poetry run python -m src.estimacion.cotas_frechet_manski
+    poetry run python -m src.diagnostico.cotas_frechet_manski
 Salida: detalle por celda en docs/reports/cotas_frechet_manski.csv
         (POBRE_GEIH) y cotas_frechet_manski_pobre_monetario.csv, más un
         resumen impreso en consola.
@@ -223,7 +223,7 @@ def main() -> None:
 
     print(
         "\nATE puntual del DML con Hot-Deck (SÍ supone CIA): ver "
-        "docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md — no se hardcodea aquí."
+        "docs/resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md — no se hardcodea aquí."
     )
 
 

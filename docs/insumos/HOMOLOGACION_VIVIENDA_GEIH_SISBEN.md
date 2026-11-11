@@ -95,7 +95,7 @@ se pudo verificar con privaciones porque la entrega del SDP no trae
   escala común (H1-H7, P1-P5). Antes eso no era posible.
 - Se pueden sumar a la celda del Hot-Deck. Comparación de las tres
   celdas (actual, + pisos, + pisos + paredes) en
-  `docs/resultados/RESULTADOS_HOTDECK.md`: pisos aporta, paredes no.
+  `docs/resultados/1_datos_y_enlace/RESULTADOS_HOTDECK.md`: pisos aporta, paredes no.
 - En `5_estimacion.py` se usan como `X` dentro de una sola fuente (GEIH),
   con los códigos de GEIH, así que el uso actual no cambia.
 - La pista de que el residuo causal venía de "vivienda sin homologar"

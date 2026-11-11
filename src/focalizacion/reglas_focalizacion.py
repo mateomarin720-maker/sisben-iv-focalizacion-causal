@@ -3,7 +3,7 @@ brecha de pobreza (FGT1) con reglas de focalización informadas por los
 efectos heterogéneos, frente a la clasificación vigente?
 
 Con los datos actuales el efecto del Sisbén no está identificado (P2,
-`docs/resultados/SIMULACION_SEMISINTETICA.md`), así que el OE3 se responde
+`docs/resultados/3_simulacion/SIMULACION_SEMISINTETICA.md`), así que el OE3 se responde
 sobre el mismo mundo semisintético: **hogares, ingresos y líneas de
 pobreza reales** de GEIH 2024 y un programa con efecto conocido tau(X)
 (el de `src/simulacion/`). Las cifras son simuladas: dicen
@@ -64,7 +64,7 @@ Carlo de cada métrica queda bajo el umbral (como en la evaluación
 semisintética) y se reanudan si se interrumpen.
 
 Uso:
-    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.reglas_focalizacion [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.reglas_focalizacion [n_jobs]
 Salidas:
     docs/reports/reglas_focalizacion.csv (cada repetición)
     docs/reports/reglas_focalizacion_resumen.csv

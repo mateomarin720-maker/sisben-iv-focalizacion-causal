@@ -24,7 +24,7 @@ corrió hasta la convergencia (432 repeticiones): con hogares reales y
 efecto conocido, el Hot-Deck lleva cualquier estimación a ≈0, y solo una
 discontinuidad con puntaje continuo y vínculo hogar por hogar recupera
 el efecto cuando hay confusión no observada
-(`docs/resultados/SIMULACION_SEMISINTETICA.md`).
+(`docs/resultados/3_simulacion/SIMULACION_SEMISINTETICA.md`).
 
 ## 1. Fuentes de datos
 
@@ -50,12 +50,12 @@ el efecto cuando hay confusión no observada
 | Outcome pobreza monetaria | `src/indicadores/pobreza_monetaria_geih.py` → `src/3b_preprocesamiento_monetario.py` | ✅ 2026-11-02 |
 | Contraste con la base oficial | `src/validacion/comparar_pobreza_monetaria_oficial.py` | ✅ 2026-11-02 |
 | DML y Causal Forest (diagnóstico placebo) | `src/5_estimacion.py` | ✅ corregido 2026-11-02 |
-| Cotas de Fréchet-Manski | `src/estimacion/cotas_frechet_manski.py` | ✅ |
+| Cotas de Fréchet-Manski | `src/diagnostico/cotas_frechet_manski.py` | ✅ |
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | ✅ |
-| Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | ✅ con métricas por grupo |
-| Simulación de identificación | `src/validacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
+| Selección de variables (OE1) | `src/diagnostico/seleccion_variables_lasso_shap.py` | ✅ con métricas por grupo |
+| Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
-| **Reglas de focalización (OE3)** | `src/validacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
+| **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
 | Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 241 pruebas; 51 de 51 errores documentados detectados por mutación (2026-11-10); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
@@ -73,7 +73,7 @@ la población; válido solo a nivel poblacional.
 P(T | celda) y la pobreza monetaria del receptor sube de 0,20 a 0,29 sin
 costo de cobertura; paredes no agrega nada encima y no entra. La celda
 sin pisos (A 22,0 · D 15,6 %) queda como sensibilidad. Detalle:
-`docs/resultados/RESULTADOS_HOTDECK.md`.
+`docs/resultados/1_datos_y_enlace/RESULTADOS_HOTDECK.md`.
 
 ### 3b. Outcomes
 
@@ -89,7 +89,7 @@ sin pisos (A 22,0 · D 15,6 %) queda como sensibilidad. Detalle:
   DANE:** sobre los 275.057 hogares que mide (24 departamentos y Bogotá),
   la reconstrucción clasifica igual al 93,9 %, con razón mediana de
   ingreso 1,00; las líneas oficiales por área explican 0,6 de los 1,4
-  puntos de diferencia. `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+  puntos de diferencia. `docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`.
 
 ### 3c. DML y Causal Forest: diagnóstico placebo
 
@@ -110,7 +110,7 @@ efecto verdadero. **No es una estimación del efecto del Sisbén.** Los
 efectos que se reportaban antes (+0,0235 en IPM y +0,0158 en pobreza
 monetaria, con IC sin el 0, y la afirmación de que los monetarios eran
 "la evidencia de robustez más fuerte") venían de pasar la celda como
-número a la propensión. `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
+número a la propensión. `docs/resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md`.
 
 ### 3d. Cotas de Fréchet-Manski: el resultado de identificación con datos reales
 
@@ -122,12 +122,12 @@ número a la propensión. `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
 Ninguna de las 921 celdas excluye el cero. Sin el supuesto del
 Hot-Deck, los datos no determinan ni el signo del efecto. No es un
 fracaso del modelo: es lo que dos fuentes sin llave común permiten
-decir. `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
+decir. `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md`.
 
 ### 3e. Representatividad
 
 La cobertura del Sisbén frente a GEIH varía 32 veces entre departamentos
-(0,4 % Valle a 12,8 % Putumayo). `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
+(0,4 % Valle a 12,8 % Putumayo). `docs/resultados/1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
 
 ### 3f. Selección de variables (OE1)
 
@@ -136,17 +136,17 @@ variable más importante en los tres métodos. Exactitud ≈53 % (línea base
 30 %), bien calibrada, pero desigual por grupo: sensibilidad 0,64 en A y
 0,39 (LASSO) o 0,22 (RandomForest) en D, que se confunde con C. Con
 partición por municipio el F1 macro cae de 0,50 a 0,44. Predice el grupo
-asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 
 ## 4. Pendientes, en orden
 
 0. **Variabilidad de la imputación del Hot-Deck hecha el 2026-11-04**
-   (prioridad 1 de la guía; `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md`):
+   (prioridad 1 de la guía; `docs/resultados/1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md`):
    inestable por hogar (34 % de coincidencia de grupo entre sorteos),
    estable en agregados (CV nacional ≤ 0,007). La mitad de la varianza de
    un contraste viene del sorteo: las estimaciones con el grupo imputado
    deberían repetir el sorteo y combinar con Rubin.
-0. **OE3 hecho el 2026-11-04** (`docs/resultados/RESULTADOS_REGLAS_FOCALIZACION.md`):
+0. **OE3 hecho el 2026-11-04** (`docs/resultados/4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md`):
    un proxy de medios logra 82-85 % de la reducción ideal de la brecha;
    las reglas con CATE estimado son peores (72 % con vínculo, 44 % con
    Hot-Deck). Siguiente: presupuestos menores que la población pobre y
@@ -156,7 +156,7 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
    (432 repeticiones; outcome de pobreza, efecto nulo, tres niveles de
    confusión no observada y regla de corte con RD incluidos).
    **Sensibilidad hecha 2026-11-04**
-   (`src/validacion/sensibilidad_semisintetica.py`): la pérdida por
+   (`src/simulacion/sensibilidad_semisintetica.py`): la pérdida por
    integración es proporcional al tamaño del efecto; la RD difusa (80 %
    de participación) recupera el efecto en el corte con vínculo (0,086
    frente a 0,090); el sesgo de LinearDML viene de la regularización de
@@ -171,7 +171,7 @@ asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE
    Bogotá) la prueba de robustez; las conclusiones no cambian. Los 9
    departamentos no están en la base oficial con ningún otro código.
    Cómo completarla si el DANE entrega esos datos:
-   `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+   `docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`.
 3. **Fase 5 de pobreza monetaria:** comparación con IPM-GEIH y el grupo
    imputado, por celda (D6).
 4. ~~Angostar las cotas con supuestos de monotonía~~ **Hecho

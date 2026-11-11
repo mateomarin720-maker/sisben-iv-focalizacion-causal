@@ -148,7 +148,7 @@ def _previas(n: int) -> pd.DataFrame | None:
 
 def p_t_por_celda(registro: pd.DataFrame) -> pd.Series:
     """P(T = A o B | celda) en el registro, con la celda del pipeline."""
-    from src.estimacion.cotas_frechet_manski import _p_t_por_celda
+    from src.diagnostico.cotas_frechet_manski import _p_t_por_celda
 
     contrato.validar(registro, "registro")
     return _p_t_por_celda(registro)["p_t"]

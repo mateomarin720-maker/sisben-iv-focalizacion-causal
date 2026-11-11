@@ -203,7 +203,7 @@ def test_sdp_toma_al_jefe_y_lleva_la_edad_al_codigo_de_ciclo(tmp_path):
 def test_seleccion_de_variables_nunca_usa_las_privaciones_del_sisben():
     """`I1`-`I15` y `H_5` son privaciones que el propio Sisbén calcula para
     clasificar: usarlas para predecir el grupo es circular."""
-    from src.estimacion import seleccion_variables_lasso_shap as sel
+    from src.diagnostico import seleccion_variables_lasso_shap as sel
 
     prohibidas = {f"I{i}" for i in range(1, 16)} | {"H_5"}
     assert not prohibidas & set(sel.TODAS)

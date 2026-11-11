@@ -1,12 +1,12 @@
 """Variables candidatas para ampliar la medición de pobreza
-(`src/estimacion/variables_candidatas_pobreza.py`), con datos sintéticos."""
+(`src/diagnostico/variables_candidatas_pobreza.py`), con datos sintéticos."""
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from src.estimacion import variables_candidatas_pobreza as vc
+from src.diagnostico import variables_candidatas_pobreza as vc
 
 CANDIDATAS = [c for g in vc.GRUPOS.values() for c in g]
 

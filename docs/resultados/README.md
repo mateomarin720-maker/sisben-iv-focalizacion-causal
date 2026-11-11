@@ -49,25 +49,25 @@ Las cifras con asterisco (\*) son simuladas; las demás, datos reales.
 
 | # | Paso | Script | Documento |
 |---|---|---|---|
-| 1 | Hot-Deck | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` | [`RESULTADOS_HOTDECK.md`](RESULTADOS_HOTDECK.md) |
-| 1b | Filtro del SDP (Bogotá) | `src/validacion/comparar_filtros_sdp.py` | [`COMPARACION_FILTROS_SDP.md`](COMPARACION_FILTROS_SDP.md) |
-| 1c | Celdas con pisos y paredes | `src/validacion/comparar_celdas_hotdeck_vivienda.py` | [`RESULTADOS_HOTDECK.md`](RESULTADOS_HOTDECK.md) |
-| 2 | Identificación (DAG) | `src/4_dag_identificacion.py` | [`IDENTIFICACION_CAUSAL.md`](IDENTIFICACION_CAUSAL.md) |
+| 1 | Hot-Deck | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` | [`RESULTADOS_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_HOTDECK.md) |
+| 1b | Filtro del SDP (Bogotá) | `src/validacion/comparar_filtros_sdp.py` | [`COMPARACION_FILTROS_SDP.md`](1_datos_y_enlace/COMPARACION_FILTROS_SDP.md) |
+| 1c | Celdas con pisos y paredes | `src/validacion/comparar_celdas_hotdeck_vivienda.py` | [`RESULTADOS_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_HOTDECK.md) |
+| 2 | Identificación (DAG) | `src/4_dag_identificacion.py` | [`IDENTIFICACION_CAUSAL.md`](2_diagnostico_datos_reales/IDENTIFICACION_CAUSAL.md) |
 | 3 | Outcome IPM-GEIH | `src/3_preprocesamiento.py` | [`METODOLOGIA_INDICADOR_IPM_GEIH.md`](../insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md) |
-| 3b | Outcome pobreza monetaria | `src/indicadores/pobreza_monetaria_geih.py`, `src/3b_preprocesamiento_monetario.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](RESULTADOS_POBREZA_MONETARIA.md) |
-| 3c | Contraste con la base oficial del DANE | `src/validacion/comparar_pobreza_monetaria_oficial.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](RESULTADOS_POBREZA_MONETARIA.md) |
-| 4 | DML: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](RESULTADOS_DML_ATE_ATT_ATU.md) |
-| 4b | Causal Forest: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](RESULTADOS_CAUSALFOREST_CATE.md) |
-| 4c | Diagnóstico de `W` | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](DIAGNOSTICO_W_CELDA_EXACTA.md) |
-| 5 | Cotas de Fréchet-Manski | `src/estimacion/cotas_frechet_manski.py`, `src/estimacion/cotas_frechet_modelos.py` | [`RESULTADOS_FRECHET_MANSKI.md`](RESULTADOS_FRECHET_MANSKI.md) |
-| 5b | Errores de inclusión y exclusión con datos reales | `src/estimacion/errores_focalizacion_frechet.py` | [`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`](RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md) |
-| 6 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
-| 7 | Selección de variables (OE1) | `src/estimacion/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](RESULTADOS_SELECCION_VARIABLES_OE1.md) |
-| 8 | Simulación de identificación | `src/validacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](SIMULACION_IDENTIFICACION.md) |
-| 9 | Evaluación semisintética | `src/simulacion/` | [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md) |
-| 10 | Reglas de focalización (OE3) | `src/validacion/reglas_focalizacion.py` | [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md) |
-| 11 | Variabilidad de la imputación del Hot-Deck | `src/validacion/variabilidad_hotdeck.py` | [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](RESULTADOS_VARIABILIDAD_HOTDECK.md) |
-| 12 | Recomendación de variables | `src/estimacion/variables_candidatas_pobreza.py` | [`RECOMENDACION_VARIABLES_POBREZA.md`](RECOMENDACION_VARIABLES_POBREZA.md) |
+| 3b | Outcome pobreza monetaria | `src/indicadores/pobreza_monetaria_geih.py`, `src/3b_preprocesamiento_monetario.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md) |
+| 3c | Contraste con la base oficial del DANE | `src/validacion/comparar_pobreza_monetaria_oficial.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md) |
+| 4 | DML: ATE/ATT/ATU | `src/5_estimacion.py` | [`RESULTADOS_DML_ATE_ATT_ATU.md`](2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md) |
+| 4b | Causal Forest: CATE | `src/5_estimacion.py` | [`RESULTADOS_CAUSALFOREST_CATE.md`](2_diagnostico_datos_reales/RESULTADOS_CAUSALFOREST_CATE.md) |
+| 4c | Diagnóstico de `W` | `src/5_estimacion.py` | [`DIAGNOSTICO_W_CELDA_EXACTA.md`](2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md) |
+| 5 | Cotas de Fréchet-Manski | `src/diagnostico/cotas_frechet_manski.py`, `src/diagnostico/cotas_frechet_modelos.py` | [`RESULTADOS_FRECHET_MANSKI.md`](2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md) |
+| 5b | Errores de inclusión y exclusión con datos reales | `src/diagnostico/errores_focalizacion_frechet.py` | [`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`](2_diagnostico_datos_reales/RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md) |
+| 6 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
+| 7 | Selección de variables (OE1) | `src/diagnostico/seleccion_variables_lasso_shap.py` | [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](2_diagnostico_datos_reales/RESULTADOS_SELECCION_VARIABLES_OE1.md) |
+| 8 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | [`SIMULACION_IDENTIFICACION.md`](3_simulacion/SIMULACION_IDENTIFICACION.md) |
+| 9 | Evaluación semisintética | `src/simulacion/` | [`SIMULACION_SEMISINTETICA.md`](3_simulacion/SIMULACION_SEMISINTETICA.md) |
+| 10 | Reglas de focalización (OE3) | `src/focalizacion/reglas_focalizacion.py` | [`RESULTADOS_REGLAS_FOCALIZACION.md`](4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md) |
+| 11 | Variabilidad de la imputación del Hot-Deck | `src/diagnostico/variabilidad_hotdeck.py` | [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md) |
+| 12 | Recomendación de variables | `src/diagnostico/variables_candidatas_pobreza.py` | [`RECOMENDACION_VARIABLES_POBREZA.md`](2_diagnostico_datos_reales/RECOMENDACION_VARIABLES_POBREZA.md) |
 
 ## Resumen por paso
 
@@ -171,7 +171,7 @@ va de −1,4 a +1,6 privaciones. La incertidumbre se concentra en lo rural
 (`POBRE_GEIH`: cota de ancho 1,07 frente a 0,34 en lo urbano).
 
 **Errores de focalización con datos reales (2026-11-10,
-[`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`](RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md)).**
+[`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`](2_diagnostico_datos_reales/RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md)).**
 Cotas de Fréchet por celda, sumadas con los factores de expansión de la
 GEIH (A/B frente a pobreza monetaria). Error de exclusión: [0,9 %; 75,0 %].
 Error de inclusión: [38,6 %; 84,5 %]. Al menos 39 % de los hogares A/B no
@@ -191,7 +191,7 @@ variable más importante en los tres métodos. Exactitud ≈53 % (línea base
 30 %), bien calibrada, pero desigual por grupo: sensibilidad 0,64 en A y
 0,39 (LASSO) o 0,22 (RandomForest) en D, que se confunde con C. Con
 partición por municipio el F1 macro cae de 0,50 a 0,44. Predice el grupo
-asignado, no la pobreza real. `docs/resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
 
 Son dos problemas predictivos distintos, y solo el segundo dice algo sobre
 errores de focalización:
@@ -235,7 +235,7 @@ heterogeneidad. **Sensibilidad (2026-11-04):** la pérdida es
 proporcional al tamaño del efecto (× 0,5 a × 2); la RD difusa, con 80 %
 de participación, recupera el efecto en el corte con vínculo (0,086
 frente a 0,090); el sesgo de LinearDML viene de la regularización de los
-modelos auxiliares. Detalle en [`SIMULACION_SEMISINTETICA.md`](SIMULACION_SEMISINTETICA.md).
+modelos auxiliares. Detalle en [`SIMULACION_SEMISINTETICA.md`](3_simulacion/SIMULACION_SEMISINTETICA.md).
 
 \* Resultado simulado.
 
@@ -251,7 +251,7 @@ reales.
 | Nacional | Desviación de 0,10 a 0,15 puntos por grupo (CV ≤ 0,007) |
 | Contraste placebo | Con Rubin, `POBRE_GEIH` pasa de −0,0030 (IC sin el 0, semilla 42) a −0,00003 [−0,0036; +0,0036]; 49-55 % de la varianza viene de la imputación |
 
-Detalle en [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](RESULTADOS_VARIABILIDAD_HOTDECK.md).
+Detalle en [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md).
 
 ### 10. Reglas de focalización (OE3)\*
 
@@ -269,7 +269,7 @@ Mismo mundo semisintético; todas las reglas con el mismo presupuesto
 Con las fuentes actuales no hay efectos heterogéneos utilizables para
 focalizar; un proxy de medios con variables del hogar sí mejora la
 focalización. La regla vigente es la imputada por celda, no la del
-Sisbén real. Detalle en [`RESULTADOS_REGLAS_FOCALIZACION.md`](RESULTADOS_REGLAS_FOCALIZACION.md).
+Sisbén real. Detalle en [`RESULTADOS_REGLAS_FOCALIZACION.md`](4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md).
 
 **Mismo dinero (2026-11-09).** Con el mismo número de hogares, el proxy
 de medios transfiere 13 %\* más que la vigente (monto fijo). Con el mismo
@@ -277,7 +277,7 @@ dinero baja de 85\* a 80\* % del ideal y sigue 19\* puntos por encima de
 la vigente: el orden de las reglas no cambia.
 
 **Heterogeneidad ampliada (2026-11-09,
-[`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`](RESULTADOS_HETEROGENEIDAD_AMPLIADA.md)).**
+[`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`](4_focalizacion/RESULTADOS_HETEROGENEIDAD_AMPLIADA.md)).**
 Con el doble de variación del efecto (desviación 0,06\*), cinco
 modificadores más y el Causal Forest viéndolos todos, la regla con CATE
 sigue 4 a 11 puntos\* por debajo de la misma regla con efecto constante.
@@ -301,7 +301,7 @@ hogar identifica 261.400 hogares pobres más (796.700 personas) y la cuenta de
 ahorros 41.500. Las ayudas del gobierno declaradas llegan a 2,8 millones de hogares,
 con 78,5 % del dinero en los dos quintiles más pobres; 3,4 millones de hogares pobres
 no declaran ninguna (descriptivo, no es un efecto). Detalle en
-[`RECOMENDACION_VARIABLES_POBREZA.md`](RECOMENDACION_VARIABLES_POBREZA.md).
+[`RECOMENDACION_VARIABLES_POBREZA.md`](2_diagnostico_datos_reales/RECOMENDACION_VARIABLES_POBREZA.md).
 
 ## Limitaciones generales
 
@@ -322,14 +322,14 @@ poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
 poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
-poetry run python -m src.estimacion.cotas_frechet_manski
+poetry run python -m src.diagnostico.cotas_frechet_manski
 poetry run python -m src.validacion.verificar_representatividad_sisben
-poetry run python -m src.estimacion.seleccion_variables_lasso_shap
+poetry run python -m src.diagnostico.seleccion_variables_lasso_shap
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.simulacion
-poetry run python -m src.validacion.reglas_focalizacion
-poetry run python -m src.validacion.sensibilidad_semisintetica
-poetry run python -m src.validacion.variabilidad_hotdeck 2
+poetry run python -m src.focalizacion.reglas_focalizacion
+poetry run python -m src.simulacion.sensibilidad_semisintetica
+poetry run python -m src.diagnostico.variabilidad_hotdeck 2
 poetry run pytest tests/
 ```
 

@@ -1,6 +1,6 @@
 # Recomendación de variables para ampliar la medición de pobreza
 
-Generado 2026-11-06 por `src/estimacion/variables_candidatas_pobreza.py`.
+Generado 2026-11-06 por `src/diagnostico/variables_candidatas_pobreza.py`.
 Salidas en `docs/reports/variables_candidatas*`.
 
 ## Qué pregunta responde
@@ -391,10 +391,10 @@ política.
 ## Cómo reproducirlo
 
 ```bash
-poetry run python -m src.estimacion.variables_candidatas_pobreza 6             # ≈50 min, todo
-poetry run python -m src.estimacion.variables_candidatas_pobreza 6 posterior   # ≈5 min, solo las revisiones
-poetry run python -m src.estimacion.variables_candidatas_pobreza 6 poblacion   # ≈10 min, cantidades por variable y modelo
-poetry run python -m src.estimacion.incidencia_transferencias                   # ≈1 min, ayudas declaradas
+poetry run python -m src.diagnostico.variables_candidatas_pobreza 6             # ≈50 min, todo
+poetry run python -m src.diagnostico.variables_candidatas_pobreza 6 posterior   # ≈5 min, solo las revisiones
+poetry run python -m src.diagnostico.variables_candidatas_pobreza 6 poblacion   # ≈10 min, cantidades por variable y modelo
+poetry run python -m src.diagnostico.incidencia_transferencias                   # ≈1 min, ayudas declaradas
 ```
 
 El argumento es el número de procesos en paralelo. La tabla de trabajo queda en

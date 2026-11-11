@@ -1,159 +1,71 @@
-# Carpeta: src (Código fuente)
----
-Contiene el código de producción del proyecto. A diferencia de los
-notebooks, el código de esta carpeta debe ser modular, reutilizable,
-documentado y preferiblemente cubierto por pruebas.
+# Carpeta `src/`: código fuente
 
-## Estructura y artefactos
+El código está organizado como la tesis: una base de ingeniería (llevar
+las fuentes a un esquema común y enlazarlas) y tres componentes de
+análisis. Los scripts numerados son el recorrido principal; los paquetes
+son módulos reutilizables. Los resultados interpretados están en
+`docs/resultados/`, con la misma organización.
 
-- **`ingesta/`**
-  - Módulos reutilizables de conexión a fuentes. `socrata_client.py`
-    implementa un cliente genérico para portales Socrata (usado por
-    `datos.gov.co` y `microdatos.dane.gov.co` para datasets abiertos como
-    IPM agregado), siguiendo el mismo patrón de parsers Socrata + CSV del
-    proyecto hermano `desarrollo_social_y_economico`.
-  - `geih_loader.py`: recorre automáticamente los meses de GEIH
-    depositados en `data/0_raw/geih/2024/<mes>/CSV/` (01..12) y convierte
-    cada uno de los 8 módulos a Parquet en `data/1_processed/geih/2024/<mes>/`.
-    No requiere tener los 12 meses — procesa los que encuentre. GEIH es
-    de acceso abierto (no requiere solicitud institucional como Sisbén),
-    pero **nunca se versiona el CSV/DTA/SAV crudo en git** — solo el
-    código que lo procesa (ver `.gitignore`, `data/0_raw/*`).
-  - Las fuentes de acceso restringido (Sisbén IV, DPS, RUI) no tienen
-    cliente API — se documentan en `data/catalogo.yaml` como
-    `solicitud_institucional` y se ingieren manualmente en `0_raw/` una
-    vez obtenido el microdato.
+Comandos de reproducción y orden de ejecución: `CLAUDE.md` (sección
+"Validación") y `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md`.
 
-- **`armonizacion/`**
-  - Lleva cada fuente a un esquema canónico por hogar (jefe de hogar):
-    `armonizar_geih_hogar_2024.py` (12 meses GEIH),
-    `armonizar_sisben_hogar_2024.py` (Sisbén nacional) y
-    `armonizar_sisben_bogota_sdp.py` (Sisbén Bogotá, entrega SDP; también
-    fusiona con el nacional reemplazando el municipio 11001). Salidas en
-    `data/2_models/`.
+## Base: datos y enlace entre fuentes
 
-- **`emparejamiento/`**
-  - `emparejamiento_hotdeck_geih_sisben.py`: Hot-Deck por celdas
-    (departamento + ciclo de vida del jefe + tramo de `viv_cuartos` + nivel
-    de pisos homologado, este último desde el 2026-11-02 — ver
-    `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`) con degradación
-    jerárquica (celda_exacta → sin_pisos → solo_depto_edad → solo_depto →
-    pool_nacional). Asigna `Grupo`/`Nivel`/`Clasificacion` del Sisbén a
-    los hogares GEIH. Válido solo a nivel poblacional (no identifica el
-    mismo hogar). `incluir_pisos=False` reproduce la celda anterior.
-    Paredes no entra (no mejora la celda, ver
-    `comparar_celdas_hotdeck_vivienda.py`).
+| Ruta | Qué hace |
+|---|---|
+| `1_integracion.py` | Ingesta de las fuentes declaradas en `data/catalogo.yaml` (bronce → plata) |
+| `2_limpieza.py` | Limpieza de las tablas del IPM: tipos, duplicados y faltantes |
+| `ingesta/` | Lectores de la GEIH (12 meses, CSV o `.DTA`, Latin-1), del Sisbén y de portales Socrata |
+| `armonizacion/` | Lleva la GEIH, el Sisbén nacional y el Sisbén de Bogotá (SDP) a un esquema canónico por hogar |
+| `emparejamiento/` | Hot-Deck por celdas (departamento, ciclo de vida del jefe, cuartos, nivel de pisos) con cadena de respaldos. Vincula solo a nivel de celda |
+| `indicadores/` | Pobreza monetaria reconstruida con la metodología del DANE, homologación del IPM e inventarios de variables de la GEIH |
+| `3_preprocesamiento.py` | Outcome IPM-GEIH (8 de 15 privaciones) y muestra de estimación |
+| `3b_preprocesamiento_monetario.py` | Pega la pobreza monetaria a la muestra de estimación |
+| `validacion/` | Chequeos de calidad de los datos: esquema armonizado, faltantes por módulo, códigos de edad del Sisbén, filtros del SDP, celdas con pisos y paredes, contraste con la pobreza oficial y representatividad del Sisbén |
+| `utils/` | Banco de datos en Azure, configuración, validación de la GEIH y `variables_canonicas.py` (reglas compartidas entre fuentes: llaves, jefe de hogar, ciclo de vida) |
 
-- **`estimacion/`**
-  - Selección de variables, recomendación de variables e incidencia de las
-    ayudas declaradas — ver `src/estimacion/README.md`.
-  - `cotas_frechet_manski.py` ✅: alternativa de robustez al DML — cotas
-    de Fréchet-Manski sobre `P(Y|X)` (GEIH) y `P(T|X)` (Sisbén) por
-    separado, sin suponer independencia condicional. Ver
-    `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`.
-  - `cotas_frechet_modelos.py`: la misma cota para cada parámetro del DML
-    y del Causal Forest (ATE, ATT, ATU, CATE por subgrupo), con
-    resultados binarios y continuos.
-  - `errores_focalizacion_frechet.py`: errores de inclusión y exclusión
-    con datos reales, como cotas de Fréchet por celda.
+## Componente 1: diagnóstico con datos reales
 
-- **`simulacion/`** (módulo del framework, 2026-11-04)
-  - Evaluación semisintética reutilizable: qué estimador recupera un
-    efecto conocido y cuánto se pierde según el vínculo entre fuentes.
-    Exige las columnas canónicas (`contrato.py`, sin alias) y calcula la
-    celda y lo derivado. `python -m src.simulacion [n_jobs]`. Diseño en
-    `docs/metodologia/DISENO_MODULO_SIMULACION.md`.
+| Ruta | Qué hace |
+|---|---|
+| `4_dag_identificacion.py` | Los DAG del proyecto y los chequeos formales de d-separación |
+| `5_estimacion.py` | DML (ATE, ATT, ATU) y Causal Forest (CATE) sobre el grupo imputado. Es un placebo del emparejamiento, no el efecto del Sisbén |
+| `diagnostico/cotas_frechet_manski.py` | Cotas de Fréchet-Manski del ATE, con supuestos de monotonía |
+| `diagnostico/cotas_frechet_modelos.py` | Una cota por cada parámetro de los modelos (ATE, ATT, ATU, CATE por subgrupo), con resultados binarios y continuos |
+| `diagnostico/errores_focalizacion_frechet.py` | Errores de inclusión y exclusión del Sisbén con datos reales, como cotas por celda |
+| `diagnostico/variabilidad_hotdeck.py` | Cuánto cambia un resultado al repetir el sorteo del Hot-Deck (reglas de Rubin) |
+| `diagnostico/seleccion_variables_lasso_shap.py` | Qué variables predicen el grupo del Sisbén (OE1) |
+| `diagnostico/variables_candidatas_pobreza.py`, `incidencia_transferencias.py` | Qué variables, fuera del Sisbén, ayudan a identificar la pobreza; incidencia de las ayudas declaradas |
 
-- **`validacion/`**
-  - Chequeos de calidad: `verificar_esquema_armonizado.py`, `revisar_faltantes_modulos_geih.py`,
-    `verificar_codigos_edad_sisben.py` (corrobora los códigos de ciclo de
-    vida de `PER002` contra variables de comportamiento), y
-    `comparar_filtros_sdp.py` (corre el Hot-Deck con los dos filtros del
-    SDP — vigencia vs. año exacto — y deja el resultado lado a lado en
-    `docs/reports/comparacion_filtros_sdp.csv`), y
-    `verificar_representatividad_sisben.py` (cobertura del Sisbén frente a
-    la población de GEIH, por departamento — ver
-    `docs/resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`), y
-    `comparar_pobreza_monetaria_oficial.py` (reconstrucción de la pobreza
-    monetaria frente a la base oficial del DANE, hogar por hogar — ver
-    `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`).
+Detalle de esta carpeta: `diagnostico/README.md`.
 
-- **`/tests`** (raíz del repo)
-  - Pruebas con `pytest` sobre las transformaciones críticas —
-    `poetry run pytest tests/`. Cubre `3_preprocesamiento.py` (outcome
-    IPM-GEIH) sobre datos reales, no sintéticos, y
-    `3b_preprocesamiento_monetario.py` (outcome de pobreza monetaria) con
-    datos reales para `_ingreso_mes` y casos de borde sintéticos para la
-    clasificación de pobreza (lógica pura, sin I/O).
+## Componente 2: simulación semisintética
 
-- **`utils/`**
-  - `azure_storage.py`, `publicar_banco_datos_azure.py` y
-    `restaurar_banco_datos_azure.py`: banco de datos en Azure Blob Storage
-    (los datos no se versionan en git).
-  - `config.py`: carga `data/catalogo.yaml` y variables de entorno
-    (`.env`) de forma centralizada para todos los scripts.
-  - `variables_canonicas.py`: reglas compartidas entre fuentes, en un
-    solo lugar (2026-11-04): `normalizar_llave`, `es_jefe` (jefe de hogar
-    por fuente) y `edad_a_ciclo` (edad en años → código de ciclo de vida
-    de `PER002`). Los módulos de armonización, el Hot-Deck, los
-    preprocesamientos y el contraste oficial lo usan en vez de copiar la
-    regla.
+| Ruta | Qué hace |
+|---|---|
+| `simulacion/` | Módulo del framework: hogares reales de la GEIH, tratamiento y efecto simulados, y qué estimador recupera el efecto según el vínculo entre fuentes. Exige las columnas canónicas (`contrato.py`). `python -m src.simulacion [n_jobs]` |
+| `simulacion/sensibilidad_semisintetica.py` | Sensibilidad de la evaluación a la confusión no observada y al solapamiento |
+| `simulacion/simulacion_identificacion.py` | Simulación sintética previa: por qué el Hot-Deck da un placebo |
 
-- **`1_integracion.py`**
-  - Script de integración de fuentes (ETL). Orquesta la ingesta de las
-    fuentes abiertas vía `ingesta/socrata_client.py` y deja el resto de
-    fuentes como placeholders documentados hasta que se resuelva el
-    acceso institucional.
+Diseño del módulo: `docs/metodologia/DISENO_MODULO_SIMULACION.md`.
 
-- **`2_limpieza.py`**
-  - Limpieza y armonización: manejo de nulos, corrección de tipos,
-    eliminación de duplicados, armonización de categorías entre fuentes.
+## Componente 3: reglas de focalización
 
-- **`3_preprocesamiento.py`** ✅ implementado 2026-10-21, ampliado 2026-10-28
-  - Construye el outcome real: `ipm_geih_score`/`POBRE_GEIH`, un IPM-GEIH
-    que cubre **8 de 15 privaciones** oficiales (las 5 dimensiones del
-    IPM, antes solo 2 — analfabetismo, logro educativo del jefe,
-    asistencia escolar de menores, aseguramiento de salud, cotización a
-    pensión del jefe, hacinamiento, alcantarillado, acueducto; dos
-    privaciones de vivienda construidas y retiradas el mismo día por
-    tautología con `viv_paredes`/`viv_pisos` de `X` en
-    `5_estimacion.py` — ver docstring del script para qué se incluyó,
-    qué no, y por qué). Tratamiento:
-    `Grupo_hotdeck`/`Clasificacion_hotdeck` (ya en el parquet fusionado del
-    Hot-Deck). Salida: `data/2_models/muestra_estimacion_2024.parquet`.
+| Ruta | Qué hace |
+|---|---|
+| `focalizacion/reglas_focalizacion.py` | Compara reglas (vigente, proxy de medios, CATE, ideal) con el mismo número de hogares y con el mismo dinero |
+| `focalizacion/heterogeneidad_ampliada.py` | Las mismas reglas con un efecto más heterogéneo (niveles ampliado y complejo) |
 
-- **`indicadores/pobreza_monetaria_geih.py`** ✅ 2026-11-02
-  - Pobreza monetaria reconstruida con la metodología del DANE (unidad
-    de gasto, `INGLABO` más componentes no incluidos, hot-deck de no
-    respuesta laboral, arriendo imputado, líneas por dominio, tasas por
-    persona) y 8 escenarios de sensibilidad. FGT0 33,2 % frente a 31,8 %
-    oficial. Ver `docs/metodologia/pobreza_monetaria/01_diccionario_ingreso.md`
-    y `docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+## Pruebas
 
-- **`3b_preprocesamiento_monetario.py`** ✅
-  - Pega el resultado anterior (escenario base) a la muestra de
-    estimación: `ingreso_percapita`, `POBRE_MONETARIO`,
-    `POBRE_EXTREMO_MONETARIO` y brechas. Salida:
-    `data/2_models/muestra_estimacion_monetaria_2024.parquet`.
-
-- **`4_dag_identificacion.py`** ✅ implementado 2026-10-21
-  - Los dos DAG del documento de pipeline (diseño principal, diseño de una
-    sola tabla) con `networkx` y chequeo formal de d-separación. Ver
-    `docs/resultados/IDENTIFICACION_CAUSAL.md`.
-
-- **`5_estimacion.py`** ✅ corregido 2026-11-02
-  - DML (`LinearDML`: ATE, ATT y ATU) y Causal Forest (`CausalForestDML`:
-    CATE), 4 outcomes × 2 especificaciones de `W` (proxy y celda exacta
-    del Hot-Deck). Las categóricas sin orden entran a los modelos
-    auxiliares como indicadoras. Con el grupo imputado por Hot-Deck el
-    resultado es un **diagnóstico placebo** (ATE ≈0 esperado), no el
-    efecto del Sisbén: ver `docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md`.
+`tests/` en la raíz: `poetry run pytest tests/`. El mapa de qué cubre cada
+archivo y la prueba de mutación están en `tests/README.md`.
 
 ## Estándares de código
 
-- **Modularidad**: funciones pequeñas con una única responsabilidad.
-- **Documentación**: docstrings estilo Google o NumPy.
-- **No hardcoding**: rutas y parámetros vienen de `data/catalogo.yaml`,
-  `.env` o argumentos de CLI — nunca hardcodeados en el script.
-- **Reproducibilidad**: fijar semillas aleatorias y registrar versiones
-  de dependencias (`poetry.lock`).
+- Funciones pequeñas con una sola responsabilidad y docstrings.
+- Los nombres de las variables canónicas de la GEIH y del Sisbén no se
+  cambian ni se hacen configurables.
+- Las categóricas sin orden entran a los modelos como indicadoras, nunca
+  como códigos numéricos.
+- Semillas fijas y dependencias en `poetry.lock`.

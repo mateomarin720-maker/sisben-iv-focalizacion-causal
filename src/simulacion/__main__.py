@@ -8,7 +8,7 @@ Salidas:
     docs/reports/simulacion_semisintetica_resumen.csv (con MCSE)
     docs/reports/simulacion_semisintetica_convergencia.csv (traza por lote)
     docs/reports/simulacion_semisintetica_tablas.md (tablas del documento)
-    docs/resultados/simulacion_semisintetica_convergencia.png
+    docs/resultados/3_simulacion/simulacion_semisintetica_convergencia.png
 """
 import logging
 import sys

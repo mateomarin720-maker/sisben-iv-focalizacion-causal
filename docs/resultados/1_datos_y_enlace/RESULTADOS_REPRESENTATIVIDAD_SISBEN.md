@@ -54,7 +54,7 @@ registrarse".
   departamento, no a nivel nacional) — pero **dentro** de cada
   departamento, sigue sin garantía de que los hogares registrados sean
   representativos de los no registrados.
-- Refuerza la lectura de `docs/resultados/RESULTADOS_FRECHET_MANSKI.md`:
+- Refuerza la lectura de `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md`:
   la cota tan ancha que se encontró ahí (sin suponer independencia
   condicional) es consistente con este sesgo de cobertura real, no
   solo con una posibilidad teórica.

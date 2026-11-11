@@ -2,6 +2,26 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-10 (34) — Código y resultados organizados por componente
+
+### Cambiado
+- `src/` y `docs/resultados/` siguen la estructura de la tesis: una base de datos y enlace y
+  tres componentes (diagnóstico con datos reales, simulación semisintética y reglas de
+  focalización). Los nombres de los archivos no cambian; solo la carpeta.
+
+| Antes | Ahora |
+|---|---|
+| `src/estimacion/` | `src/diagnostico/` |
+| `src/validacion/variabilidad_hotdeck.py` | `src/diagnostico/` |
+| `src/validacion/reglas_focalizacion.py`, `heterogeneidad_ampliada.py` | `src/focalizacion/` |
+| `src/validacion/sensibilidad_semisintetica.py`, `simulacion_identificacion.py` | `src/simulacion/` |
+| `docs/resultados/*.md` | `docs/resultados/{1_datos_y_enlace, 2_diagnostico_datos_reales, 3_simulacion, 4_focalizacion}/` |
+
+- `src/validacion/` queda solo con los chequeos de calidad de los datos.
+- Rutas, imports, comandos de validación, pruebas y mutaciones actualizados; enlaces
+  verificados. Las entradas anteriores de este changelog conservan las rutas de su fecha.
+- Respaldo del estado anterior: etiqueta `respaldo/antes-reorganizacion`.
+
 ## 2026-11-10 (33) — DAG del proyecto rehechos
 
 ### Cambiado

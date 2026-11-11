@@ -1,6 +1,6 @@
 # Resultados del Hot-Deck GEIH ← Sisbén IV
 
-*Actualizado el 2026-11-02: la celda oficial pasa a incluir el nivel de pisos (ver "Sumar pisos y paredes"). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../insumos/DESCRIPCION_TABLAS.md).*
+*Actualizado el 2026-11-02: la celda oficial pasa a incluir el nivel de pisos (ver "Sumar pisos y paredes"). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../../insumos/DESCRIPCION_TABLAS.md).*
 
 ## Resultado
 

@@ -11,7 +11,7 @@ from src.simulacion.escenarios import ESCENARIOS, OUTCOMES, VINCULOS
 NOTA_SIMULADO = ("\\* Resultado simulado (semisintético): efecto verdadero fijado por el investigador; "
                  "no es una estimación con datos reales.")
 COLUMNAS_MARCA = ["simulado", "modo"]
-FIGURA = Path("docs/resultados/simulacion_semisintetica_convergencia.png")
+FIGURA = Path("docs/resultados/3_simulacion/simulacion_semisintetica_convergencia.png")
 OUT_TABLAS = Path("docs/reports/simulacion_semisintetica_tablas.md")
 PANELES = [  # (escenario, outcome, estimador)
     ("confusion_observada", "log_ingreso", "linear_dml"),

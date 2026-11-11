@@ -24,17 +24,17 @@ carpeta responde a una pregunta distinta.
 
 ## `resultados/`
 - [`README.md`](resultados/README.md): **índice y hallazgos consolidados** — el hilo conductor que conecta los documentos de abajo (resumen ejecutivo, no hace falta leerlos todos para entender el estado del proyecto).
-- [`RESULTADOS_HOTDECK.md`](resultados/RESULTADOS_HOTDECK.md): resultado del emparejamiento GEIH ← Sisbén, la verificación de los códigos de edad `PER002` y cómo leerlos.
-- [`COMPARACION_FILTROS_SDP.md`](resultados/COMPARACION_FILTROS_SDP.md): el SDP (Sisbén Bogotá) es un registro continuo, no un corte único — comparación lado a lado de los dos filtros posibles (vigencia vs. año exacto) y por qué se adoptó vigencia.
-- [`IDENTIFICACION_CAUSAL.md`](resultados/IDENTIFICACION_CAUSAL.md): los dos DAG del pipeline (diseño principal y diseño de una sola tabla), con el chequeo formal de d-separación — por qué el diagrama simplificado del documento de pipeline necesita distinguir elegibilidad del donante de la del receptor para sostener su propia afirmación.
-- [`RESULTADOS_DML_ATE_ATT_ATU.md`](resultados/RESULTADOS_DML_ATE_ATT_ATU.md): ATE/ATT/ATU (Double Machine Learning) sobre los cuatro outcomes (IPM-GEIH y pobreza monetaria) con dos especificaciones de controles; los efectos son ≈0.
-- [`RESULTADOS_CAUSALFOREST_CATE.md`](resultados/RESULTADOS_CAUSALFOREST_CATE.md): CATE (Causal Forest) — la heterogeneidad por zona y sexo del jefe cambia de signo entre corridas y no se toma como conclusión.
-- [`RESULTADOS_FRECHET_MANSKI.md`](resultados/RESULTADOS_FRECHET_MANSKI.md): cotas de Fréchet-Manski (sin suponer independencia condicional) — el rango de efectos compatible con los datos crudos no fija ni el signo del efecto (ninguna celda excluye el 0); incluye pobreza monetaria.
-- [`DIAGNOSTICO_W_CELDA_EXACTA.md`](resultados/DIAGNOSTICO_W_CELDA_EXACTA.md): especificación de los controles del DML, aproximación continua frente a la celda exacta del Hot-Deck.
-- [`RESULTADOS_POBREZA_MONETARIA.md`](resultados/RESULTADOS_POBREZA_MONETARIA.md): pobreza monetaria reconstruida (FGT0, FGT1) y su contraste con la base oficial del DANE.
-- [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md): LASSO, Ridge y SHAP sobre el Sisbén (P1/OE1).
-- [`SIMULACION_IDENTIFICACION.md`](resultados/SIMULACION_IDENTIFICACION.md) y [`SIMULACION_SEMISINTETICA.md`](resultados/SIMULACION_SEMISINTETICA.md): qué diseño recupera un efecto conocido, con datos sintéticos y con hogares reales de la GEIH.
-- [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](resultados/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md): la cobertura del Sisbén respecto a la población de GEIH varía 32 veces entre departamentos — el registro no es una muestra uniforme.
+- [`RESULTADOS_HOTDECK.md`](resultados/1_datos_y_enlace/RESULTADOS_HOTDECK.md): resultado del emparejamiento GEIH ← Sisbén, la verificación de los códigos de edad `PER002` y cómo leerlos.
+- [`COMPARACION_FILTROS_SDP.md`](resultados/1_datos_y_enlace/COMPARACION_FILTROS_SDP.md): el SDP (Sisbén Bogotá) es un registro continuo, no un corte único — comparación lado a lado de los dos filtros posibles (vigencia vs. año exacto) y por qué se adoptó vigencia.
+- [`IDENTIFICACION_CAUSAL.md`](resultados/2_diagnostico_datos_reales/IDENTIFICACION_CAUSAL.md): los dos DAG del pipeline (diseño principal y diseño de una sola tabla), con el chequeo formal de d-separación — por qué el diagrama simplificado del documento de pipeline necesita distinguir elegibilidad del donante de la del receptor para sostener su propia afirmación.
+- [`RESULTADOS_DML_ATE_ATT_ATU.md`](resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md): ATE/ATT/ATU (Double Machine Learning) sobre los cuatro outcomes (IPM-GEIH y pobreza monetaria) con dos especificaciones de controles; los efectos son ≈0.
+- [`RESULTADOS_CAUSALFOREST_CATE.md`](resultados/2_diagnostico_datos_reales/RESULTADOS_CAUSALFOREST_CATE.md): CATE (Causal Forest) — la heterogeneidad por zona y sexo del jefe cambia de signo entre corridas y no se toma como conclusión.
+- [`RESULTADOS_FRECHET_MANSKI.md`](resultados/2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md): cotas de Fréchet-Manski (sin suponer independencia condicional) — el rango de efectos compatible con los datos crudos no fija ni el signo del efecto (ninguna celda excluye el 0); incluye pobreza monetaria.
+- [`DIAGNOSTICO_W_CELDA_EXACTA.md`](resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md): especificación de los controles del DML, aproximación continua frente a la celda exacta del Hot-Deck.
+- [`RESULTADOS_POBREZA_MONETARIA.md`](resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md): pobreza monetaria reconstruida (FGT0, FGT1) y su contraste con la base oficial del DANE.
+- [`RESULTADOS_SELECCION_VARIABLES_OE1.md`](resultados/2_diagnostico_datos_reales/RESULTADOS_SELECCION_VARIABLES_OE1.md): LASSO, Ridge y SHAP sobre el Sisbén (P1/OE1).
+- [`SIMULACION_IDENTIFICACION.md`](resultados/3_simulacion/SIMULACION_IDENTIFICACION.md) y [`SIMULACION_SEMISINTETICA.md`](resultados/3_simulacion/SIMULACION_SEMISINTETICA.md): qué diseño recupera un efecto conocido, con datos sintéticos y con hogares reales de la GEIH.
+- [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](resultados/1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md): la cobertura del Sisbén respecto a la población de GEIH varía 32 veces entre departamentos — el registro no es una muestra uniforme.
 
 ## `seguimiento/`
 - [`README.md`](seguimiento/README.md): **seguimiento consolidado** — cambios y avances desde agosto, correcciones, resultados vigentes y pendientes; es el documento para revisar con el profesor.
@@ -48,15 +48,15 @@ carpeta responde a una pregunta distinta.
 ## `reports/`
 Los scripts de calidad de datos (`src/2_limpieza.py`, `src/utils/validar_geih.py`,
 `src/validacion/comparar_filtros_sdp.py`), las
-pruebas exploratorias (`src/estimacion/`) y la estimación real (`src/5_estimacion.py`)
+pruebas exploratorias (`src/diagnostico/`) y la estimación real (`src/5_estimacion.py`)
 escriben aquí sus salidas crudas (CSV, TXT). Esta es la única carpeta de
 reportes generados; los resultados interpretados van en `resultados/`.
 
 ## Pendiente
-- Marco teórico y metodológico completo: se redacta en un documento aparte y se agregará a `insumos/` cuando esté estable (el diagrama causal ya está en `resultados/IDENTIFICACION_CAUSAL.md`, pero falta integrarlo al marco teórico formal).
-- Resultados de determinantes y validez (P1/OE1): LASSO/Ridge/SHAP sobre el Sisbén — hecho 2026-11-02, ver `resultados/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
-- Efectos causales (P2/OE2): estimación y cotas hechas (`resultados/RESULTADOS_DML_ATE_ATT_ATU.md`, `RESULTADOS_FRECHET_MANSKI.md`, `DIAGNOSTICO_W_CELDA_EXACTA.md`). Con el Hot-Deck el DML es una prueba placebo del emparejamiento y las cotas no fijan el signo; la evaluación semisintética (`resultados/SIMULACION_SEMISINTETICA.md`) tiene una primera versión y falta ampliarla.
+- Marco teórico y metodológico completo: se redacta en un documento aparte y se agregará a `insumos/` cuando esté estable (el diagrama causal ya está en `resultados/2_diagnostico_datos_reales/IDENTIFICACION_CAUSAL.md`, pero falta integrarlo al marco teórico formal).
+- Resultados de determinantes y validez (P1/OE1): LASSO/Ridge/SHAP sobre el Sisbén — hecho 2026-11-02, ver `resultados/2_diagnostico_datos_reales/RESULTADOS_SELECCION_VARIABLES_OE1.md`.
+- Efectos causales (P2/OE2): estimación y cotas hechas (`resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md`, `RESULTADOS_FRECHET_MANSKI.md`, `DIAGNOSTICO_W_CELDA_EXACTA.md`). Con el Hot-Deck el DML es una prueba placebo del emparejamiento y las cotas no fijan el signo; la evaluación semisintética (`resultados/3_simulacion/SIMULACION_SEMISINTETICA.md`) tiene una primera versión y falta ampliarla.
 - Reglas contrafactuales (P3/OE3): no iniciado; se plantea sobre la evaluación semisintética.
-- Angostar las cotas de Fréchet-Manski con supuestos de monotonía (MTS/MTR) — ver "Próximo paso" en `resultados/RESULTADOS_FRECHET_MANSKI.md`.
+- Angostar las cotas de Fréchet-Manski con supuestos de monotonía (MTS/MTR) — ver "Próximo paso" en `resultados/2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md`.
 - Indicador de pobreza ampliado: resuelto 2026-10-28 (8 de 15 privaciones, antes 4) — ver `insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`. Quedan 7 privaciones sin construir (5 por alcance/tiempo, 2 retiradas por tautología con covariables de heterogeneidad).
-- Pobreza monetaria (ingreso per cápita, FGT0/FGT1): construida y conectada a `5_estimacion.py` y a las cotas (`src/indicadores/pobreza_monetaria_geih.py`, ver `resultados/RESULTADOS_POBREZA_MONETARIA.md`). Reconstruye 33,2 % de personas pobres frente a 31,8 % oficial y clasifica igual al 93,9 % de los hogares de la base oficial. Metodología en `metodologia/pobreza_monetaria/`.
+- Pobreza monetaria (ingreso per cápita, FGT0/FGT1): construida y conectada a `5_estimacion.py` y a las cotas (`src/indicadores/pobreza_monetaria_geih.py`, ver `resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`). Reconstruye 33,2 % de personas pobres frente a 31,8 % oficial y clasifica igual al 93,9 % de los hogares de la base oficial. Metodología en `metodologia/pobreza_monetaria/`.

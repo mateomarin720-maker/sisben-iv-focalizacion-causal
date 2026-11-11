@@ -67,7 +67,7 @@ hubiera sido mecánica, debería haber caído al quitar el componente
 tautológico del outcome — no cayó. Esto es evidencia (no prueba
 definitiva) de que la señal de vivienda en el CATE es real y no un
 artefacto de la definición del score — ver
-`docs/resultados/RESULTADOS_CAUSALFOREST_CATE.md`.
+`docs/resultados/2_diagnostico_datos_reales/RESULTADOS_CAUSALFOREST_CATE.md`.
 
 ### El error que tenía `hacinamiento` antes de 2026-10-28
 
@@ -178,5 +178,5 @@ ampliación de la sección 1.
 - Diccionario oficial: `docs/insumos/DICCIONARIO_GEIH_2024.xlsx`.
 - Reporte de sensibilidad: `docs/reports/reporte_sensibilidad_ipm_geih.csv`.
 - Uso del outcome en la estimación causal:
-  `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md`,
+  `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md`,
   `RESULTADOS_CAUSALFOREST_CATE.md`, `RESULTADOS_FRECHET_MANSKI.md`.

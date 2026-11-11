@@ -22,7 +22,7 @@ estándar Monte Carlo del sesgo queda bajo 0,003 en cada celda (0,008 en
 la RD, ver `UMBRAL_MCSE`).
 
 Uso:
-    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.sensibilidad_semisintetica [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica [n_jobs]
 Salidas:
     docs/reports/sensibilidad_semisintetica.csv (cada repetición)
     docs/reports/sensibilidad_semisintetica_resumen.csv

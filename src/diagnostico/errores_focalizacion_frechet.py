@@ -35,7 +35,7 @@ Elegible: grupos A y B (el tratamiento T del resto del proyecto); como
 robustez, A, B y C.
 
 Uso:
-    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.estimacion.errores_focalizacion_frechet
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.diagnostico.errores_focalizacion_frechet
 Salida: docs/reports/errores_focalizacion_frechet.csv
 """
 from __future__ import annotations
@@ -47,7 +47,7 @@ import numpy as np
 import pandas as pd
 
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import claves_por_nivel
-from src.estimacion.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
+from src.diagnostico.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)

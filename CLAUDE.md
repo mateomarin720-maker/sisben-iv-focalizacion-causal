@@ -175,7 +175,7 @@ de respuesta.
   (`fec_fin_encuesta` 2019-2026), no un corte único — filtrar por
   vigencia (`<=` fecha de corte), no por año exacto de encuesta (sesga
   hacia actualizaciones recientes). Ver
-  `docs/resultados/COMPARACION_FILTROS_SDP.md`. El crudo no está en
+  `docs/resultados/1_datos_y_enlace/COMPARACION_FILTROS_SDP.md`. El crudo no está en
   `0_raw/` de Azure sino en `sisben/bogota/Sisben_03082026_bog.zip`
   (un CSV de 587 MB, separador `;`).
 - IPM no comparte llave de hogar con GEIH/Sisbén — nunca intentar un
@@ -194,20 +194,20 @@ poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
 poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
-poetry run python -m src.estimacion.cotas_frechet_manski
-poetry run python -m src.estimacion.cotas_frechet_modelos
-poetry run python -m src.estimacion.errores_focalizacion_frechet
+poetry run python -m src.diagnostico.cotas_frechet_manski
+poetry run python -m src.diagnostico.cotas_frechet_modelos
+poetry run python -m src.diagnostico.errores_focalizacion_frechet
 poetry run python -m src.validacion.verificar_representatividad_sisben
-poetry run python -m src.estimacion.seleccion_variables_lasso_shap
-poetry run python -m src.estimacion.variables_candidatas_pobreza 6
-poetry run python -m src.estimacion.variables_candidatas_pobreza 6 poblacion
-poetry run python -m src.estimacion.incidencia_transferencias
+poetry run python -m src.diagnostico.seleccion_variables_lasso_shap
+poetry run python -m src.diagnostico.variables_candidatas_pobreza 6
+poetry run python -m src.diagnostico.variables_candidatas_pobreza 6 poblacion
+poetry run python -m src.diagnostico.incidencia_transferencias
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
 poetry run python -m src.simulacion
-poetry run python -m src.validacion.reglas_focalizacion
-poetry run python -m src.validacion.heterogeneidad_ampliada
-poetry run python -m src.validacion.sensibilidad_semisintetica
-poetry run python -m src.validacion.variabilidad_hotdeck 2
+poetry run python -m src.focalizacion.reglas_focalizacion
+poetry run python -m src.focalizacion.heterogeneidad_ampliada
+poetry run python -m src.simulacion.sensibilidad_semisintetica
+poetry run python -m src.diagnostico.variabilidad_hotdeck 2
 poetry run pytest tests/
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
 ```

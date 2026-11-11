@@ -22,7 +22,7 @@ necesidad y cambia `efecto` unidades si el hogar es elegible (efecto < 0 = la
 elegibilidad REDUCE la privación).
 
 Uso:
-    poetry run python -m src.validacion.simulacion_identificacion [reps] [n_pob]
+    poetry run python -m src.simulacion.simulacion_identificacion [reps] [n_pob]
 """
 from __future__ import annotations
 

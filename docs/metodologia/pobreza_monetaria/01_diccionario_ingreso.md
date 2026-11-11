@@ -3,7 +3,7 @@
 Fase 2 de la metodología (`00_auditoria_y_metodologia.md`). Decisiones
 cerradas el 2026-11-02 tras la revisión de D1-D7. Implementación:
 `src/indicadores/pobreza_monetaria_geih.py`; resultados:
-`docs/resultados/RESULTADOS_POBREZA_MONETARIA.md`.
+`docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`.
 
 ## Decisiones D1-D7
 

@@ -3,7 +3,7 @@
 Ejercicio predictivo con datos reales de la GEIH 2024: no usa el Hot-Deck ni
 la simulación y no estima efectos causales. Una variable que predice pobreza
 no la causa, ni demuestra que incorporarla mejore la política. La
-interpretación está en `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`.
+interpretación está en `docs/resultados/2_diagnostico_datos_reales/RECOMENDACION_VARIABLES_POBREZA.md`.
 
 Se comparan modelos anidados, de menos a más información:
 
@@ -32,8 +32,8 @@ de ver los resultados, para revisar lo que el criterio no mide (si la cuenta de
 ahorros es consecuencia de las transferencias, y qué queda sin ella).
 
 Uso:
-    poetry run python -m src.estimacion.variables_candidatas_pobreza [n_jobs] [posterior]
-    poetry run python -m src.estimacion.variables_candidatas_pobreza [n_jobs] poblacion
+    poetry run python -m src.diagnostico.variables_candidatas_pobreza [n_jobs] [posterior]
+    poetry run python -m src.diagnostico.variables_candidatas_pobreza [n_jobs] poblacion
 Con `posterior` corre solo esa parte, sobre la tabla ya construida. Con `poblacion`,
 las cantidades de hogares y personas de cada variable y de cada modelo.
 """

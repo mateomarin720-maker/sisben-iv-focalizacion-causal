@@ -1,6 +1,6 @@
 # Variabilidad de la imputación del Hot-Deck
 
-Generado 2026-11-04 por `src/validacion/variabilidad_hotdeck.py`
+Generado 2026-11-04 por `src/diagnostico/variabilidad_hotdeck.py`
 (prioridad 1 de `docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md`,
 pregunta del tutor del 2026-11-03). Salidas en `docs/reports/`:
 `variabilidad_hotdeck.txt` (consola), `_celdas.csv` (por celda),
@@ -131,7 +131,7 @@ varianza entre sorteos.
 ## Para reproducir
 
 ```bash
-PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.variabilidad_hotdeck 2 > docs/reports/variabilidad_hotdeck.txt 2>&1
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.diagnostico.variabilidad_hotdeck 2 > docs/reports/variabilidad_hotdeck.txt 2>&1
 poetry run pytest tests/test_variabilidad_hotdeck.py
 ```
 

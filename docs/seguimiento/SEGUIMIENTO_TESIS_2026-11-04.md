@@ -174,7 +174,7 @@ Fuente: notas de la reunión del 27 de octubre de 2026 y estado del repositorio 
   queda en la etiqueta `archivo/corrige-controles-celda`.
 
 - **Prioridad 4, primera versión el 2026-11-06:**
-  `docs/resultados/RECOMENDACION_VARIABLES_POBREZA.md`. No extiende el OE1, que
+  `docs/resultados/2_diagnostico_datos_reales/RECOMENDACION_VARIABLES_POBREZA.md`. No extiende el OE1, que
   predice el grupo asignado: usa la pobreza de la GEIH como resultado.
 - **Participación en programas (matiz a la tabla "Por qué los datos reales no
   identifican el efecto"):** faltan los cruces administrativos, pero la GEIH sí
@@ -213,7 +213,7 @@ Comprobado contra el repositorio al incorporar este documento:
   corrida que regenera las cifras y los dos modos; los dos primeros se
   hicieron el 2026-11-08.
 - **Prioridad 1 hecha el mismo día:**
-  `docs/resultados/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
+  `docs/resultados/1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md` (100 sorteos). Por
   hogar, dos sorteos coinciden en el grupo el 34,4 % de las veces y en
   A/B el 62,7 %; por celda, CV mediano 0,091 y error relativo mediano
   0,072 (ponderados: 0,049 y 0,039); a escala nacional, CV ≤ 0,007. El

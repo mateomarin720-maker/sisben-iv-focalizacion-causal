@@ -1,6 +1,6 @@
 # Resultados — Cotas de Fréchet-Manski (ATE sin suponer independencia condicional)
 
-Generado 2026-10-27 por `src/estimacion/cotas_frechet_manski.py`, refrescado
+Generado 2026-10-27 por `src/diagnostico/cotas_frechet_manski.py`, refrescado
 el 2026-10-28 tras corregir `viv_cuartos` y, horas después, tras reducir
 el outcome de 10 a 8 privaciones (ver
 `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Ampliado el 2026-11-02
@@ -37,7 +37,7 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
 | | Estimador | Rango |
 |---|---|---|
 | **Fréchet-Manski** (sin CIA) | Cota, no punto | **[−0,2607 ; +0,3801]** |
-| **DML con Hot-Deck** (con CIA) | Punto + IC95% | ver `docs/resultados/RESULTADOS_DML_ATE_ATT_ATU.md` (el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda) |
+| **DML con Hot-Deck** (con CIA) | Punto + IC95% | ver `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md` (el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda) |
 
 - Cobertura: 921 celdas con información de las dos fuentes (365 con la
   celda sin pisos), 100 % del peso poblacional de GEIH.
@@ -152,7 +152,7 @@ en A/B:
   se cumple: la correlación entre P(T | celda) y la pobreza de la celda es
   0,29 (`RESULTADOS_HOTDECK.md`). Es el único que sube la cota inferior.
 
-Implementación: `cotas_con_supuestos` en `src/estimacion/cotas_frechet_manski.py`;
+Implementación: `cotas_con_supuestos` en `src/diagnostico/cotas_frechet_manski.py`;
 salida `docs/reports/cotas_frechet_manski_monotonia.csv`. Todas las cotas
 son monótonas en P(Y=1, T=1), así que la unión sobre los valores
 factibles se alcanza en los extremos de Fréchet.
@@ -200,7 +200,7 @@ fallar las pruebas.
 ## Una cota por cada número de los modelos (2026-11-09)
 
 Hasta aquí, la cota acompañaba solo al ATE de los resultados binarios.
-`src/estimacion/cotas_frechet_modelos.py` pone una cota al lado de
+`src/diagnostico/cotas_frechet_modelos.py` pone una cota al lado de
 **cada parámetro que reportan el DML y el Causal Forest**, en los cinco
 resultados. Así se ve, número por número, cuánto aportan los datos y
 cuánto el supuesto del Hot-Deck. Salida: `docs/reports/cotas_frechet_modelos.csv`.

@@ -24,7 +24,7 @@ estimación.
   IPM-GEIH (`ipm_geih_score`/`POBRE_GEIH`, 8 de 15 privaciones),
   tratamiento (`Grupo_hotdeck`) y covariables (`src/3_preprocesamiento.py`).
   Usada por `src/5_estimacion.py` (DML, Causal Forest) y
-  `src/estimacion/cotas_frechet_manski.py`.
+  `src/diagnostico/cotas_frechet_manski.py`.
 
 Los resultados interpretados de cada tabla están en
 [`docs/resultados/`](../../docs/resultados/README.md); los nombres de

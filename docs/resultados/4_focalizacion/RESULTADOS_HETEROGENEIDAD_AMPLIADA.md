@@ -1,6 +1,6 @@
 # ¿Sirve el CATE para focalizar si el efecto varía más? (heterogeneidad ampliada)
 
-Generado el 2026-11-09 por `src/validacion/heterogeneidad_ampliada.py`.
+Generado el 2026-11-09 por `src/focalizacion/heterogeneidad_ampliada.py`.
 Salidas: `docs/reports/heterogeneidad_{ampliado,complejo}{.csv,_resumen.csv,_config.json}`
 y `docs/reports/heterogeneidad_ampliada.txt`. **Todas las cifras de esta
 página son simuladas (\*).**
@@ -126,7 +126,7 @@ cambian (diferencia máxima 7·10⁻¹⁵).
 ## Para reproducir
 
 ```bash
-PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.heterogeneidad_ampliada 6 > docs/reports/heterogeneidad_ampliada.txt 2>&1
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.heterogeneidad_ampliada 6 > docs/reports/heterogeneidad_ampliada.txt 2>&1
 poetry run pytest tests/test_heterogeneidad_ampliada.py
 ```
 

@@ -16,7 +16,7 @@ sería más defendible. Si varía mucho, es evidencia directa de que el
 Sisbén sobre-representa ciertos departamentos (y sub-representa otros) en
 relación con su peso poblacional real — relevante para interpretar tanto
 el Hot-Deck como las cotas de Fréchet-Manski
-(`docs/resultados/RESULTADOS_FRECHET_MANSKI.md`).
+(`docs/resultados/2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md`).
 
 Uso:
     poetry run python -m src.validacion.verificar_representatividad_sisben

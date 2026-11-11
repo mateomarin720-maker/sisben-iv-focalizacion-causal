@@ -203,7 +203,7 @@ hasta que el error Monte Carlo de cada celda quedó bajo el umbral.
 - Solo la discontinuidad en el corte la resiste (+0,086 frente a +0,090),
   y solo con vínculo hogar por hogar; con Hot-Deck también da cero.
 
-Detalle en [`SIMULACION_SEMISINTETICA.md`](../resultados/SIMULACION_SEMISINTETICA.md).
+Detalle en [`SIMULACION_SEMISINTETICA.md`](../resultados/3_simulacion/SIMULACION_SEMISINTETICA.md).
 
 ### 5.7 Representatividad del Sisbén
 
@@ -229,7 +229,7 @@ departamentos: de 0,4 % en Valle del Cauca a 12,8 % en Putumayo.
 |---|---|
 | P1/OE1: determinantes y validez del Sisbén | Implementado (LASSO, Ridge y SHAP). Falta definir grupos y subgrupos de variables y la concordancia con la pobreza. |
 | P2/OE2: efecto causal sobre el bienestar | Estimación y cotas implementadas con indicador proxy de pobreza y con pobreza monetaria. Con los datos actuales el efecto no se identifica; la simulación cierra la parte metodológica. |
-| P3/OE3: reglas de focalización (FGT1) | Hecho en la simulación (2026-11-04): el proxy de medios logra 82-85 % de la reducción ideal de FGT1; las reglas con CATE estimado son peores. Ver [`RESULTADOS_REGLAS_FOCALIZACION.md`](../resultados/RESULTADOS_REGLAS_FOCALIZACION.md). |
+| P3/OE3: reglas de focalización (FGT1) | Hecho en la simulación (2026-11-04): el proxy de medios logra 82-85 % de la reducción ideal de FGT1; las reglas con CATE estimado son peores. Ver [`RESULTADOS_REGLAS_FOCALIZACION.md`](../resultados/4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md). |
 
 ## 8. Pendientes
 

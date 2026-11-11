@@ -1,4 +1,4 @@
-"""Cotas de Fréchet-Manski (`src/estimacion/cotas_frechet_manski.py`): el
+"""Cotas de Fréchet-Manski (`src/diagnostico/cotas_frechet_manski.py`): el
 resultado de identificación central del proyecto con datos reales."""
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.estimacion.cotas_frechet_manski import ate_agregado, cotas_con_supuestos, cotas_frechet, cotas_por_celda
+from src.diagnostico.cotas_frechet_manski import ate_agregado, cotas_con_supuestos, cotas_frechet, cotas_por_celda
 
 
 @pytest.mark.parametrize("p_y", [0.0, 1.0])

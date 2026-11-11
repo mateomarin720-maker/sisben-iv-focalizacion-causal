@@ -1,6 +1,6 @@
 # Simulación de identificación — ¿qué diseño puede recuperar el efecto de la elegibilidad?
 
-Generado 2026-10-27 por `src/validacion/simulacion_identificacion.py`
+Generado 2026-10-27 por `src/simulacion/simulacion_identificacion.py`
 (20 repeticiones, población de 150.000 hogares; salida completa en
 `docs/reports/resultado_simulacion_identificacion.txt`). **Datos
 sintéticos con efecto verdadero conocido**, no resultados sobre GEIH/Sisbén
@@ -57,6 +57,6 @@ menores en A′ (≈ +0,2); ver el archivo de salida.
 
 ## Para reproducir
 ```
-poetry run python -m src.validacion.simulacion_identificacion 20 150000
+poetry run python -m src.simulacion.simulacion_identificacion 20 150000
 ```
 Tarda alrededor de 30 segundos. Solo usa `numpy` y `pandas`.

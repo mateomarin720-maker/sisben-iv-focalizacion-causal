@@ -20,8 +20,8 @@ identificación que hace el proyecto se comprueba con d-separación
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe src/4_dag_identificacion.py
 Salida:
-    docs/resultados/dag_*.png (uno por diagrama)
-    docs/resultados/IDENTIFICACION_CAUSAL.md
+    docs/resultados/2_diagnostico_datos_reales/dag_*.png (uno por diagrama)
+    docs/resultados/2_diagnostico_datos_reales/IDENTIFICACION_CAUSAL.md
 """
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ import networkx as nx
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
-OUT_DIR = Path("docs/resultados")
+OUT_DIR = Path("docs/resultados/2_diagnostico_datos_reales")
 
 # Tipo de nodo -> (relleno, borde, texto, estilo del borde, leyenda)
 ESTILOS = {

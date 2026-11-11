@@ -1,12 +1,12 @@
-"""Cotas de Fréchet por parámetro (`src/estimacion/cotas_frechet_modelos.py`)."""
+"""Cotas de Fréchet por parámetro (`src/diagnostico/cotas_frechet_modelos.py`)."""
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from src.estimacion import cotas_frechet_modelos as cm
-from src.estimacion.cotas_frechet_manski import cotas_frechet
+from src.diagnostico import cotas_frechet_modelos as cm
+from src.diagnostico.cotas_frechet_manski import cotas_frechet
 
 
 def _poblacion(rng, n_celdas=40, binaria=False):

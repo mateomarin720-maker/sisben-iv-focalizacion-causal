@@ -23,7 +23,7 @@ consistente es tratar ambas fuentes como "stock vigente a una fecha", no como
 `CORTE` (no un valor fijo).
 
 Dos filtros disponibles (`modo`), para poder comparar ambos — ver
-`docs/resultados/COMPARACION_FILTROS_SDP.md` y
+`docs/resultados/1_datos_y_enlace/COMPARACION_FILTROS_SDP.md` y
 `src/validacion/comparar_filtros_sdp.py`:
   - "vigencia" (adoptado por defecto): `fec_fin_encuesta <= FECHA_CORTE`
     (stock vigente al corte, igual que trata el nacional).

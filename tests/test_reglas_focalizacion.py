@@ -1,11 +1,11 @@
-"""Reglas de focalización (P3/OE3, `src/validacion/reglas_focalizacion.py`)."""
+"""Reglas de focalización (P3/OE3, `src/focalizacion/reglas_focalizacion.py`)."""
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from src.validacion import reglas_focalizacion as rf
+from src.focalizacion import reglas_focalizacion as rf
 
 LP = 500_000.0
 

@@ -34,7 +34,7 @@ Outcomes: los cinco de `5_estimacion.py` (IPM continuo y binario,
 log-ingreso per cápita, pobreza monetaria reconstruida y oficial).
 
 Uso (requiere 3b_preprocesamiento_monetario.py):
-    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.estimacion.cotas_frechet_modelos
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.diagnostico.cotas_frechet_modelos
 Salida: docs/reports/cotas_frechet_modelos.csv
 """
 from __future__ import annotations
@@ -46,7 +46,7 @@ import numpy as np
 import pandas as pd
 
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celda
-from src.estimacion.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
+from src.diagnostico.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
 from src.validacion.comparar_celdas_hotdeck_vivienda import PAREDES
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")

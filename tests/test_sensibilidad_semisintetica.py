@@ -1,12 +1,12 @@
 """Sensibilidad de la evaluación semisintética
-(`src/validacion/sensibilidad_semisintetica.py`)."""
+(`src/simulacion/sensibilidad_semisintetica.py`)."""
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
 from src.simulacion.estimadores import discontinuidad, discontinuidad_difusa
-from src.validacion import sensibilidad_semisintetica as se
+from src.simulacion import sensibilidad_semisintetica as se
 
 
 def _rd_difusa(seed: int, n: int = 60_000, efecto: float = 0.1, p0: float = 0.2, p1: float = 0.8):

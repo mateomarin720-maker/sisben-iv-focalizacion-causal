@@ -60,7 +60,7 @@ EVALUACIÓN       sesgo, RMSE, cobertura del IC 95 %, ancho, PEHE (error del CAT
 **Papel de cada variable** (en el DAG del generador, `dag_simulacion.png`;
 chequeos formales en `IDENTIFICACION_CAUSAL.md` §4):
 
-![DAG del generador de la simulación](dag_simulacion.png)
+![DAG del generador de la simulación](../2_diagnostico_datos_reales/dag_simulacion.png)
 
 | Variable | Papel | Dónde entra |
 |---|---|---|
@@ -246,7 +246,7 @@ Efecto verdadero en el corte (objetivo de la RD): log-ingreso +0,090\*, pobreza 
 
 ## Sensibilidad (2026-11-04)
 
-`src/validacion/sensibilidad_semisintetica.py`, mismo generador y mismos
+`src/simulacion/sensibilidad_semisintetica.py`, mismo generador y mismos
 hogares, solo log-ingreso. 228 repeticiones, hasta que el MCSE del sesgo
 quedó bajo 0,003 en cada celda (0,008 en la RD). Salidas:
 `docs/reports/sensibilidad_semisintetica{.txt,_resumen.csv,.csv}`.

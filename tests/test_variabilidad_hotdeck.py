@@ -1,11 +1,11 @@
-"""Variabilidad de la imputación del Hot-Deck (`src/validacion/variabilidad_hotdeck.py`)."""
+"""Variabilidad de la imputación del Hot-Deck (`src/diagnostico/variabilidad_hotdeck.py`)."""
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from src.validacion import variabilidad_hotdeck as v
+from src.diagnostico import variabilidad_hotdeck as v
 
 
 def test_concordancia_por_hogar_es_el_estimador_insesgado():

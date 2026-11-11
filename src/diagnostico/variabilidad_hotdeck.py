@@ -25,7 +25,7 @@ Mide:
 Son datos reales (la imputación real), no simulados.
 
 Uso:
-    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.variabilidad_hotdeck [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.diagnostico.variabilidad_hotdeck [n_jobs]
 Salidas:
     docs/reports/variabilidad_hotdeck.txt (vía redirección), _celdas.csv,
     _agregados.csv, _estimacion.csv

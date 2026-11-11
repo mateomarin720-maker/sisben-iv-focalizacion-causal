@@ -46,4 +46,4 @@ POBRE_MONETARIO_OFICIAL              ate_mts_mtr  -0.5650   0.0000 0.5650     71
 POBRE_MONETARIO_OFICIAL ate_mts_mtr_dep_positiva  -0.4045   0.0000 0.4045     712
 Guardado: docs\reports\cotas_frechet_manski_monotonia.csv
 
-ATE puntual del DML con Hot-Deck (SÍ supone CIA): ver docs/resultados/DIAGNOSTICO_W_CELDA_EXACTA.md — no se hardcodea aquí.
+ATE puntual del DML con Hot-Deck (SÍ supone CIA): ver docs/resultados/2_diagnostico_datos_reales/DIAGNOSTICO_W_CELDA_EXACTA.md — no se hardcodea aquí.

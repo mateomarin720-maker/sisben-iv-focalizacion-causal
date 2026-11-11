@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.estimacion import incidencia_transferencias as it
+from src.diagnostico import incidencia_transferencias as it
 
 
 def _personas() -> pd.DataFrame:
