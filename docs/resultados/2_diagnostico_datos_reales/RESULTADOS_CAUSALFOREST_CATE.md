@@ -43,6 +43,25 @@ Con W = proxy los valores son del mismo orden (ver la salida completa).
   variables usa el bosque para partir un efecto que es ≈0; no es
   evidencia de un mecanismo.
 
+**La heterogeneidad no es pequeña: no es identificable con estas
+fuentes.** Que el bosque dé diferencias de ±0,01 entre subgrupos no dice
+que el efecto varíe poco. Dice que el grupo imputado no lleva
+información del hogar. Sin el supuesto del vínculo, la cota de Fréchet
+del CATE de cada subgrupo es ancha y contiene el cero en todos los casos
+(`RESULTADOS_FRECHET_MANSKI.md`, "Una cota por cada número de los
+modelos"):
+
+| Subgrupo | CATE del bosque, `POBRE_MONETARIO` | Cota de Fréchet, `POBRE_MONETARIO` |
+|---|---|---|
+| Urbana | +0,0006 | [−0,36; +0,69] |
+| Rural | −0,0020 | [−0,58; +0,51] |
+| Jefe hombre | −0,0006 | [−0,38; +0,66] |
+| Jefe mujer | +0,0012 | [−0,45; +0,68] |
+
+Las diferencias del bosque son cerca del 1 % del ancho de esas cotas.
+Los datos son compatibles tanto con un efecto igual en todos los
+subgrupos como con diferencias de decenas de puntos entre ellos.
+
 ## Historial que se conserva
 
 - 2026-10-21: un patrón concentrado en jefatura femenina, calculado con
