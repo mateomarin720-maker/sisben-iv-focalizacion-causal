@@ -33,7 +33,7 @@ revisaron y aceptaron.
 
 ## Controles
 
-- 262 pruebas automáticas y 56 errores conocidos reintroducidos por
+- 263 pruebas automáticas y 57 errores conocidos reintroducidos por
   mutación, en integración continua en cada cambio (`tests/README.md`).
 - Validación externa de los indicadores frente a las cifras oficiales del
   DANE (93,9 % de hogares con la misma clasificación de pobreza

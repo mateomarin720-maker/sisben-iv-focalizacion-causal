@@ -118,12 +118,15 @@ def cifras(contar_pruebas: bool = True) -> list[Cifra]:
                    f"Gini {num(float(nac[8]), 3)} frente a {num(float(nac[9]), 3)}", pm,
                    "fila `nacional`: `fgt0_extrema`, `fgt1_pobreza`, `gini` y sus columnas `_oficial`",
                    f"{PY} -m src.indicadores.pobreza_monetaria_geih"))
-    rep = pd.read_csv(R / "representatividad_sisben_por_depto.csv")
+    rep = pd.read_csv(R / "representatividad_sisben_por_depto.csv", dtype={"geo_depto": str})
     nal = rep["sisben_hogares_registrados"].sum() / rep["geih_hogares_expandidos"].sum()
-    c.append(Cifra(s, "Cobertura del Sisbén frente a los hogares de la GEIH (mín.–máx.; nacional)",
-                   f"{num(rep['razon_cobertura'].min(), 1, pct=True)} – {num(rep['razon_cobertura'].max(), 0, pct=True)}; "
+    arch = rep[(rep["marco"] == "departamento") & (rep["geo_depto"] != "11")]["razon_cobertura"]
+    c.append(Cifra(s, "Cobertura del Sisbén frente a los hogares de la GEIH, mismo marco "
+                      "(mín.–máx. de los departamentos del archivo nacional; nacional)",
+                   f"{num(arch.min(), 1, pct=True)} – {num(arch.max(), 1, pct=True)}; "
                    f"{num(nal, 1, pct=True)}", "representatividad_sisben_por_depto.csv",
-                   "`razon_cobertura`; nacional = suma de registrados / suma de hogares",
+                   "`razon_cobertura` con `marco` = departamento, sin Bogotá (SDP); "
+                   "nacional = suma de registrados / suma de hogares",
                    f"{PY} -m src.validacion.verificar_representatividad_sisben"))
     v = pd.read_csv(R / "variabilidad_hotdeck_estimacion.csv").set_index("outcome")
     cmd_v = f"{PY} -m src.diagnostico.variabilidad_hotdeck 2"

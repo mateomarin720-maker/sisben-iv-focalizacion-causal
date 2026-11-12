@@ -1,6 +1,6 @@
 # Pruebas
 
-262 pruebas en 25 archivos (2026-11-11). Casi todas usan datos
+263 pruebas en 25 archivos (2026-11-11). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 

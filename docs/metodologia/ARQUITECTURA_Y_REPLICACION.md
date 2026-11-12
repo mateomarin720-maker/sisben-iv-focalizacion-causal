@@ -112,7 +112,7 @@ Los reportes crudos van a `docs/reports/`, y su interpretación, a `docs/resulta
 | Contraste con cifras oficiales | Resultado mal reconstruido | Pobreza monetaria 33,2 % frente a 31,8 % oficial; misma clasificación que el DANE en el 93,9 % de los hogares |
 | Propensión contra la empírica | Categóricas usadas como número | `5_estimacion.py` la imprime por celda |
 | Equivalencia al refactorizar | Que mover código cambie resultados | `tests/test_simulacion_equivalencia.py` |
-| Pruebas automáticas | Errores conocidos y nuevos | 262 pruebas y 56 errores reintroducidos por mutación, en GitHub Actions en cada cambio |
+| Pruebas automáticas | Errores conocidos y nuevos | 263 pruebas y 57 errores reintroducidos por mutación, en GitHub Actions en cada cambio |
 | Prueba de mutación | Pruebas que pasan aunque el error vuelva | 43 errores reintroducidos, los 43 detectados (`tests/mutaciones.py`) |
 | Convergencia Monte Carlo | Simulaciones con demasiado ruido | Repeticiones hasta que el error estándar Monte Carlo queda bajo el umbral |
 

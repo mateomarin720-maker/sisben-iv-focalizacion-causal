@@ -166,3 +166,21 @@ def test_representatividad_con_los_hogares_de_un_mes_promedio():
     r = calcular_cobertura(geih, sisben)
     assert r.loc[0, "geih_hogares_expandidos"] == 1000
     assert r.loc[0, "razon_cobertura"] == pytest.approx(0.25)
+
+
+def test_representatividad_compara_la_capital_con_la_capital():
+    """En los departamentos donde la GEIH solo encuesta la cabecera de la
+    capital, el Sisbén se cuenta solo ahí. Con el departamento entero la
+    razón pasaba del 100 % (Putumayo 154 %)."""
+    from src.validacion.verificar_representatividad_sisben import calcular_cobertura
+    geih = pd.DataFrame({"geo_depto": ["86", "86", "05", "05"], "geo_zona": ["1", "1", "1", "3"],
+                         "mes": ["01"] * 4, "fex": [50.0, 50.0, 500.0, 500.0]})
+    sisben = pd.DataFrame({"geo_depto": ["86"] * 150 + ["05"] * 100,
+                           "cod_mpio": ["86001"] * 60 + ["86568"] * 90 + ["05001"] * 100,
+                           "geo_zona": ["1"] * 40 + ["3"] * 20 + ["1"] * 90 + ["1"] * 100,
+                           "Clasificacion": ["A1"] * 250})
+    r = calcular_cobertura(geih, sisben).set_index("geo_depto")
+    assert r.loc["86", "marco"] == "cabecera de la capital"
+    assert r.loc["86", "razon_cobertura"] == pytest.approx(0.40)    # 40 en la cabecera de Mocoa / 100
+    assert r.loc["05", "marco"] == "departamento"
+    assert r.loc["05", "razon_cobertura"] == pytest.approx(0.10)

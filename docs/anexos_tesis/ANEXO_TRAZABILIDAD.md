@@ -15,7 +15,7 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 | Pobreza monetaria (FGT0 por personas): reconstruida frente a oficial | 33,24 % frente a 31,83 % | `comparacion_pobreza_monetaria_oficial.txt` | filas `fgt0_reconstruida` y `fgt0_oficial`, columna nacional | `poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial` |
 | Hogares con la misma clasificación que la base oficial | 93,93 % de 275.057 hogares | `comparacion_pobreza_monetaria_oficial.txt` | fila `pct_hogares_misma_clasificacion`, columna nacional | `poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial` |
 | Pobreza extrema, brecha (FGT1) y Gini: reconstruida frente a oficial | extrema 12,5 % frente a 11,7 %; FGT1 13,5 frente a 12,6; Gini 0,565 frente a 0,551 | `pobreza_monetaria_geih.txt` | fila `nacional`: `fgt0_extrema`, `fgt1_pobreza`, `gini` y sus columnas `_oficial` | `poetry run python -m src.indicadores.pobreza_monetaria_geih` |
-| Cobertura del Sisbén frente a los hogares de la GEIH (mín.–máx.; nacional) | 4,8 % – 154 %; 17,3 % | `representatividad_sisben_por_depto.csv` | `razon_cobertura`; nacional = suma de registrados / suma de hogares | `poetry run python -m src.validacion.verificar_representatividad_sisben` |
+| Cobertura del Sisbén frente a los hogares de la GEIH, mismo marco (mín.–máx. de los departamentos del archivo nacional; nacional) | 4,8 % – 26,9 %; 16,8 % | `representatividad_sisben_por_depto.csv` | `razon_cobertura` con `marco` = departamento, sin Bogotá (SDP); nacional = suma de registrados / suma de hogares | `poetry run python -m src.validacion.verificar_representatividad_sisben` |
 | Parte de la varianza del contraste que viene de la imputación (100 sorteos), por resultado | `POBRE_MONETARIO` 48,9 %; `POBRE_GEIH` 48,8 %; `log_ingreso_percapita` 54,5 % | `variabilidad_hotdeck_estimacion.csv` | `fraccion_info_imputacion`, una fila por resultado | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
 | Contraste placebo de `POBRE_GEIH` combinado con Rubin | −0,00003 [−0,0036; +0,0036] | `variabilidad_hotdeck_estimacion.csv` | fila `POBRE_GEIH` | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
 
@@ -77,5 +77,5 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
-| Pruebas automáticas | 262 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
-| Errores conocidos reintroducidos por la prueba de mutación | 56 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |
+| Pruebas automáticas | 263 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
+| Errores conocidos reintroducidos por la prueba de mutación | 57 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |

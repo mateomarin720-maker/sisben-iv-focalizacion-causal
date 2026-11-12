@@ -2,6 +2,25 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-11 (40) — Figuras APA, factores de expansión y cobertura sobre el mismo marco
+
+### Corregido
+- **Cobertura del Sisbén mayor al 100 %.** En los 9 departamentos de la Orinoquía, la
+  Amazonía y San Andrés la GEIH solo encuesta la cabecera de la capital (`CLASE` 1, `AREA`
+  igual al departamento), y se dividía el Sisbén de todo el departamento entre ella
+  (Putumayo 154 %). Ahora el Sisbén se cuenta solo en la cabecera de la capital: ninguna
+  razón pasa de 41,5 % (Bogotá, que es el registro del SDP); en el archivo nacional va de
+  4,8 % (Valle) a 26,9 % (Boyacá), 5,6 veces; 16,8 % en el agregado. Prueba y mutación
+  (263 pruebas, 57 de 57 mutaciones).
+
+### Agregado
+- Figuras en formato APA con su número, título y nota (`docs/anexos_tesis/FIGURAS_APA.md`):
+  DAG de la ignorabilidad condicional (sección 2.2), tres pasos del DML, DAG de la
+  Proposición 1 y las nubes de una celda\* que dibujó el director. Los DAG comprueban su
+  nota con d-separación al generarse.
+- Uso del factor de expansión por análisis (`ARQUITECTURA_Y_REPLICACION.md`).
+- Catálogo 819 de la GEIH 2024 y referencias APA de los conjuntos de datos del DANE.
+
 ## 2026-11-11 (39) — Anotaciones del director sobre el borrador
 
 ### Agregado

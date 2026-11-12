@@ -69,7 +69,7 @@ focalización (`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`) toman la
 proporción de A/B de los registrados como la de toda la celda. El grafo
 dice cuándo vale: solo si lo que lleva a un hogar a registrarse no está
 relacionado con su elegibilidad más allá de X y Z. La cobertura del
-registro varía 32 veces entre departamentos
+registro varía 5,6 veces entre los departamentos del archivo nacional
 (`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`), así que es un supuesto que se
 declara, no que se verifica.
 

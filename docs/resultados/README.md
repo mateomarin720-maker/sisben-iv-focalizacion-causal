@@ -94,9 +94,10 @@ Bogotá), la reconstrucción clasifica igual al 93,9 %. La reconstrucción
 es el resultado principal (cubre los 33 departamentos); la clasificación
 oficial, la prueba de robustez.
 
-**Representatividad.** La cobertura del Sisbén frente a la GEIH varía 32
-veces entre departamentos (4,8 % Valle a 154 % Putumayo; 17,3 % nacional): el registro
-no es una muestra uniforme.
+**Representatividad.** Sobre el mismo marco (en 9 departamentos la GEIH solo
+cubre la capital), la cobertura del Sisbén frente a la GEIH va de 4,8 % (Valle) a
+26,9 % (Boyacá) en los departamentos del archivo nacional, y 16,8 % en el agregado:
+el registro no es una muestra uniforme.
 
 **Variabilidad de la imputación** (100 semillas; la 42 reproduce el
 pipeline).
