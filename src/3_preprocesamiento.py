@@ -104,10 +104,10 @@ REPORT_DIR = Path("docs/reports")
 MESES = [f"{m:02d}" for m in range(1, 13)]
 # Reglas del IPM-GEIH (umbrales, privaciones, K_POBRE): src/indicadores/ipm_proxy.py,
 # compartidas con la validación contra la ECV.
-# Hogares pobres por IPM oficial, ponderados por FEX_C: base del IPM 2025 (catálogo 903; la de
-# 2024 es el catálogo 860, que no está en el banco). Hasta el 2026-11-11 decía 0,130, que es la
-# tasa SIN ponderar de esa base. Referencia de plausibilidad, no un objetivo a igualar.
-IPM_OFICIAL_TASA_POBREZA = 0.081
+# Hogares pobres por IPM oficial 2024, ponderados por FEX_C (base del IPM 2024 en Azure,
+# 0_raw/ipm/2024/). Hasta el 2026-11-11 decía 0,130, que es la tasa SIN ponderar de la base
+# del IPM 2025. Referencia de plausibilidad, no un objetivo a igualar.
+IPM_OFICIAL_TASA_POBREZA = 0.092
 
 
 
@@ -194,7 +194,7 @@ def _validar(df: pd.DataFrame) -> None:
     cercano = min(range(1, len(PRIVACIONES) + 1),
                   key=lambda k: abs(df[f"POBRE_GEIH_K{k}"].mean() - IPM_OFICIAL_TASA_POBREZA))
     print(
-        f"  Referencia externa: IPM oficial (hogares, ponderado, 2025) = {IPM_OFICIAL_TASA_POBREZA*100:.1f}%; "
+        f"  Referencia externa: IPM oficial (hogares, ponderado, 2024) = {IPM_OFICIAL_TASA_POBREZA*100:.1f}%; "
         f"el corte más cercano es K={cercano} y el adoptado K={K_POBRE}. Validación hogar por hogar "
         f"contra la clasificación oficial: src/validacion/validar_ipm_geih_ecv.py."
     )

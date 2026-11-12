@@ -144,9 +144,9 @@ fuentes:
     nombre: "Índice de Pobreza Multidimensional"
     entidad: DANE
     portal: "microdatos.dane.gov.co (descarga manual, registro requerido)"
-    catalogo_ref: 903  # IPM 2025 (DANE-DIMPE-POBREZA-MULTIDIMENSIONAL-2025). El IPM 2024 es el catálogo 860, no está en el banco.
-    catalogo_ref_por_anio: {2025: 903}
-    periodo: "2025 (sobre la ECV 2025; verificado 2026-11-11)"
+    catalogo_ref: 860  # IPM 2024; el 903 es el IPM 2025
+    catalogo_ref_por_anio: {2024: 860, 2025: 903}
+    periodo: "2024 en Azure 0_raw/ipm/2024/ (sale de la ECV 2024); 2025 en 0_raw/ipm/nacional y departamental (verificado 2026-11-11)"
     unidad_analisis: hogar (indicadores agregados también disponibles)
     acceso: registro
     estado: disponible
@@ -228,12 +228,12 @@ fuentes:
       En Azure bajo `ecv/` (fuera de 0_raw/, así que restaurar_banco_datos_azure.py
       no la baja): 17 módulos en zip, el factor de expansión de municipios PDET y
       `ecv/docs_ecv/` (diccionario, ficha metodológica, formulario, manual). La
-      validación del IPM-GEIH usa seis módulos copiados a data/0_raw/ecv/:
+      validación del IPM-GEIH lee de Azure, en memoria, seis módulos:
       Caracteristicas_composicion_hogar, Educacion, Salud2024, Fuerza_trabajo,
       Servicios_hogar y Datos_vivienda (CSV separado por ";", latin1). Llaves:
       persona DIRECTORIO + SECUENCIA_P + ORDEN; hogar DIRECTORIO +
-      SECUENCIA_ENCUESTA (módulo de servicios); vivienda DIRECTORIO. El
-      DIRECTORIO no cruza con la base del IPM (anonimizado distinto).
+      SECUENCIA_ENCUESTA (módulo de servicios); vivienda DIRECTORIO. Cruza al
+      100 % con la base del IPM 2024 (no con la 2025).
       85.387 hogares. Ver src/validacion/validar_ipm_geih_ecv.py.
 
   - id: pobreza_monetaria

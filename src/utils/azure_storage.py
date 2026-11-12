@@ -134,6 +134,14 @@ def descargar_archivo(ruta_azure: str, ruta_local: str | Path) -> Path:
     return ruta_local
 
 
+def leer_bytes(ruta_azure: str) -> bytes:
+    """Contenido de un archivo de Azure, en memoria (sin escribirlo en disco).
+    Para los archivos del banco que no se restauran en `data/` (por ejemplo,
+    la ECV bajo `ecv/` o el IPM 2024 bajo `0_raw/ipm/2024/`)."""
+    logger.info("Leyendo azure://%s/%s", CONTAINER_NAME, ruta_azure)
+    return _cliente_contenedor().get_blob_client(ruta_azure).download_blob().readall()
+
+
 def listar_archivos(prefijo: str = "") -> list[str]:
     """Lista los archivos disponibles en el contenedor, opcionalmente
     filtrados por una carpeta virtual (prefijo), ej. listar_archivos("1_processed/geih/")"""

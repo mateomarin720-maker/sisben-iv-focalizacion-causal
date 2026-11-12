@@ -11,9 +11,10 @@ Total de variables descritas en el DDI: 146
 > 903): `PERIODO` = 20250731, la base departamental tiene más hogares
 > (87.060) que toda la ECV 2024 (85.387) y solo el 0,1 % de sus factores
 > de expansión coincide con los de la ECV 2024. El IPM 2024 es el catálogo
-> 860, que no está en el banco. Ningún modelo usa esta base (no tiene
-> llave con la GEIH); solo la validación del IPM-GEIH
-> (`VALIDACION_IPM_GEIH_ECV.md`).
+> 860; su base y su diccionario están en Azure, `0_raw/ipm/2024/`
+> (`BasesDatos-IMP-2024.zip`, `docs_ipm/`), y salen de la misma ECV 2024.
+> Ningún modelo usa estas bases (no tienen llave con la GEIH); solo la
+> validación del IPM-GEIH (`VALIDACION_IPM_GEIH_ECV.md`).
 
 > **Nota:** este DDI describe varias bases relacionadas (nivel hogar
 > y nivel persona, base nacional y base departamental) bajo el mismo

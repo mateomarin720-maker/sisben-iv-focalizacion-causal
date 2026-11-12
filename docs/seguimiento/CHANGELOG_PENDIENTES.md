@@ -6,9 +6,10 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 
 ### Agregado
 - `src/validacion/validar_ipm_geih_ecv.py` y `VALIDACION_IPM_GEIH_ECV.md`: el proxy de 8
-  privaciones calculado en la ECV con las mismas reglas. Hogar por hogar en la base del IPM:
-  correlación 0,72 con el IPM oficial, concordancia 86 %, sensibilidad 77 %, kappa 0,41
-  (K = 3). ECV 2024 frente a GEIH 2024: 19,6 % y 20,4 %; correlación 0,99 entre los 24
+  privaciones calculado en la ECV con las mismas reglas, leyendo de Azure en memoria. Hogar
+  por hogar contra el IPM oficial 2024 (que sale de la ECV 2024): correlación 0,72,
+  concordancia 85,6 %, sensibilidad 73,5 %, kappa 0,41 (K = 3); la sobreestimación es
+  rural (cabeceras 6,5 % frente a 5,9 % oficial; resto 63,7 % frente a 21,5 %). ECV 2024 frente a GEIH 2024: 19,6 % y 20,4 %; correlación 0,99 entre los 24
   departamentos completos y 0,97 entre las 9 cabeceras de capital.
 - Reglas del proxy en un solo lugar (`src/indicadores/ipm_proxy.py`), usadas por
   `3_preprocesamiento.py` (salida idéntica a la anterior) y por la validación. Prueba y
@@ -16,10 +17,11 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 - ECV 2024 en el catálogo de datos (en Azure bajo `ecv/`).
 
 ### Corregido
-- La base del IPM del banco es la de **2025** (catálogo 903), no la de 2024 (catálogo 860).
-- La tasa oficial que justificaba K = 3 (13,0 %) era la tasa sin ponderar de esa base;
-  ponderada por hogares es 8,1 %, y el corte más cercano es K = 4 (7,3 % en la base del
-  IPM, 6,7 % en la GEIH). K = 3 se mantiene: cambiarlo es decisión del equipo.
+- La base del IPM en `data/0_raw/ipm/nacional` es la de **2025** (catálogo 903); la de 2024
+  está en Azure, `0_raw/ipm/2024/`, y es la que se usa.
+- La tasa oficial que justificaba K = 3 (13,0 %) era la tasa sin ponderar de la base 2025;
+  la oficial 2024, ponderada por hogares, es 9,2 %, y el corte más cercano es K = 4 (7,5 % en
+  la base del IPM, 6,7 % en la GEIH). K = 3 se mantiene: cambiarlo es decisión del equipo.
 
 ## 2026-11-11 (40) — Figuras APA, factores de expansión y cobertura sobre el mismo marco
 

@@ -133,9 +133,10 @@ Cifras tras corregir el bug de agosto (2026-11-02; antes K≥3 = 16,3 %).
 
 K=3 se adoptó por ser el más cercano a una tasa oficial de 13,0 %.
 **Esa referencia estaba mal (corregido el 2026-11-11):** 13,0 % es la
-tasa *sin ponderar* de la base del IPM, y esa base es la de 2025
-(catálogo 903), no la de 2024. Ponderada por hogares, la tasa oficial es
-8,1 %, y el corte más cercano es K=4 (6,7 % en la GEIH). K=3 se mantiene
+tasa *sin ponderar* de la base del IPM 2025, no la oficial de 2024.
+Con la base del IPM 2024 (Azure, `0_raw/ipm/2024/`), ponderada por
+hogares, la tasa oficial es 9,2 %, y el corte más cercano es K=4 (6,7 %
+en la GEIH). K=3 se mantiene
 porque cambiarlo mueve todos los resultados; la validación contra la
 clasificación oficial, hogar por hogar, está en
 `docs/resultados/1_datos_y_enlace/VALIDACION_IPM_GEIH_ECV.md`.
