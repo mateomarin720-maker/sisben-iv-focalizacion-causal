@@ -43,6 +43,8 @@ El borrador cita conceptos sin su fuente. Verificadas para agregar:
 |---|---|
 | Independencia condicional del *statistical matching* | D'Orazio et al. (2006) y Rässler (2002), arriba |
 | Reglas de Rubin | Rubin (1987), arriba |
+| Microdatos de la GEIH 2024 (número de hogares, factor de expansión) | Departamento Administrativo Nacional de Estadística [DANE]. (2025a). *Gran Encuesta Integrada de Hogares – GEIH – 2024* [Conjunto de datos]. https://microdatos.dane.gov.co/index.php/catalog/819 (catálogo DANE-DIMPE-GEIH-2024; confirmar el año en la fecha de producción de la ficha). En el texto: «(cálculos propios con base en DANE, 2025a)» |
+| Base de pobreza monetaria y marca de víctimas | Departamento Administrativo Nacional de Estadística [DANE]. (2025b). *Medición de pobreza monetaria y desigualdad 2024* [Conjunto de datos]. https://microdatos.dane.gov.co/index.php/catalog/874 (versión 2 del 1 de septiembre de 2025) |
 | Cotas de Fréchet y de Manski | Fréchet (1951), Hoeffding (1940), Manski (1990), Manski y Pepper (2000), arriba |
 | Atenuación por errores de enlace (Proposición 2) | Scheuren, F. y Winkler, W. E. (1993). Regression analysis of data files that are computer matched. *Survey Methodology*, 19(1), 39-58. [Statistics Canada](https://www150.statcan.gc.ca/n1/en/catalogue/12-001-X199300114476) |
 | | Lahiri, P. y Larsen, M. D. (2005). Regression analysis with linked data. *Journal of the American Statistical Association*, 100(469), 222-230. https://doi.org/10.1198/016214504000001277 (DOI tomado de un registro secundario; confirmar en Crossref). [EconPapers](https://econpapers.repec.org/RePEc:bes:jnlasa:v:100:y:2005:p:222-230) |

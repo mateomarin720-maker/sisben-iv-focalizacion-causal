@@ -14,7 +14,7 @@ fuentes:
     nombre: "Gran Encuesta Integrada de Hogares"
     entidad: DANE
     portal: "microdatos.dane.gov.co"
-    catalogo_ref: null  # completar con número de catálogo tras registro
+    catalogo_ref: 819  # DANE-DIMPE-GEIH-2024, microdatos.dane.gov.co/index.php/catalog/819
     periodo: "2024 (mensual, 12 archivos)"
     unidad_analisis: hogar / persona
     acceso: registro
