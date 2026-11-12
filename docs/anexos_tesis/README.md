@@ -24,6 +24,7 @@ repositorio, así que no puede diferir de él.
 | `fig_atenuacion.png` | La estimación\* cae en proporción a los hogares mal vinculados (Proposición 2) | `simulacion_semisintetica_resumen.csv` |
 | `fig_estabilidad_hotdeck.png` | Por celda, la proporción A/B imputada reproduce la de los donantes; por hogar, dos sorteos coinciden en A/B el 62,7 % de las veces | `variabilidad_hotdeck_celdas.csv`, `variabilidad_hotdeck.txt` |
 | `fig_importancia_variables_oe1.png` | Importancia de cada variable para predecir el grupo del Sisbén con LASSO, Ridge y SHAP (OE1) | `seleccion_variables_lasso_ridge_shap.csv` |
+| `fig_dag_ignorabilidad.png` | DAG de la ignorabilidad condicional: el grupo imputado es independiente de Y dada la celda; la elegibilidad real no, por U. Formato APA, 300 dpi; número, título y nota en [`FIGURA_DAG_IGNORABILIDAD.md`](FIGURA_DAG_IGNORABILIDAD.md) | Grafo del módulo (sin datos); afirmaciones comprobadas con d-separación al generarla |
 | `fig_propension_celda.png` | Propensión estimada frente a la empírica por celda, con la celda como indicadoras y como número | Muestra de estimación (`data/2_models/`, no versionada) |
 
 Los DAG están en `docs/resultados/2_diagnostico_datos_reales/` y la

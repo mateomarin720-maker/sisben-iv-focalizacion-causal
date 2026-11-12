@@ -13,6 +13,9 @@
                                 hogar (100 sorteos)
   fig_importancia_variables_oe1 importancia de las variables en el grupo del
                                 Sisbén (LASSO, Ridge, SHAP)
+  fig_dag_ignorabilidad.png     DAG de la ignorabilidad condicional, en formato
+                                APA (sin título en la imagen); comprueba con
+                                d-separación lo que afirma su nota
 
 Todas menos la de propensión salen de `docs/reports/`; la de propensión lee la
 muestra de estimación (`data/2_models/`, no versionada).
@@ -277,10 +280,95 @@ def importancia_oe1() -> Path:
     return _guardar(fig, "fig_importancia_variables_oe1.png")
 
 
+def grafo_ignorabilidad():
+    """DAG de la ignorabilidad condicional. T es la elegibilidad A/B del
+    hogar (no se observa en la GEIH); T_d, la del donante sorteado en la
+    misma celda; T~, el grupo que imputa el Hot-Deck."""
+    import networkx as nx
+
+    g = nx.DiGraph()
+    g.add_edges_from([("U", "T"), ("U", "Y"), ("X", "T"), ("X", "Y"), ("Z", "T"), ("Z", "Y"),
+                      ("T", "Y"), ("X", "Td"), ("Td", "Ti")])
+    return g
+
+
+def _puerta_trasera(g, t: str, y: str, ajuste: set[str]) -> bool:
+    import networkx as nx
+
+    if ajuste & nx.descendants(g, t):
+        return False
+    h = g.copy()
+    h.remove_edges_from(list(g.out_edges(t)))
+    return nx.is_d_separator(h, {t}, {y}, ajuste)
+
+
+def dag_ignorabilidad() -> Path:
+    """Figura para el documento, en formato APA: sin título en la imagen
+    (número, título y nota van en el texto), sans serif, 300 dpi. Antes de
+    dibujar comprueba con d-separación las dos afirmaciones de la nota."""
+    import networkx as nx
+
+    g = grafo_ignorabilidad()
+    assert nx.is_d_separator(g, {"Ti"}, {"Y"}, {"X"}), "T~ debería ser independiente de Y dada X"
+    assert not nx.is_d_separator(g, {"Ti"}, {"Y"}, set()), "sin X, T~ y Y deberían estar asociadas"
+    assert not _puerta_trasera(g, "T", "Y", {"X", "Z"}), "U debería dejar abierta la puerta trasera"
+    assert _puerta_trasera(g.subgraph(set(g) - {"U"}), "T", "Y", {"X", "Z"}), "sin U, X y Z deberían bastar"
+
+    pos = {"U": (0.50, 1.00), "X": (0.00, 0.55), "T": (0.50, 0.55), "Y": (1.00, 0.55),
+           "Z": (0.50, 0.08), "Td": (0.00, 0.08), "Ti": (0.00, -0.40)}
+    etiqueta = {"U": "U\nCapacidad de generar\ningresos",
+                "X": "X\nCelda del Hot-Deck\n(departamento, ciclo de vida,\ncuartos, pisos)",
+                "T": "T\nElegibilidad A/B\ndel hogar",
+                "Y": "Y\nPobreza y bienestar\n(GEIH)",
+                "Z": "Z\nZona, sexo del jefe,\nparedes",
+                "Td": "T$_d$\nGrupo del donante\n(misma celda, Sisbén)",
+                "Ti": "T̃\nGrupo imputado\npor el Hot-Deck"}
+    no_observado, imputado = {"U", "T"}, {"Ti"}
+    abiertos = {("U", "T"), ("U", "Y")}
+
+    with plt.rc_context({"font.family": ["Arial", "DejaVu Sans"], "axes.grid": False}):
+        fig, ax = plt.subplots(figsize=(7.2, 5.6))
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("white")
+        ax.set_xlim(-0.30, 1.30)
+        ax.set_ylim(-0.62, 1.20)
+        ax.axis("off")
+        cajas = {}
+        for n, (x, y) in pos.items():
+            cajas[n] = ax.text(x, y, etiqueta[n], ha="center", va="center", fontsize=8.5, color=TINTA,
+                               linespacing=1.25, zorder=3,
+                               bbox=dict(boxstyle="round,pad=0.5", linewidth=1.2, edgecolor=TINTA,
+                                         facecolor="#e6e5e0" if n in imputado else "white",
+                                         linestyle="--" if n in no_observado else "-"))
+        fig.canvas.draw()
+        curva = {("X", "Y"): -0.32}
+        for u, v in g.edges():
+            abierto = (u, v) in abiertos
+            ax.annotate("", xy=pos[v], xytext=pos[u], zorder=4,
+                        arrowprops=dict(arrowstyle="-|>", mutation_scale=13, shrinkA=2, shrinkB=2,
+                                        color=NARANJA if abierto else TINTA,
+                                        linewidth=2.0 if abierto else 1.0,
+                                        patchA=cajas[u].get_bbox_patch(), patchB=cajas[v].get_bbox_patch(),
+                                        connectionstyle=f"arc3,rad={curva.get((u, v), 0.0)}"))
+        from matplotlib.lines import Line2D
+        from matplotlib.patches import Patch
+        leyenda = [Patch(facecolor="white", edgecolor=TINTA, label="Observada"),
+                   Patch(facecolor="white", edgecolor=TINTA, linestyle="--", label="No observada"),
+                   Patch(facecolor="#e6e5e0", edgecolor=TINTA, label="Imputada"),
+                   Line2D([], [], color=NARANJA, linewidth=2.0, label="Puerta trasera que X y Z no bloquean")]
+        ax.legend(handles=leyenda, loc="lower right", bbox_to_anchor=(1.0, 0.0), fontsize=7.5, frameon=False,
+                  handlelength=1.8)
+        OUT.mkdir(parents=True, exist_ok=True)
+        ruta = OUT / "fig_dag_ignorabilidad.png"
+        fig.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+    return ruta
+
+
 def main(con_datos: bool = True) -> None:
     _estilo()
     rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), estabilidad_hotdeck(),
-             importancia_oe1()]
+             importancia_oe1(), dag_ignorabilidad()]
     if con_datos:
         rutas.append(propension_celda())
     print("\n".join(f"Guardado: {r}" for r in rutas))
