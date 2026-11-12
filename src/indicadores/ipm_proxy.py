@@ -18,13 +18,40 @@ texto (la ECV usa los mismos códigos de pregunta; quien la llama renombra
   P5010    cuartos donde duermen
   P4030S3  alcantarillado (1 sí, 2 no)
   P4030S5  acueducto (1 sí, 2 no)
+  P5020    servicio sanitario (1 inodoro a alcantarillado, 2 a pozo séptico,
+           3 sin conexión, 4 letrina, 5 bajamar, 6 no tiene)
+  P5050    fuente del agua para consumo (1 acueducto por tubería, 2 otra
+           fuente por tubería, 3 pozo con bomba, 4 pozo sin bomba, 5 lluvia,
+           6 río o manantial, 7 pila pública, 8 carro tanque, 9 aguatero,
+           10 embotellada)
+  CLASE    1 urbano (cabecera), 2 rural
   inasistencia_escolar_menores  algún miembro de 6 a 16 años no asiste
+
+Las tres privaciones de vivienda siguen la definición oficial del IPM, que
+cambia con la zona (DANE, «Algoritmo para la construcción del índice de
+pobreza multidimensional», sección 4.5; Azure, `0_raw/ipm/2024/docs_ipm/`):
+
+  sin_alcantarillado  (inadecuada eliminación de excretas) urbano: sin
+                      alcantarillado; rural: inodoro sin conexión, bajamar o
+                      sin servicio sanitario (la letrina y el pozo séptico no
+                      cuentan).
+  sin_acueducto       urbano: sin acueducto; rural: agua de pozo sin bomba,
+                      lluvia, río, carro tanque, aguatero o embotellada.
+  hacinamiento        urbano: 3 o más personas por cuarto para dormir;
+                      rural: más de 3.
+
+Hasta el 2026-11-11 las tres usaban la regla urbana en todo el país: el
+proxy marcaba sin alcantarillado al 84 % de los hogares rurales (19,5 % en
+el IPM oficial) y daba 63,7 % de pobres rurales frente a 21,5 %
+(`docs/resultados/1_datos_y_enlace/VALIDACION_IPM_GEIH_ECV.md`).
 """
 from __future__ import annotations
 
 import pandas as pd
 
-UMBRAL_HACINAMIENTO = 3  # personas por cuarto para dormir
+UMBRAL_HACINAMIENTO = 3  # personas por cuarto para dormir: urbano >= 3, rural > 3
+SANITARIO_RURAL_PRIVADO = {"3", "5", "6"}  # P5020: sin conexión, bajamar, no tiene
+AGUA_RURAL_PRIVADA = {"4", "5", "6", "8", "9", "10"}  # P5050: pozo sin bomba, lluvia, río, carro tanque, aguatero, embotellada
 EDAD_MIN_ESCOLAR, EDAD_MAX_ESCOLAR = 6, 16  # universo de "inasistencia_escolar_menores"
 NIVEL_MIN_SECUNDARIA = 4  # 1=Ninguno, 2=Preescolar, 3=Primaria, 4=Secundaria... privación si < 4
 K_POBRE = 3  # umbral adoptado (de 8 privaciones)
@@ -54,13 +81,15 @@ def privaciones(df: pd.DataFrame) -> pd.DataFrame:
 
     df["inasistencia_escolar_menores"] = df["inasistencia_escolar_menores"].fillna(False).astype("Int8")
 
+    urbano = df["CLASE"] == "1"
     personas = pd.to_numeric(df["P6008"], errors="coerce")
     cuartos_dormir = pd.to_numeric(df["P5010"], errors="coerce")
     personas_cuarto = personas / cuartos_dormir.replace(0, pd.NA)
-    df["hacinamiento"] = (personas_cuarto > UMBRAL_HACINAMIENTO).astype("Int8")
+    hacinado = (personas_cuarto >= UMBRAL_HACINAMIENTO).where(urbano, personas_cuarto > UMBRAL_HACINAMIENTO)
+    df["hacinamiento"] = hacinado.astype("Int8")
 
-    df["sin_alcantarillado"] = (df["P4030S3"] == "2").astype("Int8")
-    df["sin_acueducto"] = (df["P4030S5"] == "2").astype("Int8")
+    df["sin_alcantarillado"] = (df["P4030S3"] == "2").where(urbano, df["P5020"].isin(SANITARIO_RURAL_PRIVADO)).astype("Int8")
+    df["sin_acueducto"] = (df["P4030S5"] == "2").where(urbano, df["P5050"].isin(AGUA_RURAL_PRIVADA)).astype("Int8")
 
     # Privado si NO está ocupado y cotizando a pensión (combina informalidad +
     # desempleo/inactividad del jefe en un solo indicador de trabajo).

@@ -5,6 +5,43 @@ Generado por `src/validacion/validar_ipm_geih_ecv.py` (salida:
 anotación del director: «proxy propio sin validar; o se valida contra la
 ECV o se retira».
 
+## Corrección del 2026-11-11: vivienda con la definición oficial por zona
+
+Esta validación encontró que el proxy usaba la regla urbana de vivienda en
+todo el país. Se corrigió (`src/indicadores/ipm_proxy.py`): en lo rural, la
+excreta se mide por el tipo de sanitario, el agua por la fuente y el
+hacinamiento con > 3. **La muestra de estimación no se ha regenerado**: las
+secciones A y B de abajo y `docs/reports/validacion_ipm_geih_ecv*` son del
+proxy anterior. El proxy corregido, medido en memoria sobre los mismos
+datos:
+
+| | Proxy anterior (K = 3) | Proxy corregido (K = 3) | Corregido (K = 4) | IPM oficial 2024 |
+|---|---|---|---|---|
+| Nacional | 18,7 % | **13,8 %** | 4,4 % | 9,2 % |
+| Cabeceras | 6,5 % | 7,5 % | 1,7 % | 5,9 % |
+| Rural | 63,7 % | **37,0 %** | 14,4 % | 21,5 % |
+| Concordancia con el oficial | 85,6 % | **90,0 %** | 93,0 % | — |
+| Sensibilidad | 73,5 % | 70,5 % | 36,0 % | — |
+| Kappa | 0,41 | **0,51** | 0,46 | — |
+| Correlación de rangos con el IPM | 0,72 | **0,76** | — | — |
+
+- Las tres privaciones de vivienda coinciden ahora exactamente con las
+  oficiales en los mismos hogares (rural: hacinamiento 6,1 %, excretas
+  19,5 %, agua 33,7 %; cabeceras: 6,1 %, 6,2 %, 1,8 %).
+- **K = 3 queda como el mejor corte**: el mayor kappa (0,51); K = 4 deja
+  fuera a dos tercios de los pobres oficiales (sensibilidad 36 %). La
+  pregunta de cambiar K se resuelve con la definición correcta.
+- La sobreestimación rural que queda (37,0 % frente a 21,5 %) viene de las
+  privaciones medidas sobre el jefe (cotización a pensión, logro
+  educativo), no de vivienda.
+- **Mismo año, mismo proxy corregido:** ECV 2024 14,2 % y GEIH 2024 14,5 %
+  (cabeceras 7,5 % y 8,1 %; rural 37,5 % y 37,5 %). En la GEIH, `POBRE_GEIH`
+  pasa de 20,4 % a 14,5 % de los hogares (ponderado).
+
+Para que los modelos usen el proxy corregido hay que correr
+`src/3_preprocesamiento.py` y la secuencia de validación de `CLAUDE.md`
+(no cambia el Hot-Deck).
+
 ## Por qué se puede validar
 
 El IPM oficial del DANE se calcula con la Encuesta Nacional de Calidad de

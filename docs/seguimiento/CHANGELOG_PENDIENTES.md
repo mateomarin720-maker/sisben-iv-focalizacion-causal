@@ -2,6 +2,22 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-11 (42) — IPM-GEIH: vivienda con la definición oficial por zona
+
+### Corregido
+- `sin_alcantarillado`, `sin_acueducto` y `hacinamiento` usaban la regla urbana en todo el
+  país. Ahora siguen el algoritmo oficial del IPM (sección 4.5): en lo rural, excretas por
+  `P5020` (inodoro sin conexión, bajamar o sin servicio), agua por `P5050` y hacinamiento
+  > 3; en lo urbano, sin alcantarillado, sin acueducto y ≥ 3. Códigos verificados contra el
+  diccionario y los datos (`tests/test_armonizacion.py`). Medido en memoria: el proxy pasa de
+  18,7 % a 13,8 % (oficial 9,2 %), kappa de 0,41 a 0,51; rural de 63,7 % a 37,0 % (21,5 %);
+  K = 3 sigue siendo el mejor corte. Prueba y mutación (269 pruebas, 59 de 59).
+
+### Pendiente
+- **La muestra de estimación no se ha regenerado.** Correr `src/3_preprocesamiento.py` y la
+  secuencia de `CLAUDE.md` para que los modelos usen el proxy corregido (`POBRE_GEIH` pasa de
+  20,4 % a 14,5 % ponderado). El Hot-Deck no cambia.
+
 ## 2026-11-11 (41) — Validación del IPM-GEIH contra la ECV
 
 ### Agregado

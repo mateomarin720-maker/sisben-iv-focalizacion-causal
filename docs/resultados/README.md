@@ -79,10 +79,10 @@ de pisos y paredes se retiraron por tautología con las covariables.
 Score medio 1,45/8; **`POBRE_GEIH` (score ≥ 3) 17,1 %** de los hogares.
 Validado contra la ECV (2026-11-11): con las mismas reglas, la ECV 2024 da
 19,6 % y la GEIH 2024 20,4 % (ponderados), con correlación de 0,99 entre
-departamentos; hogar por hogar, contra el IPM oficial 2024, ordena igual
-(correlación 0,72) pero con K = 3 duplica su tasa (18,7 % frente a 9,2 %),
-por la zona rural: en las cabeceras da 6,5 % frente a 5,9 %. K = 4 reproduce
-la tasa nacional. `VALIDACION_IPM_GEIH_ECV.md`.
+departamentos. La validación encontró que vivienda usaba la regla urbana
+en el campo; con la definición oficial por zona (2026-11-11, aún sin
+regenerar la muestra) el proxy da 13,8 % frente a 9,2 % oficial, kappa 0,51,
+correlación 0,76, y K = 3 sigue siendo el mejor corte. `VALIDACION_IPM_GEIH_ECV.md`.
 
 **Pobreza monetaria reconstruida.** Unidad de gasto, `INGLABO` más los
 componentes laborales que no incluye, hot-deck de no respuesta laboral,

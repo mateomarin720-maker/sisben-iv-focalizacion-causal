@@ -26,6 +26,20 @@ de este documento (con el intento bloqueado de ampliación) queda abajo en
 
 ## 1. Las 8 privaciones — código oficial y verificación
 
+**Corrección del 2026-11-11: vivienda por zona.** Las tres privaciones de
+vivienda usaban la regla urbana en todo el país. El IPM oficial las define
+distinto en lo rural (DANE, «Algoritmo para la construcción del índice de
+pobreza multidimensional», sección 4.5; Azure, `0_raw/ipm/2024/docs_ipm/`):
+la excreta por el tipo de sanitario, el agua por la fuente y el
+hacinamiento con > 3 en vez de ≥ 3. Con la regla urbana el proxy marcaba sin
+alcantarillado al 84 % de los hogares rurales (19,5 % oficial). Con la
+corrección, las tres coinciden exactamente con las oficiales en los hogares
+del IPM 2024. Los códigos de `P5020` y `P5050` siguen el orden de las letras
+del diccionario (verificado con los datos: todo hogar con `P5020` = 1 o
+`P5050` = 1 tiene alcantarillado o acueducto). Reglas en
+`src/indicadores/ipm_proxy.py`; validación en
+`docs/resultados/1_datos_y_enlace/VALIDACION_IPM_GEIH_ECV.md`.
+
 Todos los códigos siguientes están confirmados contra
 `docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (columna `Pregunta`, que trae el
 texto exacto de la pregunta y las categorías de respuesta).
@@ -37,9 +51,9 @@ texto exacto de la pregunta y las categorías de respuesta).
 | `inasistencia_escolar_menores` | Niñez | `P6170` + `P6040`, TODOS los miembros | "¿Actualmente asiste...? 1 Sí 2 No" | Algún miembro de 6 a 16 años con `P6170 == 2` |
 | `sin_aseguramiento_salud` | Salud | `P6090` (jefe) | "¿Afiliado/cotizante/beneficiario de EPS/ARS? 1 Sí 2 No 9 No sabe" | `P6090 == 2` |
 | `sin_cotizacion_pension_jefe` | Trabajo | `P6920` (jefe, módulo `ocupados`) | "¿Cotizando a fondo de pensiones? 1 Sí 2 No 3 Ya pensionado" | `P6920 != 1` |
-| `hacinamiento` | Vivienda | `P5010` (cuartos para dormir) + `P6008` (personas) | — | personas/cuarto > 3 |
-| `sin_alcantarillado` | Vivienda | `P4030S3` | "¿Con cuáles servicios cuenta la vivienda? c.Alcantarillado 1 Sí 2 No" | `P4030S3 == 2` |
-| `sin_acueducto` | Vivienda | `P4030S5` | "...e.Acueducto 1 Sí 2 No" | `P4030S5 == 2` |
+| `hacinamiento` | Vivienda | `P5010` (cuartos para dormir) + `P6008` (personas) + `CLASE` | — | Urbano: personas/cuarto ≥ 3; rural: > 3 (definición oficial del IPM) |
+| `sin_alcantarillado` (inadecuada eliminación de excretas) | Vivienda | `P4030S3`, `P5020`, `CLASE` | "c.Alcantarillado 1 Sí 2 No"; "El servicio sanitario que utiliza el hogar es: a. Inodoro conectado a alcantarillado ... f. No tiene" | Urbano: `P4030S3 == 2`; rural: `P5020` ∈ {3 inodoro sin conexión, 5 bajamar, 6 no tiene} (letrina y pozo séptico no cuentan) |
+| `sin_acueducto` | Vivienda | `P4030S5`, `P5050`, `CLASE` | "...e.Acueducto 1 Sí 2 No"; "¿De dónde obtiene principalmente este hogar el agua para consumo humano?" | Urbano: `P4030S5 == 2`; rural: `P5050` ∈ {4 pozo sin bomba, 5 lluvia, 6 río, 8 carro tanque, 9 aguatero, 10 embotellada} |
 
 Cobertura por dimensión: Educación (2), Niñez (1), Salud (1), Trabajo (1),
 Vivienda (3) — **5 de las 5 dimensiones del IPM oficial** (antes: 4

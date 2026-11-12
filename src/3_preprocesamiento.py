@@ -122,7 +122,7 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
 
     k3 = ["DIRECTORIO", "SECUENCIA_P", "HOGAR"]
     hv = pd.read_parquet(
-        path_hv, columns=[*k3, "P4030S3", "P4030S5", "P5010", "P6008"]
+        path_hv, columns=[*k3, "CLASE", "P4030S3", "P4030S5", "P5020", "P5050", "P5010", "P6008"]
     ).replace("", pd.NA)
     for c in k3:
         hv[c] = _norm_llave(hv[c])

@@ -12,7 +12,8 @@ reglas (`src/indicadores/ipm_proxy.py`), en hogares de la ECV.
      33 %). Se calcula el proxy en esos hogares y se compara con `POBRE`
      oficial: concordancia, sensibilidad, especificidad, kappa, por zona
      (la zona sale del módulo de vivienda de la ECV), por umbral K y por
-     privación. Como contraste, lo mismo con la base del IPM 2025.
+     privación. La base 2025 (`0_raw/ipm/nacional`) no cruza con la ECV
+     2024 y no trae zona: no se puede usar con las reglas de vivienda.
   B. Mismo año, ECV 2024 frente a GEIH 2024. El proxy en los módulos
      crudos de la ECV 2024 frente al de la GEIH 2024: prevalencias,
      nacional, por zona y por departamento sobre el mismo marco.
@@ -124,7 +125,9 @@ def _csv_ipm(anio: int, cual: str, columnas: list[str] | None = None) -> pd.Data
 # --------------------------------------------------------------------------
 
 def base_ipm(anio: int = 2024) -> pd.DataFrame:
-    """Hogares de la base del IPM con el proxy y la clasificación oficial."""
+    """Hogares de la base del IPM con el proxy y la clasificación oficial.
+    La zona (urbano/rural) sale del módulo de vivienda de la ECV 2024, que
+    solo cruza con la base 2024; las reglas de vivienda dependen de ella."""
     sec = BASES_IPM[anio]["hogar"]
     hog = ["DIRECTORIO", "SECUENCIA_P"]
     p = _csv_ipm(anio, "personas", [*hog, "P6051", "P6040", "P6160", "P8587", "P8586", "P6090", "P6920"])
@@ -135,9 +138,13 @@ def base_ipm(anio: int = 2024) -> pd.DataFrame:
     personas = pd.DataFrame({**{c: p[c] for c in hog}, "es_jefe": p["P6051"] == 1, "P6040": p["P6040"],
                              "asiste": codigo(p["P8586"]), "P6160": codigo(p["P6160"]), "P6090": codigo(p["P6090"]),
                              "P3042": codigo(p["P8587"]), "P6920": codigo(p["P6920"])})
-    hogares = h[[*hog, "PERSONAS", "P5010"]].merge(v, on="DIRECTORIO", how="left")
+    zona = _csv_zip(ECV + "DBF-ENCV-Datos_vivienda-2024.zip", ["DIRECTORIO", "CLASE"])
+    hogares = h[[*hog, "PERSONAS", "P5010", "P8526", "P8530"]].merge(v, on="DIRECTORIO", how="left").merge(
+        zona, on="DIRECTORIO", how="left")
     hogares = pd.DataFrame({**{c: hogares[c] for c in hog}, "P6008": hogares["PERSONAS"], "P5010": hogares["P5010"],
-                            "P4030S3": codigo(hogares["P8520S3"]), "P4030S5": codigo(hogares["P8520S5"])})
+                            "P4030S3": codigo(hogares["P8520S3"]), "P4030S5": codigo(hogares["P8520S5"]),
+                            "P5020": codigo(hogares["P8526"]), "P5050": codigo(hogares["P8530"]),
+                            "CLASE": codigo(hogares["CLASE"])})
     proxy = proxy_hogares(personas, hogares, hog)
     oficial = h[[*hog, "FEX_C", "IPM", "POBRE", *OFICIAL.values()]].rename(
         columns={c: f"oficial_{c}" for c in OFICIAL.values()})
@@ -179,7 +186,8 @@ def ecv_2024() -> pd.DataFrame:
     edu = _csv_zip(ECV + "DBF-ENCV-Educacion-2024.zip", [*per, "P6160", "P8586", "P8587"])
     sal = _csv_zip(ECV + "DBF-ENCV-Salud2024.zip", [*per, "P6090"])
     ft = _csv_zip(ECV + "DBF-ENCV-Fuerza_trabajo-2024.zip", [*per, "P6920"])
-    serv = _csv_zip(ECV + "DBF-ENCV-Servicios_hogar-2024.zip", ["DIRECTORIO", "SECUENCIA_ENCUESTA", "FEX_C", "P5010"])
+    serv = _csv_zip(ECV + "DBF-ENCV-Servicios_hogar-2024.zip", ["DIRECTORIO", "SECUENCIA_ENCUESTA", "FEX_C", "P5010",
+                                                                   "P8526", "P8530"])
     viv = _csv_zip(ECV + "DBF-ENCV-Datos_vivienda-2024.zip", ["DIRECTORIO", "CLASE", "P1_DEPARTAMENTO", "P1_MUNICIPIO", "P8520S3", "P8520S5"])
 
     p = comp.merge(edu, on=per, how="left").merge(sal, on=per, how="left").merge(ft, on=per, how="left")
@@ -192,7 +200,8 @@ def ecv_2024() -> pd.DataFrame:
                .merge(viv, on="DIRECTORIO", how="left"))
     hogares = pd.DataFrame({**{c: hogares[c] for c in hog}, "P6008": hogares["P6008"], "P5010": hogares["P5010"],
                             "P4030S3": codigo(hogares["P8520S3"]), "P4030S5": codigo(hogares["P8520S5"]),
-                            "fex": hogares["FEX_C"], "zona": np.where(hogares["CLASE"] == 1, "Cabecera", "Resto"),
+                            "P5020": codigo(hogares["P8526"]), "P5050": codigo(hogares["P8530"]),
+                            "CLASE": codigo(hogares["CLASE"]), "fex": hogares["FEX_C"], "zona": np.where(hogares["CLASE"] == 1, "Cabecera", "Resto"),
                             "depto": hogares["P1_DEPARTAMENTO"].astype(int).astype(str).str.zfill(2),
                             "capital": hogares["P1_MUNICIPIO"].astype(int) % 1000 == 1})  # 001 = capital
     return proxy_hogares(personas, hogares, hog)
@@ -227,20 +236,13 @@ def main() -> None:
                f"especificidad {c['especificidad']:.1%}; precisión {c['precision']:.1%}; kappa {c['kappa']:.3f}",
                f"   Correlación de rangos entre el puntaje del proxy y el IPM oficial: "
                f"{_spearman_ponderado(a['ipm_geih_score'], a['IPM']):.3f}"]
-    zona = _csv_zip(ECV + "DBF-ENCV-Datos_vivienda-2024.zip", ["DIRECTORIO", "CLASE"])
-    az = a.merge(zona, on="DIRECTORIO", how="left")
-    lineas.append(f"   Hogares de la base con zona en la ECV 2024: {az['CLASE'].notna().mean():.1%}")
-    for nombre, clase in (("Cabecera", 1), ("Resto", 2)):
-        d = az[az["CLASE"] == clase]
+    lineas.append(f"   Hogares de la base con zona en la ECV 2024: {a['CLASE'].notna().mean():.1%}")
+    for nombre, clase in (("Cabecera", "1"), ("Resto", "2")):
+        d = a[a["CLASE"] == clase]
         r = concordancia(d["POBRE_GEIH"], d["POBRE"], d["FEX_C"])
         lineas.append(f"   {nombre}: proxy {r['tasa_proxy']:.1%}, oficial {r['tasa_oficial']:.1%}; concordancia "
                       f"{r['concordancia']:.1%}; sensibilidad {r['sensibilidad']:.1%}; kappa {r['kappa']:.3f}")
-    a25 = base_ipm(2025)
-    c25 = concordancia(a25["POBRE_GEIH"], a25["POBRE"], a25["FEX_C"])
-    n25 = f"{c25['hogares']:,}".replace(",", ".")
-    lineas += [f"   Contraste con la base del IPM 2025 ({n25} hogares): proxy {c25['tasa_proxy']:.1%}, "
-               f"oficial {c25['tasa_oficial']:.1%}; concordancia {c25['concordancia']:.1%}; sensibilidad "
-               f"{c25['sensibilidad']:.1%}; kappa {c25['kappa']:.3f}", ""]
+    lineas.append("")
 
     filas = []
     for k in range(1, len(PRIVACIONES) + 1):

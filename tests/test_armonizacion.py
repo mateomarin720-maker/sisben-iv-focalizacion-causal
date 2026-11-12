@@ -82,6 +82,21 @@ def test_variables_candidatas_leen_la_pregunta_correcta():
         assert palabra in pregunta[codigo], f"{codigo}: '{palabra}' no está en '{pregunta[codigo][:120]}'"
 
 
+def test_ipm_geih_lee_la_pregunta_correcta():
+    """`src/indicadores/ipm_proxy.py`: cada código de la GEIH que usa el
+    proxy, contra su pregunta, y las categorías de las reglas rurales."""
+    d = pd.read_excel(DIC_GEIH)
+    pregunta = {n: f"{e} {q}".lower() for n, e, q in zip(d["Nombre"], d["Etiqueta"], d["Pregunta"])}
+    esperado = {
+        "P6160": "leer y escribir", "P6090": "cotizante o es bene", "P3042": "mayor nivel educativo", "P6920": "pensiones",
+        "P6170": "asiste", "P6040": "años cumplidos", "P5010": "duermen", "P4030S3": "alcantarillado",
+        "P4030S5": "acueducto", "CLASE": "1 urbano 2 rural",
+        "P5020": "c. inodoro sin conexión d. letrina e. bajamar f. no tiene servicio sanitario",
+        "P5050": "d. de pozo sin bomba, aljibe, jagüey o barreno e. aguas lluvias f. río",
+    }
+    for codigo, palabra in esperado.items():
+        assert palabra in pregunta[codigo], f"{codigo}: '{palabra}' no está en '{pregunta[codigo][:160]}'"
+
 def test_el_jefe_de_geih_es_p6050():
     etiquetas = _etiquetas(DIC_GEIH, "Nombre", "Etiqueta")
     assert (geih.FILTRO_JEFE_COL, geih.FILTRO_JEFE_VAL) == ("P6050", "1")

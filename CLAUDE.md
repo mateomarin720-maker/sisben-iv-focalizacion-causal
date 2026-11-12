@@ -102,6 +102,14 @@ abierta y recomendación, no como conclusión causal). Reglas del tutor:
   columna equivocada). Detalle completo:
   `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 
+- **Las privaciones del IPM cambian de definición con la zona.** Hasta
+  el 2026-11-11 el IPM-GEIH usaba la regla urbana de vivienda en todo el
+  país (84 % de los hogares rurales "sin alcantarillado" frente a 19,5 %
+  oficial; 64 % de pobres rurales frente a 21,5 %). No da error. Antes de
+  construir una privación, leer su definición en el algoritmo oficial del
+  IPM (Azure, `0_raw/ipm/2024/docs_ipm/`) y validarla contra la base del IPM
+  2024 (`src/validacion/validar_ipm_geih_ecv.py`).
+
 - **Los códigos numéricos de GEIH no siempre siguen el orden de las
   letras del diccionario.** `P6050` trae 13 códigos para 9 letras, y en
   `P6430` el 7 es jornalero o peón (99 % declara salario), no "sin
@@ -232,7 +240,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 58 de 58 el 2026-11-11). Antes de mapear una
+cuando el error vuelve; 59 de 59 el 2026-11-11). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 
