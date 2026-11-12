@@ -27,7 +27,8 @@ repositorio, así que no puede diferir de él.
 | `fig_importancia_variables_oe1.png` | Importancia de cada variable para predecir el grupo del Sisbén con LASSO, Ridge y SHAP (OE1) | `seleccion_variables_lasso_ridge_shap.csv` |
 | `fig_dag_ignorabilidad_marco.png` | DAG genérico de la ignorabilidad condicional (Figura 1, sección 2.2, notación T, Y, X, W) | Grafo del módulo, sin datos |
 | `fig_dml_tres_pasos.png` | Los tres pasos del DML: residuo del resultado, residuo del tratamiento y regresión de residuos, con la partición cruzada (Figura 2, sección 2.2) | Esquema, sin datos |
-| `fig_dag_ignorabilidad_hotdeck.png` | El mismo supuesto en el enlace por celdas: el grupo imputado es independiente de Y dada la celda; la elegibilidad real no, por U | Grafo del módulo, sin datos |
+| `fig_dag_ignorabilidad_hotdeck.png` | DAG de la Proposición 1: dada la celda C, el grupo imputado es independiente de Y; la elegibilidad verdadera no, por U | Grafo del módulo, sin datos |
+| `fig_nubes_celda_placebo.png` | Ilustración\* de la Proposición 1: en una celda, las nubes por T se separan y por T̃ son iguales | Simulación del módulo, sin datos |
 | `fig_propension_celda.png` | Propensión estimada frente a la empírica por celda, con la celda como indicadoras y como número | Muestra de estimación (`data/2_models/`, no versionada) |
 
 Los DAG están en `docs/resultados/2_diagnostico_datos_reales/` y la

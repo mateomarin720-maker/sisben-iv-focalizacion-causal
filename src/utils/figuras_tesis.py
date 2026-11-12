@@ -15,10 +15,13 @@
                                 Sisbén (LASSO, Ridge, SHAP)
   fig_dag_ignorabilidad_marco   DAG genérico de la ignorabilidad condicional
                                 (sección 2.2, notación T, Y, X, W)
-  fig_dag_ignorabilidad_hotdeck el mismo supuesto en el enlace por celdas: el
-                                grupo imputado es un placebo. Los dos DAG van
-                                en formato APA (sin título en la imagen) y
+  fig_dag_ignorabilidad_hotdeck DAG de la Proposición 1: dada la celda C, el
+                                grupo imputado es independiente de Y. Los dos DAG
+                                van en formato APA (sin título en la imagen) y
                                 comprueban con d-separación su nota
+  fig_nubes_celda_placebo.png   ilustración simulada* de la Proposición 1: en
+                                una celda, las nubes por T se separan y por T~
+                                son iguales
   fig_dml_tres_pasos.png        esquema del DML: partición cruzada, los dos
                                 residuos y la regresión final (sección 2.2)
 
@@ -297,14 +300,14 @@ def grafo_ignorabilidad_marco():
 
 
 def grafo_ignorabilidad_hotdeck():
-    """DAG del enlace por celdas. T es la elegibilidad A/B del hogar (no se
-    observa en la GEIH); T_d, la del donante sorteado en la misma celda;
-    T~, el grupo que imputa el Hot-Deck."""
+    """DAG del enlace por celdas, con la notación de la metodología. C es la
+    celda; T, la elegibilidad A/B del hogar (no se observa en la GEIH);
+    T_d, la del donante sorteado en la misma celda; T~, el grupo que imputa
+    el Hot-Deck."""
     import networkx as nx
 
     g = nx.DiGraph()
-    g.add_edges_from([("U", "T"), ("U", "Y"), ("X", "T"), ("X", "Y"), ("Z", "T"), ("Z", "Y"),
-                      ("T", "Y"), ("X", "Td"), ("Td", "Ti")])
+    g.add_edges_from([("U", "T"), ("U", "Y"), ("C", "T"), ("C", "Y"), ("T", "Y"), ("C", "Td"), ("Td", "Ti")])
     return g
 
 
@@ -320,7 +323,8 @@ def _puerta_trasera(g, t: str, y: str, ajuste: set[str]) -> bool:
 
 def _dibujar_dag(g, pos: dict, etiqueta: dict, nombre: str, no_observado: set[str], abiertos: set,
                  etiqueta_abiertos: str, imputado: set[str] = frozenset(), curva: dict | None = None,
-                 tam: tuple[float, float] = (7.2, 5.6)) -> Path:
+                 tam: tuple[float, float] = (7.2, 5.6), bloqueados: set = frozenset(),
+                 etiqueta_bloqueados: str = "") -> Path:
     """Formato APA: sin título en la imagen (número, título y nota van en el
     texto), sans serif, fondo blanco, 300 dpi."""
     from matplotlib.lines import Line2D
@@ -344,11 +348,11 @@ def _dibujar_dag(g, pos: dict, etiqueta: dict, nombre: str, no_observado: set[st
                                          linestyle="--" if n in no_observado else "-"))
         fig.canvas.draw()  # las cajas existen recién después de dibujar el texto
         for u, v in g.edges():
-            abierto = (u, v) in abiertos
+            abierto, bloqueado = (u, v) in abiertos, (u, v) in bloqueados
             ax.annotate("", xy=pos[v], xytext=pos[u], zorder=4,
                         arrowprops=dict(arrowstyle="-|>", mutation_scale=13, shrinkA=2, shrinkB=2,
-                                        color=NARANJA if abierto else TINTA,
-                                        linewidth=2.0 if abierto else 1.0,
+                                        color=NARANJA if abierto else AZUL if bloqueado else TINTA,
+                                        linewidth=2.0 if abierto or bloqueado else 1.0,
                                         linestyle="--" if abierto else "-",
                                         patchA=cajas[u].get_bbox_patch(), patchB=cajas[v].get_bbox_patch(),
                                         connectionstyle=f"arc3,rad={curva.get((u, v), 0.0)}"))
@@ -356,6 +360,8 @@ def _dibujar_dag(g, pos: dict, etiqueta: dict, nombre: str, no_observado: set[st
                    Patch(facecolor="white", edgecolor=TINTA, linestyle="--", label="No observada")]
         if imputado:
             leyenda.append(Patch(facecolor="#e6e5e0", edgecolor=TINTA, label="Imputada"))
+        if bloqueados:
+            leyenda.append(Line2D([], [], color=AZUL, linewidth=2.0, label=etiqueta_bloqueados))
         leyenda.append(Line2D([], [], color=NARANJA, linewidth=2.0, linestyle="--", label=etiqueta_abiertos))
         ax.legend(handles=leyenda, loc="upper center", bbox_to_anchor=(0.5, 0.0), fontsize=7.5, frameon=False,
                   handlelength=2.2, ncol=len(leyenda) if len(leyenda) <= 3 else 2, columnspacing=1.6)
@@ -384,27 +390,67 @@ def dag_ignorabilidad_marco() -> Path:
 
 
 def dag_ignorabilidad_hotdeck() -> Path:
-    """DAG del enlace por celdas (metodología). Comprueba con d-separación
-    las dos afirmaciones de su nota."""
+    """DAG de la Proposición 1 (metodología). Comprueba con d-separación las
+    afirmaciones de su nota."""
     import networkx as nx
 
     g = grafo_ignorabilidad_hotdeck()
-    assert nx.is_d_separator(g, {"Ti"}, {"Y"}, {"X"}), "T~ debería ser independiente de Y dada X"
-    assert not nx.is_d_separator(g, {"Ti"}, {"Y"}, set()), "sin X, T~ y Y deberían estar asociadas"
-    assert not _puerta_trasera(g, "T", "Y", {"X", "Z"}), "U debería dejar abierta la puerta trasera"
-    assert _puerta_trasera(g.subgraph(set(g) - {"U"}), "T", "Y", {"X", "Z"}), "sin U, X y Z deberían bastar"
-    pos = {"U": (0.50, 1.00), "X": (0.00, 0.55), "T": (0.50, 0.55), "Y": (1.00, 0.55),
-           "Z": (0.50, 0.08), "Td": (0.00, 0.08), "Ti": (0.00, -0.40)}
+    assert nx.is_d_separator(g, {"Ti"}, {"Y"}, {"C"}), "T~ debería ser independiente de Y dada C"
+    assert not nx.is_d_separator(g, {"Ti"}, {"Y"}, set()), "sin C, T~ y Y deberían estar asociadas"
+    assert not _puerta_trasera(g, "T", "Y", {"C"}), "U debería dejar abierta la puerta trasera de T"
+    pos = {"U": (0.50, 1.00), "C": (0.00, 0.55), "T": (0.50, 0.55), "Y": (1.00, 0.55),
+           "Td": (0.00, 0.08), "Ti": (0.00, -0.40)}
     etiqueta = {"U": "U\nCapacidad de generar\ningresos",
-                "X": "X\nCelda del Hot-Deck\n(departamento, ciclo de vida,\ncuartos, pisos)",
-                "T": "T\nElegibilidad A/B\ndel hogar",
+                "C": "C\nCelda del Hot-Deck\n(departamento, ciclo de vida,\ncuartos, pisos)",
+                "T": "T\nElegibilidad A/B\nverdadera del hogar",
                 "Y": "Y\nPobreza y bienestar\n(GEIH)",
-                "Z": "Z\nZona, sexo del jefe,\nparedes",
                 "Td": "T$_d$\nGrupo del donante\n(misma celda, Sisbén)",
                 "Ti": "T̃\nGrupo imputado\npor el Hot-Deck"}
     return _dibujar_dag(g, pos, etiqueta, "fig_dag_ignorabilidad_hotdeck.png", no_observado={"U", "T"},
-                        abiertos={("U", "T"), ("U", "Y")}, etiqueta_abiertos="Puerta trasera que X y Z no bloquean",
-                        imputado={"Ti"}, curva={("X", "Y"): -0.32})
+                        abiertos={("U", "T"), ("U", "Y")}, etiqueta_abiertos="Puerta trasera de T que C no bloquea",
+                        bloqueados={("C", "Td"), ("Td", "Ti"), ("C", "Y")},
+                        etiqueta_bloqueados="Único camino entre T̃ e Y: pasa por C",
+                        imputado={"Ti"}, curva={("C", "Y"): -0.32})
+
+
+def nubes_celda(efecto: float = 0.8, n: int = 90, semilla: int = 7) -> Path:
+    """Ilustración simulada* de la Proposición 1, como la dibujó el director:
+    dentro de una celda, los mismos hogares agrupados por el T verdadero
+    (las nubes se separan en el efecto) y por el T imputado (las nubes son
+    iguales). Y = efecto·T + ruido; T y T~ son Bernoulli(0,5)
+    independientes, porque el donante se sortea sin mirar Y."""
+    rng = np.random.default_rng(semilla)
+    t = (rng.random(n) < 0.5).astype(int)
+    t_imp = (rng.random(n) < 0.5).astype(int)
+    y = efecto * t + rng.normal(size=n)
+    with plt.rc_context({"font.family": ["Arial", "DejaVu Sans"]}):
+        fig, ejes = plt.subplots(1, 2, figsize=(7.4, 3.6), sharey=True)
+        fig.patch.set_facecolor("white")
+        for ax, grupo, rotulo, nombre_t in ((ejes[0], t, "a) Agrupado por la elegibilidad verdadera*", "T"),
+                                            (ejes[1], t_imp, "b) Agrupado por el grupo imputado*", "T̃")):
+            ax.set_facecolor("white")
+            ax.grid(axis="y", color=REJILLA, linewidth=0.6)
+            ax.grid(axis="x", visible=False)
+            jitter = rng.uniform(-0.16, 0.16, n)
+            ax.scatter(grupo + jitter, y, s=14, color=TINTA_2, alpha=0.75, linewidths=0, zorder=3)
+            medias = [y[grupo == k].mean() for k in (0, 1)]
+            for k, m in enumerate(medias):
+                ax.plot([k - 0.28, k + 0.28], [m, m], color=NARANJA, linewidth=2.2, zorder=4)
+            dif = medias[1] - medias[0]
+            ax.text(0.5, 0.97, f"Diferencia de medias: {dif:.2f}".replace(".", ",").replace("-", "−"),
+                    transform=ax.transAxes, ha="center", va="top", fontsize=8.5, color=TINTA)
+            ax.set_xticks([0, 1], [f"{nombre_t} = 0", f"{nombre_t} = 1"])
+            ax.set_xlim(-0.6, 1.6)
+            ax.set_ylim(y.min() - 0.3, y.max() + 0.9)
+            ax.set_title(rotulo, fontsize=9, loc="left", fontweight="normal", color=TINTA)
+        ejes[0].set_ylabel("Y (resultado)")
+        _coma(ejes[0], "y", 1)
+        fig.tight_layout()
+        OUT.mkdir(parents=True, exist_ok=True)
+        ruta = OUT / "fig_nubes_celda_placebo.png"
+        fig.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+    return ruta
 
 
 def dml_tres_pasos() -> Path:
@@ -474,7 +520,7 @@ def main(con_datos: bool = True) -> None:
     _estilo()
     rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), estabilidad_hotdeck(),
              importancia_oe1(), dag_ignorabilidad_marco(),
-             dag_ignorabilidad_hotdeck(), dml_tres_pasos()]
+             dag_ignorabilidad_hotdeck(), nubes_celda(), dml_tres_pasos()]
     if con_datos:
         rutas.append(propension_celda())
     print("\n".join(f"Guardado: {r}" for r in rutas))

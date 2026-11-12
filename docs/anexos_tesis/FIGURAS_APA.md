@@ -10,11 +10,12 @@ nota.
 |---|---|---|
 | Figura 1 | Sección 2.2, después del párrafo que define la ignorabilidad condicional y el solapamiento | [`fig_dag_ignorabilidad_marco.png`](figuras/fig_dag_ignorabilidad_marco.png) |
 | Figura 2 | Sección 2.2, junto al párrafo del DML (comentario del director: «una figura con los tres pasos ayuda más que este párrafo») | [`fig_dml_tres_pasos.png`](figuras/fig_dml_tres_pasos.png) |
-| Figura N | Metodología, donde se explica el Hot-Deck o el placebo del DML | [`fig_dag_ignorabilidad_hotdeck.png`](figuras/fig_dag_ignorabilidad_hotdeck.png) |
+| Figura N | Metodología, junto a la Proposición 1 (el párrafo de la «propiedad de independencia condicional») | [`fig_dag_ignorabilidad_hotdeck.png`](figuras/fig_dag_ignorabilidad_hotdeck.png) |
+| Figura N + 1 | Inmediatamente después, la ilustración que dibujó el director (las dos nubes de la celda) | [`fig_nubes_celda_placebo.png`](figuras/fig_nubes_celda_placebo.png) |
 
 La Figura 1 usa la notación de la sección 2.2 (T, Y, X, W) y no menciona
-el enlace. La segunda aplica el mismo supuesto al enlace por celdas; el
-número se ajusta al orden del documento.
+el enlace. Las dos de la metodología usan su notación (C, T, T̃, Y); el número se
+ajusta al orden del documento.
 
 ---
 
@@ -53,23 +54,36 @@ con base en Chernozhukov et al. (2018).
 
 **Figura N**
 
-*Grafo acíclico dirigido de la ignorabilidad condicional en el enlace por celdas entre la GEIH y el Sisbén IV*
+*Grafo acíclico dirigido de la Proposición 1: independencia condicional del grupo imputado*
 
-![DAG de la ignorabilidad en el enlace por celdas](figuras/fig_dag_ignorabilidad_hotdeck.png)
+![DAG de la Proposición 1](figuras/fig_dag_ignorabilidad_hotdeck.png)
 
-*Nota.* X es la celda del Hot-Deck (departamento, ciclo de vida del jefe,
-cuartos y material de los pisos), Z son las características que modifican
-el efecto sin entrar en la celda, U es la capacidad no observada de
-generar ingresos, T es la elegibilidad A/B del propio hogar (no observada
-en la GEIH), T<sub>d</sub> es el grupo del donante sorteado en la misma
-celda del Sisbén IV y T̃ es el grupo que el Hot-Deck imputa al hogar de la
-GEIH. Dada X, el grupo imputado es independiente del resultado
-(T̃ ⫫ Y | X), por lo que una estimación con T̃ funciona como placebo del
-emparejamiento y no como efecto del Sisbén. En cambio, la ignorabilidad
-condicional de la elegibilidad real, Y(t) ⫫ T | X, Z, no se cumple: el
-camino T ← U → Y (en naranja) no se bloquea con variables observadas
-(criterio de la puerta trasera; Pearl, 2009). Elaboración propia con base
-en la GEIH 2024 (DANE) y el Sisbén IV (DNP).
+*Nota.* C es la celda del Hot-Deck (departamento, ciclo de vida del jefe,
+cuartos y material de los pisos), U la capacidad no observada de generar
+ingresos, T la elegibilidad A/B verdadera del hogar (no observada en la
+GEIH), T<sub>d</sub> el grupo del donante sorteado en la misma celda del
+Sisbén IV y T̃ el grupo que el Hot-Deck imputa al hogar de la GEIH. El
+único camino entre T̃ e Y pasa por C (en azul), de modo que, dada la celda,
+T̃ ⫫ Y | C: una estimación con T̃ es un placebo del emparejamiento. La
+elegibilidad verdadera, en cambio, conserva la puerta trasera T ← U → Y
+(en naranja), que C no bloquea (Pearl, 2009). Elaboración propia.
+
+---
+
+**Figura N + 1**
+
+*Resultado de los hogares de una celda según la elegibilidad verdadera y según el grupo imputado*
+
+![Nubes de una celda](figuras/fig_nubes_celda_placebo.png)
+
+*Nota.* Datos simulados (\*): 90 hogares de una misma celda, con un efecto
+verdadero de 0,8 sobre Y y ruido normal estándar. Los dos paneles muestran
+los mismos hogares; las líneas son las medias de cada grupo. Agrupados por
+la elegibilidad verdadera (panel a), las nubes se separan en el efecto;
+agrupados por el grupo imputado (panel b), que se sortea en la celda sin
+mirar Y, las dos nubes son iguales y la diferencia es cero, sea cual sea
+el efecto verdadero. Elaboración propia; la comprobación con 200 sorteos
+está en el anexo de proposiciones.
 
 ---
 
