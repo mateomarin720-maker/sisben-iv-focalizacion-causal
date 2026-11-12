@@ -210,6 +210,7 @@ poetry run python -m src.diagnostico.variables_candidatas_pobreza 6
 poetry run python -m src.diagnostico.variables_candidatas_pobreza 6 poblacion
 poetry run python -m src.diagnostico.incidencia_transferencias
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
+poetry run python -m src.validacion.validar_ipm_geih_ecv
 poetry run python -m src.simulacion
 poetry run python -m src.focalizacion.reglas_focalizacion
 poetry run python -m src.focalizacion.heterogeneidad_ampliada
@@ -231,7 +232,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 57 de 57 el 2026-11-11). Antes de mapear una
+cuando el error vuelve; 58 de 58 el 2026-11-11). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

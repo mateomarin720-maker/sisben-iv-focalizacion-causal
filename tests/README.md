@@ -1,6 +1,6 @@
 # Pruebas
 
-263 pruebas en 25 archivos (2026-11-11). Casi todas usan datos
+267 pruebas en 26 archivos (2026-11-11). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -48,6 +48,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_ingesta_y_validacion.py` | `ingesta/geih_loader.py`, `validacion/comparar_pobreza_monetaria_oficial.py`, `4_dag_identificacion.py` | Los 8 módulos de los 12 meses con las variantes reales ("No ocupado" en marzo, agosto desde `.DTA`, carpetas vacías); Latin-1; cruce uno a uno con la base oficial; chequeos de identificación de los cinco DAG (placebo del Hot-Deck, registro en el Sisbén, confusión de la simulación) | Meses incompletos sin aviso; cruce vacío con la base oficial |
 | `test_hotdeck_celda.py` | `emparejamiento/…` | Celda con nivel de pisos; falla si falta `viv_pisos` | Celda que cae al respaldo sin avisar |
 | `test_local_csv_parser.py` | `ingesta/local_csv_parser.py` | Códigos de `.DTA` como "1", no "1.0" | Agosto con `POBRE_GEIH` 6,9 % (hasta 2026-11-02) |
+| `test_validar_ipm_geih_ecv.py` | `indicadores/ipm_proxy.py`, `validacion/validar_ipm_geih_ecv.py` | Reglas del proxy (sin y con todas las privaciones, nivel 99), jefe no ocupado privado en la ECV como en la GEIH, concordancia ponderada y kappa | Jefe no ocupado de la ECV contado como cotizante |
 | `test_preprocesamiento.py` | `3_preprocesamiento.py` | IPM-GEIH con enero real: una fila por hogar, privaciones binarias sin faltantes, puntaje = suma, umbrales monótonos (se salta sin los datos) | |
 | `test_preprocesamiento_monetario.py` | `indicadores/pobreza_monetaria_geih.py`, `3b_…` | Unidad de gasto, jornalero (`P6430` = 7), imputación, líneas, cruce con la oficial | `P6430` = 7 leído como sin remuneración |
 | `test_homologacion_ipm.py` | `indicadores/homologacion_ipm.py` | Matriz GEIH ↔ Sisbén de las 15 privaciones: cada código existe en su diccionario oficial, pesos oficiales | Citar un código que no existe |

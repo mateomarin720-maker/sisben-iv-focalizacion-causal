@@ -77,5 +77,5 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
-| Pruebas automáticas | 263 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
-| Errores conocidos reintroducidos por la prueba de mutación | 57 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |
+| Pruebas automáticas | 267 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
+| Errores conocidos reintroducidos por la prueba de mutación | 58 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |

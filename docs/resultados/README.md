@@ -60,6 +60,7 @@ doble de heterogeneidad del efecto.
 | Hot-Deck y celdas con vivienda | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py`, `src/validacion/comparar_celdas_hotdeck_vivienda.py` | [`RESULTADOS_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_HOTDECK.md) |
 | Filtro del SDP (Bogotá) | `src/validacion/comparar_filtros_sdp.py` | [`COMPARACION_FILTROS_SDP.md`](1_datos_y_enlace/COMPARACION_FILTROS_SDP.md) |
 | Outcome IPM-GEIH | `src/3_preprocesamiento.py` | [`METODOLOGIA_INDICADOR_IPM_GEIH.md`](../insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md) |
+| Validación del IPM-GEIH contra la ECV y el IPM oficial | `src/validacion/validar_ipm_geih_ecv.py` | [`VALIDACION_IPM_GEIH_ECV.md`](1_datos_y_enlace/VALIDACION_IPM_GEIH_ECV.md) |
 | Pobreza monetaria y contraste oficial | `src/indicadores/pobreza_monetaria_geih.py`, `src/3b_preprocesamiento_monetario.py`, `src/validacion/comparar_pobreza_monetaria_oficial.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md) |
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
 | Variabilidad de la imputación | `src/diagnostico/variabilidad_hotdeck.py` | [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md) |
@@ -76,6 +77,11 @@ cobertura; paredes no agrega nada encima.
 **IPM-GEIH.** 8 de las 15 privaciones del IPM, en las 5 dimensiones; las
 de pisos y paredes se retiraron por tautología con las covariables.
 Score medio 1,45/8; **`POBRE_GEIH` (score ≥ 3) 17,1 %** de los hogares.
+Validado contra la ECV (2026-11-11): con las mismas reglas, la ECV 2024 da
+19,6 % y la GEIH 2024 20,4 % (ponderados), con correlación de 0,99 entre
+departamentos; hogar por hogar, en la base del IPM, ordena como el IPM
+oficial (correlación 0,72) pero con K = 3 duplica su tasa (18,3 % frente a
+8,1 %); K = 4 la reproduce. `VALIDACION_IPM_GEIH_ECV.md`.
 
 **Pobreza monetaria reconstruida.** Unidad de gasto, `INGLABO` más los
 componentes laborales que no incluye, hot-deck de no respuesta laboral,

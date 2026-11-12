@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-11: 57 de 57 mutaciones detectadas.
+Resultado del 2026-11-11: 58 de 58 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -99,6 +99,9 @@ MUTACIONES = [
      "src/validacion/verificar_representatividad_sisben.py",
      "        sisben = sisben[~sisben[\"geo_depto\"].isin(capital) | en_capital]\n", "",
      "tests/test_ingesta_y_validacion.py"),
+    ("IPM-GEIH en la ECV: el jefe no ocupado deja de contar sin cotización", "src/validacion/validar_ipm_geih_ecv.py",
+     '    jefes["P6920"] = jefes["P6920"].astype(object).where(jefes["P6920"].notna(), np.nan)\n', "",
+     "tests/test_validar_ipm_geih_ecv.py"),
     ("DML: la regularización vigente cambia sin aviso", "src/5_estimacion.py",
      "ALPHA_Y, C_T = 1.0, 10.0", "ALPHA_Y, C_T = 1e-6, 1e6", "tests/test_estimacion_dml.py"),
     ('Modo simulado: guarda grupos con menos hogares que el umbral', 'src/simulacion/calibrar.py',

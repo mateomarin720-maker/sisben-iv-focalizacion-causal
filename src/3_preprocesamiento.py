@@ -90,6 +90,9 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # raíz del repo: el script corre directo, no con -m
 from src.utils.variables_canonicas import es_jefe, normalizar_llave as _norm_llave  # noqa: E402
+from src.indicadores.ipm_proxy import (  # noqa: E402
+    K_POBRE, PRIVACIONES, inasistencia_escolar, privaciones,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -99,16 +102,12 @@ FUSIONADO = Path("data/2_models/geih_sisben_fusionado_2024.parquet")
 OUT = Path("data/2_models/muestra_estimacion_2024.parquet")
 REPORT_DIR = Path("docs/reports")
 MESES = [f"{m:02d}" for m in range(1, 13)]
-UMBRAL_HACINAMIENTO = 3  # personas por cuarto para dormir
-EDAD_MIN_ESCOLAR, EDAD_MAX_ESCOLAR = 6, 16  # universo de "inasistencia_escolar_menores"
-NIVEL_MIN_SECUNDARIA = 4  # P3042: 1=Ninguno,2=Preescolar,3=Primaria,4=Secundaria... privación si < 4
-K_POBRE = 3  # umbral adoptado (de 8 privaciones). Ver sensibilidad en `_validar`.
-PRIVACIONES = [
-    "analfabetismo", "bajo_logro_educativo_jefe", "inasistencia_escolar_menores",
-    "sin_aseguramiento_salud", "sin_cotizacion_pension_jefe",
-    "hacinamiento", "sin_alcantarillado", "sin_acueducto",
-]
-IPM_OFICIAL_TASA_POBREZA = 0.130  # IPM Hogares Nacional 2024 (data/catalogo.yaml) — referencia de plausibilidad, no un objetivo a igualar
+# Reglas del IPM-GEIH (umbrales, privaciones, K_POBRE): src/indicadores/ipm_proxy.py,
+# compartidas con la validación contra la ECV.
+# Hogares pobres por IPM oficial, ponderados por FEX_C: base del IPM 2025 (catálogo 903; la de
+# 2024 es el catálogo 860, que no está en el banco). Hasta el 2026-11-11 decía 0,130, que es la
+# tasa SIN ponderar de esa base. Referencia de plausibilidad, no un objetivo a igualar.
+IPM_OFICIAL_TASA_POBREZA = 0.081
 
 
 
@@ -135,13 +134,7 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
         cg[c] = _norm_llave(cg[c])
 
     # Inasistencia escolar: TODOS los miembros entre 6 y 16 años, no solo el jefe.
-    edad_num = pd.to_numeric(cg["P6040"], errors="coerce")
-    es_menor_escolar = edad_num.between(EDAD_MIN_ESCOLAR, EDAD_MAX_ESCOLAR)
-    no_asiste = cg["P6170"] == "2"
-    inasistencia = (
-        (es_menor_escolar & no_asiste).groupby([cg[c] for c in k3]).any()
-        .rename("inasistencia_escolar_menores").reset_index()
-    )
+    inasistencia = inasistencia_escolar(cg["P6040"], cg["P6170"], [cg[c] for c in k3]).reset_index()
 
     jefes = cg[es_jefe(cg, "geih")][
         [*k3, "ORDEN", "P6160", "P6090", "P3042"]
@@ -156,34 +149,7 @@ def _outcome_mes(mes: str) -> pd.DataFrame | None:
         jefes["P6920"] = pd.NA
 
     df = jefes.merge(hv, on=k3, how="left").merge(inasistencia, on=k3, how="left")
-
-    df["analfabetismo"] = (df["P6160"] == "2").astype("Int8")
-    df["sin_aseguramiento_salud"] = (df["P6090"] == "2").astype("Int8")
-
-    nivel_edu = pd.to_numeric(df["P3042"], errors="coerce")
-    # 99 = "no sabe/no informa" -> se trata como NO privado (conservador), no como faltante.
-    df["bajo_logro_educativo_jefe"] = ((nivel_edu < NIVEL_MIN_SECUNDARIA) & (nivel_edu != 99)).astype("Int8")
-
-    df["inasistencia_escolar_menores"] = df["inasistencia_escolar_menores"].fillna(False).astype("Int8")
-
-    personas = pd.to_numeric(df["P6008"], errors="coerce")
-    cuartos_dormir = pd.to_numeric(df["P5010"], errors="coerce")
-    personas_cuarto = personas / cuartos_dormir.replace(0, pd.NA)
-    df["hacinamiento"] = (personas_cuarto > UMBRAL_HACINAMIENTO).astype("Int8")
-
-    df["sin_alcantarillado"] = (df["P4030S3"] == "2").astype("Int8")
-    df["sin_acueducto"] = (df["P4030S5"] == "2").astype("Int8")
-
-    # Privado si NO está ocupado y cotizando a pensión (combina informalidad +
-    # desempleo/inactividad del jefe en un solo indicador de trabajo).
-    df["sin_cotizacion_pension_jefe"] = (df["P6920"] != "1").astype("Int8")
-
-    df["ipm_geih_score"] = df[PRIVACIONES].sum(axis=1, min_count=1)
-    df["POBRE_GEIH"] = (df["ipm_geih_score"] >= K_POBRE).astype("Int8")
-    # Variantes de umbral para análisis de sensibilidad (ver _validar) — el
-    # mismo score, distinto corte. K_POBRE=3 es el umbral adoptado.
-    for k in range(1, len(PRIVACIONES) + 1):
-        df[f"POBRE_GEIH_K{k}"] = (df["ipm_geih_score"] >= k).astype("Int8")
+    df = privaciones(df)
 
     cols_salida = ["llave_directorio", "llave_secuencia_p", "llave_hogar", *PRIVACIONES,
                    "ipm_geih_score", "POBRE_GEIH", *[f"POBRE_GEIH_K{k}" for k in range(1, len(PRIVACIONES) + 1)]]
@@ -225,11 +191,12 @@ def _validar(df: pd.DataFrame) -> None:
         tasa = df[f"POBRE_GEIH_K{k}"].mean() * 100
         marca = " <- adoptado (K_POBRE)" if k == K_POBRE else ""
         print(f"  K>={k}: {tasa:.1f}%{marca}")
+    cercano = min(range(1, len(PRIVACIONES) + 1),
+                  key=lambda k: abs(df[f"POBRE_GEIH_K{k}"].mean() - IPM_OFICIAL_TASA_POBREZA))
     print(
-        f"  Referencia externa: IPM oficial (Hogares Nacional 2024, 15 privaciones) = "
-        f"{IPM_OFICIAL_TASA_POBREZA*100:.1f}% — K={K_POBRE} es el más cercano en orden de "
-        f"magnitud entre los {len(PRIVACIONES)} cortes probados; no se ajustó el umbral para "
-        f"igualarlo, es una verificación de plausibilidad ex post, no una calibración."
+        f"  Referencia externa: IPM oficial (hogares, ponderado, 2025) = {IPM_OFICIAL_TASA_POBREZA*100:.1f}%; "
+        f"el corte más cercano es K={cercano} y el adoptado K={K_POBRE}. Validación hogar por hogar "
+        f"contra la clasificación oficial: src/validacion/validar_ipm_geih_ecv.py."
     )
 
 
