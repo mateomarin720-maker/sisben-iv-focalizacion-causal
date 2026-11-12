@@ -50,6 +50,31 @@ El número de hogares se conserva en toda la cadena, de la GEIH plata a la tabla
 El proyecto no solicitará más datos. DPS y Registro Único de Víctimas figuran en el catálogo
 como pendientes y quedan fuera del alcance.
 
+### Factores de expansión
+
+La GEIH trae el factor de expansión `FEX_C18`, que la armonización renombra `fex`
+(`src/armonizacion/armonizar_geih_hogar_2024.py`). Cada uno de los 12 meses se expande a toda
+la población, así que la suma anual de `fex` es 12 veces el número de hogares (214,9 millones).
+Para totales se usa el mes promedio, `fex / 12`, que da 17,9 millones de hogares; las
+proporciones y tasas no cambian. El Sisbén es un registro administrativo, sin diseño muestral
+ni factor de expansión: sus proporciones por celda van sin ponderar.
+
+| Análisis | Ponderado | Cómo | Código |
+|---|---|---|---|
+| Distribución del grupo asignado por el Hot-Deck | Sí | `fex` | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` |
+| Pobreza monetaria reconstruida y contraste con el DANE | Sí | Personas: `FEX_C18 / 12` | `src/indicadores/pobreza_monetaria_geih.py`, `src/validacion/comparar_pobreza_monetaria_oficial.py` |
+| Cobertura del Sisbén por departamento | Sí | Hogares: `fex / 12` | `src/validacion/verificar_representatividad_sisben.py` |
+| Cotas de Fréchet-Manski | En parte | P(Y \| celda) de la GEIH y la agregación nacional con `fex`; P(T \| celda) del Sisbén sin ponderar | `src/diagnostico/cotas_frechet_manski.py` |
+| Errores de focalización | Sí | `fex` | `src/diagnostico/errores_focalizacion_frechet.py` |
+| Variabilidad del Hot-Deck | Sí | `fex` | `src/diagnostico/variabilidad_hotdeck.py` |
+| Variables candidatas y reglas de focalización | Sí | Hogares: `fex`; personas: `fex` × personas de la unidad de gasto | `src/diagnostico/variables_candidatas_pobreza.py`, `src/focalizacion/reglas_focalizacion.py` |
+| Incidencia de las transferencias | Sí | `FEX_C18 / 12` | `src/diagnostico/incidencia_transferencias.py` |
+| Sorteo de donantes del Hot-Deck | No | Donante al azar dentro de la celda (el Sisbén no tiene factor) | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` |
+| DML y Causal Forest | No | Estimación sobre la muestra, sin `sample_weight` | `src/5_estimacion.py` |
+
+El DML sin ponderar estima el efecto promedio de la muestra, no el de la población. Con el
+grupo imputado es un placebo (Proposición 1) y su límite es cero con o sin ponderación.
+
 ## Flujo
 
 | Etapa | Código | Entrada → salida | Resultado |
