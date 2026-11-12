@@ -150,7 +150,7 @@ Detalle completo de marco teórico, metodología y cronograma en
 | `docs/insumos/` | Diccionarios oficiales, ficha del Sisbén IV y homologaciones entre fuentes |
 | `docs/seguimiento/` | [Guía de la tesis](docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md), [resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md) y [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md) |
 | `data/` | Estructura de las capas (`0_raw`, `1_processed`, `2_models`) y [catálogo de fuentes](data/catalogo.yaml). Los datos no se versionan: viven en Azure Blob Storage |
-| `tests/` | 269 pruebas (`poetry run pytest tests/`) y una prueba de mutación que reintroduce 59 errores conocidos y comprueba que alguna prueba falle. Corren en GitHub Actions en cada push. Mapa en [`tests/README.md`](tests/README.md) |
+| `tests/` | 270 pruebas (`poetry run pytest tests/`) y una prueba de mutación que reintroduce 60 errores conocidos y comprueba que alguna prueba falle. Corren en GitHub Actions en cada push. Mapa en [`tests/README.md`](tests/README.md) |
 
 ### 6. Orden de ejecución
 

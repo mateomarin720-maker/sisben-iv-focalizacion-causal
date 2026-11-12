@@ -76,13 +76,13 @@ cobertura; paredes no agrega nada encima.
 
 **IPM-GEIH.** 8 de las 15 privaciones del IPM, en las 5 dimensiones; las
 de pisos y paredes se retiraron por tautología con las covariables.
-Score medio 1,45/8; **`POBRE_GEIH` (score ≥ 3) 17,1 %** de los hogares.
+Score medio 1,38/8; **`POBRE_GEIH` (score ≥ 3) 13,9 %** de los hogares (14,5 % ponderado; 17,1 % antes de corregir la vivienda por zona).
 Validado contra la ECV (2026-11-11): con las mismas reglas, la ECV 2024 da
 19,6 % y la GEIH 2024 20,4 % (ponderados), con correlación de 0,99 entre
 departamentos. La validación encontró que vivienda usaba la regla urbana
-en el campo; con la definición oficial por zona (2026-11-11, aún sin
-regenerar la muestra) el proxy da 13,8 % frente a 9,2 % oficial, kappa 0,51,
-correlación 0,76, y K = 3 sigue siendo el mejor corte. `VALIDACION_IPM_GEIH_ECV.md`.
+en el campo; con la definición oficial por zona (regenerado el 2026-11-12)
+el proxy da 13,8 % frente a 9,2 % oficial, kappa 0,51, correlación 0,76, y
+K = 3 sigue siendo el mejor corte. `VALIDACION_IPM_GEIH_ECV.md`.
 
 **Pobreza monetaria reconstruida.** Unidad de gasto, `INGLABO` más los
 componentes laborales que no incluye, hot-deck de no respuesta laboral,
@@ -114,7 +114,7 @@ pipeline).
 | Hogar | Dos sorteos coinciden en el grupo el 34,4 % de las veces y en A/B el 62,7 % |
 | Celda | CV mediano de la proporción A/B 0,091 (0,049 ponderado) |
 | Nacional | Desviación de 0,10 a 0,15 puntos por grupo (CV ≤ 0,007) |
-| Contraste placebo | Con Rubin, `POBRE_GEIH` pasa de −0,0030 (IC sin el 0, semilla 42) a −0,00003 [−0,0036; +0,0036]; 49-55 % de la varianza viene de la imputación |
+| Contraste placebo | Con Rubin, `POBRE_GEIH` da −0,000004 [−0,0033; +0,0033] (semilla 42: −0,0024, al borde del 0); 49-55 % de la varianza viene de la imputación |
 
 ## Componente 1: diagnóstico con datos reales
 
@@ -144,8 +144,8 @@ datos del proyecto.
 
 | Outcome | ATE, controles = celda exacta [IC 95 %] |
 |---|---|
-| `ipm_geih_score` | −0,0021 [−0,0092; +0,0051] |
-| `POBRE_GEIH` | −0,0026 [−0,0049; −0,0002] |
+| `ipm_geih_score` | −0,0029 [−0,0101; +0,0043] |
+| `POBRE_GEIH` | −0,0021 [−0,0045; +0,0004] |
 | `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
 | `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
 | `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | −0,0005 [−0,0041; +0,0030] |
@@ -158,7 +158,7 @@ El CATE medio también es ≈0.
 
 | Outcome | Cota del ATE sin el supuesto del vínculo |
 |---|---|
-| `POBRE_GEIH` | [−0,261; +0,380] |
+| `POBRE_GEIH` | [−0,256; +0,278] |
 | `POBRE_MONETARIO` | [−0,418; +0,648] |
 | `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | [−0,407; +0,620] |
 

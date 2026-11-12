@@ -45,12 +45,12 @@ robustez, A, B y C. Unidad: hogares.
 | Elegible | Pobreza | Error de exclusión | Con independencia | Error de inclusión | Con independencia |
 |---|---|---|---|---|---|
 | A-B | Monetaria | **[0,9 %; 75,0 %]** | 44,3 % | **[38,6 %; 84,5 %]** | 65,5 % |
-| A-B | IPM-GEIH | [0,8 %; 58,0 %] | 33,2 % | [53,5 %; 80,3 %] | 68,7 % |
+| A-B | IPM-GEIH | [0,4 %; 65,8 %] | 33,0 % | [66,9 %; 88,6 %] | 77,7 % |
 | A-B | Monetaria oficial (24 deptos.) | [0,7 %; 75,0 %] | 43,9 % | [41,2 %; 85,2 %] | 66,8 % |
 | A-B-C | Monetaria | [0,0 %; 50,0 %] | 16,0 % | [65,3 %; 82,7 %] | 70,9 % |
-| A-B-C | IPM-GEIH | [0,0 %; 32,8 %] | 11,1 % | [73,8 %; 82,4 %] | 76,7 % |
+| A-B-C | IPM-GEIH | [0,0 %; 38,1 %] | 11,0 % | [81,4 %; 88,5 %] | 83,5 % |
 
-Pobreza monetaria: 27,0 % de los hogares; A/B: 43,6 % de los hogares
+Pobreza monetaria: 27,0 % de los hogares; IPM-GEIH: 14,5 % (20,4 % antes de corregir la vivienda por zona, 2026-11-12); A/B: 43,6 % de los hogares
 registrados. Las 993 celdas tienen hogares de las dos fuentes (100 % del
 peso de la GEIH).
 

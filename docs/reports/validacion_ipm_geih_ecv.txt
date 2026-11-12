@@ -3,23 +3,22 @@ Generado por src/validacion/validar_ipm_geih_ecv.py. Hogares, ponderados por el 
 
 A. Base del IPM 2024 (sale de la ECV 2024): proxy frente a POBRE oficial, hogar por hogar
    Hogares: 77.568
-   Tasa de pobreza: proxy 18.7%, oficial 9.2%
-   Concordancia 85.6%; sensibilidad 73.5%; especificidad 86.8%; precisión 36.2%; kappa 0.412
-   Correlación de rangos entre el puntaje del proxy y el IPM oficial: 0.718
+   Tasa de pobreza: proxy 13.8%, oficial 9.2%
+   Concordancia 90.0%; sensibilidad 70.5%; especificidad 92.0%; precisión 47.3%; kappa 0.513
+   Correlación de rangos entre el puntaje del proxy y el IPM oficial: 0.760
    Hogares de la base con zona en la ECV 2024: 100.0%
-   Cabecera: proxy 6.5%, oficial 5.9%; concordancia 93.8%; sensibilidad 52.7%; kappa 0.467
-   Resto: proxy 63.7%, oficial 21.5%; concordancia 55.4%; sensibilidad 94.4%; kappa 0.229
-   Contraste con la base del IPM 2025 (79.125 hogares): proxy 18.3%, oficial 8.1%; concordancia 86.0%; sensibilidad 76.8%; kappa 0.405
+   Cabecera: proxy 7.5%, oficial 5.9%; concordancia 93.4%; sensibilidad 57.1%; kappa 0.470
+   Resto: proxy 37.0%, oficial 21.5%; concordancia 77.7%; sensibilidad 84.0%; kappa 0.476
 
    Por umbral K (privaciones del proxy) frente a POBRE oficial 2024:
  k  tasa_proxy  tasa_oficial  concordancia  sensibilidad  especificidad  kappa
- 1       0.762         0.092         0.329         0.995          0.261  0.060
- 2       0.417         0.092         0.659         0.913          0.633  0.212
- 3       0.187         0.092         0.856         0.735          0.868  0.412
- 4       0.075         0.092         0.918         0.464          0.964  0.467
- 5       0.019         0.092         0.925         0.196          0.999  0.302
- 6       0.003         0.092         0.910         0.029          1.000  0.052
- 7       0.000         0.092         0.908         0.004          1.000  0.008
+ 1       0.763         0.092         0.328         0.995          0.261  0.060
+ 2       0.395         0.092         0.683         0.921          0.659  0.235
+ 3       0.138         0.092         0.900         0.705          0.920  0.513
+ 4       0.044         0.092         0.930         0.360          0.988  0.456
+ 5       0.012         0.092         0.919         0.129          1.000  0.210
+ 6       0.002         0.092         0.910         0.022          1.000  0.039
+ 7       0.000         0.092         0.908         0.004          1.000  0.007
  8       0.000         0.092         0.908         0.000          1.000  0.000
 
    Cada privación del proxy frente a la oficial que le corresponde (base del IPM 2024), y su prevalencia
@@ -30,15 +29,15 @@ A. Base del IPM 2024 (sale de la ECV 2024): proxy frente a POBRE oficial, hogar 
 inasistencia_escolar_menores inasistencia_escolar              0.018                0.018         1.000  0.992                 0.019                  0.023
      sin_aseguramiento_salud  aseguramiento_salud              0.031                0.060         0.971  0.663                 0.031                  0.041
  sin_cotizacion_pension_jefe        empleo_formal              0.721                0.707         0.853  0.640                 0.724                  0.709
-                hacinamiento         hacinamiento              0.030                0.061         0.969  0.643                 0.030                  0.034
-          sin_alcantarillado       alcantarillado              0.228                0.091         0.861  0.501                 0.238                  0.230
-               sin_acueducto            acueducto              0.090                0.086         0.980  0.878                 0.099                  0.103
+                hacinamiento         hacinamiento              0.061                0.061         1.000  1.000                 0.061                  0.067
+          sin_alcantarillado       alcantarillado              0.091                0.091         1.000  1.000                 0.093                  0.093
+               sin_acueducto            acueducto              0.086                0.086         1.000  1.000                 0.092                  0.068
 
 B. Mismo año: proxy en la ECV 2024 (85.387 hogares) frente a la GEIH 2024 (290.968 hogares)
-   POBRE_GEIH: ECV 19.6%, GEIH 20.4%; puntaje medio: ECV 1.49, GEIH 1.51
-   Cabecera: ECV 6.5%, GEIH 7.1%
-   Resto: ECV 64.9%, GEIH 68.6%
-   Cabecera de la capital (9): correlación 0.968; diferencia media GEIH − ECV -0.034; diferencia absoluta mediana 0.046
-   Departamento (24): correlación 0.988; diferencia media GEIH − ECV +0.021; diferencia absoluta mediana 0.022
+   POBRE_GEIH: ECV 14.2%, GEIH 14.5%; puntaje medio: ECV 1.37, GEIH 1.37
+   Cabecera: ECV 7.5%, GEIH 8.1%
+   Resto: ECV 37.5%, GEIH 37.5%
+   Cabecera de la capital (9): correlación 0.961; diferencia media GEIH − ECV -0.036; diferencia absoluta mediana 0.048
+   Departamento (24): correlación 0.987; diferencia media GEIH − ECV +0.008; diferencia absoluta mediana 0.015
    Detalle: validacion_ipm_geih_ecv_departamentos.csv
 

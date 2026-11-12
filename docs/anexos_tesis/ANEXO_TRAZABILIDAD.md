@@ -17,14 +17,14 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 | Pobreza extrema, brecha (FGT1) y Gini: reconstruida frente a oficial | extrema 12,5 % frente a 11,7 %; FGT1 13,5 frente a 12,6; Gini 0,565 frente a 0,551 | `pobreza_monetaria_geih.txt` | fila `nacional`: `fgt0_extrema`, `fgt1_pobreza`, `gini` y sus columnas `_oficial` | `poetry run python -m src.indicadores.pobreza_monetaria_geih` |
 | Cobertura del Sisbén frente a los hogares de la GEIH, mismo marco (mín.–máx. de los departamentos del archivo nacional; nacional) | 4,8 % – 26,9 %; 16,8 % | `representatividad_sisben_por_depto.csv` | `razon_cobertura` con `marco` = departamento, sin Bogotá (SDP); nacional = suma de registrados / suma de hogares | `poetry run python -m src.validacion.verificar_representatividad_sisben` |
 | Parte de la varianza del contraste que viene de la imputación (100 sorteos), por resultado | `POBRE_MONETARIO` 48,9 %; `POBRE_GEIH` 48,8 %; `log_ingreso_percapita` 54,5 % | `variabilidad_hotdeck_estimacion.csv` | `fraccion_info_imputacion`, una fila por resultado | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
-| Contraste placebo de `POBRE_GEIH` combinado con Rubin | −0,00003 [−0,0036; +0,0036] | `variabilidad_hotdeck_estimacion.csv` | fila `POBRE_GEIH` | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
+| Contraste placebo de `POBRE_GEIH` combinado con Rubin | −0,00000 [−0,0033; +0,0033] | `variabilidad_hotdeck_estimacion.csv` | fila `POBRE_GEIH` | `poetry run python -m src.diagnostico.variabilidad_hotdeck 2` |
 
 ## Componente 1: diagnóstico con datos reales
 
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
-| ATE del DML (placebo), controles = celda exacta: `ipm_geih_score` | −0,0021 [−0,0092; +0,0051] | `estimacion_ate_att_atu_cate.txt` | bloque `ipm_geih_score`, «W = CELDA EXACTA», línea «ATE» | `poetry run python src/5_estimacion.py` |
-| ATE del DML (placebo), controles = celda exacta: `POBRE_GEIH` | −0,0026 [−0,0049; −0,0002] | `estimacion_ate_att_atu_cate.txt` | bloque `POBRE_GEIH`, «W = CELDA EXACTA», línea «ATE» | `poetry run python src/5_estimacion.py` |
+| ATE del DML (placebo), controles = celda exacta: `ipm_geih_score` | −0,0029 [−0,0101; +0,0043] | `estimacion_ate_att_atu_cate.txt` | bloque `ipm_geih_score`, «W = CELDA EXACTA», línea «ATE» | `poetry run python src/5_estimacion.py` |
+| ATE del DML (placebo), controles = celda exacta: `POBRE_GEIH` | −0,0021 [−0,0045; +0,0004] | `estimacion_ate_att_atu_cate.txt` | bloque `POBRE_GEIH`, «W = CELDA EXACTA», línea «ATE» | `poetry run python src/5_estimacion.py` |
 | ATE del DML (placebo), controles = celda exacta: `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] | `estimacion_ate_att_atu_cate.txt` | bloque `log_ingreso_percapita`, «W = CELDA EXACTA», línea «ATE» | `poetry run python src/5_estimacion.py` |
 | ATE del DML (placebo), controles = celda exacta: `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] | `estimacion_ate_att_atu_cate.txt` | bloque `POBRE_MONETARIO`, «W = CELDA EXACTA», línea «ATE» | `poetry run python src/5_estimacion.py` |
 | ATE del DML (placebo), controles = celda exacta: `POBRE_MONETARIO_OFICIAL` | −0,0005 [−0,0041; +0,0030] | `estimacion_ate_att_atu_cate.txt` | bloque `POBRE_MONETARIO_OFICIAL`, «W = CELDA EXACTA», línea «ATE» | `poetry run python src/5_estimacion.py` |
@@ -77,5 +77,5 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
-| Pruebas automáticas | 267 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
-| Errores conocidos reintroducidos por la prueba de mutación | 58 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |
+| Pruebas automáticas | 270 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
+| Errores conocidos reintroducidos por la prueba de mutación | 60 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |

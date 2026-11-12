@@ -135,15 +135,16 @@ a una iteración futura.
 
 | Corte | % hogares clasificados pobres |
 |---|---|
-| K≥1 | 77,9 % |
-| K≥2 | 41,0 % |
-| **K≥3 (adoptado)** | **17,1 %** |
-| K≥4 | 6,7 % |
-| K≥5 | 1,9 % |
-| K≥6 | 0,3 % |
+| K≥1 | 78,0 % |
+| K≥2 | 40,3 % |
+| **K≥3 (adoptado)** | **13,9 %** |
+| K≥4 | 4,3 % |
+| K≥5 | 1,1 % |
+| K≥6 | 0,2 % |
 | K≥7-8 | ~0,0 % |
 
-Cifras tras corregir el bug de agosto (2026-11-02; antes K≥3 = 16,3 %).
+Hogares sin ponderar, con la vivienda corregida por zona (2026-11-12;
+antes K≥3 = 17,1 %, y 16,3 % antes del bug de agosto).
 
 K=3 se adoptó por ser el más cercano a una tasa oficial de 13,0 %.
 **Esa referencia estaba mal (corregido el 2026-11-11):** 13,0 % es la
@@ -151,8 +152,9 @@ tasa *sin ponderar* de la base del IPM 2025, no la oficial de 2024.
 Con la base del IPM 2024 (Azure, `0_raw/ipm/2024/`), ponderada por
 hogares, la tasa oficial es 9,2 %, y el corte más cercano es K=4 (6,7 %
 en la GEIH). K=3 se mantiene
-porque cambiarlo mueve todos los resultados; la validación contra la
-clasificación oficial, hogar por hogar, está en
+porque cambiarlo mueve todos los resultados. Con la vivienda corregida por
+zona, K=3 es además el corte más cercano a la tasa oficial y el de mayor
+kappa; la validación contra la clasificación oficial, hogar por hogar, está en
 `docs/resultados/1_datos_y_enlace/VALIDACION_IPM_GEIH_ECV.md`.
 
 ## 5. Validaciones obligatorias — resultado

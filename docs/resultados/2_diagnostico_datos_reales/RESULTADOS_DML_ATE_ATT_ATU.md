@@ -42,10 +42,10 @@ inclusión ni de exclusión, que son conceptos de focalización.
 
 | Outcome | W | ATE [IC 95 %] | ATT | ATU |
 |---|---|---|---|---|
-| `ipm_geih_score` | PROXY | −0,0052 [−0,0122; +0,0018] | −0,0062 | −0,0044 |
-| `ipm_geih_score` | CELDA | −0,0021 [−0,0092; +0,0051] | −0,0016 | −0,0025 |
-| `POBRE_GEIH` | PROXY | +0,0010 [−0,0014; +0,0033] | +0,0006 | +0,0013 |
-| `POBRE_GEIH` | CELDA | −0,0026 [−0,0049; −0,0002] | −0,0031 | −0,0021 |
+| `ipm_geih_score` | PROXY | −0,0055 [−0,0126; +0,0016] | −0,0065 | −0,0047 |
+| `ipm_geih_score` | CELDA | −0,0029 [−0,0101; +0,0043] | −0,0029 | −0,0030 |
+| `POBRE_GEIH` | PROXY | +0,0014 [−0,0011; +0,0038] | +0,0015 | +0,0013 |
+| `POBRE_GEIH` | CELDA | −0,0021 [−0,0045; +0,0004] | −0,0023 | −0,0018 |
 | `log_ingreso_percapita` | PROXY | −0,0056 [−0,0190; +0,0077] | −0,0066 | −0,0048 |
 | `log_ingreso_percapita` | CELDA | +0,0006 [−0,0128; +0,0141] | +0,0007 | +0,0006 |
 | `POBRE_MONETARIO` | PROXY | +0,0003 [−0,0031; +0,0037] | +0,0007 | −0,0001 |
@@ -66,16 +66,16 @@ que antes (p5 0,363 sin pisos).
 
 ## Cómo leerlo
 
-- **Actualización 2026-11-04:** el octavo, `POBRE_GEIH` con la celda,
-  depende de la semilla del Hot-Deck. Repitiendo el sorteo 100 veces, el
-  contraste promedio es −0,00003 y solo el 3 % de los sorteos excluye el
-  cero; con las reglas de Rubin el IC es [−0,0036; +0,0036]
-  (`RESULTADOS_VARIABILIDAD_HOTDECK.md`). Los IC de esta página no
-  incluyen la varianza de la imputación (≈ la mitad de la total).
-- Siete de ocho ATE incluyen el cero; el octavo (`POBRE_GEIH` con la
-  celda) lo excluye por poco (−0,26 puntos, límite superior −0,0002) y no
-  se replica en `POBRE_MONETARIO`. Con ocho intervalos al 95 %, uno al
-  borde es lo esperable por azar. Todos son despreciables en magnitud.
+- **Los ocho ATE incluyen el cero** y son despreciables en magnitud.
+  Hasta el 2026-11-12 (antes de corregir la vivienda del IPM-GEIH por
+  zona) `POBRE_GEIH` con la celda daba −0,0026 [−0,0049; −0,0002], al
+  borde; con el indicador corregido da −0,0021 [−0,0045; +0,0004].
+- Un solo sorteo del Hot-Deck subestima la incertidumbre. Repitiendo el
+  sorteo 100 veces, el contraste de `POBRE_GEIH` promedia −0,000004 y solo
+  el 4 % de los sorteos excluye el cero; con las reglas de Rubin el IC es
+  [−0,0033; +0,0033] (`RESULTADOS_VARIABILIDAD_HOTDECK.md`). Los IC de
+  esta página no incluyen la varianza de la imputación (≈ la mitad de la
+  total).
 - El cambio de celda (sin pisos → con pisos) no movió la conclusión: con
   la celda anterior también eran siete de ocho, con el octavo en
   `log_ingreso_percapita`.

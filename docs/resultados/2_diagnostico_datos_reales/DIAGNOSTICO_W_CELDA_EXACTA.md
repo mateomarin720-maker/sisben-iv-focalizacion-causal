@@ -52,10 +52,10 @@ celda exacta, la propensión estimada reproduce la empírica: correlación
 
 | Outcome | W | ATE [IC 95 %] | ATT | ATU |
 |---|---|---|---|---|
-| `ipm_geih_score` (0-8) | PROXY | −0,0052 [−0,0122; +0,0018] | −0,0062 | −0,0044 |
-| `ipm_geih_score` (0-8) | CELDA EXACTA | −0,0021 [−0,0092; +0,0051] | −0,0016 | −0,0025 |
-| `POBRE_GEIH` | PROXY | +0,0010 [−0,0014; +0,0033] | +0,0006 | +0,0013 |
-| `POBRE_GEIH` | CELDA EXACTA | −0,0026 [−0,0049; −0,0002] | −0,0031 | −0,0021 |
+| `ipm_geih_score` (0-8) | PROXY | −0,0055 [−0,0126; +0,0016] | −0,0065 | −0,0047 |
+| `ipm_geih_score` (0-8) | CELDA EXACTA | −0,0029 [−0,0101; +0,0043] | −0,0029 | −0,0030 |
+| `POBRE_GEIH` | PROXY | +0,0014 [−0,0011; +0,0038] | +0,0015 | +0,0013 |
+| `POBRE_GEIH` | CELDA EXACTA | −0,0021 [−0,0045; +0,0004] | −0,0023 | −0,0018 |
 | `log_ingreso_percapita` | PROXY | −0,0056 [−0,0190; +0,0077] | −0,0066 | −0,0048 |
 | `log_ingreso_percapita` | CELDA EXACTA | +0,0006 [−0,0128; +0,0141] | +0,0007 | +0,0006 |
 | `POBRE_MONETARIO` | PROXY | +0,0003 [−0,0031; +0,0037] | +0,0007 | −0,0001 |

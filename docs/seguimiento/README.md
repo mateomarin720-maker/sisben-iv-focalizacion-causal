@@ -121,7 +121,7 @@ Paredes no agrega nada encima.
 
 | Outcome | Resultado |
 |---|---|
-| IPM-GEIH | 8 de las 15 privaciones. 17,1 % de los hogares con 3 o más privaciones (`POBRE_GEIH`). |
+| IPM-GEIH | 8 de las 15 privaciones. 13,9 % de los hogares con 3 o más privaciones (`POBRE_GEIH`), con la vivienda corregida por zona. |
 | Pobreza monetaria reconstruida (FGT0, personas) | 33,2 % frente a 31,8 % oficial. FGT1: 13,5 % frente a 12,6 %. |
 | Contraste hogar por hogar con la base oficial del DANE | Clasificación igual en el 93,9 % de los 275.057 hogares comparables. |
 

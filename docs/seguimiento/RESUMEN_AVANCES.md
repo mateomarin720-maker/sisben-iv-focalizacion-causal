@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 269 pruebas; 59 de 59 errores documentados detectados por mutación (2026-11-11); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 270 pruebas; 60 de 60 errores documentados detectados por mutación (2026-11-12); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -77,8 +77,8 @@ sin pisos (A 22,0 · D 15,6 %) queda como sensibilidad. Detalle:
 
 ### 3b. Outcomes
 
-- **IPM-GEIH:** 8 de las 15 privaciones oficiales; 17,1 % de hogares con
-  `POBRE_GEIH` (score ≥ 3). `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
+- **IPM-GEIH:** 8 de las 15 privaciones oficiales; 13,9 % de hogares con
+  `POBRE_GEIH` (score ≥ 3), con la vivienda corregida por zona (antes 17,1 %). `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 - **Pobreza monetaria reconstruida** (unidad de gasto, líneas por
   dominio, hot-deck de no respuesta laboral, arriendo imputado; D1-D7
   cerradas): **33,2 %** de personas pobres frente a 31,8 % oficial;
@@ -99,8 +99,8 @@ incluyen el cero y todos son despreciables:
 
 | Outcome | ATE, W = celda exacta [IC 95 %] |
 |---|---|
-| `ipm_geih_score` | −0,0021 [−0,0092; +0,0051] |
-| `POBRE_GEIH` | −0,0026 [−0,0049; −0,0002] |
+| `ipm_geih_score` | −0,0029 [−0,0101; +0,0043] |
+| `POBRE_GEIH` | −0,0021 [−0,0045; +0,0004] |
 | `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
 | `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
 
@@ -116,7 +116,7 @@ número a la propensión. `docs/resultados/2_diagnostico_datos_reales/DIAGNOSTIC
 
 | Outcome | Cota del ATE sin suponer independencia condicional |
 |---|---|
-| `POBRE_GEIH` | [−0,261; +0,380] |
+| `POBRE_GEIH` | [−0,256; +0,278] |
 | `POBRE_MONETARIO` | [−0,418; +0,648] |
 
 Ninguna de las 921 celdas excluye el cero. Sin el supuesto del

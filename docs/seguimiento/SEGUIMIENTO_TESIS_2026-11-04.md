@@ -39,7 +39,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
-| Pruebas | Hechas | 269 pruebas y 59 mutaciones al 11 nov, con integración continua |
+| Pruebas | Hechas | 270 pruebas y 60 mutaciones al 12 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
 
@@ -56,10 +56,10 @@ El DML da efectos de cero en todos los resultados, y las cotas no fijan ni el si
 | Paso | Resultado | Lectura |
 | --- | --- | --- |
 | Hot-Deck | Grupos A / B / C / D: 14,2 / 29,4 / 34,4 / 22,0 % | El grupo se sortea dentro de la celda y no lleva información del hogar receptor |
-| IPM-GEIH | 8 de 15 privaciones; 17,1 % de hogares con 3 o más | Es un proxy del IPM oficial |
+| IPM-GEIH | 8 de 15 privaciones; 13,9 % de hogares con 3 o más (vivienda corregida por zona el 12 nov) | Proxy validado contra la ECV y el IPM 2024 |
 | Pobreza monetaria (personas) | 33,2 % frente a 31,8 % oficial; FGT1 13,5 % frente a 12,6 %; igual clasificación en 93,9 % de 275.057 hogares | El arriendo imputado es la decisión que más pesa: sin él la tasa sube a 38,8 % |
-| DML, ATE con celda exacta | Puntaje IPM-GEIH −0,0021 [−0,0092; +0,0051]; pobreza monetaria −0,0002 [−0,0036; +0,0033] | Efectos despreciables; es un placebo |
-| Cotas de Fréchet-Manski (921 celdas) | `POBRE_GEIH` [−0,261; +0,380]; `POBRE_MONETARIO` [−0,418; +0,648] | Ninguna celda excluye el 0. Con los tres supuestos de monotonía, pobreza monetaria queda en [−0,405; 0] |
+| DML, ATE con celda exacta | Puntaje IPM-GEIH −0,0029 [−0,0101; +0,0043]; pobreza monetaria −0,0002 [−0,0036; +0,0033] | Efectos despreciables; es un placebo |
+| Cotas de Fréchet-Manski (921 celdas) | `POBRE_GEIH` [−0,256; +0,278]; `POBRE_MONETARIO` [−0,418; +0,648] | Ninguna celda excluye el 0. Con los tres supuestos de monotonía, pobreza monetaria queda en [−0,405; 0] |
 | Cotas de Fréchet por parámetro | ATE, ATT, ATU y CATE por zona, sexo del jefe y paredes, en los cinco resultados | Ninguno de los 50 parámetros excluye el 0; las cotas son 140 a 210 veces más anchas que los IC del DML |
 | Errores de focalización (A/B frente a pobreza monetaria, cotas por celda) | Exclusión [0,9 %; 75,0 %]; inclusión [38,6 %; 84,5 %] | Al menos 39 % de los A/B no son pobres monetarios; la exclusión solo tiene piso en Putumayo, San Andrés y Bogotá |
 | OE1: LASSO, Ridge y SHAP | Exactitud 0,53 frente a 0,30 de la línea base; `viv_pisos` es la variable más importante | Predice el grupo asignado, no la pobreza real |
@@ -127,12 +127,12 @@ El grupo imputado solo lleva la información de la celda, así que su desempeño
 
 ## Pruebas y calidad del código
 
-La suite pasa en GitHub Actions: 269 pruebas al 11 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
+La suite pasa en GitHub Actions: 270 pruebas al 12 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
 
 | Aspecto | Estado |
 | --- | --- |
 | Integración continua | `.github/workflows/pruebas.yml` corre la suite y la prueba de mutación en cada push a `main` y en cada PR (Python 3.11). Últimas corridas en verde |
-| Prueba de mutación | Se reintroducen 59 errores y los 59 hacen fallar alguna prueba |
+| Prueba de mutación | Se reintroducen 60 errores y los 60 hacen fallar alguna prueba |
 | Cobertura | Armonización contra los diccionarios oficiales, DML, cotas de Fréchet-Manski, reglas de focalización, simulación semisintética y su sensibilidad |
 | Estabilidad | Cinco corridas seguidas sin fallos; pruebas con azar usan semillas fijas |
 | Comando del proyecto | `poetry run pytest` pasa desde el 4 de noviembre (`pythonpath` en `pyproject.toml`); ningún script usa ya `warnings.filterwarnings("ignore")` |

@@ -195,6 +195,16 @@ def test_el_ipm_no_se_predice_con_sus_componentes():
     assert vc.especificaciones(vc.PRINCIPAL)["ficha_derivadas"].count("hacinamiento") == 1
 
 
+def test_los_codigos_del_ipm_geih_son_mecanicos():
+    """Cada pregunta de la GEIH que entra al IPM-GEIH queda fuera de los
+    predictores de POBRE_GEIH. Desde el 2026-11-11 el sanitario (P5020) y la
+    fuente de agua (P5050) definen la excreta y el agua rurales."""
+    for codigo in ("P5020", "P5050", "P4030S3", "P4030S5"):
+        nombre = vc.HOGAR_VIVIENDA.get(codigo)
+        if nombre is not None:
+            assert nombre in vc.MECANICAS_IPM, f"{codigo} ({nombre}) entra al IPM-GEIH pero no está en MECANICAS_IPM"
+
+
 def test_una_vivienda_queda_en_un_solo_pliegue():
     viviendas = np.array(["a", "b", "a", "c", "b", "d", "a"] * 20)
     pliegues = vc.particion_por_grupo(viviendas, 3)

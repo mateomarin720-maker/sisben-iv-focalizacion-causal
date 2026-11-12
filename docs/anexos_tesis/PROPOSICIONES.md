@@ -55,8 +55,8 @@ efecto. Es lo que pasaba con la celda como código numérico antes del
 | Sin confusión en la celda | 0,115 | −0,0005 (error MC 0,0011) |
 | Con confusión en la celda | 0,774 | −0,0005 (error MC 0,0011) |
 
-Con datos reales, el contraste combinado de 100 sorteos es −0,00003 para
-`POBRE_GEIH` (IC [−0,0036; +0,0036]).
+Con datos reales, el contraste combinado de 100 sorteos es −0,000004 para
+`POBRE_GEIH` (IC [−0,0033; +0,0033]).
 
 ## Proposición 2: la señal cae en proporción al enlace
 
@@ -127,8 +127,9 @@ Son la misma cantidad. ∎
 
 Con imputación total, el IC de un solo sorteo usa √U cuando la varianza que
 importa es U + B ≈ 2U: es demasiado estrecho en un factor √2. Por eso un
-sorteo aislado puede dar un IC sin el cero, como el de `POBRE_GEIH`
-(−0,0026 [−0,0049; −0,0002]).
+sorteo aislado puede dar un IC sin el cero, como el de `POBRE_GEIH` antes
+de corregir la vivienda del IPM-GEIH por zona (−0,0026 [−0,0049; −0,0002];
+con el indicador corregido, −0,0021 [−0,0045; +0,0004]).
 
 **El rango 49 %-55 % es ruido, no tres resultados.** Con M sorteos, B se
 estima con un error relativo de √(2/(M − 1)), unos 14 % con M = 100. La

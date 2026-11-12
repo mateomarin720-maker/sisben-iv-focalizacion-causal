@@ -88,15 +88,15 @@ varianza entre sorteos.
 | Outcome | Semilla 42 [error] | Media de 100 sorteos | IC 95 % con Rubin | Varianza de la imputación / total | Sorteos con IC sin el 0 |
 |---|---|---|---|---|---|
 | `POBRE_MONETARIO` | −0,0004 [0,0018] | −0,0003 | [−0,0051; +0,0046] | 49 % | 4 % |
-| `POBRE_GEIH` | **−0,0030 [0,0013]** | −0,00003 | [−0,0036; +0,0036] | 49 % | 3 % |
+| `POBRE_GEIH` | −0,0024 [0,0012] | −0,000004 | [−0,0033; +0,0033] | 49 % | 4 % |
 | log-ingreso per cápita | +0,0004 [0,0069] | +0,0012 | [−0,0186; +0,0210] | 55 % | 8 % |
 
-- Con la semilla 42, `POBRE_GEIH` da −0,0030 con un IC que excluye el
-  cero: es el mismo resultado que el DML con la celda exacta (−0,0026,
-  `RESULTADOS_DML_ATE_ATT_ATU.md`), el único de los ocho que lo excluía.
-  **En los 100 sorteos, la media es −0,00003 y solo el 3 % excluye el
-  cero**, lo que el azar produce por sí solo con un 5 % de error. Ese
-  resultado era suerte del sorteo, no señal.
+- Con la semilla 42, `POBRE_GEIH` da −0,0024 con un IC que queda al borde
+  del cero (antes de corregir la vivienda del IPM-GEIH por zona daba
+  −0,0030 y lo excluía, igual que el DML con la celda exacta). **En los
+  100 sorteos, la media es −0,000004 y solo el 4 % excluye el cero**, lo
+  que el azar produce por sí solo con un 5 % de error. Un resultado al
+  borde con una semilla es suerte del sorteo, no señal.
 - **Cerca de la mitad de la varianza total viene de la imputación** (49-55
   %). Los intervalos que se calculan con un solo sorteo, como los del DML
   de `5_estimacion.py`, no la incluyen: en `POBRE_GEIH` el error que
@@ -130,7 +130,7 @@ varianza entre sorteos.
   muestreo de la GEIH.
 - El contraste placebo usa una regresión con efectos fijos, no el DML
   completo (más costoso de repetir 100 veces); con la semilla 42 dan lo
-  mismo (−0,0030 frente a −0,0026).
+  mismo (−0,0024 frente a −0,0021).
 - El 0,02 % de los hogares que cae a una celda de respaldo se cuenta en
   su celda exacta, que no tiene donantes (sin concordancia teórica).
 

@@ -130,17 +130,20 @@ Exclusión frente a la referencia, en puntos.
 
 | Grupo | Monetaria | Boosting | Oficial DANE | Extrema | IPM-GEIH |
 |---|---|---|---|---|---|
-| Inclusión financiera | −0,99 | −0,97 | −1,02 | −0,35 | −0,80 |
-| Estrato | −0,52 | −0,39 | −0,56 | −0,14 (el IC incluye el cero) | −0,61 |
-| Migración | +0,04 | −0,08 | +0,04 | 0,00 | **−0,31** [−0,45; −0,16] |
-| Campesino | −0,11 | −0,14 | +0,02 | 0,00 | **−0,23** [−0,36; −0,10] |
-| Discapacidad | −0,10 | −0,13 | −0,07 | −0,13 | −0,06 |
-| Víctimas | −0,07 | −0,18 | −0,02 | −0,02 | −0,07 |
+| Inclusión financiera | −0,99 | −0,97 | −1,02 | −0,35 | −0,81 |
+| Estrato | −0,52 | −0,39 | −0,56 | −0,14 (el IC incluye el cero) | −0,86 |
+| Migración | +0,04 | −0,08 | +0,04 | 0,00 | **−0,20** [−0,36; −0,08] |
+| Campesino | −0,11 | −0,14 | +0,02 | 0,00 | **−0,40** [−0,58; −0,25] |
+| Discapacidad | −0,10 | −0,13 | −0,07 | −0,13 | +0,01 |
+| Víctimas | −0,07 | −0,18 | −0,02 | −0,02 | −0,11 |
 
 Inclusión financiera es consistente en todos. Migración y condición campesina solo
 aportan en el IPM-GEIH, donde se quitaron de la referencia componentes como el
 aseguramiento en salud y la cotización a pensión. Una explicación posible, no
-comprobada, es que estén actuando como sustitutos de esos componentes.
+comprobada, es que estén actuando como sustitutos de esos componentes. Columna
+IPM-GEIH recalculada el 2026-11-12 con la vivienda corregida por zona (la tasa de
+pobres baja de 20,4 % a 14,5 %) y sin `hog_sanitario` ni `hog_agua` en la
+referencia, que ahora son componentes del indicador.
 
 ### Por variable
 

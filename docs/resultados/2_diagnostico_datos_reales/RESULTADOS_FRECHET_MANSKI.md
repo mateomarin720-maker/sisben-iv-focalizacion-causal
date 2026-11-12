@@ -36,23 +36,24 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
 
 | | Estimador | Rango |
 |---|---|---|
-| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[−0,2607 ; +0,3801]** |
+| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[−0,2563 ; +0,2777]** |
 | **DML con Hot-Deck** (con CIA) | Punto + IC95% | ver `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md` (el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda) |
 
 - Cobertura: 921 celdas con información de las dos fuentes (365 con la
   celda sin pisos), 100 % del peso poblacional de GEIH.
-- Ancho de la cota Fréchet-Manski: **0,6409**. Historia: 0,986 antes de
+- Ancho de la cota Fréchet-Manski: **0,5340**. Historia: 0,986 antes de
   corregir `viv_cuartos`; 0,7267 con la celda correcta y 10 privaciones;
   0,7163 con 8 privaciones; 0,7344 tras corregir el bug de agosto; 0,6409
   con pisos en la celda (la celda más fina separa mejor hogares con y sin
-  privaciones). Sigue cubriendo buena parte del rango posible de una
+  privaciones); 0,5340 con la vivienda del IPM-GEIH corregida por zona
+  (2026-11-12: la tasa de pobres baja de 20,4 % a 14,5 %). Sigue cubriendo buena parte del rango posible de una
   diferencia de proporciones (de −1 a +1).
 - Ancho del IC95 % del DML con celda exacta (`POBRE_GEIH`, ver
-  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0047 — **~140 veces más angosto**
+  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0049 — **~110 veces más angosto**
   que la cota Fréchet-Manski. Ese punto ≈0 es la prueba placebo del
   emparejamiento, no una estimación del efecto.
-- **Ninguna celda tiene una cota que excluya el 0.** Las 130 celdas con
-  `P(Y=1|X)` igual a 0 o 1 tienen cota exactamente [0; 0]; en 10 de ellas
+- **Ninguna celda tiene una cota que excluya el 0.** Las 120 celdas con
+  `P(Y=1|X)` igual a 0 o 1 tienen cota exactamente [0; 0]; en 7 de ellas
   el CSV muestra un límite inferior de 2·10⁻¹⁶ por redondeo, que no es un
   efecto.
 
@@ -64,12 +65,13 @@ regenerado al reemplazar el outcome anterior, que daba [−0,5817; +0,6877]).
 
 | Outcome | P(Y=1) | Cota Fréchet-Manski (sin CIA) | Ancho | ATE DML, celda exacta (con CIA) |
 |---|---|---|---|---|
-| `POBRE_GEIH` | 0,204 | [−0,2607 ; +0,3801] | 0,6409 | −0,0026 [−0,0049 ; −0,0002] |
+| `POBRE_GEIH` | 0,145 | [−0,2563 ; +0,2777] | 0,5340 | −0,0021 [−0,0045 ; +0,0004] |
 | `POBRE_MONETARIO` | 0,270 | **[−0,4179 ; +0,6477]** | **1,0656** | −0,0002 [−0,0036 ; +0,0033] |
 
 - Cobertura: las mismas 921 celdas, 100 % del peso de GEIH.
 - La cota de `POBRE_MONETARIO` es más ancha que la de `POBRE_GEIH` (1,07
-  frente a 0,64, de un máximo posible de 2): las cotas de
+  frente a 0,53, de un máximo posible de 2; 0,64 antes de corregir la
+  vivienda del IPM-GEIH por zona): las cotas de
   Fréchet-Hoeffding se ensanchan cuanto más cerca de 0,5 están las dos
   marginales.
 - **Ninguna celda excluye el 0.** Las celdas con `P(Y=1|X)` = 1 (46) o = 0
@@ -159,13 +161,13 @@ factibles se alcanza en los extremos de Fréchet.
 
 | Cota del ATE (921 celdas) | `POBRE_GEIH` | Ancho | `POBRE_MONETARIO` | Ancho |
 |---|---|---|---|---|
-| Contraste (la de arriba) | [−0,261; +0,380] | 0,64 | [−0,418; +0,648] | 1,07 |
-| Contraste + dependencia positiva | [0; +0,380] | 0,38 | [0; +0,648] | 0,65 |
-| ATE sin supuestos | [−0,469; +0,765] | 1,23 | [−0,571; +0,829] | 1,40 |
-| ATE con MTS | [−0,469; +0,380] | 0,85 | [−0,571; +0,648] | 1,22 |
-| ATE con MTR | [−0,469; 0] | 0,47 | [−0,571; 0] | 0,57 |
-| ATE con MTS y MTR | [−0,469; 0] | 0,47 | [−0,571; 0] | 0,57 |
-| ATE con MTS, MTR y dependencia positiva | **[−0,367; 0]** | 0,37 | **[−0,405; 0]** | 0,41 |
+| Contraste (la de arriba) | [−0,256; +0,278] | 0,53 | [−0,418; +0,648] | 1,07 |
+| Contraste + dependencia positiva | [0; +0,278] | 0,28 | [0; +0,648] | 0,65 |
+| ATE sin supuestos | [−0,482; +0,708] | 1,19 | [−0,571; +0,829] | 1,40 |
+| ATE con MTS | [−0,482; +0,278] | 0,76 | [−0,571; +0,648] | 1,22 |
+| ATE con MTR | [−0,482; 0] | 0,48 | [−0,571; 0] | 0,57 |
+| ATE con MTS y MTR | [−0,482; 0] | 0,48 | [−0,571; 0] | 0,57 |
+| ATE con MTS, MTR y dependencia positiva | **[−0,387; 0]** | 0,39 | **[−0,405; 0]** | 0,41 |
 
 Con la clasificación oficial del DANE (712 celdas), la última fila da
 [−0,405; 0], igual que la reconstrucción.
@@ -235,12 +237,12 @@ reproducen exactamente las de las secciones anteriores.
 
 | Resultado | Parámetro | DML [IC 95 %] | Cota de Fréchet | Ancho de la cota / ancho del IC |
 |---|---|---|---|---|
-| `ipm_geih_score` (0-8) | ATE | −0,002 [−0,009; +0,005] | [−1,43; +1,60] | ≈210 |
-| | ATT | −0,002 | [−1,65; +1,71] | |
-| | ATU | −0,003 | [−1,25; +1,51] | |
-| `POBRE_GEIH` | ATE | −0,003 [−0,005; −0,000] | [−0,26; +0,38] | ≈140 |
-| | ATT | −0,003 | [−0,37; +0,45] | |
-| | ATU | −0,002 | [−0,18; +0,33] | |
+| `ipm_geih_score` (0-8) | ATE | −0,003 [−0,010; +0,004] | [−1,33; +1,42] | ≈190 |
+| | ATT | −0,003 | [−1,54; +1,50] | |
+| | ATU | −0,003 | [−1,17; +1,36] | |
+| `POBRE_GEIH` | ATE | −0,002 [−0,005; +0,000] | [−0,26; +0,28] | ≈110 |
+| | ATT | −0,002 | [−0,39; +0,32] | |
+| | ATU | −0,002 | [−0,15; +0,24] | |
 | `log_ingreso_percapita` | ATE | +0,001 [−0,013; +0,014] | [−2,04; +1,85] | ≈145 |
 | | ATT | +0,001 | [−1,77; +1,87] | |
 | | ATU | +0,001 | [−2,26; +1,83] | |

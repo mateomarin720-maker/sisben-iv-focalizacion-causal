@@ -21,13 +21,13 @@ por tipo de hogar. Misma especificación que
 
 | Outcome | CATE medio | sd | Rural / urbana | Hombre / mujer |
 |---|---|---|---|---|
-| `ipm_geih_score` | −0,0045 | 0,031 | +0,0085 / −0,0064 | −0,0090 / +0,0001 |
-| `POBRE_GEIH` | −0,0002 | 0,008 | +0,0057 / −0,0011 | −0,0015 / +0,0011 |
+| `ipm_geih_score` | −0,0052 | 0,034 | −0,0071 / −0,0049 | −0,0155 / +0,0054 |
+| `POBRE_GEIH` | −0,0021 | 0,011 | −0,0086 / −0,0012 | −0,0049 / +0,0006 |
 | `log_ingreso_percapita` | +0,0084 | 0,042 | +0,0014 / +0,0094 | +0,0015 / +0,0154 |
 | `POBRE_MONETARIO` | +0,0003 | 0,008 | −0,0020 / +0,0006 | −0,0006 / +0,0012 |
 
 `X` = zona, sexo del jefe y paredes; pisos salió de `X` al entrar a la
-celda.
+celda. Cifras del IPM-GEIH con la vivienda corregida por zona (2026-11-12).
 
 Con W = proxy los valores son del mismo orden (ver la salida completa).
 

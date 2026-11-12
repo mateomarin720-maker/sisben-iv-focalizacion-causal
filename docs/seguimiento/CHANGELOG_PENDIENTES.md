@@ -2,6 +2,23 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-12 (43) — Modelos regenerados con el IPM-GEIH corregido
+
+### Cambiado
+- Muestra de estimación regenerada con la vivienda por zona (`POBRE_GEIH` 20,4 % → 14,5 %
+  ponderado, puntaje medio 1,45 → 1,38) y vuelta a correr la secuencia de `CLAUDE.md` en los
+  módulos que usan el IPM-GEIH. El Hot-Deck y los resultados monetarios no cambian.
+- DML con la celda exacta: `POBRE_GEIH` −0,0021 [−0,0045; +0,0004] (antes −0,0026, IC sin el
+  cero); ahora los 8 ATE incluyen el cero. Rubin con 100 sorteos: −0,000004 [−0,0033; +0,0033],
+  48,8 % de la varianza por la imputación.
+- Fréchet-Manski de `POBRE_GEIH`: [−0,256; +0,278] (ancho 0,534, antes 0,641); 120 celdas
+  degeneradas (antes 130). Errores de focalización A-B: exclusión [0,4 %; 65,8 %].
+- Validación contra el IPM 2024 y la ECV: secciones A y B con el proxy corregido (13,8 %
+  frente a 9,2 %, kappa 0,51; ECV 14,2 % y GEIH 14,5 %).
+- Variables candidatas: `hog_sanitario` y `hog_agua` salen de la referencia al predecir el
+  IPM-GEIH (son componentes del indicador), con prueba y mutación. Migración y condición
+  campesina siguen aportando solo en el IPM-GEIH.
+
 ## 2026-11-11 (42) — IPM-GEIH: vivienda con la definición oficial por zona
 
 ### Corregido
@@ -13,10 +30,7 @@ Formato: más reciente primero. Rama de trabajo: `main`.
   18,7 % a 13,8 % (oficial 9,2 %), kappa de 0,41 a 0,51; rural de 63,7 % a 37,0 % (21,5 %);
   K = 3 sigue siendo el mejor corte. Prueba y mutación (269 pruebas, 59 de 59).
 
-### Pendiente
-- **La muestra de estimación no se ha regenerado.** Correr `src/3_preprocesamiento.py` y la
-  secuencia de `CLAUDE.md` para que los modelos usen el proxy corregido (`POBRE_GEIH` pasa de
-  20,4 % a 14,5 % ponderado). El Hot-Deck no cambia.
+La muestra de estimación se regeneró en la entrada 43.
 
 ## 2026-11-11 (41) — Validación del IPM-GEIH contra la ECV
 

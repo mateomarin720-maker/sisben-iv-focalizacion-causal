@@ -118,9 +118,13 @@ CATEGORICAS = set(FICHA_CAT) | {"estrato"}
 
 # El IPM-GEIH se calcula con estas columnas: para predecirlo no pueden estar en
 # la referencia, o el modelo reconstruiría la fórmula y no quedaría qué aportar.
+# Desde el 2026-11-11 la excreta y el agua rurales salen del sanitario (P5020)
+# y de la fuente de agua (P5050): `hog_sanitario` y `hog_agua` también son
+# componentes (src/indicadores/ipm_proxy.py).
 MECANICAS_IPM = {"analfabetismo", "bajo_logro_educativo_jefe", "inasistencia_escolar_menores",
                  "sin_aseguramiento_salud", "sin_cotizacion_pension_jefe", "hacinamiento", "viv_alcantarillado",
-                 "viv_acueducto", "viv_cuartos", "viv_cuartos_dormir", "jefe_educacion", "adulto_educ_superior"}
+                 "viv_acueducto", "viv_cuartos", "viv_cuartos_dormir", "jefe_educacion", "adulto_educ_superior",
+                 "hog_sanitario", "hog_agua"}
 
 
 # --------------------------------------------------------------------------
