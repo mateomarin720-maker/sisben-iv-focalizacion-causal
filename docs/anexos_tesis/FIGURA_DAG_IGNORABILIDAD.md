@@ -1,11 +1,36 @@
-# Figura del DAG de ignorabilidad condicional (formato APA 7)
+# Figuras de la ignorabilidad condicional (formato APA 7)
 
-Para pegar en el documento. La imagen es
-[`figuras/fig_dag_ignorabilidad.png`](figuras/fig_dag_ignorabilidad.png)
-(300 dpi, sin título dentro de la imagen, como pide APA). Se regenera con
-`python -m src.utils.figuras_tesis`, y antes de guardarla el código
-comprueba con d-separación las dos afirmaciones de la nota. El número de
-la figura se ajusta al orden del documento.
+Dos DAG para pegar en el documento, a 300 dpi y sin título dentro de la
+imagen, como pide APA: el número y el título van encima de la figura y la
+nota debajo. Se regeneran con `python -m src.utils.figuras_tesis`. Antes de
+guardar cada figura, el código comprueba con d-separación lo que afirma su
+nota.
+
+| Figura | Dónde va | Imagen |
+|---|---|---|
+| Figura 1 | Sección 2.2, después del párrafo que define la ignorabilidad condicional y el solapamiento | [`fig_dag_ignorabilidad_marco.png`](figuras/fig_dag_ignorabilidad_marco.png) |
+| Figura N | Metodología, donde se explica el Hot-Deck o el placebo del DML | [`fig_dag_ignorabilidad_hotdeck.png`](figuras/fig_dag_ignorabilidad_hotdeck.png) |
+
+La Figura 1 usa la notación de la sección 2.2 (T, Y, X, W) y no menciona
+el enlace. La segunda aplica el mismo supuesto al enlace por celdas; el
+número se ajusta al orden del documento.
+
+---
+
+**Figura 1**
+
+*Grafo acíclico dirigido de la ignorabilidad condicional*
+
+![DAG de la ignorabilidad condicional](figuras/fig_dag_ignorabilidad_marco.png)
+
+*Nota.* T es el tratamiento (elegibilidad o transferencia), Y el
+resultado, W los confusores y X las covariables con las que se estudia la
+heterogeneidad del efecto. Condicionar en X y W bloquea todos los caminos
+de puerta trasera entre T e Y, y la ignorabilidad condicional
+(Y(1), Y(0) ⫫ T | X, W) se cumple. Un confusor no observado U abre el
+camino T ← U → Y (en naranja), que ninguna variable observada bloquea; el
+supuesto equivale a afirmar que ese camino no existe (Pearl, 2009).
+Elaboración propia.
 
 ---
 
@@ -13,7 +38,7 @@ la figura se ajusta al orden del documento.
 
 *Grafo acíclico dirigido de la ignorabilidad condicional en el enlace por celdas entre la GEIH y el Sisbén IV*
 
-![DAG de ignorabilidad condicional](figuras/fig_dag_ignorabilidad.png)
+![DAG de la ignorabilidad en el enlace por celdas](figuras/fig_dag_ignorabilidad_hotdeck.png)
 
 *Nota.* X es la celda del Hot-Deck (departamento, ciclo de vida del jefe,
 cuartos y material de los pisos), Z son las características que modifican
@@ -31,7 +56,7 @@ en la GEIH 2024 (DANE) y el Sisbén IV (DNP).
 
 ---
 
-## Referencias que cita la nota
+## Referencias que citan las notas
 
 Pearl, J. (2009). *Causality: Models, reasoning, and inference* (2.ª ed.).
 Cambridge University Press. https://doi.org/10.1017/CBO9780511803161

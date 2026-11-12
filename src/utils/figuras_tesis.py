@@ -13,9 +13,12 @@
                                 hogar (100 sorteos)
   fig_importancia_variables_oe1 importancia de las variables en el grupo del
                                 Sisbén (LASSO, Ridge, SHAP)
-  fig_dag_ignorabilidad.png     DAG de la ignorabilidad condicional, en formato
-                                APA (sin título en la imagen); comprueba con
-                                d-separación lo que afirma su nota
+  fig_dag_ignorabilidad_marco   DAG genérico de la ignorabilidad condicional
+                                (sección 2.2, notación T, Y, X, W)
+  fig_dag_ignorabilidad_hotdeck el mismo supuesto en el enlace por celdas: el
+                                grupo imputado es un placebo. Los dos DAG van
+                                en formato APA (sin título en la imagen) y
+                                comprueban con d-separación su nota
 
 Todas menos la de propensión salen de `docs/reports/`; la de propensión lee la
 muestra de estimación (`data/2_models/`, no versionada).
@@ -280,10 +283,21 @@ def importancia_oe1() -> Path:
     return _guardar(fig, "fig_importancia_variables_oe1.png")
 
 
-def grafo_ignorabilidad():
-    """DAG de la ignorabilidad condicional. T es la elegibilidad A/B del
-    hogar (no se observa en la GEIH); T_d, la del donante sorteado en la
-    misma celda; T~, el grupo que imputa el Hot-Deck."""
+def grafo_ignorabilidad_marco():
+    """DAG genérico de la sección 2.2, con su notación: W confusores, X
+    covariables de la heterogeneidad (CATE), T tratamiento, Y resultado y U
+    un confusor no observado, que el supuesto descarta."""
+    import networkx as nx
+
+    g = nx.DiGraph()
+    g.add_edges_from([("W", "T"), ("W", "Y"), ("X", "T"), ("X", "Y"), ("T", "Y"), ("U", "T"), ("U", "Y")])
+    return g
+
+
+def grafo_ignorabilidad_hotdeck():
+    """DAG del enlace por celdas. T es la elegibilidad A/B del hogar (no se
+    observa en la GEIH); T_d, la del donante sorteado en la misma celda;
+    T~, el grupo que imputa el Hot-Deck."""
     import networkx as nx
 
     g = nx.DiGraph()
@@ -302,18 +316,81 @@ def _puerta_trasera(g, t: str, y: str, ajuste: set[str]) -> bool:
     return nx.is_d_separator(h, {t}, {y}, ajuste)
 
 
-def dag_ignorabilidad() -> Path:
-    """Figura para el documento, en formato APA: sin título en la imagen
-    (número, título y nota van en el texto), sans serif, 300 dpi. Antes de
-    dibujar comprueba con d-separación las dos afirmaciones de la nota."""
+def _dibujar_dag(g, pos: dict, etiqueta: dict, nombre: str, no_observado: set[str], abiertos: set,
+                 etiqueta_abiertos: str, imputado: set[str] = frozenset(), curva: dict | None = None,
+                 tam: tuple[float, float] = (7.2, 5.6)) -> Path:
+    """Formato APA: sin título en la imagen (número, título y nota van en el
+    texto), sans serif, fondo blanco, 300 dpi."""
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch
+
+    curva = curva or {}
+    xs, ys = [q[0] for q in pos.values()], [q[1] for q in pos.values()]
+    with plt.rc_context({"font.family": ["Arial", "DejaVu Sans"], "axes.grid": False}):
+        fig, ax = plt.subplots(figsize=tam)
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("white")
+        ax.set_xlim(min(xs) - 0.30, max(xs) + 0.30)
+        ax.set_ylim(min(ys) - 0.22, max(ys) + 0.20)
+        ax.axis("off")
+        cajas = {}
+        for n, (x, y) in pos.items():
+            cajas[n] = ax.text(x, y, etiqueta[n], ha="center", va="center", fontsize=8.5, color=TINTA,
+                               linespacing=1.25, zorder=3,
+                               bbox=dict(boxstyle="round,pad=0.5", linewidth=1.2, edgecolor=TINTA,
+                                         facecolor="#e6e5e0" if n in imputado else "white",
+                                         linestyle="--" if n in no_observado else "-"))
+        fig.canvas.draw()  # las cajas existen recién después de dibujar el texto
+        for u, v in g.edges():
+            abierto = (u, v) in abiertos
+            ax.annotate("", xy=pos[v], xytext=pos[u], zorder=4,
+                        arrowprops=dict(arrowstyle="-|>", mutation_scale=13, shrinkA=2, shrinkB=2,
+                                        color=NARANJA if abierto else TINTA,
+                                        linewidth=2.0 if abierto else 1.0,
+                                        linestyle="--" if abierto else "-",
+                                        patchA=cajas[u].get_bbox_patch(), patchB=cajas[v].get_bbox_patch(),
+                                        connectionstyle=f"arc3,rad={curva.get((u, v), 0.0)}"))
+        leyenda = [Patch(facecolor="white", edgecolor=TINTA, label="Observada"),
+                   Patch(facecolor="white", edgecolor=TINTA, linestyle="--", label="No observada")]
+        if imputado:
+            leyenda.append(Patch(facecolor="#e6e5e0", edgecolor=TINTA, label="Imputada"))
+        leyenda.append(Line2D([], [], color=NARANJA, linewidth=2.0, linestyle="--", label=etiqueta_abiertos))
+        ax.legend(handles=leyenda, loc="upper center", bbox_to_anchor=(0.5, 0.0), fontsize=7.5, frameon=False,
+                  handlelength=2.2, ncol=len(leyenda) if len(leyenda) <= 3 else 2, columnspacing=1.6)
+        OUT.mkdir(parents=True, exist_ok=True)
+        ruta = OUT / nombre
+        fig.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+    return ruta
+
+
+def dag_ignorabilidad_marco() -> Path:
+    """Figura 1 del documento (sección 2.2). Comprueba con d-separación que
+    {X, W} cumple el criterio de la puerta trasera sin U y no con U."""
+    g = grafo_ignorabilidad_marco()
+    assert _puerta_trasera(g.subgraph(set(g) - {"U"}), "T", "Y", {"X", "W"}), "sin U, X y W deberían bastar"
+    assert not _puerta_trasera(g, "T", "Y", {"X", "W"}), "con U, la puerta trasera debería quedar abierta"
+    pos = {"W": (0.50, 1.00), "X": (0.50, 0.62), "T": (0.00, 0.30), "Y": (1.00, 0.30), "U": (0.50, -0.05)}
+    etiqueta = {"W": "W\nConfusores\n(alta dimensión)",
+                "X": "X\nCovariables de\nheterogeneidad",
+                "T": "T ∈ {0, 1}\nTratamiento\n(elegibilidad o transferencia)",
+                "Y": "Y\nResultado\nY(1), Y(0)",
+                "U": "U\nConfusor no observado"}
+    return _dibujar_dag(g, pos, etiqueta, "fig_dag_ignorabilidad_marco.png", no_observado={"U"},
+                        abiertos={("U", "T"), ("U", "Y")},
+                        etiqueta_abiertos="Camino que la ignorabilidad descarta", tam=(6.6, 4.6))
+
+
+def dag_ignorabilidad_hotdeck() -> Path:
+    """DAG del enlace por celdas (metodología). Comprueba con d-separación
+    las dos afirmaciones de su nota."""
     import networkx as nx
 
-    g = grafo_ignorabilidad()
+    g = grafo_ignorabilidad_hotdeck()
     assert nx.is_d_separator(g, {"Ti"}, {"Y"}, {"X"}), "T~ debería ser independiente de Y dada X"
     assert not nx.is_d_separator(g, {"Ti"}, {"Y"}, set()), "sin X, T~ y Y deberían estar asociadas"
     assert not _puerta_trasera(g, "T", "Y", {"X", "Z"}), "U debería dejar abierta la puerta trasera"
     assert _puerta_trasera(g.subgraph(set(g) - {"U"}), "T", "Y", {"X", "Z"}), "sin U, X y Z deberían bastar"
-
     pos = {"U": (0.50, 1.00), "X": (0.00, 0.55), "T": (0.50, 0.55), "Y": (1.00, 0.55),
            "Z": (0.50, 0.08), "Td": (0.00, 0.08), "Ti": (0.00, -0.40)}
     etiqueta = {"U": "U\nCapacidad de generar\ningresos",
@@ -323,52 +400,16 @@ def dag_ignorabilidad() -> Path:
                 "Z": "Z\nZona, sexo del jefe,\nparedes",
                 "Td": "T$_d$\nGrupo del donante\n(misma celda, Sisbén)",
                 "Ti": "T̃\nGrupo imputado\npor el Hot-Deck"}
-    no_observado, imputado = {"U", "T"}, {"Ti"}
-    abiertos = {("U", "T"), ("U", "Y")}
-
-    with plt.rc_context({"font.family": ["Arial", "DejaVu Sans"], "axes.grid": False}):
-        fig, ax = plt.subplots(figsize=(7.2, 5.6))
-        fig.patch.set_facecolor("white")
-        ax.set_facecolor("white")
-        ax.set_xlim(-0.30, 1.30)
-        ax.set_ylim(-0.62, 1.20)
-        ax.axis("off")
-        cajas = {}
-        for n, (x, y) in pos.items():
-            cajas[n] = ax.text(x, y, etiqueta[n], ha="center", va="center", fontsize=8.5, color=TINTA,
-                               linespacing=1.25, zorder=3,
-                               bbox=dict(boxstyle="round,pad=0.5", linewidth=1.2, edgecolor=TINTA,
-                                         facecolor="#e6e5e0" if n in imputado else "white",
-                                         linestyle="--" if n in no_observado else "-"))
-        fig.canvas.draw()
-        curva = {("X", "Y"): -0.32}
-        for u, v in g.edges():
-            abierto = (u, v) in abiertos
-            ax.annotate("", xy=pos[v], xytext=pos[u], zorder=4,
-                        arrowprops=dict(arrowstyle="-|>", mutation_scale=13, shrinkA=2, shrinkB=2,
-                                        color=NARANJA if abierto else TINTA,
-                                        linewidth=2.0 if abierto else 1.0,
-                                        patchA=cajas[u].get_bbox_patch(), patchB=cajas[v].get_bbox_patch(),
-                                        connectionstyle=f"arc3,rad={curva.get((u, v), 0.0)}"))
-        from matplotlib.lines import Line2D
-        from matplotlib.patches import Patch
-        leyenda = [Patch(facecolor="white", edgecolor=TINTA, label="Observada"),
-                   Patch(facecolor="white", edgecolor=TINTA, linestyle="--", label="No observada"),
-                   Patch(facecolor="#e6e5e0", edgecolor=TINTA, label="Imputada"),
-                   Line2D([], [], color=NARANJA, linewidth=2.0, label="Puerta trasera que X y Z no bloquean")]
-        ax.legend(handles=leyenda, loc="lower right", bbox_to_anchor=(1.0, 0.0), fontsize=7.5, frameon=False,
-                  handlelength=1.8)
-        OUT.mkdir(parents=True, exist_ok=True)
-        ruta = OUT / "fig_dag_ignorabilidad.png"
-        fig.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
-        plt.close(fig)
-    return ruta
+    return _dibujar_dag(g, pos, etiqueta, "fig_dag_ignorabilidad_hotdeck.png", no_observado={"U", "T"},
+                        abiertos={("U", "T"), ("U", "Y")}, etiqueta_abiertos="Puerta trasera que X y Z no bloquean",
+                        imputado={"Ti"}, curva={("X", "Y"): -0.32})
 
 
 def main(con_datos: bool = True) -> None:
     _estilo()
     rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), estabilidad_hotdeck(),
-             importancia_oe1(), dag_ignorabilidad()]
+             importancia_oe1(), dag_ignorabilidad_marco(),
+             dag_ignorabilidad_hotdeck()]
     if con_datos:
         rutas.append(propension_celda())
     print("\n".join(f"Guardado: {r}" for r in rutas))
