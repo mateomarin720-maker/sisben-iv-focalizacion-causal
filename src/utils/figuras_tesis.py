@@ -19,6 +19,8 @@
                                 grupo imputado es un placebo. Los dos DAG van
                                 en formato APA (sin título en la imagen) y
                                 comprueban con d-separación su nota
+  fig_dml_tres_pasos.png        esquema del DML: partición cruzada, los dos
+                                residuos y la regresión final (sección 2.2)
 
 Todas menos la de propensión salen de `docs/reports/`; la de propensión lee la
 muestra de estimación (`data/2_models/`, no versionada).
@@ -405,11 +407,74 @@ def dag_ignorabilidad_hotdeck() -> Path:
                         imputado={"Ti"}, curva={("X", "Y"): -0.32})
 
 
+def dml_tres_pasos() -> Path:
+    """Esquema del DML parcialmente lineal (sección 2.2): partición cruzada,
+    los dos residuos y la regresión final. Formato APA, sin datos."""
+    with plt.rc_context({"font.family": ["Arial", "DejaVu Sans"], "axes.grid": False,
+                         "mathtext.fontset": "dejavusans"}):
+        fig, ax = plt.subplots(figsize=(9.6, 4.6))
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("white")
+        ax.set_xlim(0, 12)
+        ax.set_ylim(0, 5.6)
+        ax.axis("off")
+
+        def caja(x, y, w, h, titulo, lineas, relleno="white", paso=0.5):
+            """Título arriba y cada línea del cuerpo en su propia posición."""
+            ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02,rounding_size=0.12",
+                                        facecolor=relleno, edgecolor=TINTA, linewidth=1.2, zorder=2))
+            ax.text(x + w / 2, y + h - 0.25, titulo, ha="center", va="top", fontsize=8.8, fontweight="bold",
+                    color=TINTA, zorder=3)
+            centro = y + (h - 0.55) / 2
+            for j, linea in enumerate(lineas):
+                ax.text(x + w / 2, centro + (len(lineas) - 1) * paso / 2 - j * paso, linea, ha="center",
+                        va="center", fontsize=9.5, color=TINTA, zorder=3)
+
+        def flecha(x0, y0, x1, y1):
+            ax.annotate("", xy=(x1, y1), xytext=(x0, y0), zorder=4,
+                        arrowprops=dict(arrowstyle="-|>", mutation_scale=13, color=TINTA, linewidth=1.1))
+
+        # Datos y partición cruzada
+        caja(0.1, 1.2, 2.9, 3.2, "Datos", [])
+        ax.text(1.55, 3.55, "$(Y_i,\\ T_i,\\ W_i)$", ha="center", va="center", fontsize=9.5, color=TINTA)
+        ax.text(1.55, 2.95, "Partición en K pliegues", ha="center", va="center", fontsize=8.5, color=TINTA)
+        k, x0, ancho, y0 = 5, 0.45, 2.2, 2.25
+        for j in range(k):
+            ax.add_patch(plt.Rectangle((x0 + j * ancho / k, y0), ancho / k - 0.06, 0.38, zorder=3,
+                                       facecolor=NARANJA if j == 1 else "#e6e5e0", edgecolor=TINTA, linewidth=0.8))
+        ax.text(x0 + 1.5 * ancho / k - 0.03, y0 + 0.19, "k", ha="center", va="center", fontsize=8.5,
+                color="white", fontweight="bold", zorder=4)
+        ax.text(1.55, 1.75, "Se ajusta en los K − 1 pliegues\nrestantes y se predice en k",
+                ha="center", va="center", fontsize=7.6, color=TINTA_2, linespacing=1.3)
+
+        # Pasos 1 y 2
+        caja(3.9, 3.05, 3.5, 2.2, "Paso 1. Residuo del resultado",
+             ["$\\hat g(W) \\approx E[Y \\mid W]$", "$\\tilde Y_i = Y_i - \\hat g(W_i)$"])
+        caja(3.9, 0.35, 3.5, 2.2, "Paso 2. Residuo del tratamiento",
+             ["$\\hat m(W) \\approx E[T \\mid W]$", "$\\tilde T_i = T_i - \\hat m(W_i)$"])
+        # Paso 3
+        caja(8.3, 1.2, 3.6, 3.2, "Paso 3. Regresión de residuos",
+             ["$\\tilde Y_i$ sobre $\\tilde T_i$",
+              "$\\hat\\theta = \\sum_i \\tilde T_i \\tilde Y_i \\; / \\; \\sum_i \\tilde T_i^{2}$"],
+             relleno="#e6e5e0", paso=0.75)
+
+        flecha(3.05, 3.4, 3.85, 4.0)
+        flecha(3.05, 2.2, 3.85, 1.6)
+        flecha(7.45, 4.0, 8.25, 3.4)
+        flecha(7.45, 1.6, 8.25, 2.2)
+
+        OUT.mkdir(parents=True, exist_ok=True)
+        ruta = OUT / "fig_dml_tres_pasos.png"
+        fig.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+    return ruta
+
+
 def main(con_datos: bool = True) -> None:
     _estilo()
     rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), estabilidad_hotdeck(),
              importancia_oe1(), dag_ignorabilidad_marco(),
-             dag_ignorabilidad_hotdeck()]
+             dag_ignorabilidad_hotdeck(), dml_tres_pasos()]
     if con_datos:
         rutas.append(propension_celda())
     print("\n".join(f"Guardado: {r}" for r in rutas))

@@ -12,7 +12,7 @@ repositorio, así que no puede diferir de él.
 | [`DECLARACION_USO_IA.md`](DECLARACION_USO_IA.md) | Uso del asistente de programación en el repositorio: en qué se usó, qué no hizo y qué controles lo respaldan | A mano |
 | [`METODO_PREDICTIVO.md`](METODO_PREDICTIVO.md) | Modelo base, partición y factores de expansión de la recomendación de variables y de las reglas de focalización (Tabla 5) | A mano |
 | [`BIBLIOGRAFIA_VERIFICADA.md`](BIBLIOGRAFIA_VERIFICADA.md) | Referencias verificadas, con DOI donde existe, y las que hay que retirar | A mano |
-| [`FIGURA_DAG_IGNORABILIDAD.md`](FIGURA_DAG_IGNORABILIDAD.md) | Número, título y nota en APA 7 de los dos DAG de ignorabilidad condicional, y dónde va cada uno | A mano; las imágenes salen de `python -m src.utils.figuras_tesis` |
+| [`FIGURAS_APA.md`](FIGURAS_APA.md) | Número, título y nota en APA 7 de los DAG de ignorabilidad condicional y del esquema del DML, y dónde va cada uno | A mano; las imágenes salen de `python -m src.utils.figuras_tesis` |
 | [`figuras/`](figuras/) | Figuras para el documento (ver abajo) | `python -m src.utils.figuras_tesis` |
 
 ## Figuras
@@ -26,6 +26,7 @@ repositorio, así que no puede diferir de él.
 | `fig_estabilidad_hotdeck.png` | Por celda, la proporción A/B imputada reproduce la de los donantes; por hogar, dos sorteos coinciden en A/B el 62,7 % de las veces | `variabilidad_hotdeck_celdas.csv`, `variabilidad_hotdeck.txt` |
 | `fig_importancia_variables_oe1.png` | Importancia de cada variable para predecir el grupo del Sisbén con LASSO, Ridge y SHAP (OE1) | `seleccion_variables_lasso_ridge_shap.csv` |
 | `fig_dag_ignorabilidad_marco.png` | DAG genérico de la ignorabilidad condicional (Figura 1, sección 2.2, notación T, Y, X, W) | Grafo del módulo, sin datos |
+| `fig_dml_tres_pasos.png` | Los tres pasos del DML: residuo del resultado, residuo del tratamiento y regresión de residuos, con la partición cruzada (Figura 2, sección 2.2) | Esquema, sin datos |
 | `fig_dag_ignorabilidad_hotdeck.png` | El mismo supuesto en el enlace por celdas: el grupo imputado es independiente de Y dada la celda; la elegibilidad real no, por U | Grafo del módulo, sin datos |
 | `fig_propension_celda.png` | Propensión estimada frente a la empírica por celda, con la celda como indicadoras y como número | Muestra de estimación (`data/2_models/`, no versionada) |
 

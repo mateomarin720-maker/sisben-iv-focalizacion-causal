@@ -1,14 +1,15 @@
-# Figuras de la ignorabilidad condicional (formato APA 7)
+# Figuras del marco teórico y de la metodología (formato APA 7)
 
-Dos DAG para pegar en el documento, a 300 dpi y sin título dentro de la
+Figuras para pegar en el documento, a 300 dpi y sin título dentro de la
 imagen, como pide APA: el número y el título van encima de la figura y la
 nota debajo. Se regeneran con `python -m src.utils.figuras_tesis`. Antes de
-guardar cada figura, el código comprueba con d-separación lo que afirma su
+guardar cada DAG, el código comprueba con d-separación lo que afirma su
 nota.
 
 | Figura | Dónde va | Imagen |
 |---|---|---|
 | Figura 1 | Sección 2.2, después del párrafo que define la ignorabilidad condicional y el solapamiento | [`fig_dag_ignorabilidad_marco.png`](figuras/fig_dag_ignorabilidad_marco.png) |
+| Figura 2 | Sección 2.2, junto al párrafo del DML (comentario del director: «una figura con los tres pasos ayuda más que este párrafo») | [`fig_dml_tres_pasos.png`](figuras/fig_dml_tres_pasos.png) |
 | Figura N | Metodología, donde se explica el Hot-Deck o el placebo del DML | [`fig_dag_ignorabilidad_hotdeck.png`](figuras/fig_dag_ignorabilidad_hotdeck.png) |
 
 La Figura 1 usa la notación de la sección 2.2 (T, Y, X, W) y no menciona
@@ -31,6 +32,22 @@ de puerta trasera entre T e Y, y la ignorabilidad condicional
 camino T ← U → Y (en naranja), que ninguna variable observada bloquea; el
 supuesto equivale a afirmar que ese camino no existe (Pearl, 2009).
 Elaboración propia.
+
+---
+
+**Figura 2**
+
+*Pasos del estimador Double/Debiased Machine Learning en el modelo parcialmente lineal*
+
+![Tres pasos del DML](figuras/fig_dml_tres_pasos.png)
+
+*Nota.* Las funciones de molestia ĝ y m̂ se estiman con algoritmos
+flexibles (por ejemplo, Gradient Boosting o Random Forest) en K − 1
+pliegues y se evalúan en el pliegue restante k; el proceso rota por los K
+pliegues, de modo que ningún residuo se calcula con un modelo entrenado
+con la misma observación. θ̂ es la pendiente de la regresión de Ỹ sobre T̃
+y es √n-consistente aunque ĝ y m̂ converjan más lento. Elaboración propia
+con base en Chernozhukov et al. (2018).
 
 ---
 
