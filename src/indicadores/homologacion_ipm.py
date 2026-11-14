@@ -273,7 +273,7 @@ MATRIZ: list[Privacion] = [
         poblacion_referencia="Hogares; regla distinta por zona.",
         estado=HOMOLOGABLE,
         decisiones_pendientes="¿'u otra fuente' (glosario) incluye otra fuente por tubería y pila pública?",
-        en_ipm_geih_base="`sin_acueducto`: aplica la regla urbana (P4030S5 = 2) también a los hogares rurales.",
+        en_ipm_geih_base="`sin_acueducto`: igual a la oficial desde el 2026-11-11 (regla urbana en cabeceras, fuente de agua en lo rural).",
     ),
     Privacion(
         id="I12", nombre="Inadecuada eliminación de excretas", dimension="Vivienda y servicios públicos",
@@ -286,7 +286,7 @@ MATRIZ: list[Privacion] = [
         diferencias="Ninguna de fondo. La letrina (P5020 = 4) no priva en zona rural según el texto oficial.",
         poblacion_referencia="Hogares; regla distinta por zona.",
         estado=HOMOLOGABLE,
-        en_ipm_geih_base="`sin_alcantarillado`: aplica la regla urbana (P4030S3 = 2) también a los hogares rurales.",
+        en_ipm_geih_base="`sin_alcantarillado`: igual a la oficial desde el 2026-11-11 (alcantarillado en cabeceras, tipo de sanitario en lo rural).",
     ),
     Privacion(
         id="I13", nombre="Material inadecuado de pisos", dimension="Vivienda y servicios públicos",
@@ -331,7 +331,7 @@ MATRIZ: list[Privacion] = [
         poblacion_referencia="Hogares; regla distinta por zona.",
         estado=HOMOLOGABLE,
         supuestos="'Cuarto' = cuarto para dormir (P5010), por el diccionario del IPM.",
-        en_ipm_geih_base="`hacinamiento`: > 3 personas por cuarto para dormir en ambas zonas (sin la regla urbana >= 3).",
+        en_ipm_geih_base="`hacinamiento`: igual a la oficial desde el 2026-11-11 (>= 3 personas por cuarto para dormir en cabeceras, > 3 en lo rural).",
     ),
 ]
 

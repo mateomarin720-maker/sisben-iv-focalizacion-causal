@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-12: 60 de 60 mutaciones detectadas.
+Resultado del 2026-11-14: 62 de 62 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -77,6 +77,13 @@ MUTACIONES = [
      "<= presupuesto * (1 + 1e-9)]] = 1", "< presupuesto]] = 1", "tests/test_reglas_focalizacion.py"),
     ("OE3: el monto fijo no se multiplica por las personas", "src/focalizacion/reglas_focalizacion.py",
      "return tau * lp * personas", "return tau * lp", "tests/test_reglas_focalizacion.py"),
+    ("OE3: el modelo base lineal recibe las paredes como número", "src/focalizacion/reglas_focalizacion.py",
+     "        if c in sin_orden:\n            cats = categorias", "        if False:\n            cats = categorias",
+     "tests/test_reglas_focalizacion.py"),
+    ("OE3: el modelo base lineal sin la celda en los modelos auxiliares", "src/focalizacion/reglas_focalizacion.py",
+     "    m.fit(y, t, X=x.to_numpy(float), W=d[w_cols].to_numpy(float))",
+     "    m.fit(y, t, X=x.to_numpy(float), W=0 * d[w_cols].to_numpy(float))",
+     "tests/test_reglas_focalizacion.py"),
     ("Heterogeneidad: el efecto no se estandariza", "src/focalizacion/heterogeneidad_ampliada.py",
      "TAU_DESVIACION * (h - h.mean()) / h.std()", "TAU_DESVIACION * (h - h.mean())", "tests/test_heterogeneidad_ampliada.py"),
     ("Heterogeneidad: piso de tierra con el código del Sisbén", "src/focalizacion/heterogeneidad_ampliada.py",

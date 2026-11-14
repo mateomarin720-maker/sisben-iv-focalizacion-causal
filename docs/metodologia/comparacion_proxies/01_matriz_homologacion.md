@@ -213,7 +213,7 @@ Interpretación y decisiones pendientes: [`00_auditoria_variables.md`](00_audito
 | Diferencias de definición | GEIH pregunta por el agua 'para consumo humano', no 'para preparar los alimentos'. Las categorías 2 (otra fuente por tubería) y 7 (pila pública) no están en la lista oficial: no privan, salvo que se lea 'u otra fuente' del glosario. |
 | Población de referencia | Hogares; regla distinta por zona. |
 | Disponibilidad y calidad | `P4030S5` (hogares, CLASE=1): n = 253,377, vacío 0.00 %, no sabe 0.00 %; `P5050` (hogares, CLASE=2): n = 37,591, vacío 0.00 %, no sabe 0.00 % — 12 meses de GEIH 2024 apilados. |
-| En `IPM_GEIH_BASE` (actual) | `sin_acueducto`: aplica la regla urbana (P4030S5 = 2) también a los hogares rurales. |
+| En `IPM_GEIH_BASE` (actual) | `sin_acueducto`: igual a la oficial desde el 2026-11-11 (regla urbana en cabeceras, fuente de agua en lo rural). |
 | Supuestos | — |
 | Decisiones pendientes | ¿'u otra fuente' (glosario) incluye otra fuente por tubería y pila pública? |
 
@@ -230,7 +230,7 @@ Interpretación y decisiones pendientes: [`00_auditoria_variables.md`](00_audito
 | Diferencias de definición | Ninguna de fondo. La letrina (P5020 = 4) no priva en zona rural según el texto oficial. |
 | Población de referencia | Hogares; regla distinta por zona. |
 | Disponibilidad y calidad | `P4030S3` (hogares, CLASE=1): n = 253,377, vacío 0.00 %, no sabe 0.00 %; `P5020` (hogares, CLASE=2): n = 37,591, vacío 0.00 %, no sabe 0.00 % — 12 meses de GEIH 2024 apilados. |
-| En `IPM_GEIH_BASE` (actual) | `sin_alcantarillado`: aplica la regla urbana (P4030S3 = 2) también a los hogares rurales. |
+| En `IPM_GEIH_BASE` (actual) | `sin_alcantarillado`: igual a la oficial desde el 2026-11-11 (alcantarillado en cabeceras, tipo de sanitario en lo rural). |
 | Supuestos | — |
 | Decisiones pendientes | — |
 
@@ -281,6 +281,6 @@ Interpretación y decisiones pendientes: [`00_auditoria_variables.md`](00_audito
 | Diferencias de definición | El texto oficial dice 'por cuarto' sin precisar; se usan cuartos para dormir porque es la variable de cuartos que lista el diccionario del IPM (P5010). P5010 trae 98/99 (no sabe): faltante. |
 | Población de referencia | Hogares; regla distinta por zona. |
 | Disponibilidad y calidad | `P6008` (hogares): n = 290,968, vacío 0.00 %, no sabe 0.00 %; `P5010` (hogares): n = 290,968, vacío 0.00 %, no sabe 0.00 % — 12 meses de GEIH 2024 apilados. |
-| En `IPM_GEIH_BASE` (actual) | `hacinamiento`: > 3 personas por cuarto para dormir en ambas zonas (sin la regla urbana >= 3). |
+| En `IPM_GEIH_BASE` (actual) | `hacinamiento`: igual a la oficial desde el 2026-11-11 (>= 3 personas por cuarto para dormir en cabeceras, > 3 en lo rural). |
 | Supuestos | 'Cuarto' = cuarto para dormir (P5010), por el diccionario del IPM. |
 | Decisiones pendientes | — |

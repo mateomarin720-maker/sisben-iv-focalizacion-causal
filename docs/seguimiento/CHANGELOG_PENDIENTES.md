@@ -2,6 +2,64 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-14 (44) — Controles de las reglas de focalización, licencia y limpieza para la entrega
+
+### Agregado
+- `reglas_focalizacion.py`: dos reglas de control, con su propio generador aleatorio (las demás
+  no cambian). **Control positivo:** la regla con CATE usando el efecto verdadero; llega a
+  82,5\* / 85,0\* % del ideal, casi igual que el proxy de medios (82,2\* / 84,6\*). **Modelo base
+  lineal:** el CATE de un LinearDML (X en indicadoras, mismos modelos auxiliares); 73,6\* /
+  73,2\*, como el Causal Forest (72,7\* / 72,0\*). Responde a la pregunta del tutor por el
+  modelo base: la conclusión no depende del bosque, y con esta heterogeneidad conocer el
+  efecto aporta casi nada. Con la heterogeneidad ampliada y compleja, el efecto verdadero gana
+  1,6\* y 3,7\* puntos sobre el PMT, y el LinearDML le gana al bosque cuando el efecto es lineal
+  (+1 a +2\*) y pierde con interacciones (−2 a −5\*); ninguno se acerca al PMT. Dos pruebas y
+  dos mutaciones (271 pruebas tras quitar `test_dependencias.py` con el paso a Poetry; 62 de 62 mutaciones detectadas).
+- `LICENSE` (MIT, a nombre de los dos autores, como declaraba `pyproject.toml`), también en
+  `CITATION.cff` y en el README; cubre el código, no los datos.
+- Bibliografía verificada: FGT (1984), Imbens y Rubin (2015), Lee y Lemieux (2010), Morris et
+  al. (2019) y Kidd y Wylde (2011), con DOI o URL.
+
+### Cambiado
+- Reglas de focalización y heterogeneidad ampliada vueltas a correr: el proxy de medios usa
+  las privaciones del IPM-GEIH, corregidas el 11-nov. Cambios ≤ 0,1 punto en las reglas con
+  proxy; la vigente, la aleatoria y la ideal no cambian.
+- README: estructura del repositorio como árbol por ramas; la ECV entre las fuentes.
+- Movidos a la carpeta que les corresponde: `src/utils/validar_geih.py` → `src/validacion/`
+  (es un chequeo de calidad de la GEIH; se corre con `python -m src.validacion.validar_geih`) y
+  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` → `docs/metodologia/` (metodología propia,
+  junto a la de pobreza monetaria; `insumos/` queda para diccionarios, fichas y
+  homologaciones). Referencias actualizadas.
+
+### Corregido
+- `DICCIONARIO_HOTDECK.md` describía la celda de septiembre (departamento + edad, ≈130 celdas,
+  dos respaldos) y daba paredes, pisos y zona del Sisbén como sin homologar. Ahora coincide con
+  el código: departamento + ciclo de vida + tramo de cuartos + nivel de pisos (993 celdas,
+  99,98 % exacta), cadena de cinco niveles y por qué pisos sí y paredes no.
+- Matriz de homologación del IPM y auditoría de variables: decían que el IPM-GEIH aplicaba la
+  regla urbana de vivienda en todo el país (corregido el 11-nov).
+- Resultados vigentes con cifras del IPM-GEIH anteriores al 12-nov en el índice de
+  resultados, la guía de la tesis y el seguimiento consolidado.
+- `docs/reports/resultado_preprocesamiento.txt` y `resultado_representatividad_sisben.txt`
+  eran de corridas anteriores (puntaje 1,45 y la tasa «oficial» de 13 %; cobertura sin el
+  marco común); regenerados.
+- Cinco salidas de consola eran anteriores a la regeneración del 12-nov aunque sus CSV ya
+  estaban al día: `cotas_frechet_manski.txt`, `cotas_frechet_modelos.txt`,
+  `errores_focalizacion_frechet.txt`, `variabilidad_hotdeck.txt` y `variables_candidatas.txt`.
+  Reemplazadas por la consola de esas corridas. Los reportes de calidad de la GEIH
+  (`reporte_*_geih.csv`) se regeneraron desde `src/validacion/` y no cambiaron.
+
+### Eliminado
+- Etiquetas de respaldo `archivo/corrige-controles-celda`, `respaldo/antes-revision-externa` y
+  `respaldo/antes-reorganizacion` (marcadores de estados ya incluidos en `main` o descartados).
+  Queda un solo respaldo, `respaldo/ipm-geih-regla-urbana` (`24ca996`, la versión de las cifras
+  del borrador revisado por el director), documentado en `docs/seguimiento/RESPALDO.md`.
+- `docs/seguimiento/README_AVANCE_2026-11-02.md` (corte de un día, con cifras de entonces; su
+  contenido está en este changelog), `docs/insumos/referencias_teoricas.md` (sin verificar;
+  sus referencias pasaron a `BIBLIOGRAFIA_VERIFICADA.md`),
+  `docs/reports/reporte_inventario_variables_geih_ipm.html` (sin generador ni lector) y
+  `src/validacion/revisar_faltantes_modulos_geih.py` (script suelto fuera del pipeline).
+
 ## 2026-11-12 (43) — Modelos regenerados con el IPM-GEIH corregido
 
 ### Cambiado

@@ -1,10 +1,10 @@
-2026-11-04 11:55:58,514 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet y data\2_models\sisben_estandarizado_2024_con_bogota.parquet
+2026-11-11 22:55:35,781 INFO Cargando data\2_models\muestra_estimacion_monetaria_2024.parquet y data\2_models\sisben_estandarizado_2024_con_bogota.parquet
 
 === Cotas de Fréchet-Manski — ATE sobre POBRE_GEIH ===
 Celdas usadas: 921 | cobertura poblacional GEIH: 100.0%
-P(Y=1) ponderada en las celdas usadas: 0.2044
-ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.2607, +0.3801]
-Ancho de la cota: 0.6409
+P(Y=1) ponderada en las celdas usadas: 0.1448
+ATE (Fréchet-Manski, SIN suponer independencia condicional): [-0.2563, +0.2777]
+Ancho de la cota: 0.5340
 Detalle por celda: docs\reports\cotas_frechet_manski.csv
 
 === Cotas de Fréchet-Manski — ATE sobre POBRE_MONETARIO ===
@@ -23,13 +23,13 @@ Detalle por celda: docs\reports\cotas_frechet_manski_pobre_monetario_oficial.csv
 
 === Cotas con supuestos de monotonía (Manski y Pepper, 2000) ===
                 outcome                 supuesto  cota_lo  cota_hi  ancho  celdas
-             POBRE_GEIH                contraste  -0.2607   0.3801 0.6409     921
-             POBRE_GEIH   contraste_dep_positiva  -0.0000   0.3801 0.3801     921
-             POBRE_GEIH        ate_sin_supuestos  -0.4687   0.7653 1.2340     921
-             POBRE_GEIH                  ate_mts  -0.4687   0.3801 0.8488     921
-             POBRE_GEIH                  ate_mtr  -0.4687   0.0000 0.4687     921
-             POBRE_GEIH              ate_mts_mtr  -0.4687   0.0000 0.4687     921
-             POBRE_GEIH ate_mts_mtr_dep_positiva  -0.3671   0.0000 0.3671     921
+             POBRE_GEIH                contraste  -0.2563   0.2777 0.5340     921
+             POBRE_GEIH   contraste_dep_positiva   0.0000   0.2777 0.2777     921
+             POBRE_GEIH        ate_sin_supuestos  -0.4816   0.7078 1.1894     921
+             POBRE_GEIH                  ate_mts  -0.4816   0.2777 0.7593     921
+             POBRE_GEIH                  ate_mtr  -0.4816   0.0000 0.4816     921
+             POBRE_GEIH              ate_mts_mtr  -0.4816   0.0000 0.4816     921
+             POBRE_GEIH ate_mts_mtr_dep_positiva  -0.3866   0.0000 0.3866     921
         POBRE_MONETARIO                contraste  -0.4179   0.6477 1.0656     921
         POBRE_MONETARIO   contraste_dep_positiva   0.0000   0.6477 0.6477     921
         POBRE_MONETARIO        ate_sin_supuestos  -0.5712   0.8294 1.4005     921

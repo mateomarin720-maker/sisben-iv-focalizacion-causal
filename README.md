@@ -140,16 +140,32 @@ Detalle completo de marco teórico, metodología y cronograma en
 
 ### 5. Estructura del repositorio
 
-| Carpeta | Contenido |
-|---|---|
-| `src/` | Código organizado como la tesis: base (`ingesta/`, `armonizacion/`, `emparejamiento/`, `indicadores/`, `validacion/`, `utils/`), `diagnostico/`, `simulacion/` y `focalizacion/`, más los scripts numerados `1_` a `5_`. Mapa en [`src/README.md`](src/README.md) |
-| `docs/resultados/` | Un documento por paso, en cuatro carpetas que siguen la misma estructura, con [índice](docs/resultados/README.md) |
-| `docs/reports/` | Salidas crudas de cada script (tablas y consola) |
-| `docs/metodologia/` | [Arquitectura y replicación](docs/metodologia/ARQUITECTURA_Y_REPLICACION.md), diseño del módulo de simulación y metodología de la pobreza monetaria |
-| `docs/insumos/` | Diccionarios oficiales, ficha del Sisbén IV y homologaciones entre fuentes |
-| `docs/seguimiento/` | [Guía de la tesis](docs/seguimiento/SEGUIMIENTO_TESIS_2026-11-04.md), [resumen de avances](docs/seguimiento/RESUMEN_AVANCES.md) y [changelog](docs/seguimiento/CHANGELOG_PENDIENTES.md) |
-| `data/` | Estructura de las capas (`0_raw`, `1_processed`, `2_models`) y [catálogo de fuentes](data/catalogo.yaml). Los datos no se versionan: viven en Azure Blob Storage |
-| `tests/` | 269 pruebas (`poetry run pytest tests/`) y una prueba de mutación que reintroduce 60 errores conocidos y comprueba que alguna prueba falle. Corren en GitHub Actions en cada push. Mapa en [`tests/README.md`](tests/README.md) |
+```text
+sisben_causal/
+├── README.md, LICENSE, CITATION.cff     presentación, licencia (MIT) y cómo citar
+├── pyproject.toml, poetry.lock          dependencias (la integración continua instala desde poetry.lock)
+├── data/                                capas bronce/plata/oro y catalogo.yaml (los datos están en Azure)
+├── src/                                 código, organizado como la tesis ─ mapa en src/README.md
+│   ├── 1_integracion.py … 5_estimacion.py   recorrido principal (scripts numerados)
+│   ├── ingesta/ armonizacion/ emparejamiento/ indicadores/ validacion/ utils/
+│   │                                    base: fuentes, esquema canónico, Hot-Deck, outcomes, chequeos
+│   ├── diagnostico/                     componente 1: diagnóstico con datos reales
+│   ├── simulacion/                      componente 2: simulación semisintética (módulo reutilizable)
+│   └── focalizacion/                    componente 3: reglas de focalización
+├── tests/                               pruebas y prueba de mutación ─ mapa en tests/README.md
+└── docs/                                documentación ─ índice en docs/README.md
+    ├── resultados/                      un documento por paso, en las mismas cuatro partes
+    │   ├── 1_datos_y_enlace/
+    │   ├── 2_diagnostico_datos_reales/
+    │   ├── 3_simulacion/
+    │   └── 4_focalizacion/
+    ├── reports/                         salidas crudas de cada script (no se editan a mano)
+    ├── anexos_tesis/                    trazabilidad de cifras, proposiciones, bibliografía y figuras APA
+    ├── metodologia/                     arquitectura y replicación, contrato canónico de datos, simulación, IPM-GEIH, pobreza monetaria
+    ├── insumos/                         diccionarios oficiales, ficha del Sisbén IV y homologaciones
+    ├── seguimiento/                     guía de la tesis, resumen de avances y changelog
+    └── institucional/                   anteproyecto
+```
 
 ### 6. Orden de ejecución
 
@@ -175,7 +191,7 @@ Cada paso debe reproducir las cifras de `docs/resultados/`.
 
 | Parte | Estado |
 |---|---|
-| Fuentes | ✅ GEIH 2024 (12 meses), IPM, Sisbén IV nacional y de Bogotá, armonizadas y validadas contra los diccionarios oficiales. No se solicitarán más datos: la réplica usa solo estas fuentes |
+| Fuentes | ✅ GEIH 2024 (12 meses), IPM, Sisbén IV nacional y de Bogotá, armonizadas y validadas contra los diccionarios oficiales; ECV 2024 e IPM oficial 2024 para validar el IPM-GEIH. No se solicitarán más datos: la réplica usa solo estas fuentes |
 | Base: enlace y outcomes | ✅ Hot-Deck con 99,98 % en celda exacta; IPM-GEIH y pobreza monetaria contrastada con la base oficial (93,9 % de coincidencia) |
 | 1. Diagnóstico con datos reales | ✅ DML y Causal Forest (placebo), cotas por parámetro, errores de focalización por celda, selección (OE1) y recomendación de variables |
 | 2. Simulación semisintética | ✅ Hasta la convergencia (432 repeticiones) y sensibilidad. El módulo `src/simulacion/` tiene hechos los 7 pasos de su diseño, incluidos el modo simulado y el de datos propios |
@@ -205,3 +221,11 @@ empleado en el proyecto hermano del Consultorio, *Sinergia socioeconómica:
 contratación pública, estructura territorial y economía popular*
 (repositorio `desarrollo_social_y_economico`), adaptado aquí a fuentes de
 registro social (GEIH, Sisbén IV, IPM, DPS).
+
+### 10. Licencia
+
+El código se publica bajo la licencia MIT (archivo [`LICENSE`](LICENSE)).
+La licencia cubre el código y la documentación del repositorio, no los
+datos: los microdatos de la GEIH y del IPM (DANE) y del Sisbén IV (DNP y
+SDP) no se incluyen y se rigen por las condiciones de uso de cada entidad.
+Para citar el repositorio, ver [`CITATION.cff`](CITATION.cff).

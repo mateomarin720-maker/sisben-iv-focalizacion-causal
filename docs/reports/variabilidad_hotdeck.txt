@@ -1,5 +1,5 @@
-2026-11-04 13:27:25,157 INFO Receptor 290,968 hogares | donante 3,106,489 | 100 sorteos
-2026-11-04 13:49:47,715 INFO Sorteos listos en 1343 s
+2026-11-11 22:57:08,957 INFO Receptor 290,968 hogares | donante 3,106,489 | 100 sorteos
+2026-11-11 23:16:00,744 INFO Sorteos listos en 1132 s
 
 === Variabilidad de la imputación del Hot-Deck: 100 sorteos ===
 La semilla 42 reproduce el grupo guardado en el 100.00 % de los hogares
@@ -41,7 +41,7 @@ nacional      D     22.129   0.145 0.007   21.817   22.528          22.013      
 4. Contraste placebo (efectos fijos de celda) combinado con reglas de Rubin:
               outcome  semilla_42  error_semilla_42   m  estimacion  var_dentro  var_entre  var_total  error_total  fraccion_info_imputacion    ic_lo   ic_hi  pct_sorteos_ic_sin_cero
       POBRE_MONETARIO    -0.00042           0.00177 100    -0.00028     0.00000    0.00000    0.00001      0.00247                   0.48906 -0.00513 0.00456                      4.0
-           POBRE_GEIH    -0.00303           0.00131 100    -0.00003     0.00000    0.00000    0.00000      0.00183                   0.48765 -0.00361 0.00356                      3.0
+           POBRE_GEIH    -0.00238           0.00122 100    -0.00000     0.00000    0.00000    0.00000      0.00170                   0.48774 -0.00334 0.00333                      4.0
 log_ingreso_percapita     0.00044           0.00685 100     0.00117     0.00005    0.00006    0.00010      0.01010                   0.54500 -0.01863 0.02097                      8.0
 
 Guardado: docs\reports\variabilidad_hotdeck_celdas.csv

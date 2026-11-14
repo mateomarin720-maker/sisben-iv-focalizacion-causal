@@ -45,6 +45,20 @@ proporcional el gasto es el aumento del ingreso de la unidad de gasto.
                          tratamiento imputado por Hot-Deck (lo que se
                          puede hacer hoy)
   ideal                  ingreso y efecto verdaderos (no factible: techo)
+  pmt_brecha_tau         control positivo: como pmt_brecha_cate, pero con
+                         el efecto verdadero de cada hogar en vez del CATE
+                         estimado (no factible). Es lo más que puede
+                         aportar conocer la heterogeneidad con el ingreso
+                         predicho por el proxy
+  pmt_brecha_cate_lineal modelo base lineal: el CATE de un LinearDML con
+                         las mismas X (indicadoras para las categóricas sin
+                         orden), W y tratamiento verdadero que el Causal
+                         Forest. En el diseño básico el efecto es lineal en
+                         esas X: separa el error del bosque del de la idea
+                         de focalizar por CATE
+
+Las dos últimas se agregaron el 2026-11-14 y eligen con su propio
+generador aleatorio: las cifras de las demás reglas no cambian.
 
 La reducción esperada de la brecha de un hogar es E[g(Y) − g(Y después)],
 con Y = log-ingreso predicho por el proxy de medios + su residuo,
@@ -109,14 +123,17 @@ PMT_CATEGORICAS = ["celda", "viv_paredes", "viv_acueducto", "viv_alcantarillado"
 PMT_NUMERICAS = ["hog_num_personas", "viv_cuartos", "analfabetismo", "bajo_logro_educativo_jefe",
                  "inasistencia_escolar_menores", "sin_aseguramiento_salud", "sin_cotizacion_pension_jefe",
                  "hacinamiento"]
-REGLAS = ["vigente_hotdeck", "aleatoria", "pmt_ingreso", "pmt_brecha", "pmt_brecha_cate", "pmt_brecha_cate_hd", "ideal"]
+REGLAS_BASE = ["vigente_hotdeck", "aleatoria", "pmt_ingreso", "pmt_brecha", "pmt_brecha_cate", "pmt_brecha_cate_hd",
+               "ideal"]
+REGLAS_CONTROL = ["pmt_brecha_tau", "pmt_brecha_cate_lineal"]  # control positivo y modelo base lineal (2026-11-14)
+REGLAS = REGLAS_BASE + REGLAS_CONTROL
 METRICAS = ["error_inclusion", "error_exclusion", "fgt0_post", "fgt1_post", "reduccion_fgt1", "pct_ideal", "gasto_rel"]
 UMBRAL_MCSE = {"error_inclusion": 0.002, "error_exclusion": 0.002, "fgt0_post": 0.001, "fgt1_post": 0.0005,
                "reduccion_fgt1": 0.0002, "pct_ideal": 0.5, "gasto_rel": 0.005}
 MIN_REPS, MAX_REPS, LOTE = 30, 300, 12
 TIPOS_EFECTO = ("proporcional", "monto_fijo")
 PRESUPUESTOS = ("hogares", "dinero")  # dinero: solo con monto fijo (el costo se conoce antes de asignar)
-REGLAS_POR_REDUCCION = ("pmt_brecha", "pmt_brecha_cate", "pmt_brecha_cate_hd", "ideal")
+REGLAS_POR_REDUCCION = ("pmt_brecha", "pmt_brecha_cate", "pmt_brecha_cate_hd", "ideal", *REGLAS_CONTROL)
 # Modificadores sin orden que pueden llegar en `x_cols`: indicadoras en los modelos auxiliares.
 X_CATEGORICAS_EXTRA = ("het_depto",)
 
@@ -213,6 +230,47 @@ def ajustar_bosque(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, x_cols: list[s
     return m
 
 
+def x_lineal(d: pd.DataFrame, x_cols: list[str], categorias: dict[str, list] | None = None
+             ) -> tuple[pd.DataFrame, dict[str, list]]:
+    """X para un estimador lineal: las categóricas sin orden como
+    indicadoras (sin la primera categoría), nunca como código numérico
+    (CLAUDE.md: rompe `LinearDML`). `categorias` se toma de la muestra de
+    entrenamiento; una categoría que no estaba ahí queda en la de
+    referencia. Devuelve la matriz y las categorías usadas."""
+    est5 = estimacion5()
+    sin_orden = {*est5.X_CATEGORICAS, *X_CATEGORICAS_EXTRA}
+    categorias = dict(categorias or {})
+    partes = {}
+    for c in x_cols:
+        if c in sin_orden:
+            cats = categorias.setdefault(c, sorted(pd.unique(d[c])))
+            for v in cats[1:]:
+                partes[f"{c}_{v}"] = (d[c] == v).to_numpy(float)
+        else:
+            partes[c] = d[c].to_numpy(float)
+    return pd.DataFrame(partes, index=d.index), categorias
+
+
+def ajustar_lineal(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, x_cols: list[str] | None = None):
+    """LinearDML con los mismos modelos auxiliares y W que `ajustar_bosque`,
+    y X en indicadoras (`x_lineal`). Devuelve el modelo y las categorías
+    de X, para evaluar en otra muestra con la misma codificación."""
+    from econml.dml import LinearDML
+    from sklearn.linear_model import LogisticRegression, Ridge
+    from sklearn.pipeline import make_pipeline
+
+    est5 = estimacion5()
+    x_cols = list(x_cols or est5.X_COLS)
+    w_cols = est5.W_CELDA[0]
+    x, categorias = x_lineal(d, x_cols)
+    columnas = list(x.columns) + w_cols  # econml pasa [X, W]: las indicadoras de X van tal cual
+    modelo_y = make_pipeline(est5._codificador(columnas, w_cols, []), Ridge(alpha=est5.ALPHA_Y))
+    modelo_t = make_pipeline(est5._codificador(columnas, w_cols, []), LogisticRegression(C=est5.C_T, max_iter=2000))
+    m = LinearDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, random_state=SEED)
+    m.fit(y, t, X=x.to_numpy(float), W=d[w_cols].to_numpy(float))
+    return m, categorias
+
+
 def elegir(puntaje: np.ndarray, k: int, rng: np.random.Generator) -> np.ndarray:
     """Trata a los k hogares de mayor puntaje (empates al azar)."""
     orden = np.lexsort((rng.random(len(puntaje)), -np.asarray(puntaje, float)))
@@ -267,6 +325,7 @@ def una_repeticion(b: pd.DataFrame, rep: int, x_cols: list[str] | None = None) -
     efecto que ve el Causal Forest (por defecto, los de `5_estimacion.py`)."""
     rng = np.random.default_rng([SEED, rep])
     rng_dinero = np.random.default_rng([SEED, rep, 1])  # aparte: no altera el presupuesto en hogares
+    rng_control = np.random.default_rng([SEED, rep, 2])  # aparte: las reglas de control no mueven a las demás
     idx = rng.permutation(len(b))
     ev = b.iloc[idx[:N_EVAL]].reset_index(drop=True)                      # donde se aplican las reglas
     en = b.iloc[idx[N_EVAL:N_EVAL + N_ENTRENA]].reset_index(drop=True)    # encuesta de entrenamiento (X, Y)
@@ -299,6 +358,9 @@ def una_repeticion(b: pd.DataFrame, rep: int, x_cols: list[str] | None = None) -
             bosque = ajustar_bosque(en, y_en, t, x_cols)
             cate[nombre] = (float(bosque.ate(en[x_cols].to_numpy(float))),
                             np.ravel(bosque.effect(ev[x_cols].to_numpy(float))))
+        lineal, categorias = ajustar_lineal(en, y_en, t_en, x_cols)
+        cate["lineal"] = (float(lineal.ate(x_lineal(en, x_cols, categorias)[0].to_numpy(float))),
+                          np.ravel(lineal.effect(x_lineal(ev, x_cols, categorias)[0].to_numpy(float))))
 
         lp, y0, tau = ev["lp"].to_numpy(), ev["y0"].to_numpy(), ev["tau"].to_numpy()
 
@@ -313,6 +375,8 @@ def una_repeticion(b: pd.DataFrame, rep: int, x_cols: list[str] | None = None) -
             "pmt_brecha_cate": esperada(cate["verdadero"][1]),
             "pmt_brecha_cate_hd": esperada(cate["hotdeck"][1]),
             "ideal": brecha(ingreso_relativo(y0, lp)) - brecha(despues(y0, tau, lp, tipo)),
+            "pmt_brecha_tau": esperada(tau),
+            "pmt_brecha_cate_lineal": esperada(cate["lineal"][1]),
         }
         base = metricas(ev, np.zeros(len(ev), dtype=int), tipo)
         gasto_hogar = w_hogar * costo(ev, tipo)
@@ -320,8 +384,11 @@ def una_repeticion(b: pd.DataFrame, rep: int, x_cols: list[str] | None = None) -
                        ate_cf_verdadero=cate["verdadero"][0], ate_cf_hotdeck=cate["hotdeck"][0],
                        pehe_cf_verdadero=float(np.sqrt(np.mean((cate["verdadero"][1] - tau) ** 2))),
                        pehe_cf_hotdeck=float(np.sqrt(np.mean((cate["hotdeck"][1] - tau) ** 2))),
+                       ate_lineal=cate["lineal"][0],
+                       pehe_lineal=float(np.sqrt(np.mean((cate["lineal"][1] - tau) ** 2))),
                        sd_tau=float(tau.std()))
-        elegidos = {regla: elegir(puntajes[regla], k, rng) for regla in REGLAS}
+        elegidos = {regla: elegir(puntajes[regla], k, rng) for regla in REGLAS_BASE}
+        elegidos |= {regla: elegir(puntajes[regla], k, rng_control) for regla in REGLAS_CONTROL}
         gasto_vigente = float(gasto_hogar @ elegidos["vigente_hotdeck"])
         bloques = [("hogares", elegidos)]
         if tipo == "monto_fijo":
@@ -368,7 +435,7 @@ def pendientes(res: pd.DataFrame) -> list[str]:
 def firma(**extra) -> str:
     cfg = dict(SEED=SEED, N_EVAL=N_EVAL, N_ENTRENA=N_ENTRENA, ESCENARIO=ESCENARIO, PMT_CATEGORICAS=PMT_CATEGORICAS,
                PMT_NUMERICAS=PMT_NUMERICAS, REGLAS=REGLAS, TAU=TAU, TIPOS_EFECTO=TIPOS_EFECTO,
-               PRESUPUESTOS=PRESUPUESTOS, version=4, **extra)  # 3: cadena de respaldos; 4: presupuesto en dinero
+               PRESUPUESTOS=PRESUPUESTOS, version=5, **extra)  # 3: respaldos; 4: dinero; 5: reglas de control
     return hashlib.sha1(json.dumps(cfg, sort_keys=True).encode()).hexdigest()[:12]
 
 
@@ -424,6 +491,7 @@ def imprimir(r: pd.DataFrame, titulo: str) -> None:
         print(f"Causal Forest ({tipo}): ATE con T verdadero {g['ate_cf_verdadero'].mean():+.4f}, con T por Hot-Deck "
               f"{g['ate_cf_hotdeck'].mean():+.4f}; PEHE {g['pehe_cf_verdadero'].mean():.4f} y "
               f"{g['pehe_cf_hotdeck'].mean():.4f} frente a una desviación de tau de {g['sd_tau'].mean():.4f}")
+        print(f"LinearDML ({tipo}, T verdadero): ATE {g['ate_lineal'].mean():+.4f}; PEHE {g['pehe_lineal'].mean():.4f}")
     for (tipo, presupuesto), g in res.groupby(["efecto", "presupuesto"], sort=False):
         print(f"\n--- Efecto {tipo}, presupuesto en {presupuesto}")
         print(g.drop(columns=["efecto", "presupuesto"]).round(4).to_string(index=False))

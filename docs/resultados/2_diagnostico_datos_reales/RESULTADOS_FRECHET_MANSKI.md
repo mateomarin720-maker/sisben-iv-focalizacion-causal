@@ -3,7 +3,7 @@
 Generado 2026-10-27 por `src/diagnostico/cotas_frechet_manski.py`, refrescado
 el 2026-10-28 tras corregir `viv_cuartos` y, horas después, tras reducir
 el outcome de 10 a 8 privaciones (ver
-`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Ampliado el 2026-11-02
+`docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Ampliado el 2026-11-02
 a `POBRE_MONETARIO` (ver sección propia abajo) y regenerado ese mismo día
 tras corregir el bug de agosto (códigos `"1.0"` del `.DTA`, ver
 CHANGELOG) y otra vez al sumar el nivel de pisos a la celda. Detalle por celda:

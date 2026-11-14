@@ -66,7 +66,7 @@ subgrupos como con diferencias de decenas de puntos entre ellos.
 
 - 2026-10-21: un patrón concentrado en jefatura femenina, calculado con
   `viv_paredes`/`viv_pisos` apuntando a columnas equivocadas
-  (`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`).
+  (`docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`).
 - 2026-10-28 a 2026-11-02: un patrón por zona y la vivienda como pista de
   un residuo, calculados con la celda como código numérico.
 - Chequeo de tautología del 2026-10-28: se retiraron del IPM-GEIH las

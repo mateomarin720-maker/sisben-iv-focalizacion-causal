@@ -7,12 +7,17 @@ Mateo Roncancio y Juan Sebastián Fonseca. Maestría en Ciencia de Datos,
 Universidad Santo Tomás. Tutor: Carlos Isaac Zainea Maya.
 Corte: 3 de noviembre de 2026.
 
+> **Documento histórico.** Relata el proyecto de agosto al 3 de noviembre.
+> Las cifras de las tablas se actualizaron al 12 de noviembre; para el
+> estado y los resultados vigentes ver
+> [`RESUMEN_AVANCES.md`](RESUMEN_AVANCES.md) y
+> [`../resultados/README.md`](../resultados/README.md).
+
 Este documento reúne los cambios y avances del proyecto desde su inicio
 (4 de agosto de 2026) hasta el corte. Para el detalle técnico de cada
 cambio ver [`CHANGELOG_PENDIENTES.md`](CHANGELOG_PENDIENTES.md); para el
 estado completo de fuentes y pendientes,
-[`RESUMEN_AVANCES.md`](RESUMEN_AVANCES.md); para el corte del último día,
-[`README_AVANCE_2026-11-02.md`](README_AVANCE_2026-11-02.md); para los
+[`RESUMEN_AVANCES.md`](RESUMEN_AVANCES.md); para los
 resultados interpretados, [`../resultados/README.md`](../resultados/README.md).
 
 ## 1. Qué se hace y con qué enfoque
@@ -136,21 +141,22 @@ ATE con intervalo de confianza del 95 %, controlando por la celda exacta
 
 | Outcome | ATE |
 |---|---|
-| `ipm_geih_score` (0 a 8) | −0,0021 [−0,0092; +0,0051] |
-| `POBRE_GEIH` | −0,0026 [−0,0049; −0,0002] |
+| `ipm_geih_score` (0 a 8) | −0,0029 [−0,0101; +0,0043] |
+| `POBRE_GEIH` | −0,0021 [−0,0045; +0,0004] |
 | `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
 | `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
 | `POBRE_MONETARIO_OFICIAL` (robustez) | −0,0005 [−0,0041; +0,0030] |
 
-Todos los efectos son despreciables. Los únicos intervalos que no incluyen
-el 0 son los de `POBRE_GEIH` (ATE y ATT), por un margen mínimo. El Causal
+Todos los efectos son despreciables y todos los intervalos incluyen el 0.
+Hasta el 2026-11-12, antes de corregir la vivienda del IPM-GEIH por zona,
+el de `POBRE_GEIH` lo excluía por un margen mínimo (−0,0026). El Causal
 Forest no muestra heterogeneidad estable entre corridas.
 
 ### 5.4 Cotas de Fréchet-Manski
 
 | Outcome | Celdas | Cota del ATE |
 |---|---|---|
-| `POBRE_GEIH` | 921 | [−0,261; +0,380] |
+| `POBRE_GEIH` | 921 | [−0,256; +0,278] |
 | `POBRE_MONETARIO` | 921 | [−0,418; +0,648] |
 | `POBRE_MONETARIO_OFICIAL` | 712 | [−0,407; +0,620] |
 

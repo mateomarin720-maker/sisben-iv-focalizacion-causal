@@ -1,14 +1,14 @@
-2026-11-10 19:45:09,470 INFO Elegible A-B: 100.00 % de los hogares GEIH con e de la celda exacta
-2026-11-10 19:45:23,019 INFO Elegible A-B-C: 100.00 % de los hogares GEIH con e de la celda exacta
+2026-11-11 22:56:49,412 INFO Elegible A-B: 100.00 % de los hogares GEIH con e de la celda exacta
+2026-11-11 22:57:04,151 INFO Elegible A-B-C: 100.00 % de los hogares GEIH con e de la celda exacta
 === Errores de focalización del Sisbén con datos reales: cotas de Fréchet por celda ===
 (lo/hi: cotas sin supuestos dentro de la celda; ind: con independencia, como el Hot-Deck)
                                   exclusion_lo  exclusion_ind  exclusion_hi  inclusion_lo  inclusion_ind  inclusion_hi  tasa_pobreza  tasa_elegibles  celdas
 elegible pobreza                                                                                                                                            
 A-B      POBRE_MONETARIO                 0.009          0.443         0.750         0.386          0.655         0.845         0.270           0.436     993
-         POBRE_GEIH                      0.008          0.332         0.580         0.535          0.687         0.803         0.204           0.436     993
+         POBRE_GEIH                      0.004          0.330         0.658         0.669          0.777         0.886         0.145           0.436     993
          POBRE_MONETARIO_OFICIAL         0.007          0.439         0.750         0.412          0.668         0.852         0.258           0.436     756
 A-B-C    POBRE_MONETARIO                 0.000          0.160         0.500         0.653          0.709         0.827         0.270           0.779     993
-         POBRE_GEIH                      0.000          0.111         0.328         0.738          0.767         0.824         0.204           0.779     993
+         POBRE_GEIH                      0.000          0.110         0.381         0.814          0.835         0.885         0.145           0.779     993
          POBRE_MONETARIO_OFICIAL         0.000          0.158         0.506         0.669          0.721         0.836         0.258           0.779     756
 
 --- Por departamento (pobreza monetaria, elegible A-B)

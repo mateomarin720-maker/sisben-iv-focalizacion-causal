@@ -38,7 +38,7 @@ fuentes:
       SECUENCIA_P directamente, distinto de la convención IPM.
 
       Validación de integridad 2024-08-09 (12/12 meses, ver
-      src/utils/validar_geih.py y docs/reports/reporte_*_geih.csv):
+      src/validacion/validar_geih.py y docs/reports/reporte_*_geih.csv):
       corregidos 2 bugs de ingesta que dejaban meses sin procesar —
       geih_loader.py tomaba solo la primera carpeta "CSV" encontrada por
       rglob (algunos meses traen carpetas "CSV" vacías/decoy junto a la

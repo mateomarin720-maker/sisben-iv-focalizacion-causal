@@ -48,6 +48,11 @@ El borrador cita conceptos sin su fuente. Verificadas para agregar:
 | Cotas de Fréchet y de Manski | Fréchet (1951), Hoeffding (1940), Manski (1990), Manski y Pepper (2000), arriba |
 | Atenuación por errores de enlace (Proposición 2) | Scheuren, F. y Winkler, W. E. (1993). Regression analysis of data files that are computer matched. *Survey Methodology*, 19(1), 39-58. [Statistics Canada](https://www150.statcan.gc.ca/n1/en/catalogue/12-001-X199300114476) |
 | | Lahiri, P. y Larsen, M. D. (2005). Regression analysis with linked data. *Journal of the American Statistical Association*, 100(469), 222-230. https://doi.org/10.1198/016214504000001277 (DOI tomado de un registro secundario; confirmar en Crossref). [EconPapers](https://econpapers.repec.org/RePEc:bes:jnlasa:v:100:y:2005:p:222-230) |
+| Familia FGT (pobreza monetaria, brecha) | Foster, J., Greer, J. y Thorbecke, E. (1984). A class of decomposable poverty measures. *Econometrica*, 52(3), 761-766. https://doi.org/10.2307/1913475. [Econometric Society](https://econometricsociety.org/publications/econometrica/1984/05/01/notes-and-comments-class-decomposable-poverty-measures) |
+| Marco de resultados potenciales | Imbens, G. W. y Rubin, D. B. (2015). *Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction*. Cambridge University Press. https://doi.org/10.1017/CBO9781139025751 |
+| Regresión discontinua (escenario de corte de la simulación) | Lee, D. S. y Lemieux, T. (2010). Regression discontinuity designs in economics. *Journal of Economic Literature*, 48(2), 281-355. https://doi.org/10.1257/jel.48.2.281. [EconPapers](https://econpapers.repec.org/RePEc:aea:jeclit:v:48:y:2010:i:2:p:281-355) |
+| Diseño y métricas de la simulación (sesgo, RMSE, cobertura) | Morris, T. P., White, I. R. y Crowther, M. J. (2019). Using simulation studies to evaluate statistical methods. *Statistics in Medicine*, 38(11), 2074-2102. https://doi.org/10.1002/sim.8086. [PMC6492164](https://pmc.ncbi.nlm.nih.gov/articles/PMC6492164) |
+| Proxy de medios (PMT) | Kidd, S. y Wylde, E. (2011). *Targeting the poorest: An assessment of the proxy means test methodology*. AusAID. https://www.dfat.gov.au/sites/default/files/targeting-poorest.pdf |
 
 Las demás referencias del borrador (Athey e Imbens 2016 y 2019; Athey,
 Tibshirani y Wager 2019; Blumenstock et al. 2015; CEPAL 2022;
@@ -56,4 +61,6 @@ Kidd y Wylde 2011; Rubin 1974; Veras Soares et al. 2010; Wager y Athey
 2018) existen como se citan. Falta agregarles el DOI o la URL, y retirar
 las que el texto no cita.
 
-Verificación hecha el 2026-11-11.
+Verificación hecha el 2026-11-11; FGT, Imbens y Rubin, Lee y Lemieux,
+Morris et al. y Kidd y Wylde agregadas el 2026-11-14 (reemplazan el
+antiguo `docs/insumos/referencias_teoricas.md`).

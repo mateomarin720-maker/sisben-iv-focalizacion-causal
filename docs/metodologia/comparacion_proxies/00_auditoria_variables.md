@@ -96,13 +96,13 @@ Frente a la regla oficial difiere así:
 | `inasistencia_escolar_menores` | I3 | **Igual a la oficial** |
 | `sin_aseguramiento_salud` | I9 | Solo el jefe, y "no sabe" (9) cuenta como asegurado; la oficial mira a todos los de 6+ y "no sabe" priva |
 | `sin_cotizacion_pension_jefe` | I8 | Solo el jefe, y priva a todo jefe no ocupado; la oficial es la regla de la "nueva PEA" del hogar |
-| `hacinamiento` | I15 | > 3 en ambas zonas; la oficial es ≥ 3 en urbano |
-| `sin_alcantarillado` | I12 | Regla urbana aplicada también a la zona rural |
-| `sin_acueducto` | I11 | Regla urbana aplicada también a la zona rural |
+| `hacinamiento` | I15 | **Igual a la oficial** desde el 2026-11-11 (≥ 3 en cabeceras, > 3 en lo rural) |
+| `sin_alcantarillado` | I12 | **Igual a la oficial** desde el 2026-11-11 (en lo rural, por el tipo de sanitario) |
+| `sin_acueducto` | I11 | **Igual a la oficial** desde el 2026-11-11 (en lo rural, por la fuente de agua) |
 
 Ninguna de las 8 está mal calculada respecto de su propia definición: la
 diferencia es de definición, y así está documentado en
-`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`. Esto confirma que BASE
+`docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`. Esto confirma que BASE
 no debe llamarse "IPM" sin calificativo.
 
 ### 2.4 Disponibles, faltantes y pendientes de validación

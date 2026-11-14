@@ -18,11 +18,11 @@ Comandos de reproducción y orden de ejecución: `CLAUDE.md` (sección
 | `ingesta/` | Lectores de la GEIH (12 meses, CSV o `.DTA`, Latin-1), del Sisbén y de portales Socrata |
 | `armonizacion/` | Lleva la GEIH, el Sisbén nacional y el Sisbén de Bogotá (SDP) a un esquema canónico por hogar |
 | `emparejamiento/` | Hot-Deck por celdas (departamento, ciclo de vida del jefe, cuartos, nivel de pisos) con cadena de respaldos. Vincula solo a nivel de celda |
-| `indicadores/` | Pobreza monetaria reconstruida con la metodología del DANE, homologación del IPM e inventarios de variables de la GEIH |
+| `indicadores/` | Pobreza monetaria reconstruida con la metodología del DANE, reglas de las 8 privaciones del IPM-GEIH (`ipm_proxy.py`, definición oficial por zona), homologación del IPM e inventarios de variables de la GEIH |
 | `3_preprocesamiento.py` | Outcome IPM-GEIH (8 de 15 privaciones) y muestra de estimación |
 | `3b_preprocesamiento_monetario.py` | Pega la pobreza monetaria a la muestra de estimación |
-| `validacion/` | Chequeos de calidad de los datos: esquema armonizado, faltantes por módulo, códigos de edad del Sisbén, filtros del SDP, celdas con pisos y paredes, contraste con la pobreza oficial y representatividad del Sisbén |
-| `utils/` | Banco de datos en Azure, configuración, validación de la GEIH y `variables_canonicas.py` (reglas compartidas entre fuentes: llaves, jefe de hogar, ciclo de vida) |
+| `validacion/` | Chequeos de calidad de los datos: integridad y error muestral de la GEIH (`validar_geih.py`), esquema armonizado, códigos de edad del Sisbén, filtros del SDP, celdas con pisos y paredes, contraste con la pobreza oficial, representatividad del Sisbén y validación del IPM-GEIH contra la ECV y el IPM oficial 2024 (`validar_ipm_geih_ecv.py`, lee de Azure en memoria) |
+| `utils/` | Banco de datos en Azure, configuración, `variables_canonicas.py` (reglas compartidas entre fuentes: llaves, jefe de hogar, ciclo de vida) y los anexos de la tesis (`anexo_trazabilidad.py`, `figuras_tesis.py`) |
 
 ## Componente 1: diagnóstico con datos reales
 
@@ -34,6 +34,7 @@ Comandos de reproducción y orden de ejecución: `CLAUDE.md` (sección
 | `diagnostico/cotas_frechet_modelos.py` | Una cota por cada parámetro de los modelos (ATE, ATT, ATU, CATE por subgrupo), con resultados binarios y continuos |
 | `diagnostico/errores_focalizacion_frechet.py` | Errores de inclusión y exclusión del Sisbén con datos reales, como cotas por celda |
 | `diagnostico/variabilidad_hotdeck.py` | Cuánto cambia un resultado al repetir el sorteo del Hot-Deck (reglas de Rubin) |
+| `diagnostico/proposiciones.py` | Comprueba las Proposiciones 1 a 3 por Monte Carlo y con las cotas publicadas |
 | `diagnostico/seleccion_variables_lasso_shap.py` | Qué variables predicen el grupo del Sisbén (OE1) |
 | `diagnostico/variables_candidatas_pobreza.py`, `incidencia_transferencias.py` | Qué variables, fuera del Sisbén, ayudan a identificar la pobreza; incidencia de las ayudas declaradas |
 
@@ -55,7 +56,7 @@ Diseño del módulo: `docs/metodologia/DISENO_MODULO_SIMULACION.md`.
 
 | Ruta | Qué hace |
 |---|---|
-| `focalizacion/reglas_focalizacion.py` | Compara reglas (vigente, proxy de medios, CATE, ideal) con el mismo número de hogares y con el mismo dinero |
+| `focalizacion/reglas_focalizacion.py` | Compara reglas (vigente, proxy de medios, CATE con Causal Forest, ideal) con el mismo número de hogares y con el mismo dinero, más dos controles: el efecto verdadero (control positivo) y el CATE de un LinearDML (modelo base lineal) |
 | `focalizacion/heterogeneidad_ampliada.py` | Las mismas reglas con un efecto más heterogéneo (niveles ampliado y complejo) |
 
 ## Pruebas

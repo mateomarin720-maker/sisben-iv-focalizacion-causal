@@ -8,7 +8,7 @@ una encuesta con factor de expansión: cobertura departamental estable mes
 a mes, y una primera aproximación al error muestral usando FEX_C18.
 
 Uso:
-    poetry run python -m src.utils.validar_geih
+    poetry run python -m src.validacion.validar_geih
 
 ⚠️ Limitación importante sobre el error muestral: el microdato PÚBLICO de
 GEIH no trae las variables de diseño (estrato de muestreo, UPM/conglomerado)

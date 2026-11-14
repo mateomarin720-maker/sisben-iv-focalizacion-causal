@@ -59,7 +59,7 @@ doble de heterogeneidad del efecto.
 |---|---|---|
 | Hot-Deck y celdas con vivienda | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py`, `src/validacion/comparar_celdas_hotdeck_vivienda.py` | [`RESULTADOS_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_HOTDECK.md) |
 | Filtro del SDP (Bogotá) | `src/validacion/comparar_filtros_sdp.py` | [`COMPARACION_FILTROS_SDP.md`](1_datos_y_enlace/COMPARACION_FILTROS_SDP.md) |
-| Outcome IPM-GEIH | `src/3_preprocesamiento.py` | [`METODOLOGIA_INDICADOR_IPM_GEIH.md`](../insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md) |
+| Outcome IPM-GEIH | `src/3_preprocesamiento.py` | [`METODOLOGIA_INDICADOR_IPM_GEIH.md`](../metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md) |
 | Validación del IPM-GEIH contra la ECV y el IPM oficial | `src/validacion/validar_ipm_geih_ecv.py` | [`VALIDACION_IPM_GEIH_ECV.md`](1_datos_y_enlace/VALIDACION_IPM_GEIH_ECV.md) |
 | Pobreza monetaria y contraste oficial | `src/indicadores/pobreza_monetaria_geih.py`, `src/3b_preprocesamiento_monetario.py`, `src/validacion/comparar_pobreza_monetaria_oficial.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md) |
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
@@ -77,12 +77,13 @@ cobertura; paredes no agrega nada encima.
 **IPM-GEIH.** 8 de las 15 privaciones del IPM, en las 5 dimensiones; las
 de pisos y paredes se retiraron por tautología con las covariables.
 Score medio 1,38/8; **`POBRE_GEIH` (score ≥ 3) 13,9 %** de los hogares (14,5 % ponderado; 17,1 % antes de corregir la vivienda por zona).
-Validado contra la ECV (2026-11-11): con las mismas reglas, la ECV 2024 da
-19,6 % y la GEIH 2024 20,4 % (ponderados), con correlación de 0,99 entre
-departamentos. La validación encontró que vivienda usaba la regla urbana
-en el campo; con la definición oficial por zona (regenerado el 2026-11-12)
-el proxy da 13,8 % frente a 9,2 % oficial, kappa 0,51, correlación 0,76, y
-K = 3 sigue siendo el mejor corte. `VALIDACION_IPM_GEIH_ECV.md`.
+Validado contra la ECV y el IPM oficial 2024: con las mismas reglas, la
+ECV 2024 da 14,2 % y la GEIH 2024 14,5 % (ponderados), con correlación de
+0,99 entre departamentos; hogar por hogar, el proxy da 13,8 % frente a
+9,2 % oficial, kappa 0,51 y correlación de rangos 0,76. K = 3 es el mejor
+corte. La validación encontró que vivienda usaba la regla urbana en el
+campo; se corrigió el 2026-11-11 y se regeneró el 2026-11-12
+(`VALIDACION_IPM_GEIH_ECV.md`).
 
 **Pobreza monetaria reconstruida.** Unidad de gasto, `INGLABO` más los
 componentes laborales que no incluye, hot-deck de no respuesta laboral,
@@ -236,7 +237,7 @@ Mismo mundo semisintético; presupuesto = los hogares A/B vigentes
 | Vigente (Hot-Deck) | 43,5 %\* | 60\* / 61\* |
 | Aleatoria | 53,4 %\* | 47\* / 47\* |
 | Proxy de medios por ingreso | 18,6 %\* | 82\* / 85\* |
-| Proxy + CATE con vínculo | 26,1 %\* | 73\* / 72\* |
+| Proxy + CATE con vínculo | 26,0 %\* | 73\* / 72\* |
 | Proxy + CATE con Hot-Deck | 54,9 %\* | 45\* / 44\* |
 
 - **Mismo dinero:** el proxy de medios transfiere 13 %\* más que la
@@ -244,7 +245,14 @@ Mismo mundo semisintético; presupuesto = los hogares A/B vigentes
   85\* a 80\* % del ideal y el orden de las reglas no cambia.
 - **Heterogeneidad ampliada:** con el doble de variación del efecto y el
   Causal Forest viendo todos los modificadores, la regla con CATE sigue
-  4 a 11 puntos\* por debajo de la misma regla con efecto constante.
+  4 a 11 puntos\* por debajo de la misma regla con efecto constante. Con
+  el efecto verdadero, la ganancia sobre el PMT sube a 1,6-3,7\* puntos;
+  el LinearDML le gana al bosque si el efecto es lineal y pierde si no.
+- **Controles (2026-11-14):** con el efecto verdadero en vez del CATE
+  estimado, la regla llega a 83\* / 85\* % del ideal, casi igual que el
+  proxy de medios; con un LinearDML, que tiene la forma correcta del
+  efecto, 74\* / 73\*, como el Causal Forest. El problema no es el modelo:
+  con esta heterogeneidad, conocer el efecto aporta casi nada.
 - La regla vigente es la imputada por celda, no la del Sisbén real.
 
 ## Limitaciones generales

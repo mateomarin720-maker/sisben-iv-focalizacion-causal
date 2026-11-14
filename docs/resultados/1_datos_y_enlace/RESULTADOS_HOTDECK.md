@@ -24,7 +24,7 @@ Grupo asignado, ponderado por el factor de expansión de GEIH:
 
 **`viv_cuartos` tenía un código equivocado hasta el 2026-10-28** (tomaba
 `P5010`, "cuartos para dormir", en vez de `P5000`, "cuartos en total" —
-ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). La celda estaba
+ver `docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`). La celda estaba
 matcheando por número de alcobas, no por tamaño total de la vivienda. Con
 el código correcto, Grupo D sube de 10,3 % a 15,6 % — un cambio mayor que
 el de sumar vivienda a la celda en primer lugar, porque antes la variable

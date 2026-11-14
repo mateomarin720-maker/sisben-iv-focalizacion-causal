@@ -1,43 +1,44 @@
 
 === Representatividad del Sisbén frente a GEIH, por departamento ===
-geo_depto  geih_hogares_expandidos  sisben_hogares_registrados  razon_cobertura
-       76             1618278.1895                       77191           0.0477
-       08              819289.0513                       43603           0.0532
-       66              355820.5028                       22200           0.0624
-       05             2520020.9282                      168444           0.0668
-       63              213763.1872                       16151           0.0756
-       17              388941.3991                       39812           0.1024
-       25             1226913.7604                      131686           0.1073
-       88               16399.6667                        1790           0.1091
-       54              554537.8549                       66886           0.1206
-       94                7572.4167                         924           0.1220
-       44              327516.9282                       40237           0.1229
-       50              420172.6823                       51791           0.1233
-       68              830171.4000                      109773           0.1322
-       23              588679.9618                       79795           0.1355
-       13              714571.5035                      101547           0.1421
-       91               12508.4246                        1801           0.1440
-       19              549619.6975                       80645           0.1467
-       20              438202.0937                       70339           0.1605
-       73              501751.6282                       86047           0.1715
-       47              441292.3603                       75924           0.1720
-       41              380579.0219                       67061           0.1762
-       52              600347.9965                      117021           0.1949
-       18              159547.6660                       31269           0.1960
-       70              305532.0051                       62040           0.2031
-       27              222482.7323                       50837           0.2285
-       15              487720.4891                      131306           0.2692
-       97                3413.7500                        1029           0.3014
-       11             3070267.0632                     1274578           0.4151
-       95               15605.3333                        6990           0.4479
-       81               29131.1667                       16380           0.5623
-       85               59490.3333                       33726           0.5669
-       99                5589.5833                        5440           0.9732
-       86               18932.4167                       29148           1.5396
+geo_depto  geih_hogares_expandidos  sisben_hogares_registrados  razon_cobertura                  marco
+       85               59490.3333                        1329           0.0223 cabecera de la capital
+       88               16399.6667                         540           0.0329 cabecera de la capital
+       76             1618278.1895                       77191           0.0477           departamento
+       81               29131.1667                        1489           0.0511 cabecera de la capital
+       08              819289.0513                       43603           0.0532           departamento
+       66              355820.5028                       22200           0.0624           departamento
+       95               15605.3333                        1019           0.0653 cabecera de la capital
+       05             2520020.9282                      168444           0.0668           departamento
+       86               18932.4167                        1322           0.0698 cabecera de la capital
+       63              213763.1872                       16151           0.0756           departamento
+       17              388941.3991                       39812           0.1024           departamento
+       25             1226913.7604                      131686           0.1073           departamento
+       91               12508.4246                        1373           0.1098 cabecera de la capital
+       94                7572.4167                         894           0.1181 cabecera de la capital
+       54              554537.8549                       66886           0.1206           departamento
+       44              327516.9282                       40237           0.1229           departamento
+       50              420172.6823                       51791           0.1233           departamento
+       68              830171.4000                      109773           0.1322           departamento
+       23              588679.9618                       79795           0.1355           departamento
+       13              714571.5035                      101547           0.1421           departamento
+       19              549619.6975                       80645           0.1467           departamento
+       20              438202.0937                       70339           0.1605           departamento
+       73              501751.6282                       86047           0.1715           departamento
+       47              441292.3603                       75924           0.1720           departamento
+       41              380579.0219                       67061           0.1762           departamento
+       52              600347.9965                      117021           0.1949           departamento
+       18              159547.6660                       31269           0.1960           departamento
+       70              305532.0051                       62040           0.2031           departamento
+       97                3413.7500                         729           0.2135 cabecera de la capital
+       99                5589.5833                        1238           0.2215 cabecera de la capital
+       27              222482.7323                       50837           0.2285           departamento
+       15              487720.4891                      131306           0.2692           departamento
+       11             3070267.0632                     1274578           0.4151           departamento
 
-Razón de cobertura nacional: 0.173
-Razón mínima: 0.048 (depto 76)
-Razón máxima: 1.540 (depto 86)
-Factor de variación (máx/mín): 32.3x
+Razón de cobertura nacional: 0.168
+Razón mínima: 0.022 (depto 85)
+Razón máxima: 0.415 (depto 11)
+Factor de variación (máx/mín): 18.6x
+Solo departamentos completos (24): 0.048 a 0.415, factor 8.7x
 
 Guardado: docs\reports\representatividad_sisben_por_depto.csv

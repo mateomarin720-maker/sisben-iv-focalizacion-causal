@@ -39,7 +39,7 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
-| Pruebas | Hechas | 270 pruebas y 60 mutaciones al 12 nov, con integración continua |
+| Pruebas | Hechas | 271 pruebas y 62 mutaciones al 14 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
 
@@ -127,12 +127,12 @@ El grupo imputado solo lleva la información de la celda, así que su desempeño
 
 ## Pruebas y calidad del código
 
-La suite pasa en GitHub Actions: 270 pruebas al 12 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
+La suite pasa en GitHub Actions: 271 pruebas al 14 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
 
 | Aspecto | Estado |
 | --- | --- |
 | Integración continua | `.github/workflows/pruebas.yml` corre la suite y la prueba de mutación en cada push a `main` y en cada PR (Python 3.11). Últimas corridas en verde |
-| Prueba de mutación | Se reintroducen 60 errores y los 60 hacen fallar alguna prueba |
+| Prueba de mutación | Se reintroducen 62 errores y los 62 hacen fallar alguna prueba |
 | Cobertura | Armonización contra los diccionarios oficiales, DML, cotas de Fréchet-Manski, reglas de focalización, simulación semisintética y su sensibilidad |
 | Estabilidad | Cinco corridas seguidas sin fallos; pruebas con azar usan semillas fijas |
 | Comando del proyecto | `poetry run pytest` pasa desde el 4 de noviembre (`pythonpath` en `pyproject.toml`); ningún script usa ya `warnings.filterwarnings("ignore")` |
@@ -220,6 +220,8 @@ Comprobado contra el repositorio al incorporar este documento:
   0,072 (ponderados: 0,049 y 0,039); a escala nacional, CV ≤ 0,007. El
   −0,0026 del DML en `POBRE_GEIH` (único IC sin el cero) depende de la
   semilla: con 100 sorteos y reglas de Rubin, −0,00003 [−0,0036; +0,0036].
+  (Cifras del 4-nov; con el IPM-GEIH corregido el 12-nov el sorteo único da
+  −0,0021 [−0,0045; +0,0004] y Rubin −0,000004 [−0,0033; +0,0033].)
 - **Prioridad 7 hecha el mismo día:** `poetry run pytest` pasa (138) tras
   agregar `pythonpath` en `pyproject.toml`; los tres scripts de
   simulación ya no usan `warnings.filterwarnings("ignore")` (sin el

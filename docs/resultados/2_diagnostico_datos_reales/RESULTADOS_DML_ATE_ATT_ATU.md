@@ -95,7 +95,7 @@ que antes (p5 0,363 sin pisos).
 - Tratamiento imputado por Hot-Deck, no observado: el DML no identifica
   el efecto del Sisbén con este diseño (`SIMULACION_IDENTIFICACION.md`).
 - IPM-GEIH con 8 de 15 privaciones del IPM oficial
-  (`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`).
+  (`docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`).
 - Pobreza monetaria reconstruida con microdatos públicos, no la oficial
   (clasifica igual al 93,9 % de los hogares que mide el DANE,
   `RESULTADOS_POBREZA_MONETARIA.md`).

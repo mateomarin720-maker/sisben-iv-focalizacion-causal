@@ -100,7 +100,7 @@ abierta y recomendación, no como conclusión causal). Reglas del tutor:
   columna nueva, incluso si el resultado agregado parece razonable (el
   hacinamiento viejo daba 23,3 %, un número plausible, calculado con la
   columna equivocada). Detalle completo:
-  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
+  `docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 
 - **Las privaciones del IPM cambian de definición con la zona.** Hasta
   el 2026-11-11 el IPM-GEIH usaba la regla urbana de vivienda en todo el
@@ -240,7 +240,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 60 de 60 el 2026-11-12). Antes de mapear una
+cuando el error vuelve; 62 de 62 el 2026-11-14). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

@@ -105,3 +105,36 @@ def test_con_el_mismo_dinero_la_vigente_trata_a_los_mismos_hogares():
     vigente = (rng.random(500) < 0.45).astype(int)
     t = rf.elegir_por_dinero(vigente.astype(float), costo, float(costo @ vigente), rng)
     assert t.tolist() == vigente.tolist()
+
+
+def test_x_lineal_pasa_las_categoricas_sin_orden_como_indicadoras():
+    """El modelo base lineal no puede recibir el código de paredes como
+    número (CLAUDE.md: rompe `LinearDML`): una indicadora por categoría,
+    sin la primera; una categoría nueva queda en la de referencia."""
+    entrena = pd.DataFrame({"geo_zona_urbana": [1, 0, 1], "jefe_mujer": [0, 1, 1], "viv_paredes": [1, 3, 5]})
+    x, cats = rf.x_lineal(entrena, ["geo_zona_urbana", "jefe_mujer", "viv_paredes"])
+    assert list(x.columns) == ["geo_zona_urbana", "jefe_mujer", "viv_paredes_3", "viv_paredes_5"]
+    assert x[["viv_paredes_3", "viv_paredes_5"]].to_numpy().tolist() == [[0, 0], [1, 0], [0, 1]]
+    evalua = pd.DataFrame({"geo_zona_urbana": [0], "jefe_mujer": [0], "viv_paredes": [9]})
+    x2, _ = rf.x_lineal(evalua, ["geo_zona_urbana", "jefe_mujer", "viv_paredes"], cats)
+    assert list(x2.columns) == list(x.columns)
+    assert x2[["viv_paredes_3", "viv_paredes_5"]].to_numpy().tolist() == [[0, 0]]
+
+
+def test_el_modelo_base_lineal_recupera_un_efecto_lineal():
+    """Control del modelo base: con un efecto lineal en las X y asignación
+    al azar dentro de la celda, el CATE de `ajustar_lineal` es el
+    verdadero."""
+    rng = np.random.default_rng(7)
+    n = 6000
+    d = pd.DataFrame({"geo_zona_urbana": rng.integers(0, 2, n), "jefe_mujer": rng.integers(0, 2, n),
+                      "viv_paredes": rng.choice([1, 2, 3], n), "hotdeck_celda_cat": rng.integers(0, 20, n)})
+    tau = (0.10 + 0.05 * (1 - d["geo_zona_urbana"]) - 0.03 * d["jefe_mujer"]
+           + 0.04 * (d["viv_paredes"] != 1)).to_numpy(float)
+    p = 0.3 + 0.4 * (d["hotdeck_celda_cat"].to_numpy() % 2)
+    t = (rng.random(n) < p).astype(int)
+    # La celda confunde: sube la probabilidad de tratamiento y el resultado.
+    y = 0.3 * (d["hotdeck_celda_cat"].to_numpy() % 2) + tau * t + rng.normal(0, 0.05, n)
+    m, cats = rf.ajustar_lineal(d, y, t, ["geo_zona_urbana", "jefe_mujer", "viv_paredes"])
+    cate = np.ravel(m.effect(rf.x_lineal(d, ["geo_zona_urbana", "jefe_mujer", "viv_paredes"], cats)[0].to_numpy(float)))
+    assert np.sqrt(np.mean((cate - tau) ** 2)) < 0.01

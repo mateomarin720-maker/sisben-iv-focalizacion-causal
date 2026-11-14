@@ -68,7 +68,7 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 | Vigente (Hot-Deck): error de exclusión; % de la reducción ideal de FGT1 (proporcional / monto fijo) | 43,5 %\*; 60\* / 61\* | `reglas_focalizacion_resumen.csv` | regla `vigente_hotdeck`, presupuesto `hogares` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
 | Aleatoria: error de exclusión; % de la reducción ideal de FGT1 (proporcional / monto fijo) | 53,4 %\*; 47\* / 47\* | `reglas_focalizacion_resumen.csv` | regla `aleatoria`, presupuesto `hogares` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
 | Proxy de medios por ingreso: error de exclusión; % de la reducción ideal de FGT1 (proporcional / monto fijo) | 18,6 %\*; 82\* / 85\* | `reglas_focalizacion_resumen.csv` | regla `pmt_ingreso`, presupuesto `hogares` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
-| Proxy + CATE con vínculo: error de exclusión; % de la reducción ideal de FGT1 (proporcional / monto fijo) | 26,1 %\*; 73\* / 72\* | `reglas_focalizacion_resumen.csv` | regla `pmt_brecha_cate`, presupuesto `hogares` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
+| Proxy + CATE con vínculo: error de exclusión; % de la reducción ideal de FGT1 (proporcional / monto fijo) | 26,0 %\*; 73\* / 72\* | `reglas_focalizacion_resumen.csv` | regla `pmt_brecha_cate`, presupuesto `hogares` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
 | Proxy + CATE con Hot-Deck: error de exclusión; % de la reducción ideal de FGT1 (proporcional / monto fijo) | 54,9 %\*; 45\* / 44\* | `reglas_focalizacion_resumen.csv` | regla `pmt_brecha_cate_hd`, presupuesto `hogares` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
 | Repeticiones de las reglas | 300 | `reglas_focalizacion_resumen.csv` | columna `reps` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
 | Proxy de medios con el mismo dinero que la vigente: % del ideal (gasto relativo con el mismo número de hogares) | 80\* (1,13\*) | `reglas_focalizacion_resumen.csv` | `pmt_ingreso`, monto fijo, presupuestos `dinero` y `hogares` | `poetry run python -m src.focalizacion.reglas_focalizacion` |
@@ -77,5 +77,5 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
-| Pruebas automáticas | 270 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
-| Errores conocidos reintroducidos por la prueba de mutación | 60 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |
+| Pruebas automáticas | 271 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
+| Errores conocidos reintroducidos por la prueba de mutación | 62 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |

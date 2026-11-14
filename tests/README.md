@@ -1,6 +1,6 @@
 # Pruebas
 
-269 pruebas en 25 archivos (2026-11-12). Casi todas usan datos
+271 pruebas en 25 archivos (2026-11-14). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -50,7 +50,8 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_preprocesamiento.py` | `3_preprocesamiento.py` | IPM-GEIH con enero real: una fila por hogar, privaciones binarias sin faltantes, puntaje = suma, umbrales monótonos (se salta sin los datos) | |
 | `test_preprocesamiento_monetario.py` | `indicadores/pobreza_monetaria_geih.py`, `3b_…` | Unidad de gasto, jornalero (`P6430` = 7), imputación, líneas, cruce con la oficial | `P6430` = 7 leído como sin remuneración |
 | `test_homologacion_ipm.py` | `indicadores/homologacion_ipm.py` | Matriz GEIH ↔ Sisbén de las 15 privaciones: cada código existe en su diccionario oficial, pesos oficiales | Citar un código que no existe |
-| `test_reglas_focalizacion.py` | `focalizacion/reglas_focalizacion.py` | Brecha y efecto (proporcional y monto fijo), reducción esperada sobre los residuos, elección de los k mejores, errores de inclusión/exclusión ponderados por personas, la regla ideal nunca pierde, el proxy de medios sin el ingreso | |
+| `test_reglas_focalizacion.py` | `focalizacion/reglas_focalizacion.py` | Brecha y efecto (proporcional y monto fijo), reducción esperada sobre los residuos, elección de los k mejores, errores de inclusión/exclusión ponderados por personas, la regla ideal nunca pierde, el proxy de medios sin el ingreso, el modelo base lineal recibe las categóricas como indicadoras y recupera un efecto lineal | Paredes como número en el modelo lineal; modelo lineal sin la celda |
+| `test_heterogeneidad_ampliada.py` | `focalizacion/heterogeneidad_ampliada.py` | Modificadores con los códigos de la GEIH, efecto con la media del generador y más variación, el efecto depende de los modificadores nuevos, el bosque ve todos los modificadores y controla la celda con cualquier X | Efecto sin estandarizar; piso de tierra con el código del Sisbén |
 | `test_sensibilidad_semisintetica.py` | `simulacion/sensibilidad_semisintetica.py` | RD difusa insesgada y con cobertura ≈95 % en 100 semillas; la RD nítida sobre participación difusa se atenúa; escenarios y versión sin regularizar del DML | |
 | `test_variabilidad_hotdeck.py` | `diagnostico/variabilidad_hotdeck.py` | Concordancia entre sorteos insesgada y convergente a la teórica de la celda; CV y error relativo por celda ponderados; contraste con efectos fijos igual a MCO con indicadoras; reglas de Rubin | |
 | `test_simulacion_semisintetica.py` | `simulacion/*` | Generador, Hot-Deck simulado, RD, MCSE; efectos fijos con códigos de celda `int8`; cadena de respaldos igual a la del `hotdeck()` del pipeline y sorteo sin cambios cuando no hay celdas vacías; asterisco en toda cifra simulada y columna `simulado` | Desborde con códigos de celda pequeños (2026-11-04); sortear en todo el registro sin pasar por los respaldos |

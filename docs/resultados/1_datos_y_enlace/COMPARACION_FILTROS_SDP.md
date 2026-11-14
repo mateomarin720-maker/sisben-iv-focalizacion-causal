@@ -3,7 +3,7 @@
 Generado 2026-10-21 por `src/validacion/comparar_filtros_sdp.py`,
 refrescado el 2026-10-28 tras corregir el código de `viv_cuartos` (antes
 tomaba "cuartos para dormir" en vez de "cuartos en total" — ver
-`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Resuelve
+`docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`). Resuelve
 con evidencia la duda abierta en `docs/seguimiento/CHANGELOG_PENDIENTES.md`
 (2026-10-10): el archivo del SDP trae `fec_fin_encuesta` por hogar entre
 2019-03-22 y 2026-07-29 — no es un corte único, es un registro

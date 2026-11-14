@@ -15,7 +15,7 @@ comparte llave de hogar con GEIH/Sisbén).
   dormir") y `P6008` ("total de personas en el hogar", directo).
 - El índice solo tenía 4 privaciones porque no había forma de verificar
   más códigos sin el diccionario oficial (ver intento documentado en
-  `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5, histórico). Con el
+  `docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md` §5, histórico). Con el
   diccionario ya conseguido, se amplía a **8 privaciones**, cubriendo las
   5 dimensiones del IPM (antes solo 4 dimensiones con 1 indicador cada
   una).

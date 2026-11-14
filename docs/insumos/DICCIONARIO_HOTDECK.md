@@ -1,7 +1,9 @@
 # Diccionario consolidado — Variables para Hot-Deck (GEIH ↔ Sisbén IV)
 
-*(Actualizado 2026-10-09. Toda variable codificada queda con su nombre y
-significado aquí, no solo en comentarios de código — observación del tutor.)*
+*(Actualizado 2026-11-14: celda con pisos desde el 2026-11-02 y cadena de
+respaldos desde el 2026-11-04. Toda variable codificada queda con su nombre
+y significado aquí, no solo en comentarios de código — observación del
+tutor.)*
 
 ## 1. Variable de tratamiento
 
@@ -34,18 +36,18 @@ significado aquí, no solo en comentarios de código — observación del tutor.
 (`docs/insumos/DICCIONARIO_GEIH_2024.xlsx`) y el de Sisbén
 (`docs/insumos/DICCIONARIO_SISBEN_2024.xlsx`). Antes de esta fecha,
 `viv_paredes`/`viv_pisos`/`viv_cuartos` del lado GEIH usaban códigos
-equivocados (ver `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` para el
+equivocados (ver `docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md` para el
 detalle del error y su efecto en el Hot-Deck).
 
 | Nombre canónico | GEIH | Sisbén nacional | Sisbén Bogotá (SDP) | Estado |
 |---|---|---|---|---|
 | `geo_depto` | `DPTO` | `cod_mpio[:2]` | `"11"` | ✅ 33 códigos DIVIPOLA idénticos |
 | `geo_localidad` | — | — | `Cod_comuna` (localidad, 20 códigos) | Solo descriptiva; GEIH no la desagrega |
-| `geo_zona` | `CLASE` — **1=Urbano, 2=Rural** (confirmado) | `ZONA` (1/2) | `Cod_clase` (1 cabecera, 2 centro poblado, 3 rural disperso) | ✅ Lado GEIH confirmado; Sisbén sin confirmar si 1 es el mismo sentido |
+| `geo_zona` | `CLASE` — **1=Urbano, 2=Rural** (confirmado) | `ZONA` (1/2) | `Cod_clase` (1 cabecera, 2 centro poblado, 3 rural disperso) | ✅ 1 = urbano en las dos fuentes: GEIH por el diccionario; Sisbén inferido de `I14` (2026-11-02, `HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`). No entra a la celda |
 | `jefe_edad` | `P6040` (**años**, confirmado: "¿cuántos años cumplidos tiene?") | `PER002` (**código de ciclo de vida**) | `fec_nacimiento` → ciclo | ⚠️ Ver sección 5 |
 | `jefe_sexo` | `P3271` — confirmada la pregunta ("¿cuál fue su sexo al nacer?"), el diccionario no trae la tabla 1/2 explícita | `PER001` | `sexo_persona` (valor `4` inválido → nulo) | ⚠️ Pregunta confirmada, dirección del código 1/2 sigue sin confirmar |
-| `viv_paredes` | **`P4010`** (corregido, antes `P4020`) | `VIV002` | `tip_mat_paredes` | ✅ Lado GEIH confirmado y con categorías completas (ver METODOLOGIA_INDICADOR_IPM_GEIH.md); Sisbén sin la tabla de categorías explícita todavía |
-| `viv_pisos` | **`P4020`** (corregido, antes `P4030S1`) | `VIV003` | `tip_mat_pisos` | ✅ Lado GEIH confirmado y con categorías completas; Sisbén igual que arriba |
+| `viv_paredes` | **`P4010`** (corregido, antes `P4020`) | `VIV002` | `tip_mat_paredes` | ✅ Homologado el 2026-11-02 con la ficha del Sisbén IV y verificado contra `I13` (`HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`). Evaluado para la celda y descartado (sección 6) |
+| `viv_pisos` | **`P4020`** (corregido, antes `P4030S1`) | `VIV003` | `tip_mat_pisos` | ✅ Homologado el 2026-11-02 (ficha del Sisbén IV, verificado contra `I14`). **En la celda** por nivel: acabado, cemento o madera burda, tierra. Los códigos crudos van al revés entre fuentes (tierra = 1 en GEIH, 5 en Sisbén) |
 | `viv_cuartos` | **`P5000`** (corregido, antes `P5010`) — "cuartos en total, incl. sala-comedor" | `VIV009` — "número de cuartos, incl. sala-comedor" | `num_cuartos_vivienda` | ✅ Mismo concepto confirmado en las dos fuentes (antes GEIH medía sin saberlo "cuartos para dormir", un concepto distinto) |
 | `viv_cuartos_dormir` | `P5010` (nuevo, separado de `viv_cuartos`) | — | — | Insumo de `hacinamiento` en `3_preprocesamiento.py`, no entra a la celda del Hot-Deck |
 | `viv_alcantarillado` | `P4030S3` (nuevo, ya ubicado) | `VIV005` | `ind_tiene_alcantarillado` | ✅ Homologado en GEIH desde 2026-10-28 |
@@ -53,12 +55,11 @@ detalle del error y su efecto en el Hot-Deck).
 | `hog_num_personas` | `P6008` (nuevo, ya ubicado — "total de personas en el hogar") | `HOG027` | conteo de personas por hogar | ✅ Homologado en GEIH desde 2026-10-28 |
 | `fex` | `FEX_C18` | `FEX` | — (fijo en 1: no hay factor de expansión) | Ponderación, no entra a la celda |
 
-Las categorías de `viv_paredes`/`viv_pisos` SÍ están confirmadas del lado
-GEIH, pero **las categorías del lado Sisbén (`VIV002`/`VIV003`) todavía no
-tienen el desglose completo en el diccionario disponible** — por eso
-siguen sin sumarse a la celda del Hot-Deck ni usarse como privación
-directamente comparable entre fuentes. `viv_cuartos` (conteo cardinal) sí
-se usa en la celda porque no necesita homologar categorías.
+`viv_paredes` y `viv_pisos` se comparan entre fuentes solo a través de la
+escala común de `HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`, nunca por el código
+crudo. `viv_cuartos` (conteo cardinal) no necesita homologar categorías.
+Bogotá (SDP) es coherente con la ficha pero no se pudo verificar con
+privaciones.
 
 ## 5. Edad del jefe: ciclo de vida (✅ hipótesis corroborada indirectamente, 2026-10-10)
 
@@ -84,9 +85,26 @@ El extracto del Sisbén **no trae la edad en años**. Entre jefes de hogar (`PER
 
 Los códigos 1 y 2 (infancia/niñez, nunca jefes de hogar) confirman además que el ciclo de vida completo tiene 6 categorías, no 4 — el hot-deck solo necesita 3–6 porque un jefe de hogar nunca cae en 1/2. Detalle de la verificación: `src/validacion/verificar_codigos_edad_sisben.py`. En Bogotá y en GEIH la edad se convierte con los cortes 17/28/59.
 
-## 6. Celda de matching actual
+## 6. Celda de matching actual (desde el 2026-11-02)
 
-`geo_depto` + ciclo de vida del jefe (≈130 celdas). Degradación jerárquica: `celda_exacta` → `solo_depto` → `pool_nacional`. Solo son donantes los hogares con `Clasificacion` observada. Resultado actual: 100 % celda exacta.
+| Componente | Valores | Desde |
+|---|---|---|
+| `geo_depto` | 33 códigos DIVIPOLA | 2026-09-17 |
+| Ciclo de vida del jefe | 12-17, 18-28, 29-59, 60+ (sección 5; tramos en `src/utils/variables_canonicas.py`) | 2026-10-09 |
+| Tramo de `viv_cuartos` | 1, 2, 3 o más | 2026-10-21 (código corregido el 2026-10-28) |
+| Nivel de `viv_pisos` | acabado, cemento o madera burda, tierra | 2026-11-02 |
+
+993 celdas con receptores; 99,98 % de los hogares en celda exacta. Por qué
+pisos sí y paredes no: con pisos, la correlación de P(T | celda) con la
+pobreza monetaria sube de 0,20 a 0,29 con casi la misma cobertura; paredes
+triplica las celdas sin mejorarla (`RESULTADOS_HOTDECK.md`,
+`src/validacion/comparar_celdas_hotdeck_vivienda.py`).
+
+Cadena de respaldos (`claves_por_nivel`, definida una vez para el Hot-Deck
+y la simulación): `celda_exacta` → `sin_pisos` → `solo_depto_edad` →
+`solo_depto` → `pool_nacional`. Solo son donantes los hogares con
+`Clasificacion` observada. La celda sin pisos queda como sensibilidad
+(`incluir_pisos=False`).
 
 ## 7. ⚠️ Circularidad confirmada — nunca usar como Outcome
 
@@ -100,7 +118,7 @@ Los códigos 1 y 2 (infancia/niñez, nunca jefes de hogar) confirman además que
 - **Corte distinto (corregido 2026-10-10, dos iteraciones):** el archivo del SDP no es un corte único — es un registro administrativo continuo con `fec_fin_encuesta` entre 2019-03-22 y 2026-07-29 (verificado: cada hogar aparece una sola vez en el archivo, con la fecha de su único registro — no hay copias duplicadas repitiendo el mismo valor año a año). Antes del 2026-10-10 se usaban los 1.458.474 jefes completos bajo la etiqueta fija `"bogota_sdp_2026-08"`, sin filtrar por fecha.
   - **Primer intento (año exacto 2024):** descartado. Solo 75.488 de 1.458.474 jefes (5,2 %) tienen `fec_fin_encuesta` en el año 2024 exacto. Ese filtro confunde "estar registrado en 2024" con "haber sido re-encuestado en 2024" — el Sisbén no re-visita a todos los hogares cada año, así que subestima brutalmente el universo vigente y sesga la muestra hacia hogares con actualización reciente (que no son representativos del resto).
   - **Filtro adoptado (vigencia hasta corte, `fec_fin_encuesta <= 2024-12-31`):** 1.274.578 de 1.458.468 hogares (87,4 %) quedan vigentes; se descartan 183.890 por ser posteriores (registrados/actualizados en 2025-2026, fuera del alcance de "población 2024"). Es consistente con el nacional, cuyo `CORTE` tampoco trae fecha real por hogar (literal fijo `"SIV_2024"` para los 1.833.166 hogares) — ambas fuentes se tratan como "stock vigente a una fecha", no "encuestados ese año exacto".
-  - Efecto en el Hot-Deck con el filtro adoptado: donante total 3.106.489 hogares (vs. 3.290.379 sin filtrar y 1.907.399 con año exacto). Celda exacta: 100 % (también dentro de Bogotá). Números de Grupo nacional actualizados el 2026-10-28 tras corregir `viv_cuartos` (ver más abajo) — ver `docs/resultados/1_datos_y_enlace/RESULTADOS_HOTDECK.md` para la cifra vigente.
+  - Efecto en el Hot-Deck con el filtro adoptado: donante total 3.106.489 hogares (vs. 3.290.379 sin filtrar y 1.907.399 con año exacto). Celda exacta: 100 % con la celda de entonces (departamento y edad); 99,98 % con la vigente. Números de Grupo nacional actualizados el 2026-10-28 tras corregir `viv_cuartos` (ver más abajo) — ver `docs/resultados/1_datos_y_enlace/RESULTADOS_HOTDECK.md` para la cifra vigente.
   - **Dentro de Bogotá el filtro de fecha sigue importando** (ver `docs/resultados/1_datos_y_enlace/COMPARACION_FILTROS_SDP.md` para los números vigentes tras la corrección de vivienda) — la muestra de "solo recién actualizados" sigue sin ser representativa del Sisbén vigente de Bogotá.
   - Limitación que persiste: no se puede verificar si el nacional (`CORTE="SIV_2024"` fijo) tiene la misma mezcla de antigüedad por hogar que Bogotá — el extracto no expone una fecha real por hogar como sí lo hace el SDP.
 - **Selección:** el Sisbén solo incluye hogares encuestados; asignar su distribución a todo el GEIH sobrerrepresenta A y B.
@@ -110,5 +128,6 @@ Los códigos 1 y 2 (infancia/niñez, nunca jefes de hogar) confirman además que
 ## 9. Pendientes de este diccionario
 - [x] Confirmar los códigos de `PER002` — corroborado indirectamente (sección 5, 2026-10-10); sigue faltando la ficha ANDA oficial para confirmación 100 %.
 - [x] Ubicar en GEIH las columnas equivalentes a `HOG027`, `VIV005`, `VIV008` — hecho 2026-10-28 (`P6008`, `P4030S3`, `P4030S5`), ver sección 4.
-- [x] Verificar `geo_zona`, `viv_paredes`, `viv_pisos` contra el diccionario oficial de GEIH — hecho 2026-10-28 (sección 4). Pendiente aún del lado Sisbén (categorías de `VIV002`/`VIV003` sin desglose completo) y `jefe_sexo` (pregunta confirmada, dirección del código 1/2 no).
-- [ ] Sumar `viv_paredes`/`viv_pisos` a la celda del Hot-Deck una vez se homologuen las categorías también del lado Sisbén.
+- [x] Verificar `geo_zona`, `viv_paredes`, `viv_pisos` contra el diccionario oficial de GEIH — hecho 2026-10-28 (sección 4); del lado Sisbén, con la ficha del Sisbén IV el 2026-11-02.
+- [x] Sumar `viv_paredes`/`viv_pisos` a la celda — pisos sumado el 2026-11-02; paredes evaluado y descartado (sección 6).
+- [ ] `jefe_sexo`: confirmar el sentido del código 1/2 en las dos fuentes (la pregunta está confirmada). No entra a la celda.

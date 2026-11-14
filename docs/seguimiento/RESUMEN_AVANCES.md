@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 269 pruebas; 60 de 60 errores documentados detectados por mutación (2026-11-12); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 271 pruebas; 62 de 62 errores documentados detectados por mutación (2026-11-14); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -78,7 +78,7 @@ sin pisos (A 22,0 · D 15,6 %) queda como sensibilidad. Detalle:
 ### 3b. Outcomes
 
 - **IPM-GEIH:** 8 de las 15 privaciones oficiales; 13,9 % de hogares con
-  `POBRE_GEIH` (score ≥ 3), con la vivienda corregida por zona (antes 17,1 %). `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
+  `POBRE_GEIH` (score ≥ 3), con la vivienda corregida por zona (antes 17,1 %). `docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`.
 - **Pobreza monetaria reconstruida** (unidad de gasto, líneas por
   dominio, hot-deck de no respuesta laboral, arriendo imputado; D1-D7
   cerradas): **33,2 %** de personas pobres frente a 31,8 % oficial;
@@ -196,10 +196,11 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
       zenodo.org con GitHub, activar el repositorio en la configuración de
       GitHub de Zenodo (debe ser público), publicar una versión en GitHub
       (por ejemplo `v1.0.0`) y agregar el DOI que asigna Zenodo a
-      `CITATION.cff` y al documento. Conviene agregar antes el `LICENSE`,
-      porque Zenodo publica la licencia con el DOI.
-    - Agregar el archivo `LICENSE`: `pyproject.toml` declara MIT, pero el
-      archivo no existe. Lo deciden los autores.
+      `CITATION.cff` y al documento. Zenodo publica con el DOI la licencia
+      del `LICENSE`.
+    - ~~Agregar el archivo `LICENSE`~~ **Hecho 2026-11-14:** MIT, a nombre
+      de los dos autores (como declaraba `pyproject.toml`), también en
+      `CITATION.cff` y en el README. Cubre el código, no los datos.
     - Declaración de uso de IA: la del repositorio está en
       `docs/anexos_tesis/DECLARACION_USO_IA.md`. Falta la del documento
       escrito (redacción, traducción del resumen, corrección de estilo),
@@ -245,6 +246,6 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
 - `docs/resultados/README.md` — índice de resultados (empezar aquí)
 - `docs/metodologia/pobreza_monetaria/` — auditoría (`00`) y decisiones y diccionario del ingreso (`01`)
 - `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md` — paredes y pisos entre fuentes
-- `docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md` — IPM-GEIH
+- `docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md` — IPM-GEIH
 - `docs/insumos/DICCIONARIO_GEIH_2024.xlsx`, `DICCIONARIO_SISBEN_2024.xlsx`, `FICHA_SISBEN_IV_FCS_2017.pdf`
 - `docs/seguimiento/CHANGELOG_PENDIENTES.md` — historial

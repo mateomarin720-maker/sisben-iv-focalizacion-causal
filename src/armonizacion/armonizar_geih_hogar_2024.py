@@ -10,7 +10,7 @@ homologadas en vez de tener que mapear nombres cada vez.
 ⚠️ CORREGIDO 2026-10-28 con el diccionario oficial de variables de GEIH
 2024 (`docs/insumos/Diccionario_variables_GEIH_2024.xlsx`, conseguido
 después de documentar el bloqueo en
-`docs/insumos/METODOLOGIA_INDICADOR_IPM_GEIH.md`). El mapeo de vivienda
+`docs/metodologia/METODOLOGIA_INDICADOR_IPM_GEIH.md`). El mapeo de vivienda
 que tenía este script ANTES de esa fecha estaba mal — no por adivinar,
 sino por una correspondencia de códigos incorrecta que nadie había
 verificado contra la ficha real:
