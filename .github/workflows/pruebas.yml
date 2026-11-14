@@ -29,25 +29,27 @@ jobs:
             exit 1
           fi
 
+      - name: Instalar Poetry
+        run: pipx install poetry
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: pip
-          cache-dependency-path: requirements-pruebas.txt
+          cache: poetry
 
-      - name: Instalar dependencias de las pruebas
-        run: pip install -r requirements-pruebas.txt
+      - name: Instalar dependencias (versiones de poetry.lock)
+        run: poetry install --no-root
 
       # Cada prueba fallida queda también como anotación del job (visible
       # sin permisos sobre los registros).
       - name: Pruebas
         run: |
           set -o pipefail
-          python -m pytest tests/ -q -rs -rf 2>&1 | tee pytest.log || {
+          poetry run python -m pytest tests/ -q -rs -rf 2>&1 | tee pytest.log || {
             grep -E "^(FAILED|ERROR) " pytest.log | sed 's/^/::error title=pytest::/'
             exit 1
           }
 
       # Reintroduce cada error ya documentado y exige que alguna prueba falle.
       - name: Prueba de mutación
-        run: python tests/mutaciones.py
+        run: poetry run python tests/mutaciones.py

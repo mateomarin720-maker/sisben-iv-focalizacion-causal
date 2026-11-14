@@ -44,6 +44,10 @@ shap = ">=0.51,<1.0"
 # Banco de datos
 azure-storage-blob = "^12.30.3"
 
+# Única fuente de dependencias, también para las pruebas: la integración
+# continua (.github/workflows/pruebas.yml, Python 3.11) corre
+# `poetry install --no-root` con las versiones de poetry.lock. Una dependencia
+# nueva que usen `src/` o `tests/` se declara aquí y se regenera el lock.
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 ruff = "^0.3"

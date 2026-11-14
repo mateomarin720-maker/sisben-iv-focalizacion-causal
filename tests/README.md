@@ -1,6 +1,6 @@
 # Pruebas
 
-270 pruebas en 26 archivos (2026-11-12). Casi todas usan datos
+269 pruebas en 25 archivos (2026-11-12). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -18,15 +18,13 @@ reales buscan `data/` con rutas relativas a ella.
 
 `.github/workflows/pruebas.yml` corre la suite y la prueba de mutación
 en GitHub Actions en cada push a `main` o `ediciones-hotdeck-sdp` y en
-cada PR (Python 3.11, dependencias de `requirements-pruebas.txt`,
-fijadas a las versiones con las que pasan). Allí no está el banco de
+cada PR (Python 3.11, dependencias de `poetry.lock`). Allí no está el banco de
 datos, así que se saltan las 7 pruebas que leen enero real de GEIH; las demás
 corren y se detectan todas las mutaciones.
 
 Si una prueba falla en GitHub, el PR queda marcado en rojo. Para agregar
-una dependencia nueva a las pruebas, sumarla a `pyproject.toml`, actualizar
-`poetry.lock` y copiar a `requirements-pruebas.txt` la versión que resolvió el
-lock: `test_dependencias.py` falla si no coinciden.
+una dependencia nueva a las pruebas, sumarla a `pyproject.toml` y actualizar
+`poetry.lock`; la integración continua instala desde el lock.
 
 ## Qué cubre cada archivo
 
@@ -59,7 +57,6 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_variables_candidatas.py` | `diagnostico/variables_candidatas_pobreza.py` | Agregación de personas a hogares, códigos de discapacidad, métricas ponderadas, Holm, criterio de decisión, errores agrupados contra `statsmodels` | Predictores que miden el ingreso, categóricas como número, IPM predicho con sus componentes, recomendar sin estabilidad |
 | `test_incidencia_transferencias.py` | `diagnostico/incidencia_transferencias.py` | Monto sin códigos de no sabe ni empleados domésticos, hogares y personas por programa, pobreza con y sin ayuda, quintiles | Contar el monto anual como mensual, o personas como hogares |
 | `test_simulacion_contrato.py` | `simulacion/contrato.py` | Falta cada columna obligatoria y el error la nombra; sin alias; códigos fuera de dominio (incluido "1.0"); faltantes; pisos del Sisbén frente a la GEIH; el registro solo revisa clasificados; opcionales; duplicadas | Volver a aceptar nombres distintos (regla del tutor) |
-| `test_dependencias.py` | `requirements-pruebas.txt`, `poetry.lock` | Cada versión que fija la integración continua es una de las que resolvió el lock | Que CI pruebe con versiones distintas a las del entorno del proyecto |
 | `test_simulacion_equivalencia.py` | `simulacion/evaluacion.py` | 3 repeticiones iguales a la versión anterior (`tests/referencia/`), salvo la única combinación que usa respaldos; columnas extra o en otro orden no cambian la base | Que una refactorización mueva los resultados publicados |
 
 ## Cómo se comprobó que las pruebas sirven
