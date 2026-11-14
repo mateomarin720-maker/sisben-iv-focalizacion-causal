@@ -64,6 +64,8 @@ HOGARES = {
     "viv_cuartos": Columna("cuartos en total (P5000), 1 o más", _entero(1), "entero (texto)"),
     "viv_pisos": Columna("material de pisos, códigos GEIH de P4020 (1-7)", _codigos(*"1234567")),
     "viv_paredes": Columna("material de paredes, códigos GEIH de P4010 (1-9)", _codigos(*"123456789")),
+    "hog_num_personas": Columna("personas del hogar (P6008), 1 o más", _entero(1), "entero (texto)"),
+    "hog_num_menores": Columna("personas del hogar con menos de 18 años, 0 o más", _entero(0), "entero (texto)"),
     "ingreso_percapita": Columna("ingreso per cápita de la unidad de gasto, pesos, 0 o más", _real(0), "real"),
     "dominio_pm": Columna("dominio de la línea de pobreza: " + ", ".join(LINEAS), _codigos(*LINEAS)),
 }
@@ -78,6 +80,9 @@ REGISTRO = {
     "viv_cuartos": Columna("cuartos en total (VIV009), 1 o más", _entero(1), "entero (texto)"),
     "viv_pisos": Columna("material de pisos, códigos del Sisbén (1-6; orden inverso al de la GEIH)",
                          _codigos(*"123456")),
+    "hog_num_personas": Columna("personas del hogar (HOG027), 1 o más", _entero(1), "entero (texto)"),
+    "hog_num_menores": Columna("personas del hogar con ciclo de vida 1 a 3 (menos de 18 años), 0 o más",
+                               _entero(0), "entero (texto)"),
     "Grupo": Columna("grupo del Sisbén (A-D)", _codigos(*"ABCD")),
     "Clasificacion": Columna("subgrupo del Sisbén; nulo en hogares sin clasificar", lambda s: s.notna(), "texto"),
 }

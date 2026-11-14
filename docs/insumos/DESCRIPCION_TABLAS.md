@@ -25,9 +25,13 @@ Se arma con los módulos `hogar_vivienda` y `caracteristicas_generales` de GEIH 
 | `llave_directorio`, `llave_secuencia_p`, `llave_hogar` | `DIRECTORIO`, `SECUENCIA_P`, `HOGAR` | Identificadores normalizados a texto de entero |
 | `geo_depto` | `DPTO` | Departamento (código DIVIPOLA de 2 dígitos) |
 | `geo_zona` | `CLASE` | Zona (1 cabecera, 2 resto) |
-| `viv_paredes` | `P4020` | Material de las paredes |
-| `viv_pisos` | `P4030S1` | Material de los pisos |
-| `viv_cuartos` | `P5010` | Número de cuartos |
+| `viv_paredes` | `P4010` | Material de las paredes exteriores (mapeo corregido el 2026-10-28 con el diccionario oficial; antes leía `P4020`) |
+| `viv_pisos` | `P4020` | Material de los pisos (antes leía `P4030S1`, energía eléctrica) |
+| `viv_cuartos` | `P5000` | Cuartos en total, incluida la sala-comedor (antes leía `P5010`) |
+| `viv_cuartos_dormir` | `P5010` | Cuartos usados para dormir (insumo del hacinamiento) |
+| `viv_alcantarillado`, `viv_acueducto` | `P4030S3`, `P4030S5` | Servicios de la vivienda (1 sí, 2 no) |
+| `hog_num_personas` | `P6008` | Personas del hogar |
+| `hog_num_menores` | conteo sobre `caracteristicas_generales` | Personas del hogar con `P6040` < 18; en la celda del Hot-Deck desde el 2026-11-14 |
 | `fex` | `FEX_C18` | Factor de expansión |
 | `jefe_sexo` | `P3271` | Sexo del jefe |
 | `jefe_edad` | `P6040` | Edad del jefe, **en años** |
@@ -46,6 +50,7 @@ Se arma con Hogares, Viviendas y Personas del Sisbén IV, filtrando al jefe (`PE
 | `llave_hogar_sisben` | construida | `cod_mpio|geo_zona|llave|CORTE|HOGAR`; única por hogar |
 | `geo_depto` | `cod_mpio[:2]` | Departamento |
 | `hog_num_personas` | `HOG027` | Número de personas del hogar |
+| `hog_num_menores` | conteo sobre Personas | Personas del hogar con `PER002` en los ciclos 1, 2 o 3 (menores de 18); en la celda del Hot-Deck desde el 2026-11-14 |
 | `viv_paredes`, `viv_pisos`, `viv_cuartos` | `VIV002`, `VIV003`, `VIV009` | Vivienda |
 | `viv_alcantarillado`, `viv_acueducto` | `VIV005`, `VIV008` | Servicios de la vivienda |
 | `jefe_sexo` | `PER001` | Sexo del jefe |
@@ -69,6 +74,7 @@ Tiene las mismas columnas que la tabla nacional, con estas diferencias:
 | `geo_localidad` | Localidad (`Cod_comuna`); solo existe en Bogotá. Ver [`CODIGOS_LOCALIDAD_BOGOTA.md`](CODIGOS_LOCALIDAD_BOGOTA.md) |
 | `geo_zona` | `Cod_clase` (1 cabecera, 2 centro poblado, 3 rural disperso) |
 | `jefe_edad` | Se calcula desde `fec_nacimiento` (referencia 31/12/2024) y se pasa a los mismos códigos 3 a 6 |
+| `hog_num_menores` | Personas del hogar con menos de 18 años al 31/12/2024, por `fec_nacimiento` |
 | `jefe_sexo` | El valor `4` es inválido y queda nulo |
 | `fex` | Fijo en `1.0`: la entrega no trae factor de expansión |
 | `CORTE`, `fuente` | `bogota_sdp_2026-08` y `sdp_bogota_2026-08` |

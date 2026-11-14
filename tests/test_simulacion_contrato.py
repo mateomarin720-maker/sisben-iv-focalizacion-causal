@@ -16,6 +16,7 @@ def _registro(n: int = 50) -> pd.DataFrame:
     return pd.DataFrame({
         "geo_depto": rng.choice(["05", "11"], n), "jefe_edad": rng.choice(list("3456"), n),
         "viv_cuartos": rng.integers(1, 5, n).astype(str), "viv_pisos": rng.choice(list("123456"), n),
+        "hog_num_personas": rng.integers(1, 8, n).astype(str), "hog_num_menores": rng.integers(0, 4, n).astype(str),
         "Grupo": rng.choice(list("ABCD"), n), "Clasificacion": rng.choice(["A1", "B2", "C3"], n),
     })
 
@@ -46,6 +47,7 @@ def test_no_acepta_nombres_distintos_aunque_el_contenido_sea_el_mismo():
     ("geo_zona", "3"), ("jefe_sexo", "0"), ("viv_pisos", "9"), ("viv_paredes", "0"),
     ("dominio_pm", "urbano"), ("geo_depto", "5"), ("jefe_edad", "-1"), ("viv_cuartos", "0"),
     ("ingreso_percapita", -1.0), ("geo_zona", "1.0"),  # "1.0": el error de agosto (.DTA)
+    ("hog_num_personas", "0"), ("hog_num_menores", "-1"), ("hog_num_menores", "2.0"),
 ])
 def test_codigo_fuera_de_dominio(columna, valor):
     hogares, _ = hogares_sinteticos(n=300)

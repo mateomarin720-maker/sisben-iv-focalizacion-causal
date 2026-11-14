@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.utils.variables_canonicas import JEFE, es_jefe
+from src.utils.variables_canonicas import JEFE, es_jefe, es_menor
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -44,6 +44,10 @@ MAPA_JEFE = {
     "PER001": "jefe_sexo",
     "PER002": "jefe_edad",
 }
+# `hog_num_menores`: personas del hogar con PER002 en los ciclos de vida 1, 2 o 3
+# (menores de 18; variables_canonicas.es_menor), contadas sobre todas las
+# filas de Personas, no solo el jefe (desde el 2026-11-14).
+COLUMNA_EDAD = "PER002"
 
 FILTRO_JEFE_COL, FILTRO_JEFE_VAL = JEFE["sisben"]  # PER003 == "1"
 
@@ -68,6 +72,8 @@ def armonizar_sisben_hogar() -> pd.DataFrame:
     cols_pers = list(dict.fromkeys(cols_pers))
     pers = pd.read_parquet(SISBEN_DIR / "personas.parquet", columns=cols_pers).replace("", pd.NA)
 
+    menores = (es_menor(pers[COLUMNA_EDAD], en_codigos=True).groupby([pers[c] for c in [*LLAVE, "HOGAR"]])
+               .sum().rename("hog_num_menores").reset_index())
     jefes = pers[es_jefe(pers, "sisben")].copy()
     n_dup_jefe = jefes.duplicated(subset=[*LLAVE, "HOGAR"]).sum()
     if n_dup_jefe > 0:
@@ -89,7 +95,7 @@ def armonizar_sisben_hogar() -> pd.DataFrame:
     # (PER001..) son del MISMO hogar y no generan filas nuevas.
     hog = hog.drop_duplicates(subset=[*LLAVE, "HOGAR"], keep="first")
     df = hog.merge(viv, on=llave_viv, how="left")
-    df = df.merge(jefes, on=[*LLAVE, "HOGAR"], how="left")
+    df = df.merge(jefes, on=[*LLAVE, "HOGAR"], how="left").merge(menores, on=[*LLAVE, "HOGAR"], how="left")
     assert not df.duplicated(subset=[*LLAVE, "HOGAR"]).any(), "Hay hogares duplicados tras los merges"
 
     df = df.rename(columns={**MAPA_HOGAR, **MAPA_VIVIENDA, **MAPA_JEFE})

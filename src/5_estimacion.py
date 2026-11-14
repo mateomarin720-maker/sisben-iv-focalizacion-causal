@@ -130,7 +130,7 @@ N_SUB_CATE = 80_000
 
 # Cada W: (categóricas sin orden, continuas). Las categóricas entran a los
 # modelos auxiliares como variables indicadoras, nunca como su código.
-W_PROXY = (["geo_depto_cat", "pisos_nivel_cat"], ["jefe_edad", "viv_cuartos"])  # proxy de la celda
+W_PROXY = (["geo_depto_cat", "pisos_nivel_cat"], ["jefe_edad", "viv_cuartos", "hog_num_personas", "hog_num_menores"])  # proxy de la celda
 W_CELDA = (["hotdeck_celda_cat"], [])  # celda EXACTA del Hot-Deck (igual al sorteo real)
 X_COLS = ["geo_zona_urbana", "jefe_mujer", "viv_paredes"]  # NO usadas en la celda
 X_CATEGORICAS = ["viv_paredes"]  # código de material: indicadoras en los modelos auxiliares
@@ -148,7 +148,7 @@ def _preparar(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["T"] = df["Grupo_hotdeck"].isin(["A", "B"]).astype(int)
     df["jefe_edad"] = pd.to_numeric(df["jefe_edad"], errors="coerce")
-    for c in ["viv_paredes", "viv_pisos", "viv_cuartos"]:
+    for c in ["viv_paredes", "viv_pisos", "viv_cuartos", "hog_num_personas", "hog_num_menores"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     df["geo_zona_urbana"] = (df["geo_zona"] == "1").astype(int)
     df["jefe_mujer"] = (df["jefe_sexo"] == "2").astype(int)
@@ -266,7 +266,7 @@ def main() -> None:
     logger.info("n=%s | T=1 (Grupo A/B): %.1f%%", f"{len(df):,}", df["T"].mean() * 100)
 
     especificaciones = [
-        ("PROXY (indicadoras de geo_depto y nivel de pisos + splines de jefe_edad y viv_cuartos)", W_PROXY),
+        ("PROXY (indicadoras de geo_depto y nivel de pisos + splines de jefe_edad, viv_cuartos, personas y menores)", W_PROXY),
         ("CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)", W_CELDA),
     ]
 

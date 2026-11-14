@@ -28,6 +28,8 @@ def _fuentes(n: int = N, seed: int = 3) -> tuple[pd.DataFrame, pd.DataFrame]:
         "geo_depto": depto, "geo_zona": zona, "jefe_sexo": np.where(mujer, "2", "1"),
         "jefe_edad": rng.integers(18, 91, n).astype(str), "viv_cuartos": rng.integers(1, 8, n).astype(str),
         "viv_pisos": pisos, "viv_paredes": paredes,
+        "hog_num_personas": (personas := rng.integers(1, 9, n)).astype(str),
+        "hog_num_menores": rng.integers(0, personas).astype(str),
         "ingreso_percapita": np.where(rng.random(n) < 0.04, 0.0, np.expm1(log_ing)),
         "dominio_pm": np.where(zona == "2", "rural", np.where(depto == "11", "13_ciudades", "otras_cabeceras")),
     })
@@ -35,6 +37,7 @@ def _fuentes(n: int = N, seed: int = 3) -> tuple[pd.DataFrame, pd.DataFrame]:
     reg = pd.DataFrame({
         "geo_depto": rng.choice(["05", "11", "76"], m), "jefe_edad": rng.choice(list("3456"), m, p=[.02, .2, .58, .2]),
         "viv_cuartos": rng.integers(1, 6, m).astype(str), "viv_pisos": rng.choice(list("12345"), m),
+        "hog_num_personas": rng.integers(1, 9, m).astype(str), "hog_num_menores": rng.integers(0, 4, m).astype(str),
         "Grupo": rng.choice(list("ABCD"), m), "Clasificacion": "X1",
     })
     return hogares, reg
@@ -46,7 +49,7 @@ def parametros():
 
 
 def _grupos(p: dict):
-    for nombre in ("depto", "zona", "dominio", "vivienda", "paredes", "mujer"):
+    for nombre in ("depto", "zona", "dominio", "vivienda", "hogar", "paredes", "mujer"):
         yield from ((nombre, k, g) for k, g in p[nombre].items())
     yield from (("ingreso", k, g) for k, g in p["ingreso"]["grupos"].items())
 

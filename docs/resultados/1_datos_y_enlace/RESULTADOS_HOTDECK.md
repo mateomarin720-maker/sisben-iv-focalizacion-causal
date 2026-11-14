@@ -1,6 +1,6 @@
 # Resultados del Hot-Deck GEIH ← Sisbén IV
 
-*Actualizado el 2026-11-02: la celda oficial pasa a incluir el nivel de pisos (ver "Sumar pisos y paredes"). Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../../insumos/DESCRIPCION_TABLAS.md).*
+*Actualizado el 2026-11-14: la celda oficial suma personas del hogar y menores de 18 años (ver "Sumar personas y menores"); el 2026-11-02 había sumado el nivel de pisos. Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../../insumos/DESCRIPCION_TABLAS.md).*
 
 ## Resultado
 
@@ -8,7 +8,9 @@
 |---|---|
 | Hogares receptores (GEIH 2024, 12 meses) | 290.968 |
 | Hogares donantes (Sisbén nacional + Bogotá, filtro de vigencia) | 3.106.489 |
-| Celda exacta (departamento + ciclo de vida del jefe + tramo de cuartos + nivel de pisos) | 99,98 % (993 celdas con receptores, 977 con donantes) |
+| Celda exacta (departamento + ciclo de vida del jefe + tramo de cuartos + nivel de pisos + personas 1-2 / 3+ + menores de 18 años 0 / 1 / 2+) | 99,92 % (3.721 celdas con receptores) |
+| Hogares en `sin_menores` (respaldo sin el tramo de menores) | 143 |
+| Hogares en `sin_personas` (la celda del 2026-11-02) | 35 |
 | Hogares en `sin_pisos` (respaldo depto + edad + cuartos) | 67 |
 | Hogares en `solo_depto_edad` | 2 |
 | Hogares en `solo_depto` o `pool_nacional` | 0 |
@@ -17,7 +19,8 @@ Grupo asignado, ponderado por el factor de expansión de GEIH:
 
 | Grupo | A | B | C | D |
 |---|---|---|---|---|
-| % de hogares (celda con pisos, oficial desde 2026-11-02) | **14,2** | 29,4 | 34,4 | **22,0** |
+| % de hogares (celda con personas y menores, oficial desde 2026-11-14) | **14,9** | 29,7 | 33,8 | **21,6** |
+| % de hogares (celda con pisos, 2026-11-02 a 2026-11-14) | 14,2 | 29,4 | 34,4 | 22,0 |
 | % de hogares (sin pisos, `viv_cuartos` corregido, 2026-10-28 a 2026-11-02) | 22,0 | 33,8 | 28,7 | 15,6 |
 | % de hogares (`viv_cuartos` con el código equivocado, hasta 2026-10-27) | 31,2 | 35,2 | 23,2 | 10,3 |
 | % de hogares (celda sin vivienda, hasta 2026-10-21) | 28,0 | 34,4 | 24,9 | 12,7 |
@@ -78,6 +81,57 @@ para no fragmentar las celdas.
   queda como sensibilidad (`hotdeck(..., incluir_pisos=False)`). Pisos en
   Bogotá es coherente con la ficha pero no se pudo verificar con
   privaciones (el SDP no las trae).
+
+## ¿Sumar personas y menores a la celda? (2026-11-14)
+
+Las variables homologadas que no estaban en la celda y las demás que los
+tres catálogos traen en común se evaluaron una a una sobre la celda con
+pisos (`src/validacion/comparar_celdas_hotdeck_vivienda.py`,
+`src/validacion/candidatas_celda_catalogo.py`;
+`docs/reports/comparacion_celdas_hotdeck_vivienda.csv`,
+`docs/reports/candidatas_celda_catalogo.csv`). Criterios: al menos 99,5 %
+de los hogares en celda exacta y no más del 5 % en celdas con menos de 30
+donantes; se mira la correlación de P(T | celda) con la pobreza monetaria
+y Δ, el ancho medio de la cota de Fréchet de P(Y = 1, T = 1 | celda)
+(cuanto menor, más cierran las cotas del ATE). El placebo repite el cálculo
+con la variable agregada barajada dentro de la celda anterior: lo que se
+"gana" solo por partir la celda.
+
+| | 2. + pisos (hasta 2026-11-14) | 4. + personas (4 tramos) | 5. + personas (4) + menores | 6. + personas (3) + menores | 7. + personas (1-2 / 3+) + menores (oficial) |
+|---|---|---|---|---|---|
+| Celdas con receptores | 993 | 3.244 | 5.637 | 4.867 | 3.721 |
+| Hogares en celda exacta | 99,98 % | 99,92 % | 99,83 % | 99,86 % | 99,92 % |
+| Hogares en celdas con < 30 donantes | 0,8 % | 2,9 % | 6,3 % | 5,1 % | 3,7 % |
+| Correlación de P(T \| celda) con pobreza monetaria | 0,29 | 0,37 | 0,41 | 0,41 | 0,41 |
+| Δ (ancho de la cota por celda) | 0,200 | 0,167 | 0,145 | 0,148 | 0,148 |
+| Δ placebo (misma partición, sin información) | — | 0,198 | 0,165 | — | 0,176 |
+| Cumple los umbrales | sí | sí | no | no | sí |
+
+**Lectura:**
+- **Personas y menores aportan; casi todo lo que aportan es información,
+  no fragmentación.** Con personas, Δ baja de 0,200 a 0,167 (el placebo da
+  0,198); con menores encima, a 0,145-0,148 (placebo 0,165-0,176). Bootstrap
+  pareado por vivienda (200 réplicas): la celda 7 frente a la 2 baja Δ en
+  −0,053 [−0,055; −0,052], y frente a la 4 en −0,019 [−0,020; −0,017].
+- **Se eligió la 7 y no la 5 ni la 6**: cierran lo mismo (Δ 0,145-0,148,
+  correlación 0,41) pero la 5 y la 6 dejan 6,3 % y 5,1 % de los hogares en
+  celdas con menos de 30 donantes, sobre el umbral. La 7 queda en 3,7 %.
+- **Nada más del catálogo entra.** Zona, paredes, sexo del jefe, mayores de
+  60, cónyuge, energía, gas, recolección y cocina homologan pero no aportan:
+  su suma en un puntaje P(A/B | variables) da 0,003 de Δ después del placebo
+  y solo fragmenta. Tipo de vivienda, tenencia, dormitorios y sanitario
+  exclusivo no homologan (sus distribuciones no cuadran entre fuentes).
+  Estrato, internet, educación y ocupación faltan en una fuente. Acueducto,
+  alcantarillado, sanitario y fuente de agua son privaciones del IPM:
+  meterlas en la celda ata el grupo imputado al resultado (tautología).
+- **La distribución de grupos se mueve poco** (A 14,2 → 14,9 %; D 22,0 →
+  21,6 %), a diferencia de lo que pasó con pisos. El problema de
+  identificación no cambia: dentro de la celda el sorteo sigue siendo al
+  azar y el DML sigue siendo un placebo. Lo que mejora son las cotas y la
+  concordancia entre celdas.
+- **Decisión (2026-11-14): la celda 7 es la oficial.** Las anteriores
+  quedan como sensibilidad (`incluir_menores=False`,
+  `incluir_personas=False`, `incluir_pisos=False`).
 
 ## Historial de la cobertura
 

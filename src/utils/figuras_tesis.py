@@ -210,7 +210,7 @@ def arquitectura() -> Path:
     caja(1, 40, 17, 17, "Fuentes", "GEIH 2024 (12 meses)\nSisbén IV nacional\nSisbén Bogotá (SDP)\nIPM 2024")
     caja(23, 40, 17, 17, "Ingesta", "crudos → Parquet\nAzure Blob Storage\ncatálogo versionado\ningesta/, 1_, 2_")
     caja(45, 40, 19, 17, "Armonización", "esquema canónico\npor hogar\ncontrato de datos\narmonizacion/", AZUL)
-    caja(69, 40, 30, 17, "Enlace y resultados", "Hot-Deck por celda (993 celdas)\npobreza monetaria e IPM-GEIH\nemparejamiento/, indicadores/\nvalidacion/")
+    caja(69, 40, 30, 17, "Enlace y resultados", "Hot-Deck por celda (3.721 celdas)\npobreza monetaria e IPM-GEIH\nemparejamiento/, indicadores/\nvalidacion/")
     for x0, x1 in [(18.8, 22.2), (40.8, 44.2), (64.8, 68.2)]:
         flecha(x0, 48.5, x1, 48.5)
     caja(1, 5, 30, 25, "1. Diagnóstico con datos reales",

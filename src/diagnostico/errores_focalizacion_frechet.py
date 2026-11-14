@@ -46,7 +46,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import claves_por_nivel
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, claves_por_nivel
 from src.diagnostico.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -55,7 +55,7 @@ logger = logging.getLogger(__name__)
 OUT = Path("docs/reports/errores_focalizacion_frechet.csv")
 POBREZA = ["POBRE_MONETARIO", "POBRE_GEIH", "POBRE_MONETARIO_OFICIAL"]
 ELEGIBLE = {"A-B": ["A", "B"], "A-B-C": ["A", "B", "C"]}
-CELDA = ["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos"]
+CELDA = list(CELDA_COLUMNAS)
 
 
 def elegibles_por_hogar(geih: pd.DataFrame, sisben: pd.DataFrame, grupos: list[str]) -> tuple[np.ndarray, np.ndarray]:

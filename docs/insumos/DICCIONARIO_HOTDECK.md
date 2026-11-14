@@ -85,7 +85,7 @@ El extracto del Sisbén **no trae la edad en años**. Entre jefes de hogar (`PER
 
 Los códigos 1 y 2 (infancia/niñez, nunca jefes de hogar) confirman además que el ciclo de vida completo tiene 6 categorías, no 4 — el hot-deck solo necesita 3–6 porque un jefe de hogar nunca cae en 1/2. Detalle de la verificación: `src/validacion/verificar_codigos_edad_sisben.py`. En Bogotá y en GEIH la edad se convierte con los cortes 17/28/59.
 
-## 6. Celda de matching actual (desde el 2026-11-02)
+## 6. Celda de matching actual (desde el 2026-11-14)
 
 | Componente | Valores | Desde |
 |---|---|---|
@@ -93,18 +93,74 @@ Los códigos 1 y 2 (infancia/niñez, nunca jefes de hogar) confirman además que
 | Ciclo de vida del jefe | 12-17, 18-28, 29-59, 60+ (sección 5; tramos en `src/utils/variables_canonicas.py`) | 2026-10-09 |
 | Tramo de `viv_cuartos` | 1, 2, 3 o más | 2026-10-21 (código corregido el 2026-10-28) |
 | Nivel de `viv_pisos` | acabado, cemento o madera burda, tierra | 2026-11-02 |
+| Tramo de `hog_num_personas` | 1-2, 3 o más | 2026-11-14 |
+| Tramo de `hog_num_menores` | 0, 1, 2 o más menores de 18 años | 2026-11-14 |
 
-993 celdas con receptores; 99,98 % de los hogares en celda exacta. Por qué
-pisos sí y paredes no: con pisos, la correlación de P(T | celda) con la
-pobreza monetaria sube de 0,20 a 0,29 con casi la misma cobertura; paredes
-triplica las celdas sin mejorarla (`RESULTADOS_HOTDECK.md`,
-`src/validacion/comparar_celdas_hotdeck_vivienda.py`).
+Las seis entran como coincidencia exacta: ninguna pesa más que otra. Lo
+único que las ordena es la cadena de respaldos, que suelta primero la que
+menos aporta. Personas y menores son conteos homologados sin tabla de
+equivalencias: GEIH `P6008` y personas con `P6040` < 18; Sisbén nacional
+`HOG027` y personas con `PER002` en los ciclos 1 a 3; Bogotá, filas por
+hogar y `fec_nacimiento` (`src/utils/variables_canonicas.py`, `es_menor`).
+Su distribución coincide entre fuentes (sin menores: 56 % GEIH ponderada,
+54 % Sisbén nacional, 61 % Bogotá).
+
+Por qué estas y no otras (`RESULTADOS_HOTDECK.md`,
+`src/validacion/comparar_celdas_hotdeck_vivienda.py`,
+`src/validacion/candidatas_celda_catalogo.py`): pisos subió la
+correlación de P(T | celda) con la pobreza monetaria de 0,20 a 0,29
+(paredes triplicaba las celdas sin mejorarla); personas y menores la
+suben a 0,41 y cierran el ancho de la cota de Fréchet por celda de 0,200 a
+0,148, con 99,9 % de los hogares en celda exacta y 3,7 % en celdas con
+menos de 30 donantes (umbrales: 99,5 % y 5 %; personas en tres tramos,
+1-2, 3-4 y 5 o más, cierra igual pero deja 5,1 % en celdas pequeñas).
+Personas y menores son condición de algunas privaciones (hacinamiento,
+inasistencia escolar), no la privación misma.
+
+### 6.1 Variables descartadas y motivo
+
+Se revisaron todas las variables de vivienda y hogar de los tres
+catálogos (diccionario de la GEIH 2024, ficha del Sisbén IV y la entrega
+del SDP). Cada una pasó por cuatro filtros, en este orden: (1) ¿existe en
+las tres fuentes?; (2) ¿es una privación del IPM?; (3) ¿homologa, es decir,
+su distribución cuadra entre fuentes después de llevar los códigos a
+categorías comunes?; (4) ¿aporta sobre la celda sin fragmentarla? Δ es el
+ancho medio de la cota de Fréchet por celda (menor es mejor); la
+referencia es la celda con personas, Δ = 0,167, 2,9 % de hogares en
+celdas con menos de 30 donantes.
+
+| Variable | Filtro donde cae | Motivo |
+|---|---|---|
+| Zona (urbano / resto) | 4. No aporta | Homologa (ficha: 1 cabecera, 2-3 resto), pero Δ apenas baja (0,163) y las celdas pequeñas suben a 4,4 %. La celda ya la captura con departamento y pisos |
+| Paredes | 4. No aporta | Homologa (escala común con `I14`), Δ 0,165 y 4,2 % de celdas pequeñas; desde el 2026-11-02 triplicaba las celdas sin subir la correlación |
+| Sexo del jefe | 4. No aporta | Homologa (2 = mujer en las dos fuentes), Δ 0,161 pero 6,5 % de celdas pequeñas, sobre el umbral |
+| Mayores de 60 en el hogar | 4. No aporta | Homologa (33 % GEIH, 27 % Sisbén nacional, 31 % Bogotá); Δ 0,166 |
+| Cónyuge en el hogar | 4. No aporta | Δ 0,162 con 5,6 % de celdas pequeñas; además la presencia difiere entre fuentes (50 % frente a 35 %) |
+| Energía, gas, recolección de basuras, combustible de cocina | 4. No aporta | Homologan (sí/no o limpia/otra); Δ 0,164-0,167. Pisos ya resume las condiciones de la vivienda |
+| Suma de todas las débiles (puntaje P(A/B \| variables), en terciles o quintiles) | 4. No aporta | La ganancia aparente (Δ 0,151-0,153) es casi toda partición: con el placebo queda 0,003, y deja 7-12 % de celdas pequeñas |
+| Tipo de vivienda | 3. No homologa | "Cuarto" es 2 % en GEIH, 29 % en el Sisbén nacional y 20 % en Bogotá: la pregunta no mide lo mismo |
+| Tenencia de la vivienda | 3. No homologa | Los códigos van al revés entre fuentes y "otra" es 24 %, 53 % y 11 %; no hay equivalencia confiable |
+| Cuartos para dormir | 3. No homologa | Un dormitorio: 40 % GEIH, 70 % Sisbén nacional, 46 % Bogotá. Además es el insumo del hacinamiento (filtro 2) |
+| Sanitario de uso exclusivo | 3. No homologa | Exclusivo: 94 % GEIH, 56 % Sisbén nacional, 67 % Bogotá |
+| Acueducto, alcantarillado, tipo de sanitario, fuente de agua | 2. Privación del IPM | Son privaciones del resultado: en la celda atarían el grupo imputado al propio resultado (tautología; principio de 2026-11-02) |
+| Analfabetismo, logro educativo, inasistencia escolar, salud, informalidad y pensión | 2. Privación del IPM | Mismo motivo; además la educación y la ocupación no están en Bogotá |
+| Estrato | 1. Falta en una fuente | Lo traen la GEIH y Bogotá, pero el archivo nacional del Sisbén 2024 no lo entrega |
+| Internet, nevera, lavadora | 1. Falta en una fuente | No están en la GEIH o en Bogotá |
+| Estado civil del jefe | 1. Equivale a otra | El Sisbén nacional solo trae dos códigos (con o sin pareja), que es la variable cónyuge |
+| Eventos (inundación, avalancha…), días y horas de agua, localidad | 1. Falta en una fuente | Sin equivalente en la GEIH; la localidad solo existe en Bogotá |
+
+Evidencia: `docs/reports/candidatas_celda_catalogo.csv` (distribución por
+fuente y aporte de cada candidata) y
+`docs/reports/comparacion_celdas_hotdeck_vivienda.csv` (celdas anidadas,
+con placebo). Las privaciones del Sisbén (`I1`-`I15`, `H_5`) nunca se usan
+(sección 7).
 
 Cadena de respaldos (`claves_por_nivel`, definida una vez para el Hot-Deck
-y la simulación): `celda_exacta` → `sin_pisos` → `solo_depto_edad` →
-`solo_depto` → `pool_nacional`. Solo son donantes los hogares con
-`Clasificacion` observada. La celda sin pisos queda como sensibilidad
-(`incluir_pisos=False`).
+y la simulación): `celda_exacta` → `sin_menores` → `sin_personas` (la
+celda del 2026-11-02) → `sin_pisos` → `solo_depto_edad` → `solo_depto` →
+`pool_nacional`. Solo son donantes los hogares con `Clasificacion`
+observada. Las celdas anteriores quedan como sensibilidad
+(`incluir_menores=False`, `incluir_personas=False`, `incluir_pisos=False`).
 
 ## 7. ⚠️ Circularidad confirmada — nunca usar como Outcome
 

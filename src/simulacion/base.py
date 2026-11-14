@@ -17,7 +17,8 @@ from src.simulacion.escenarios import TAU
 
 # Columna con el código de celda de cada nivel de la cadena de respaldos,
 # en el orden de `claves_por_nivel` (de la más fina a la más gruesa).
-NIVELES = {"celda_exacta": "hotdeck_celda_cat", "sin_pisos": "celda_sin_pisos_cat",
+NIVELES = {"celda_exacta": "hotdeck_celda_cat", "sin_menores": "celda_sin_menores_cat",
+           "sin_personas": "celda_sin_personas_cat", "sin_pisos": "celda_sin_pisos_cat",
            "solo_depto_edad": "celda_solo_depto_edad_cat", "solo_depto": "celda_solo_depto_cat"}
 
 

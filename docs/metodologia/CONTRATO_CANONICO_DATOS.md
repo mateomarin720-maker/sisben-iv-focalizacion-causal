@@ -57,6 +57,7 @@ Un guion (—) indica que la fuente no tiene la variable o que no se cruza.
 | `viv_alcantarillado` | ¿Tiene alcantarillado? | `P4030S3` | `VIV005` | `ind_tiene_alcantarillado` | `P8520S3` |
 | `viv_acueducto` | ¿Tiene acueducto? | `P4030S5` | `VIV008` | `ind_tiene_acueducto` | `P8520S5` |
 | `hog_num_personas` | Personas del hogar | `P6008` | `HOG027` | conteo de personas por hogar | `PERSONAS` |
+| `hog_num_menores` | Personas del hogar menores de 18 años (desde el 2026-11-14) | conteo de personas con `P6040` < 18 | conteo de personas con `PER002` en 1, 2 o 3 | conteo por `fec_nacimiento` (< 18 al 31-12-2024) | — |
 | `fex` | Factor de expansión del hogar | `FEX_C18` | `FEX` | — (no hay factor; fijo en 1) | `FEX_C` |
 | `Grupo` | Grupo del Sisbén IV (tratamiento) | — (se imputa con el Hot-Deck) | `Grupo` | `Grupo` | — |
 | `Nivel` | Nivel dentro del grupo | — | `Nivel` | número extraído de `Clasificacion` | — |
@@ -143,12 +144,13 @@ Es la lectura de `src/simulacion/contrato.py` (tablas `hogares` y
 | `vinculo` | código (texto) | `"llave"`, `"hotdeck"` | hogares (opcional) |
 | `Clasificacion` | texto | grupo más nivel; **nula** en hogares sin clasificar, que no se validan ni entran a P(T ∣ celda) | registro (obligatoria) |
 | `viv_alcantarillado`, `viv_acueducto` | código (texto) | GEIH `"1"`, `"2"`; Sisbén sin tabla de códigos en el repositorio | no validadas por el contrato |
-| `hog_num_personas` | entero (texto) | 1 o más | no validada por el contrato |
+| `hog_num_personas` | entero (texto) | 1 o más | hogares y registro (obligatoria) |
+| `hog_num_menores` | entero (texto) | 0 o más | hogares y registro (obligatoria) |
 
 Variables derivadas que el módulo calcula y **no se aceptan como entrada**
 (CLAUDE.md): la celda del Hot-Deck (departamento, ciclo de vida del jefe,
-`viv_cuartos` y `viv_pisos`; 993 celdas), zona urbana, jefe mujer y
-P(T ∣ celda).
+`viv_cuartos`, `viv_pisos`, `hog_num_personas` y `hog_num_menores` en
+tramos), zona urbana, jefe mujer y P(T ∣ celda).
 
 Variables de resultado de la tabla de estimación
 (`muestra_estimacion_monetaria_2024.parquet`):
@@ -180,8 +182,9 @@ completan por suposición.
    ciclo de vida). El módulo lo exige así a propósito; el error típico es
    pasar una tabla con los códigos de la otra.
 6. **Documentación que se solapa:** `docs/insumos/DICCIONARIO_HOTDECK.md`
-   describe la celda del Hot-Deck como departamento más ciclo de vida
-   (≈130 celdas); la vigente suma `viv_cuartos` y `viv_pisos` (993 celdas).
+   describe en su sección 6 la celda vigente (departamento, ciclo de
+   vida, cuartos, pisos, personas y menores desde el 2026-11-14); las
+   secciones anteriores cuentan cómo se llegó a ella.
    `docs/anexos_tesis/CONTRATO_DATOS.md` es la tabla del contrato de
    simulación generada del código; este documento la amplía con las otras
    fuentes y no la reemplaza.

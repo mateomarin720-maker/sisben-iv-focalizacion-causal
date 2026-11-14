@@ -45,7 +45,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celda
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, construir_celda
 from src.diagnostico.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
 from src.validacion.comparar_celdas_hotdeck_vivienda import PAREDES
 
@@ -56,7 +56,7 @@ OUT = Path("docs/reports/cotas_frechet_modelos.csv")
 OUTCOMES = ["ipm_geih_score", "POBRE_GEIH", "log_ingreso_percapita", "POBRE_MONETARIO", "POBRE_MONETARIO_OFICIAL"]
 N_MINIMO = 30
 SUBGRUPOS = ("zona", "sexo_jefe", "paredes")  # las X del Causal Forest
-COLUMNAS = ["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "viv_paredes", "geo_zona", "jefe_sexo"]
+COLUMNAS = [*CELDA_COLUMNAS, "viv_paredes", "geo_zona", "jefe_sexo"]
 
 
 def subgrupos(df: pd.DataFrame, fuente: str) -> pd.DataFrame:

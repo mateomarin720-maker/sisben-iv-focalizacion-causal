@@ -57,13 +57,14 @@ def test_cotas_por_celda_usa_cada_fuente_por_separado():
     """P(Y|celda) sale de GEIH ponderada por `fex`; P(T|celda) sale del
     Sisbén sin ponderar. Sin Hot-Deck de por medio."""
     geih = pd.DataFrame({"geo_depto": "05", "jefe_edad": [40, 40, 40], "viv_cuartos": 3, "viv_pisos": "4",
-                         "fex": [1.0, 1.0, 2.0], "POBRE_GEIH": [1, 0, 0]})
+                         "hog_num_personas": 4, "hog_num_menores": 2, "fex": [1.0, 1.0, 2.0], "POBRE_GEIH": [1, 0, 0]})
     sisben = pd.DataFrame({"geo_depto": "05", "jefe_edad": ["5"] * 4, "viv_cuartos": 3, "viv_pisos": "1",
-                           "Grupo": ["A", "B", "C", "D"], "Clasificacion": "x"})
+                           "hog_num_personas": "4", "hog_num_menores": "3", "Grupo": ["A", "B", "C", "D"],
+                           "Clasificacion": "x"})
     df = cotas_por_celda(geih, sisben, "POBRE_GEIH")
     assert len(df) == 1
     fila = df.iloc[0]
-    assert fila["celda"] == "05|ciclo5|3omascuartos|acabado"
+    assert fila["celda"] == "05|ciclo5|3omascuartos|acabado|3omaspersonas|2omasmenores"
     assert fila["p_y"] == pytest.approx(0.25) and fila["p_t"] == pytest.approx(0.5)
     esperado = cotas_frechet([0.25], [0.5]).iloc[0]
     assert fila["cate_lo"] == pytest.approx(esperado["cate_lo"]) and fila["cate_hi"] == pytest.approx(esperado["cate_hi"])

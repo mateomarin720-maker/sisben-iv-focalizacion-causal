@@ -4,21 +4,34 @@ Receptor: una fila por hogar GEIH (jefe P6050==1) -> geih_estandarizado_2024.par
 Donante : una fila por hogar Sisbén (jefe PER003==1) -> sisben_estandarizado_2024.parquet
           (o la version con Bogotá si existe sisben_estandarizado_2024_con_bogota.parquet)
 
-Celda (desde el 2026-11-02) = geo_depto + tramo de edad del jefe + tramo
-de número de cuartos (`viv_cuartos`) + nivel de material de pisos.
+Celda (desde el 2026-11-14) = geo_depto + tramo de edad del jefe + tramo
+de número de cuartos (`viv_cuartos`) + nivel de material de pisos + tramo
+de personas del hogar (1-2, 3 o más) + tramo de menores de 18 años (0, 1,
+2 o más).
 
 Los pisos entran por la escala común de
 `docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`, agrupada en tres
 niveles (acabado | cemento o madera burda | tierra); los códigos crudos no
-se comparan entre fuentes (en pisos van al revés). Se eligió esta celda
-frente a la anterior (sin pisos) y a una con pisos y paredes
-(`src/validacion/comparar_celdas_hotdeck_vivienda.py`): con pisos, la
-correlación entre P(T | celda) y la pobreza monetaria del receptor sube de
-0,20 a 0,29 con 99,98 % de cobertura; paredes triplica las celdas sin
-mejorar nada. La celda anterior queda como sensibilidad
-(`incluir_pisos=False`).
-Degradación jerárquica:
-    celda_exacta (depto+edad+cuartos+pisos) -> sin_pisos (depto+edad+cuartos)
+se comparan entre fuentes (en pisos van al revés). Personas y menores son
+conteos (`hog_num_personas`, `hog_num_menores`) y no necesitan tabla de
+equivalencias; se agrupan en tramos para no fragmentar la celda.
+
+Cómo se eligió (`src/validacion/comparar_celdas_hotdeck_vivienda.py` y
+`src/validacion/candidatas_celda_catalogo.py`): pisos subió la correlación
+entre P(T | celda) y la pobreza monetaria del receptor de 0,20 a 0,29
+(2026-11-02); personas y menores la suben a 0,41 y cierran el ancho de las
+cotas de Fréchet por celda de 0,200 a 0,148 (2026-11-14), con 99,9 % de
+los hogares en celda exacta y 3,7 % en celdas con menos de 30 donantes
+(personas en tres tramos, 1-2, 3-4 y 5 o más, cierra igual pero deja
+5,1 % en celdas pequeñas, sobre el umbral del 5 %).
+Las demás variables comunes a las tres fuentes no aportan (zona, paredes,
+sexo del jefe, servicios), no homologan (tipo de vivienda, tenencia) o son
+privaciones del IPM (acueducto, alcantarillado: tautología con el
+resultado). Las celdas anteriores quedan como sensibilidad
+(`incluir_menores=False`, `incluir_personas=False`, `incluir_pisos=False`).
+Degradación jerárquica (se suelta primero la variable que menos aporta):
+    celda_exacta (depto+edad+cuartos+pisos+personas+menores) -> sin_menores
+    -> sin_personas (la celda del 2026-11-02) -> sin_pisos (depto+edad+cuartos)
     -> solo_depto_edad -> solo_depto -> pool_nacional
 Solo se usan como donantes hogares con tratamiento (Clasificacion) observado.
 Valido solo a nivel poblacional: no identifica el mismo hogar (supuesto de
@@ -53,7 +66,13 @@ OUT = DIR / "geih_sisben_fusionado_2024.parquet"
 CODIGO_A_CICLO = {c: f"ciclo{c}" for c in CODIGOS_CICLO}
 TRAMOS_CUARTOS = [0, 1, 2, 100]
 LABELS_CUARTOS = ["1cuarto", "2cuartos", "3omascuartos"]
+TRAMOS_PERSONAS = [0, 2, 1000]
+LABELS_PERSONAS = ["1a2personas", "3omaspersonas"]
+TRAMOS_MENORES = [-1, 0, 1, 1000]
+LABELS_MENORES = ["0menores", "1menor", "2omasmenores"]
 TRAT = ["Grupo", "Nivel", "Clasificacion"]
+# Columnas canónicas que necesita la celda, en receptor y donante.
+CELDA_COLUMNAS = ["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "hog_num_personas", "hog_num_menores"]
 
 # Código crudo de material de pisos -> nivel común (HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md).
 PISOS_NIVEL = {
@@ -69,9 +88,22 @@ def _tramo_edad(df: pd.DataFrame, edad_en_codigos: bool) -> pd.Series:
     return edad_a_ciclo(df["jefe_edad"]).map(CODIGO_A_CICLO).fillna("NA")  # GEIH: jefe_edad en años
 
 
+def _tramo(df: pd.DataFrame, columna: str, cortes: list, etiquetas: list[str]) -> pd.Series:
+    """Tramo de un conteo; sin la columna o fuera de rango queda "NA"."""
+    valor = pd.to_numeric(df[columna], errors="coerce") if columna in df else pd.Series(np.nan, index=df.index)
+    return pd.cut(valor, bins=cortes, labels=etiquetas).astype("object").fillna("NA")
+
+
 def _tramo_cuartos(df: pd.DataFrame) -> pd.Series:
-    cuartos = pd.to_numeric(df["viv_cuartos"], errors="coerce") if "viv_cuartos" in df else pd.Series(np.nan, index=df.index)
-    return pd.cut(cuartos, bins=TRAMOS_CUARTOS, labels=LABELS_CUARTOS).astype("object").fillna("NA")
+    return _tramo(df, "viv_cuartos", TRAMOS_CUARTOS, LABELS_CUARTOS)
+
+
+def tramo_personas(df: pd.DataFrame) -> pd.Series:
+    return _tramo(df, "hog_num_personas", TRAMOS_PERSONAS, LABELS_PERSONAS)
+
+
+def tramo_menores(df: pd.DataFrame) -> pd.Series:
+    return _tramo(df, "hog_num_menores", TRAMOS_MENORES, LABELS_MENORES)
 
 
 def nivel_pisos(df: pd.DataFrame, sisben: bool) -> pd.Series:
@@ -83,34 +115,51 @@ def nivel_pisos(df: pd.DataFrame, sisben: bool) -> pd.Series:
 
 
 def construir_celda(df: pd.DataFrame, edad_en_codigos: bool = False, incluir_vivienda: bool = True,
-                    incluir_pisos: bool = True) -> pd.Series:
+                    incluir_pisos: bool = True, incluir_personas: bool = True,
+                    incluir_menores: bool = True) -> pd.Series:
     """`edad_en_codigos=True` marca al Sisbén (edad en ciclo de vida y su
-    tabla de pisos). `incluir_vivienda=False` deja depto + edad;
-    `incluir_pisos=False` deja la celda anterior al 2026-11-02."""
+    tabla de pisos). Cada `incluir_*=False` corta la celda ahí:
+    `incluir_menores=False` deja la celda con personas; `incluir_personas=False`
+    la del 2026-11-02 (depto + edad + cuartos + pisos); `incluir_pisos=False`
+    la anterior a esa; `incluir_vivienda=False` deja depto + edad."""
     base = df["geo_depto"].astype(str).str.zfill(2) + "|" + _tramo_edad(df, edad_en_codigos).astype(str)
     if not incluir_vivienda:
         return base
     base = base + "|" + _tramo_cuartos(df).astype(str)
     if not incluir_pisos:
         return base
-    return base + "|" + nivel_pisos(df, sisben=edad_en_codigos).astype(str)
+    base = base + "|" + nivel_pisos(df, sisben=edad_en_codigos).astype(str)
+    if not incluir_personas:
+        return base
+    base = base + "|" + tramo_personas(df).astype(str)
+    if not incluir_menores:
+        return base
+    return base + "|" + tramo_menores(df).astype(str)
 
 
 def claves_por_nivel(df: pd.DataFrame, edad_en_codigos: bool = False, incluir_vivienda: bool = True,
-                     incluir_pisos: bool = True) -> list[tuple[str, pd.Series]]:
+                     incluir_pisos: bool = True, incluir_personas: bool = True,
+                     incluir_menores: bool = True) -> list[tuple[str, pd.Series]]:
     """Cadena de respaldos: (nombre del nivel, clave de celda), de la más
     fina a la más gruesa. La usan el Hot-Deck y la simulación
     (`src/simulacion/vinculo.py`), para que sorteen igual. Después del
     último nivel queda el sorteo en todo el registro (`pool_nacional`).
     El primer nivel se llama siempre `celda_exacta`, aunque la celda de
-    sensibilidad no lleve pisos o vivienda."""
-    configs = []
-    if incluir_vivienda and incluir_pisos:
-        configs.append(("celda_exacta", dict(incluir_vivienda=True, incluir_pisos=True)))
-    if incluir_vivienda:
-        configs.append(("celda_exacta" if not configs else "sin_pisos", dict(incluir_vivienda=True, incluir_pisos=False)))
-    configs.append(("celda_exacta" if not configs else "solo_depto_edad", dict(incluir_vivienda=False)))
-    niveles = [(nombre, construir_celda(df, edad_en_codigos=edad_en_codigos, **kw)) for nombre, kw in configs]
+    sensibilidad sea más corta."""
+    pasos = [  # (nombre del respaldo, qué se quita, si ese paso existe en esta celda), en el orden en que se sueltan
+        ("sin_menores", "incluir_menores", incluir_vivienda and incluir_pisos and incluir_personas and incluir_menores),
+        ("sin_personas", "incluir_personas", incluir_vivienda and incluir_pisos and incluir_personas),
+        ("sin_pisos", "incluir_pisos", incluir_vivienda and incluir_pisos),
+        ("solo_depto_edad", "incluir_vivienda", incluir_vivienda),
+    ]
+    kw = dict(incluir_vivienda=incluir_vivienda, incluir_pisos=incluir_pisos, incluir_personas=incluir_personas,
+              incluir_menores=incluir_menores)
+    configs = [("celda_exacta", dict(kw))]
+    for nombre, quitar, aplica in pasos:
+        if aplica:
+            kw = {**kw, quitar: False}
+            configs.append((nombre, dict(kw)))
+    niveles = [(nombre, construir_celda(df, edad_en_codigos=edad_en_codigos, **c)) for nombre, c in configs]
     niveles.append(("solo_depto", niveles[-1][1].str.split("|").str[0]))
     return niveles
 
@@ -128,19 +177,23 @@ def _sortear(grupos: dict, claves: pd.Series, rng) -> tuple[np.ndarray, np.ndarr
 
 
 def hotdeck(receptor: pd.DataFrame, donante: pd.DataFrame, seed: int = 42, incluir_vivienda: bool = True,
-            incluir_pisos: bool = True) -> pd.DataFrame:
-    if incluir_vivienda and incluir_pisos and not {"viv_pisos"} <= set(receptor) & set(donante):
-        # Sin la columna todo caería al respaldo sin pisos sin dar error.
-        raise ValueError("La celda con pisos requiere `viv_pisos` en receptor y donante")
+            incluir_pisos: bool = True, incluir_personas: bool = True, incluir_menores: bool = True) -> pd.DataFrame:
+    # Sin la columna, todo caería al respaldo correspondiente sin dar error.
+    requeridas = {"viv_pisos": incluir_vivienda and incluir_pisos,
+                  "hog_num_personas": incluir_vivienda and incluir_pisos and incluir_personas,
+                  "hog_num_menores": incluir_vivienda and incluir_pisos and incluir_personas and incluir_menores}
+    faltan = [c for c, requerida in requeridas.items() if requerida and c not in set(receptor) & set(donante)]
+    if faltan:
+        raise ValueError(f"La celda requiere {faltan} en receptor y donante")
     rng = np.random.default_rng(seed)
     donante = donante[donante["Clasificacion"].notna()].reset_index(drop=True)
     receptor = receptor.copy().reset_index(drop=True)
 
     # Niveles de celda, de más fina a más gruesa; cada uno solo se usa para
-    # los receptores sin donante en el anterior. `incluir_pisos=False`
-    # reproduce la celda anterior y `incluir_vivienda=False` la de
-    # depto + edad, para sensibilidad.
-    kw = dict(incluir_vivienda=incluir_vivienda, incluir_pisos=incluir_pisos)
+    # los receptores sin donante en el anterior. Los `incluir_*=False`
+    # reproducen las celdas anteriores, para sensibilidad.
+    kw = dict(incluir_vivienda=incluir_vivienda, incluir_pisos=incluir_pisos, incluir_personas=incluir_personas,
+              incluir_menores=incluir_menores)
     claves = [(nombre, cr, cd) for (nombre, cr), (_, cd) in
               zip(claves_por_nivel(receptor, **kw), claves_por_nivel(donante, edad_en_codigos=True, **kw))]
 
@@ -175,7 +228,7 @@ def main() -> None:
     sb = SISBEN_BOG if SISBEN_BOG.exists() else SISBEN
     logger.info("Donante: %s", sb)
     rec = pd.read_parquet(GEIH)
-    don = pd.read_parquet(sb, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", *TRAT])
+    don = pd.read_parquet(sb, columns=[*CELDA_COLUMNAS, *TRAT])
     logger.info("Receptor GEIH: %s hogares | Donante Sisbén: %s hogares", f"{len(rec):,}", f"{len(don):,}")
     out = hotdeck(rec, don)
     out.to_parquet(OUT, index=False)

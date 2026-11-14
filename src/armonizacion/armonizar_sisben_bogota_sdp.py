@@ -34,15 +34,19 @@ Dos filtros disponibles (`modo`), para poder comparar ambos — ver
 
 Uso:
     poetry run python -m src.armonizacion.armonizar_sisben_bogota_sdp RUTA_CSV [--modo vigencia|anio_exacto]
+    poetry run python -m src.armonizacion.armonizar_sisben_bogota_sdp azure:sisben/bogota/Sisben_03082026_bog.zip
+      (lee el zip del banco de datos en memoria, sin descargarlo a data/)
 Salida: data/2_models/sisben_bogota_estandarizado[_<modo>].parquet
         (+ opcional fusión con nacional sustituyendo cod_mpio 11001)
 """
 from __future__ import annotations
+import io
 import sys
+import zipfile
 from pathlib import Path
 import pandas as pd
 
-from src.utils.variables_canonicas import edad_a_ciclo, es_jefe
+from src.utils.variables_canonicas import edad_a_ciclo, es_jefe, es_menor
 
 OUT_DIR = Path("data/2_models")
 NACIONAL = OUT_DIR / "sisben_estandarizado_2024.parquet"
@@ -61,13 +65,26 @@ def _rutas(modo: str) -> tuple[Path, Path]:
             OUT_DIR / f"sisben_estandarizado_2024_con_bogota{sufijo}.parquet")
 
 
+def _leer_csv(csv: str) -> pd.DataFrame:
+    """CSV local, o `azure:<ruta del blob>` (zip con un CSV) leído en memoria."""
+    if csv.startswith("azure:"):
+        from src.utils.azure_storage import leer_bytes
+
+        with zipfile.ZipFile(io.BytesIO(leer_bytes(csv[len("azure:"):]))) as z, z.open(z.namelist()[0]) as f:
+            return pd.read_csv(f, sep=";", usecols=COLS, dtype=str, encoding="utf-8-sig")
+    return pd.read_csv(csv, sep=";", usecols=COLS, dtype=str, encoding="utf-8-sig")
+
+
 def armonizar_sisben_bogota(csv: str, modo: str = "vigencia") -> pd.DataFrame:
     if modo not in ("vigencia", "anio_exacto"):
         raise ValueError(f"modo debe ser 'vigencia' o 'anio_exacto', no {modo!r}")
 
-    df = pd.read_csv(csv, sep=";", usecols=COLS, dtype=str, encoding="utf-8-sig")
+    df = _leer_csv(csv)
     k = ["ide_ficha_origen", "ide_hogar"]
     n_pers = df.groupby(k).size().rename("hog_num_personas").reset_index()
+    # Menores de 18 al 31-dic-2024, sobre todas las personas del hogar (variables_canonicas.es_menor).
+    edad = (FECHA_REF_EDAD - pd.to_datetime(df["fec_nacimiento"], errors="coerce")).dt.days // 365.25
+    n_men = es_menor(edad).groupby([df[c] for c in k]).sum().rename("hog_num_menores").reset_index()
     jefes_todos = df[es_jefe(df, "sdp")].drop_duplicates(k, keep="first")
 
     fec_encuesta = pd.to_datetime(jefes_todos["fec_fin_encuesta"], errors="coerce")
@@ -89,7 +106,7 @@ def armonizar_sisben_bogota(csv: str, modo: str = "vigencia") -> pd.DataFrame:
     )
     jefes = jefes_todos[mask].copy()
 
-    h = jefes.merge(n_pers, on=k, how="left")
+    h = jefes.merge(n_pers, on=k, how="left").merge(n_men, on=k, how="left")
     nac = pd.to_datetime(h["fec_nacimiento"], errors="coerce")
     out = pd.DataFrame({
         "llave_directorio": h["ide_ficha_origen"],
@@ -109,6 +126,7 @@ def armonizar_sisben_bogota(csv: str, modo: str = "vigencia") -> pd.DataFrame:
         "viv_alcantarillado": h["ind_tiene_alcantarillado"],
         "viv_acueducto": h["ind_tiene_acueducto"],
         "hog_num_personas": h["hog_num_personas"],
+        "hog_num_menores": h["hog_num_menores"],
         "Grupo": h["Grupo"],
         "Clasificacion": h["Clasificacion"],
         "Nivel": h["Clasificacion"].str.extract(r"(\d+)")[0],
@@ -138,7 +156,7 @@ def main() -> None:
 
     out, out_fusion = _rutas(modo)
     out.parent.mkdir(parents=True, exist_ok=True)
-    if arg.lower().endswith(".parquet"):   # ya estandarizado: solo fusionar con el nacional
+    if arg.lower().endswith(".parquet") and not arg.startswith("azure:"):   # ya estandarizado: solo fusionar
         b = pd.read_parquet(arg)
     else:
         b = armonizar_sisben_bogota(arg, modo=modo)

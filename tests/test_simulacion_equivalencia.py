@@ -8,6 +8,10 @@ anterior, antes de mover el código, sobre la tabla sintética de
 mismas filas: si una refactorización cambia un resultado, esta prueba lo
 detecta antes que la corrida completa.
 
+La celda del Hot-Deck sumó personas y menores el 2026-11-14; la tabla
+sintética los trae en un solo tramo, así que las celdas de la referencia no
+cambian y la prueba sigue comparando con la versión anterior.
+
 Única diferencia admitida: la cadena de respaldos del Hot-Deck simulado
 (paso 4 del diseño, 2026-11-04). La versión anterior sorteaba en todo el
 registro a los hogares sin donante en su celda; ahora suben por la cadena
@@ -44,6 +48,11 @@ def hogares_sinteticos(n: int = N_HOGARES, seed: int = 7) -> tuple[pd.DataFrame,
         "viv_cuartos": rng.integers(1, 5, n).astype(str),
         "viv_pisos": pisos,
         "viv_paredes": rng.choice(["1", "1", "1", "5"], n),
+        # Personas y menores (celda desde el 2026-11-14) con un generador aparte y
+        # un solo tramo cada uno (1-2 personas, 0 menores): la partición de celdas
+        # y las demás columnas son las mismas de la referencia, que sigue valiendo.
+        "hog_num_personas": np.random.default_rng(seed + 2).integers(1, 3, n).astype(str),
+        "hog_num_menores": "0",
         "ingreso_percapita": np.where(rng.random(n) < 0.03, 0.0, np.exp(log_ing)),
         "dominio_pm": np.where(zona == "2", "rural", np.where(np.isin(depto, ["05", "11"]), "13_ciudades",
                                                               "otras_cabeceras")),

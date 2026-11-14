@@ -57,7 +57,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.utils.variables_canonicas import JEFE, es_jefe, normalizar_llave as _norm_llave
+from src.utils.variables_canonicas import JEFE, es_jefe, es_menor, normalizar_llave as _norm_llave
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -93,6 +93,10 @@ MAPA_JEFE = {
     "P3271": "jefe_sexo",
     "P6040": "jefe_edad",
 }
+# Conteo por hogar sobre TODAS las personas de caracteristicas_generales
+# (no solo el jefe): `hog_num_menores` = personas con P6040 < 18 (desde el
+# 2026-11-14, para la celda del Hot-Deck; regla en variables_canonicas.es_menor).
+COLUMNA_EDAD = "P6040"
 
 FILTRO_JEFE_COL, FILTRO_JEFE_VAL = JEFE["geih"]  # P6050 == "1"
 
@@ -121,6 +125,10 @@ def _cargar_mes(mes: str) -> pd.DataFrame | None:
         jefes = cg[es_jefe(cg, "geih")].copy()
         columnas_jefe = [c for c in MAPA_JEFE if c in jefes.columns]
         jefes = jefes[["DIRECTORIO", "SECUENCIA_P", "HOGAR", *columnas_jefe]].rename(columns=MAPA_JEFE)
+        if COLUMNA_EDAD in cg.columns:
+            menores = (es_menor(cg[COLUMNA_EDAD]).groupby([cg["DIRECTORIO"], cg["SECUENCIA_P"], cg["HOGAR"]])
+                       .sum().rename("hog_num_menores").reset_index())
+            jefes = jefes.merge(menores, on=["DIRECTORIO", "SECUENCIA_P", "HOGAR"], how="left")
         hv = hv.merge(
             jefes,
             left_on=["llave_directorio", "llave_secuencia_p", "llave_hogar"],

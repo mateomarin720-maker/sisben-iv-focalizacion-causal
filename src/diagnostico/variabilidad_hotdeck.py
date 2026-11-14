@@ -65,7 +65,7 @@ def cargar() -> tuple[pd.DataFrame, pd.DataFrame]:
     global _DATOS
     if _DATOS is None:
         _DATOS = (pd.read_parquet(hd.GEIH),
-                  pd.read_parquet(hd.SISBEN_BOG, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", *hd.TRAT]))
+                  pd.read_parquet(hd.SISBEN_BOG, columns=[*hd.CELDA_COLUMNAS, *hd.TRAT]))
     return _DATOS
 
 

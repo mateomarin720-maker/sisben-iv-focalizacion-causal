@@ -60,9 +60,11 @@ def test_definiciones_iguales_a_las_reglas_simuladas():
 
 def test_e_con_la_cadena_de_respaldos():
     geih = pd.DataFrame({"geo_depto": ["05", "05", "99"], "jefe_edad": ["40", "40", "40"],
-                         "viv_cuartos": ["3", "1", "3"], "viv_pisos": ["4", "4", "4"]})
+                         "viv_cuartos": ["3", "1", "3"], "viv_pisos": ["4", "4", "4"],
+                         "hog_num_personas": ["2", "2", "2"], "hog_num_menores": ["0", "0", "0"]})
     sis = pd.DataFrame({"geo_depto": ["05", "05", "08"], "jefe_edad": ["5", "5", "5"], "viv_cuartos": ["3", "3", "3"],
-                        "viv_pisos": ["1", "1", "1"], "Grupo": ["A", "D", "B"]})
+                        "viv_pisos": ["1", "1", "1"], "hog_num_personas": ["2", "2", "2"],
+                        "hog_num_menores": ["0", "0", "0"], "Grupo": ["A", "D", "B"]})
     e, nivel = ef.elegibles_por_hogar(geih, sis, ["A", "B"])
     assert e[0] == 0.5 and nivel[0] == 0           # celda exacta
     assert e[1] == 0.5 and nivel[1] > 0            # otro tramo de cuartos: respaldo en depto + edad

@@ -68,6 +68,8 @@ def generar(p: dict, n: int, semilla: int = 2026) -> tuple[pd.DataFrame, pd.Seri
     dominio = _sortear(rng, p["dominio"], [dz, zona])
     vivienda = _sortear(rng, p["vivienda"], [dz, depto, todos]).str.split(SEP, expand=True)
     ciclo, cuartos, pisos = vivienda[0], vivienda[1], vivienda[2]
+    hogar = _sortear(rng, p["hogar"], [zona + SEP + ciclo, ciclo, todos]).str.split(SEP, expand=True)
+    personas, menores = hogar[0], hogar[1]
     nivel = _nivel_pisos(pisos)
     paredes = _sortear(rng, p["paredes"], [zona + SEP + nivel, nivel, todos])
     mujer = _sortear(rng, p["mujer"], [zona + SEP + ciclo, todos]).astype(int)
@@ -86,7 +88,8 @@ def generar(p: dict, n: int, semilla: int = 2026) -> tuple[pd.DataFrame, pd.Seri
     hogares = pd.DataFrame({
         "geo_depto": depto.astype(str), "geo_zona": zona.astype(str), "jefe_sexo": np.where(mujer == 1, "2", "1"),
         "jefe_edad": edad.astype(str), "viv_cuartos": cuartos.astype(str), "viv_pisos": pisos.astype(str),
-        "viv_paredes": paredes.astype(str), "ingreso_percapita": np.maximum(ingreso, 0.0),
+        "viv_paredes": paredes.astype(str), "hog_num_personas": personas.astype(str),
+        "hog_num_menores": menores.astype(str), "ingreso_percapita": np.maximum(ingreso, 0.0),
         "dominio_pm": dominio.astype(str),
     })
     return hogares, pd.Series(p["p_t_celda"], dtype=float)

@@ -142,6 +142,7 @@ def test_geih_lee_cada_variable_de_su_columna_y_cruza_el_jefe(tmp_path, monkeypa
     assert out.loc["8", ["viv_paredes", "viv_pisos", "viv_cuartos"]].tolist() == ["9", "1", "2"]
     assert out.loc["7", "jefe_edad"] == "45" and out.loc["7", "jefe_sexo"] == "2"
     assert out.loc["8", "jefe_edad"] == "70"
+    assert out["hog_num_menores"].tolist() == [1, 0]  # el de 10 años; el jefe de 45 y su pareja no cuentan
     assert len(out) == 2
 
 
@@ -157,6 +158,7 @@ def test_sisben_nacional_toma_al_jefe_y_conserva_el_codigo_de_edad(tmp_path, mon
     pd.DataFrame({
         "cod_mpio": ["05001", "05001", "11001", "11001"], "ZONA": "1", "llave": ["a", "a", "b", "b"], "CORTE": "SIV",
         "HOGAR": "1", "PER003": ["2", "1", "1", "1"], "PER001": ["1", "2", "1", "2"], "PER002": ["3", "5", "6", "4"],
+        # PER002 es ciclo de vida: 3 = 12-17 cuenta como menor; 4 = 18-28 no
         "Grupo": ["A", "A", "C", "C"], "Nivel": "1", "Clasificacion": ["A1", "A1", "C2", "C2"],
     }).to_parquet(tmp_path / "personas.parquet")
     monkeypatch.setattr(sisben, "SISBEN_DIR", tmp_path)
@@ -167,6 +169,7 @@ def test_sisben_nacional_toma_al_jefe_y_conserva_el_codigo_de_edad(tmp_path, mon
     assert out.loc["b", "jefe_edad"] == "6"  # dos jefes marcados: se conserva el primero
     assert out.loc["a", ["viv_paredes", "viv_pisos", "viv_cuartos"]].tolist() == ["1", "2", "3"]
     assert out.loc["a", "geo_depto"] == "05" and out.loc["b", "geo_depto"] == "11"
+    assert out.loc["a", "hog_num_menores"] == 1 and out.loc["b", "hog_num_menores"] == 0
 
 
 # --------------------------------------------------------------------------
@@ -207,6 +210,8 @@ def test_sdp_toma_al_jefe_y_lleva_la_edad_al_codigo_de_ciclo(tmp_path):
     assert vig.loc["1", "jefe_edad"] == "5"  # 34 años al 31-dic-2024
     assert vig.loc["2", "jefe_edad"] == "3"  # 16 años
     assert vig.loc["1", "hog_num_personas"] == 2
+    assert vig.loc["1", "hog_num_menores"] == 1  # nacido en 2015: 9 años al 31-dic-2024
+    assert vig.loc["2", "hog_num_menores"] == 1  # el propio jefe, de 16
     assert vig.loc["1", "jefe_sexo"] == "2" and pd.isna(vig.loc["2", "jefe_sexo"])
     assert vig.loc["1", "Nivel"] == "4"
 

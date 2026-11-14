@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import TRAT, hotdeck
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, TRAT, hotdeck
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ def main() -> None:
         if not path.exists():
             logger.warning("Falta %s — corra armonizar_sisben_bogota_sdp.py con --modo correspondiente", path)
             continue
-        don = pd.read_parquet(path, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", *TRAT])
+        don = pd.read_parquet(path, columns=[*CELDA_COLUMNAS, *TRAT])
         logger.info("[%s] Donante: %s hogares", nombre, f"{len(don):,}")
         out = hotdeck(rec, don)
         filas.append(_resumen(nombre, out, len(don)))

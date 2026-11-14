@@ -165,9 +165,13 @@ de respuesta.
 - **`geo_zona`**: 1 = urbano en las dos fuentes. En GEIH lo dice el
   diccionario (`CLASE`); en el Sisbén se infiere de `I14` (2026-11-02,
   ver la homologación de vivienda), no de una ficha de la variable.
-- Variables cardinales (conteos: `viv_cuartos`, número de personas) SÍ son
-  seguras de comparar/sumar a una celda de matching sin homologar — no
-  necesitan tabla de equivalencia de categorías.
+- Variables cardinales (conteos: `viv_cuartos`, `hog_num_personas`,
+  `hog_num_menores`) SÍ son seguras de comparar/sumar a una celda de
+  matching sin homologar — no necesitan tabla de equivalencia de
+  categorías. Personas y menores entraron a la celda el 2026-11-14
+  (`docs/insumos/DICCIONARIO_HOTDECK.md` §6); el resto del catálogo común
+  a las tres fuentes ya se evaluó y no aporta, no homologa o es una
+  privación del IPM (`src/validacion/candidatas_celda_catalogo.py`).
 
 ## Convenciones de datos
 
@@ -218,6 +222,8 @@ poetry run python -m src.diagnostico.variables_candidatas_pobreza 6
 poetry run python -m src.diagnostico.variables_candidatas_pobreza 6 poblacion
 poetry run python -m src.diagnostico.incidencia_transferencias
 poetry run python -m src.validacion.comparar_celdas_hotdeck_vivienda
+poetry run python -m src.validacion.candidatas_celda_catalogo   # lento (25 min); lee Bogotá desde Azure
+poetry run python -m src.simulacion.calibrar
 poetry run python -m src.validacion.validar_ipm_geih_ecv
 poetry run python -m src.simulacion
 poetry run python -m src.focalizacion.reglas_focalizacion

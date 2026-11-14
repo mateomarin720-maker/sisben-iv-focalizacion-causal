@@ -45,7 +45,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celda
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, construir_celda
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -185,8 +185,8 @@ def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame, y_col: str = "POBR
 
 def main() -> None:
     logger.info("Cargando %s y %s", GEIH_PATH, SISBEN_PATH)
-    geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "fex", *OUTCOMES])
-    sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "jefe_edad", "viv_cuartos", "viv_pisos", "Grupo", "Clasificacion"])
+    geih = pd.read_parquet(GEIH_PATH, columns=[*CELDA_COLUMNAS, "fex", *OUTCOMES])
+    sisben = pd.read_parquet(SISBEN_PATH, columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion"])
     total_geih = pd.to_numeric(geih["fex"], errors="coerce").fillna(0).sum()
     filas_monotonia = []
 

@@ -7,10 +7,11 @@ columnas canónicas sin versionar ningún hogar.
 
 Cadena de condicionales (diseño, sección 4):
   departamento → zona | depto → dominio de la línea | depto × zona →
-  (ciclo de vida, cuartos, pisos) | depto × zona → paredes | zona × nivel
-  de pisos → jefe mujer | zona × ciclo → ingreso | depto × zona × nivel de
-  pisos (proporción sin ingreso, media y desviación del log-ingreso, más el
-  efecto de jefe mujer y paredes precarias) → P(T | celda) del registro.
+  (ciclo de vida, cuartos, pisos) | depto × zona → (personas, menores) |
+  zona × ciclo → paredes | zona × nivel de pisos → jefe mujer | zona ×
+  ciclo → ingreso | depto × zona × nivel de pisos (proporción sin ingreso,
+  media y desviación del log-ingreso, más el efecto de jefe mujer y paredes
+  precarias) → P(T | celda) del registro.
 
 Protección de datos: un grupo con menos de `UMBRAL` hogares no se guarda;
 el generador usa el del nivel superior (depto × zona → depto → nacional),
@@ -43,6 +44,8 @@ logger = logging.getLogger(__name__)
 
 UMBRAL = 30
 CUARTOS_MAX = 6  # 6 = seis o más (la celda solo distingue 1, 2 y 3 o más)
+PERSONAS_MAX = 8  # 8 = ocho o más (la celda distingue 1-2 y 3 o más)
+MENORES_MAX = 4  # 4 = cuatro o más (la celda distingue 0, 1 y 2 o más)
 PARAMETROS = Path(__file__).parent / "parametros" / "poblacion_2024.json"
 TODOS = "*"
 SEP = "|"
@@ -55,12 +58,15 @@ def _nivel_pisos(pisos: pd.Series) -> pd.Series:
 def variables(hogares: pd.DataFrame) -> pd.DataFrame:
     """Las variables de la cadena, a partir de las columnas canónicas."""
     cuartos = pd.to_numeric(hogares["viv_cuartos"], errors="coerce").clip(upper=CUARTOS_MAX).astype(int)
+    personas = pd.to_numeric(hogares["hog_num_personas"], errors="coerce").clip(upper=PERSONAS_MAX).astype(int)
+    menores = pd.to_numeric(hogares["hog_num_menores"], errors="coerce").clip(upper=MENORES_MAX).astype(int)
     ingreso = pd.to_numeric(hogares["ingreso_percapita"], errors="coerce")
     return pd.DataFrame({
         "depto": hogares["geo_depto"].astype(str), "zona": hogares["geo_zona"].astype(str),
         "dominio": hogares["dominio_pm"].astype(str), "ciclo": edad_a_ciclo(hogares["jefe_edad"]).astype(str),
         "vivienda": edad_a_ciclo(hogares["jefe_edad"]).astype(str) + SEP + cuartos.astype(str) + SEP
                     + hogares["viv_pisos"].astype(str),
+        "hogar": personas.astype(str) + SEP + menores.astype(str),
         "nivel_pisos": _nivel_pisos(hogares["viv_pisos"]), "paredes": hogares["viv_paredes"].astype(str),
         "mujer": (hogares["jefe_sexo"].astype(str) == "2").astype(float),
         "precaria": (hogares["viv_paredes"].astype(str) != "1").astype(float),
@@ -133,11 +139,13 @@ def calibrar(hogares: pd.DataFrame, registro: pd.DataFrame) -> dict:
     v = variables(hogares)
     reg = registro[registro["Clasificacion"].notna()]
     return dict(
-        version=1, umbral=UMBRAL, n_hogares=int(len(v)), cuartos_max=CUARTOS_MAX,
+        version=2, umbral=UMBRAL, n_hogares=int(len(v)), cuartos_max=CUARTOS_MAX, personas_max=PERSONAS_MAX,
+        menores_max=MENORES_MAX,
         depto=distribuciones(v, [[]], "depto"),
         zona=distribuciones(v, [["depto"], []], "zona"),
         dominio=distribuciones(v, [["depto", "zona"], ["zona"]], "dominio"),
         vivienda=distribuciones(v, [["depto", "zona"], ["depto"], []], "vivienda"),
+        hogar=distribuciones(v, [["zona", "ciclo"], ["ciclo"], []], "hogar"),
         paredes=distribuciones(v, [["zona", "nivel_pisos"], ["nivel_pisos"], []], "paredes"),
         mujer=distribuciones(v.assign(m=v["mujer"].astype(int).astype(str)), [["zona", "ciclo"], []], "m"),
         ingreso=modelo_ingreso(v),
