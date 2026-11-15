@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from src.simulacion.estimadores import discontinuidad, discontinuidad_difusa
@@ -55,3 +56,21 @@ def test_las_dos_versiones_de_linear_dml_cambian_solo_la_regularizacion():
     assert (vigente[0][-1].alpha, vigente[1][-1].C) == (1.0, 10.0)
     assert (casi_nula[0][-1].alpha, casi_nula[1][-1].C) == (pytest.approx(1e-6), pytest.approx(1e6))
     assert [p for p, _ in vigente[0].steps] == [p for p, _ in casi_nula[0].steps]
+
+
+def test_tamano_de_encuesta_sortea_cada_tamano_y_usa_el_t_del_donante():
+    """Pregunta 4 (2026-11-15): cada tamaño tiene su encuesta, los mismos
+    tres estimadores de la celda, y con Hot-Deck el T viene del donante."""
+    from src.simulacion.base import preparar_base
+    from tests.test_simulacion_equivalencia import hogares_sinteticos
+
+    hogares, p_t = hogares_sinteticos(n=3_000)
+    b = preparar_base(hogares, p_t)
+    filas = pd.DataFrame(se.una_repeticion_tamano(b, rep=0, tamanos=(600, 1_200)))
+    assert len(filas) == 2 * len(se.ESCENARIOS_TAMANO) * len(se.VINCULOS_TAMANO) * 3
+    assert set(filas["hogares"]) == {600, 1_200}
+    assert set(filas["estimador"]) == {"regresion_efectos_fijos", "linear_dml", "linear_dml_sin_regularizar"}
+    nulo = filas[filas["escenario"].str.startswith("efecto_nulo")]
+    assert (nulo["efecto_verdadero"] == 0).all()
+    reg = filas[filas["estimador"] == "regresion_efectos_fijos"].set_index(["escenario", "vinculo"])["estimacion"]
+    assert (reg.xs("oraculo", level="vinculo") != reg.xs("hotdeck", level="vinculo")).all()

@@ -25,4 +25,4 @@ Proposición 3. Rubin con imputación total (100 sorteos en cada una de 20 pobla
     0.1 100           20              1.0039          0.5017        0.4489        0.5785            0.5025
 
 Cota del ATE sin supuestos, pobreza monetaria (cotas_frechet_manski_pobre_monetario.csv)
-celdas 921 | Δ medio ponderado 0.2003 | 1 + 2Δ = 1.4005 | ancho publicado 1.4005
+celdas 3217 | Δ medio ponderado 0.1486 | 1 + 2Δ = 1.2971 | ancho publicado 1.2971

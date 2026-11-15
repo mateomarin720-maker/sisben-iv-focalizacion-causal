@@ -104,13 +104,16 @@ con la variable agregada barajada dentro de la celda anterior: lo que se
 | Hogares en celdas con < 30 donantes | 0,8 % | 2,9 % | 6,3 % | 5,1 % | 3,7 % |
 | Correlación de P(T \| celda) con pobreza monetaria | 0,29 | 0,37 | 0,41 | 0,41 | 0,41 |
 | Δ (ancho de la cota por celda) | 0,200 | 0,167 | 0,145 | 0,148 | 0,148 |
-| Δ placebo (misma partición, sin información) | — | 0,198 | 0,165 | — | 0,176 |
+| Δ placebo (lo agregado, barajado dentro de la celda anterior) | — | 0,198 | 0,165 | 0,196 | 0,198 |
 | Cumple los umbrales | sí | sí | no | no | sí |
 
 **Lectura:**
 - **Personas y menores aportan; casi todo lo que aportan es información,
   no fragmentación.** Con personas, Δ baja de 0,200 a 0,167 (el placebo da
-  0,198); con menores encima, a 0,145-0,148 (placebo 0,165-0,176). Bootstrap
+  0,198). En la celda oficial, personas y menores juntos llevan Δ de 0,200
+  a 0,148; barajados al azar dentro de la celda con pisos, solo a 0,198: el
+  95 % de la reducción es información. (La celda 5 parte de la 4, por eso
+  su placebo, 0,165, se compara con 0,167.) Bootstrap
   pareado por vivienda (200 réplicas): la celda 7 frente a la 2 baja Δ en
   −0,053 [−0,055; −0,052], y frente a la 4 en −0,019 [−0,020; −0,017].
 - **Se eligió la 7 y no la 5 ni la 6**: cierran lo mismo (Δ 0,145-0,148,

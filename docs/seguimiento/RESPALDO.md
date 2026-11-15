@@ -22,7 +22,7 @@ depende de él.
 
 ## Qué cambia frente a `main`
 
-| | Respaldo (regla urbana en todo el país) | `main` (definición oficial por zona) |
+| | Respaldo (regla urbana en todo el país) | `main` al 2026-11-13, misma celda (definición oficial por zona) |
 |---|---|---|
 | `POBRE_GEIH`, hogares ponderados | 20,4 % | 14,5 % |
 | Proxy frente al IPM oficial 2024 (hogar por hogar) | 18,7 % frente a 9,2 %; kappa 0,41 | 13,8 % frente a 9,2 %; kappa 0,51 |
@@ -31,7 +31,11 @@ depende de él.
 | Cota de Fréchet-Manski, `POBRE_GEIH` | [−0,261; +0,380] | [−0,256; +0,278] |
 
 No cambian el Hot-Deck, la pobreza monetaria, la simulación semisintética
-ni las conclusiones. Detalle: entradas 42 a 44 de
+ni las conclusiones. Desde el 2026-11-14 `main` usa además una celda del
+Hot-Deck más fina (suma personas y menores; entrada 45 del CHANGELOG), así
+que sus cifras actuales difieren también por eso; la columna de la
+derecha es `main` antes de ese cambio (commit `53ce74a`), con la misma
+celda que el respaldo. Detalle: entradas 42 a 44 de
 [`CHANGELOG_PENDIENTES.md`](CHANGELOG_PENDIENTES.md).
 
 ## Cómo usarlo

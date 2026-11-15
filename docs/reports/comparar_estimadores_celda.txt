@@ -1,0 +1,14 @@
+Hogares: 290,968 | celdas: 3,721 | hogares por celda: media 78, mediana 11
+              outcome                       estimador     ate   ic_lo  ic_hi
+log_ingreso_percapita                      linear_dml  0.0013 -0.0131 0.0158
+log_ingreso_percapita linear_dml_casi_sin_regularizar  0.0049 -0.0096 0.0194
+log_ingreso_percapita         regresion_efectos_fijos  0.0028 -0.0115 0.0171
+      POBRE_MONETARIO                      linear_dml  0.0017 -0.0021 0.0055
+      POBRE_MONETARIO linear_dml_casi_sin_regularizar  0.0009 -0.0029 0.0047
+      POBRE_MONETARIO         regresion_efectos_fijos -0.0003 -0.0041 0.0035
+           POBRE_GEIH                      linear_dml  0.0009 -0.0018 0.0037
+           POBRE_GEIH linear_dml_casi_sin_regularizar  0.0005 -0.0023 0.0033
+           POBRE_GEIH         regresion_efectos_fijos -0.0004 -0.0030 0.0023
+
+Diferencia máxima entre estimadores: {'POBRE_GEIH': 0.0013, 'POBRE_MONETARIO': 0.002, 'log_ingreso_percapita': 0.0035}
+Todos los IC incluyen el 0: True

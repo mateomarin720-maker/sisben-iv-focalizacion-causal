@@ -24,7 +24,7 @@ import pandas as pd
 
 from src.simulacion import contrato, reportes
 from src.simulacion.asignacion import asignar
-from src.simulacion.base import celdas_por_nivel, diseno_x, preparar_base
+from src.simulacion.base import celdas_por_nivel, diseno_x, firma_con_datos, preparar_base
 from src.simulacion.escenarios import (B_X, ESCENARIOS, H_RD, LOTE, MAX_REPS, MAX_REPS_BOSQUE, MIN_REPS,
                                        MIN_REPS_BOSQUE, N_ENCUESTA, OUTCOMES, SEED, TAU, UMBRAL_COBERTURA,
                                        UMBRAL_SESGO, VINCULOS, VINCULOS_BOSQUE)
@@ -192,7 +192,7 @@ def main(n_jobs: int = 3, n: int = N_ENCUESTA, hogares: Path = HOGARES, registro
     logger.info("Base: %s hogares, %s celdas | tau medio %.4f", f"{len(b):,}", b["celda"].nunique(),
                 b["tau"].mean())
     rr = rutas(salida)
-    firma = _firma(n, **(origen or {}))
+    firma = firma_con_datos(_firma(n, **(origen or {})), b)  # reanuda solo con los mismos datos
 
     r = _previas(n, rr, firma)
     if r is not None:

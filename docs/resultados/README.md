@@ -19,7 +19,7 @@ Las cifras con asterisco (\*) son simuladas; las demás, datos reales.
 **Base.** El Hot-Deck vincula la GEIH y el Sisbén solo a nivel de celda:
 dentro de cada celda el grupo se sortea, así que el grupo imputado no
 lleva información del hogar receptor. Dos sorteos coinciden en el grupo
-de un hogar solo el 34 % de las veces, aunque la distribución nacional
+de un hogar solo el 41 % de las veces, aunque la distribución nacional
 varía menos de 0,2 puntos. Los resultados están construidos y validados:
 IPM-GEIH (8 de 15 privaciones) y pobreza monetaria reconstruida (33,2 %
 frente a 31,8 % oficial; clasifica igual al 93,9 % de los hogares de la
@@ -33,9 +33,10 @@ base oficial).
    ATT, ATU y CATE por subgrupo, en cinco resultados) tiene una cota de
    Fréchet que excluya el cero.
 3. Errores de focalización con datos reales, como cotas por celda: al
-   menos 39 % de los hogares A/B no son pobres monetarios (inclusión
-   [38,6 %; 84,5 %]); la exclusión va de 0,9 % a 75,0 % y solo tiene piso
-   en Putumayo, San Andrés y Bogotá.
+   menos 41 % de los hogares A/B no son pobres monetarios (inclusión
+   [41,2 %; 74,4 %]); la exclusión va de 2,8 % a 57,7 % y solo tiene un
+   piso apreciable donde hay menos A/B que pobres (San Andrés, Putumayo,
+   Bogotá, Cundinamarca, Guaviare).
 4. Predecir el grupo del Sisbén y predecir la pobreza son problemas
    distintos: el primero acierta 53 %; el segundo es el que sirve para
    recomendar variables.
@@ -43,13 +44,13 @@ base oficial).
 **Componente 2: simulación semisintética\*.** Con hogares reales y un
 efecto conocido (+0,095\* en log-ingreso), todo estimador devuelve ≈0
 cuando el tratamiento viene del Hot-Deck. Con el tratamiento verdadero,
-regresión, DML y Causal Forest recuperan el efecto si la confusión es
+la regresión con efectos fijos de celda recupera el efecto si la confusión es
 observable, y ninguno si no lo es; solo la discontinuidad en el corte
 resiste la confusión no observada, y necesita vínculo hogar por hogar.
 
 **Componente 3: reglas de focalización\*.** Un proxy de medios con
-variables del hogar logra 82-85 %\* de la reducción ideal de la brecha
-(FGT1), frente a 60 %\* de la clasificación imputada, también con el mismo
+variables del hogar logra 84-87 %\* de la reducción ideal de la brecha
+(FGT1), frente a 75 %\* de la clasificación imputada, también con el mismo
 dinero. Ordenar por el CATE estimado empeora la focalización, aun con el
 doble de heterogeneidad del efecto.
 
@@ -67,9 +68,13 @@ doble de heterogeneidad del efecto.
 
 **Hot-Deck.** 290.968 hogares GEIH, 3.106.489 donantes del Sisbén
 (nacional y Bogotá vigente). Celda: departamento, ciclo de vida del jefe,
-tramo de cuartos y nivel de pisos homologado; 99,98 % en celda exacta
-(993 celdas). Grupo asignado (ponderado): **A 14,2 · B 29,4 · C 34,4 ·
-D 22,0 %**. Bogotá se filtra por vigencia al 31 de diciembre de 2024.
+tramo de cuartos, nivel de pisos homologado, personas del hogar (1-2 / 3+)
+y menores de 18 años (0 / 1 / 2+); 99,92 % en celda exacta (3.721
+celdas). Grupo asignado (ponderado): **A 14,9 · B 29,7 · C 33,8 · D
+21,6 %**. Personas y menores entraron el 2026-11-14: cierran el ancho de
+la cota de Fréchet por celda de 0,200 a 0,148 y suben la correlación de
+P(T | celda) con la pobreza monetaria de 0,29 a 0,41; el resto del
+catálogo no aporta, no homologa o es una privación del IPM. Bogotá se filtra por vigencia al 31 de diciembre de 2024.
 Pisos entró a la celda el 2026-11-02: sube la correlación entre
 P(T | celda) y la pobreza monetaria de 0,20 a 0,29 sin costo de
 cobertura; paredes no agrega nada encima.
@@ -112,10 +117,10 @@ pipeline).
 
 | Nivel | Resultado |
 |---|---|
-| Hogar | Dos sorteos coinciden en el grupo el 34,4 % de las veces y en A/B el 62,7 % |
-| Celda | CV mediano de la proporción A/B 0,091 (0,049 ponderado) |
-| Nacional | Desviación de 0,10 a 0,15 puntos por grupo (CV ≤ 0,007) |
-| Contraste placebo | Con Rubin, `POBRE_GEIH` da −0,000004 [−0,0033; +0,0033] (semilla 42: −0,0024, al borde del 0); 49-55 % de la varianza viene de la imputación |
+| Hogar | Dos sorteos coinciden en el grupo el 41,2 % de las veces y en A/B el 70,3 % |
+| Celda | CV mediano de la proporción A/B 0,149 (0,106 ponderado): la celda más fina tiene menos hogares por celda |
+| Nacional | Desviación de 0,10 a 0,16 puntos por grupo (CV ≤ 0,006) |
+| Contraste placebo | Con Rubin, `POBRE_GEIH` da +0,0001 [−0,0035; +0,0038] (semilla 42: −0,0003); 47-53 % de la varianza viene de la imputación |
 
 ## Componente 1: diagnóstico con datos reales
 
@@ -159,26 +164,29 @@ El CATE medio también es ≈0.
 
 | Outcome | Cota del ATE sin el supuesto del vínculo |
 |---|---|
-| `POBRE_GEIH` | [−0,256; +0,278] |
-| `POBRE_MONETARIO` | [−0,418; +0,648] |
-| `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | [−0,407; +0,620] |
+| `POBRE_GEIH` | [−0,260; +0,308] |
+| `POBRE_MONETARIO` | [−0,361; +0,637] |
+| `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | [−0,359; +0,619] |
 
 - **Con supuestos de monotonía**, la cota del ATE de pobreza monetaria
-  queda en **[−0,405; 0]**. Los supuestos son: los A/B son al menos tan
+  queda en **[−0,359; 0]**. Los supuestos son: los A/B son al menos tan
   pobres y el programa no aumenta la pobreza de nadie. El ancho baja de
-  1,40 a 0,41, pero el signo lo pone el supuesto. El ancho 1,40 es
+  1,30 a 0,36, pero el signo lo pone el supuesto. El ancho 1,30 es
   1 + 2Δ: la cota de Manski (ancho 1) más el doble del ancho medio de
-  Fréchet de la conjunta no observada, Δ = 0,20
-  (`docs/anexos_tesis/PROPOSICIONES.md`).
-- **Una cota por cada parámetro de los modelos:** son entre 140 y 210
-  veces más anchas que los IC del DML. En el IPM, el efecto va de −1,4 a
-  +1,6 privaciones. La incertidumbre se concentra en lo rural.
+  Fréchet de la conjunta no observada, Δ = 0,149
+  (`docs/anexos_tesis/PROPOSICIONES.md`). Con la celda del 2026-11-02,
+  Δ = 0,200 y el ancho era 1,40: personas y menores en la celda cierran
+  la cota 0,10.
+- **Una cota por cada parámetro de los modelos:** son entre 100 y 180
+  veces más anchas que los IC del DML. En el IPM, el efecto va de −1,3 a
+  +1,5 privaciones. La incertidumbre se concentra en lo rural.
 
 **Errores de focalización con datos reales** (A/B frente a pobreza
 monetaria, cotas por celda sumadas con los factores de expansión).
-Exclusión [0,9 %; 75,0 %]; inclusión [38,6 %; 84,5 %]. La exclusión solo
-tiene piso donde hay menos A/B que pobres: Putumayo (≥ 19,5 %), San
-Andrés (≥ 24,9 %) y Bogotá (≥ 5,2 %).
+Exclusión [2,8 %; 57,7 %]; inclusión [41,2 %; 74,4 %] (con la celda
+anterior, [0,9 %; 75,0 %] y [38,6 %; 84,5 %]). La exclusión solo tiene
+piso donde hay menos A/B que pobres: San Andrés (≥ 35,0 %), Putumayo
+(≥ 26,0 %), Bogotá (≥ 11,5 %), Cundinamarca y Guaviare (≥ 8 %).
 
 **Selección y recomendación de variables.** Son dos problemas
 predictivos distintos, y solo el segundo dice algo sobre errores de
@@ -187,7 +195,7 @@ focalización:
 | Modelo | Objetivo | Resultado |
 |---|---|---|
 | Clasificación (OE1) | Grupo del Sisbén (A-D) | LASSO, Ridge y SHAP sobre 150.000 hogares: exactitud ≈53 % (línea base 30 %); `viv_pisos` es la variable más importante; sensibilidad 0,64 en A y 0,22-0,39 en D; con partición por municipio el F1 macro cae de 0,50 a 0,44 |
-| Pobreza | Pobreza monetaria de la GEIH, independiente del Sisbén | Calcular la composición del hogar con lo que ya se recoge reduce el error de exclusión 5,40 puntos; todas las variables nuevas, 1,40. Solo la cuenta de ahorros (−0,86) tiene un aporte claro y estable |
+| Pobreza | Pobreza monetaria de la GEIH, independiente del Sisbén | Calcular la composición del hogar con lo que ya se recoge reduce el error de exclusión 5,23 puntos; todas las variables nuevas, 1,34. Solo la cuenta de ahorros (−0,81) tiene un aporte claro y estable; el estrato queda en el borde del umbral (−0,49, "considerar") |
 
 La concordancia entre el grupo y la pobreza de un mismo hogar no se puede
 medir: el grupo en la GEIH es imputado por celda. Por eso los errores de
@@ -204,17 +212,26 @@ más pobres (descriptivo).
 | Evaluación semisintética y sensibilidad | `src/simulacion/`, `src/simulacion/sensibilidad_semisintetica.py` | [`SIMULACION_SEMISINTETICA.md`](3_simulacion/SIMULACION_SEMISINTETICA.md) |
 
 Covariables, celda, ingreso y línea de pobreza reales de la GEIH;
-tratamiento y efecto simulados (P(T | celda) del Sisbén real). 432
+tratamiento y efecto simulados (P(T | celda) del Sisbén real). 456
 repeticiones de 30.000 hogares, hasta que el error Monte Carlo de todas
-las celdas quedó bajo el umbral.
+las celdas quedó bajo el umbral (2026-11-15, celda con personas y
+menores).
 
 | Estimación media | Verdadero | Oráculo | Vínculo 50 % | Hot-Deck |
 |---|---|---|---|---|
-| Confusión observada, LinearDML, log-ingreso | +0,095\* | +0,089\* | +0,040\* | −0,006\* |
-| Confusión observada, LinearDML, pobreza | −0,033\* | −0,031\* | −0,014\* | +0,002\* |
-| Confusión no observada fuerte, LinearDML, log-ingreso | +0,095\* | −0,778\* | −0,390\* | −0,003\* |
-| Confusión no observada fuerte, LinearDML, pobreza | −0,033\* | +0,138\* | +0,070\* | +0,002\* |
-| Regla de corte, RD, log-ingreso (efecto en el corte) | +0,090\* | +0,086\* | +0,042\* | −0,001\* |
+| Confusión observada, regresión EF celda, log-ingreso | +0,095\* | +0,090\* | +0,045\* | +0,001\* |
+| Confusión observada, LinearDML, log-ingreso | +0,095\* | +0,059\* | +0,011\* | −0,034\* |
+| Confusión observada, regresión EF celda, pobreza | −0,033\* | −0,032\* | −0,016\* | +0,000\* |
+| Confusión no observada fuerte, regresión EF celda, log-ingreso | +0,095\* | −0,860\* | −0,431\* | −0,002\* |
+| Confusión no observada fuerte, regresión EF celda, pobreza | −0,033\* | +0,129\* | +0,065\* | +0,000\* |
+| Regla de corte, RD, log-ingreso (efecto en el corte) | +0,093\* | +0,094\* | +0,048\* | +0,001\* |
+
+LinearDML queda sesgado (−0,035\* con efecto nulo) porque la encuesta
+simulada deja ≈8 hogares por celda: la regularización y el ajuste
+cruzado de sus modelos auxiliares dejan confusión entre celdas. Con
+datos reales (78 hogares por celda en promedio) no aparece: LinearDML,
+casi sin regularizar y la regresión con efectos fijos dan el mismo ATE
+(`SIMULACION_SEMISINTETICA.md`, punto 8).
 
 Con Hot-Deck se pierde el efecto completo; con vínculo parcial se atenúa
 en proporción a los hogares mal vinculados. Con confusión no observada
@@ -230,28 +247,30 @@ imperfecta, no una validación universal de los estimadores.
 | Heterogeneidad ampliada y compleja del efecto | `src/focalizacion/heterogeneidad_ampliada.py` | [`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`](4_focalizacion/RESULTADOS_HETEROGENEIDAD_AMPLIADA.md) |
 
 Mismo mundo semisintético; presupuesto = los hogares A/B vigentes
-(46,7 %). 300 repeticiones.
+(47,0 %). 300 repeticiones.
 
 | Regla | Error de exclusión | % de la reducción ideal de FGT1 (proporcional / monto fijo) |
 |---|---|---|
-| Vigente (Hot-Deck) | 43,5 %\* | 60\* / 61\* |
-| Aleatoria | 53,4 %\* | 47\* / 47\* |
-| Proxy de medios por ingreso | 18,6 %\* | 82\* / 85\* |
-| Proxy + CATE con vínculo | 26,0 %\* | 73\* / 72\* |
-| Proxy + CATE con Hot-Deck | 54,9 %\* | 45\* / 44\* |
+| Vigente (Hot-Deck) | 27,8 %\* | 75\* / 75\* |
+| Aleatoria | 53,1 %\* | 47\* / 47\* |
+| Proxy de medios por ingreso | 16,3 %\* | 84\* / 86\* |
+| Proxy + CATE con vínculo | 30,2 %\* | 68\* / 61\* |
+| Proxy + CATE con Hot-Deck | 66,6 %\* | 34\* / 27\* |
 
-- **Mismo dinero:** el proxy de medios transfiere 13 %\* más que la
-  vigente con el mismo número de hogares; con el mismo dinero baja de
-  85\* a 80\* % del ideal y el orden de las reglas no cambia.
+- **Mismo dinero:** con la celda nueva el proxy de medios gasta lo
+  mismo que la vigente (0,99\*); con el mismo dinero queda en 87\* % del
+  ideal y el orden de las reglas no cambia.
 - **Heterogeneidad ampliada:** con el doble de variación del efecto y el
   Causal Forest viendo todos los modificadores, la regla con CATE sigue
-  4 a 11 puntos\* por debajo de la misma regla con efecto constante. Con
-  el efecto verdadero, la ganancia sobre el PMT sube a 1,6-3,7\* puntos;
+  9 a 16 puntos\* por debajo de la misma regla con efecto constante. Con
+  el efecto verdadero, la ganancia sobre el PMT sube a 1,3-3,0\* puntos;
   el LinearDML le gana al bosque si el efecto es lineal y pierde si no.
 - **Controles (2026-11-14):** con el efecto verdadero en vez del CATE
-  estimado, la regla llega a 83\* / 85\* % del ideal, casi igual que el
+  estimado, la regla llega a 85\* / 87\* % del ideal, casi igual que el
   proxy de medios; con un LinearDML, que tiene la forma correcta del
-  efecto, 74\* / 73\*, como el Causal Forest. El problema no es el modelo:
+  efecto, 70\* / 62\*, como el Causal Forest. Los dos CATE además salen
+  sesgados en su nivel (ATE +0,06\* frente a +0,095\*) por las celdas
+  con pocos hogares de entrenamiento. El problema no es el modelo:
   con esta heterogeneidad, conocer el efecto aporta casi nada.
 - La regla vigente es la imputada por celda, no la del Sisbén real.
 

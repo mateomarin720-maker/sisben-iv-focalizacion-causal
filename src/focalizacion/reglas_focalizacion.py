@@ -101,7 +101,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 from src.simulacion import contrato
 from src.simulacion.asignacion import asignar
-from src.simulacion.base import celdas_por_nivel, preparar_base
+from src.simulacion.base import celdas_por_nivel, firma_con_datos, preparar_base
 from src.simulacion.escenarios import ESCENARIOS, TAU
 from src.simulacion.estimadores import estimacion5
 from src.simulacion.evaluacion import HOGARES, REGISTRO, p_t_por_celda
@@ -456,6 +456,7 @@ def correr(b: pd.DataFrame, salida: Path, salida_resumen: Path, salida_firma: Pa
     guardado si la configuración no cambió. Devuelve cada repetición."""
     from joblib import Parallel, delayed, parallel_config
 
+    firma_cfg = firma_con_datos(firma_cfg, b)  # reanuda solo con los mismos datos (y la misma configuración)
     r = sin_marca(pd.read_csv(salida)) if (salida.exists() and salida_firma.exists()
                                  and json.loads(salida_firma.read_text()).get("firma") == firma_cfg) else pd.DataFrame()
     if r.empty:

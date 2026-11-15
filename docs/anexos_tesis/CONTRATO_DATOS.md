@@ -13,6 +13,8 @@ Los códigos se comparan como texto: un código `1.0` no es `1` y se rechaza. Es
 | `viv_cuartos` | hogares | sí | entero (texto) | cuartos en total (P5000), 1 o más |
 | `viv_pisos` | hogares | sí | código (texto) | material de pisos, códigos GEIH de P4020 (1-7) |
 | `viv_paredes` | hogares | sí | código (texto) | material de paredes, códigos GEIH de P4010 (1-9) |
+| `hog_num_personas` | hogares | sí | entero (texto) | personas del hogar (P6008), 1 o más |
+| `hog_num_menores` | hogares | sí | entero (texto) | personas del hogar con menos de 18 años, 0 o más |
 | `ingreso_percapita` | hogares | sí | real | ingreso per cápita de la unidad de gasto, pesos, 0 o más |
 | `dominio_pm` | hogares | sí | código (texto) | dominio de la línea de pobreza: 13_ciudades, otras_cabeceras, rural |
 | `fex` | hogares | no | real | factor de expansión, mayor que 0 |
@@ -22,5 +24,7 @@ Los códigos se comparan como texto: un código `1.0` no es `1` y se rechaza. Es
 | `jefe_edad` | registro | sí | código (texto) | código de ciclo de vida de PER002 (3-6) |
 | `viv_cuartos` | registro | sí | entero (texto) | cuartos en total (VIV009), 1 o más |
 | `viv_pisos` | registro | sí | código (texto) | material de pisos, códigos del Sisbén (1-6; orden inverso al de la GEIH) |
+| `hog_num_personas` | registro | sí | entero (texto) | personas del hogar (HOG027), 1 o más |
+| `hog_num_menores` | registro | sí | entero (texto) | personas del hogar con ciclo de vida 1 a 3 (menos de 18 años), 0 o más |
 | `Grupo` | registro | sí | código (texto) | grupo del Sisbén (A-D) |
 | `Clasificacion` | registro | sí | texto | subgrupo del Sisbén; nulo en hogares sin clasificar |

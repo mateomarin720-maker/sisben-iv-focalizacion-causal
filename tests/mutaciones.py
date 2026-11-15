@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-14: 62 de 62 mutaciones detectadas.
+Resultado del 2026-11-15: 69 de 69 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -55,6 +55,15 @@ MUTACIONES = [
      'r["llave_directorio"], r["llave_secuencia_p"], r["mes"] = _llave(r["DIRECTORIO"]), _llave(r["SECUENCIA_P"]), _llave(r["mes"])',
      'r["llave_directorio"], r["llave_secuencia_p"], r["mes"] = _llave(r["DIRECTORIO"]), _llave(r["SECUENCIA_P"]), r["mes"]',
      "tests/test_ingesta_y_validacion.py"),
+    ("Simulación: la firma de reanudación ignora los datos (error del 2026-11-14)", "src/simulacion/base.py",
+     'return hashlib.sha1(f"{firma}|{huella(b)}".encode()).hexdigest()[:12]', 'return firma',
+     "tests/test_simulacion_semisintetica.py"),
+    ("Sensibilidad de tamaño: el Hot-Deck usa el T del propio hogar", "src/simulacion/sensibilidad_semisintetica.py",
+     "t_obs = t_real[donante] if VINCULOS[vinculo] == 1.0 else t_real[enc]", "t_obs = t_real[enc]",
+     "tests/test_sensibilidad_semisintetica.py"),
+    ("Comparación con datos reales: la regresión ignora la celda", "src/diagnostico/comparar_estimadores_celda.py",
+     "celda = pd.factorize(d[est5.W_CELDA[0][0]])[0]", "celda = np.zeros(len(d), dtype=int)",
+     "tests/test_comparar_estimadores_celda.py"),
     ("Hot-Deck: el tramo de personas corta en 3 en vez de 2", "src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py",
      "TRAMOS_PERSONAS = [0, 2, 1000]", "TRAMOS_PERSONAS = [0, 3, 1000]", "tests/test_hotdeck_celda.py"),
     ("Hot-Deck: la cadena de respaldos salta el nivel sin menores", "src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py",
@@ -63,7 +72,7 @@ MUTACIONES = [
     ("Menores: el ciclo de vida 4 (18-28) del Sisbén cuenta como menor", "src/utils/variables_canonicas.py",
      'CICLOS_MENOR = ["1", "2", "3"]', 'CICLOS_MENOR = ["1", "2", "3", "4"]', "tests/test_armonizacion.py"),
     ("Menores: corte en 17 años en vez de 18", "src/utils/variables_canonicas.py",
-     "EDAD_MENOR = 18", "EDAD_MENOR = 17", "tests/test_armonizacion.py"),
+     "EDAD_MENOR = 18", "EDAD_MENOR = 17", "tests/test_variables_canonicas.py tests/test_armonizacion.py"),
     ("Hot-Deck: tramo de edad propio distinto al del Sisbén", "src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py",
      'return edad_a_ciclo(df["jefe_edad"]).map(CODIGO_A_CICLO).fillna("NA")',
      'return pd.cut(pd.to_numeric(df["jefe_edad"], errors="coerce"), bins=[0, 17, 29, 59, 200], labels=list(CODIGO_A_CICLO.values())).astype("object").fillna("NA")',

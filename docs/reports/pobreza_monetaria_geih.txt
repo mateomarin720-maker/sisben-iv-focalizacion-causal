@@ -1,6 +1,6 @@
-2026-11-02 16:02:53,878 INFO Personas GEIH 2024: 829,683 | población expandida: 51.55 M
-2026-11-02 16:02:53,880 INFO Montos 98/99 tratados como 0: 12,843
-2026-11-02 16:03:13,159 INFO Hot-deck laboral: 12,163 ocupados imputados (3.5% de los remunerados), 0 sin donante
+2026-11-14 16:59:50,610 INFO Personas GEIH 2024: 829,683 | población expandida: 51.55 M
+2026-11-14 16:59:50,611 INFO Montos 98/99 tratados como 0: 12,843
+2026-11-14 17:00:06,976 INFO Hot-deck laboral: 12,163 ocupados imputados (3.5% de los remunerados), 0 sin donante
 
 === Pobreza monetaria reconstruida 2024 (personas, FEX_C18/12) vs. DANE oficial ===
         dominio  personas  fgt0_pobreza  fgt0_oficial  fgt1_pobreza  fgt1_oficial  fgt2_pobreza  fgt0_extrema  fgt0_extrema_oficial     gini  gini_oficial

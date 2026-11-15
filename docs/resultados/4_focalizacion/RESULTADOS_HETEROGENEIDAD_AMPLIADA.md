@@ -1,6 +1,6 @@
 # ¿Sirve el CATE para focalizar si el efecto varía más? (heterogeneidad ampliada)
 
-Generado el 2026-11-09 y vuelto a correr el 2026-11-14 (IPM-GEIH corregido y dos reglas de control) por `src/focalizacion/heterogeneidad_ampliada.py`.
+Generado el 2026-11-09 y vuelto a correr el 2026-11-14 (IPM-GEIH corregido y dos reglas de control) y el 2026-11-15 (celda del Hot-Deck con personas y menores, 3.721 celdas) por `src/focalizacion/heterogeneidad_ampliada.py`.
 Salidas: `docs/reports/heterogeneidad_{ampliado,complejo}{.csv,_resumen.csv,_config.json}`
 y `docs/reports/heterogeneidad_ampliada.txt`. **Todas las cifras de esta
 página son simuladas (\*).**
@@ -44,88 +44,100 @@ verdadero tau(X):
 
 | Nivel | ATE estimado, T verdadero | ATE estimado, T por Hot-Deck | PEHE, T verdadero | Desviación de tau | PEHE / desviación |
 |---|---|---|---|---|---|
-| Básico | +0,083 a +0,087\* | −0,008 a −0,010\* | 0,066 a 0,072\* | 0,028\* | 2,3 a 2,6\* |
-| Ampliado | +0,088\* | −0,003 a −0,004\* | 0,135 a 0,163\* | 0,060\* | 2,2 a 2,7\* |
-| Complejo | +0,088\* | −0,003 a −0,004\* | 0,127 a 0,173\* | 0,059\* | 2,2 a 2,9\* |
+| Básico | +0,038 a +0,061\* | −0,034 a −0,058\* | 0,084 a 0,098\* | 0,028\* | 3,0 a 3,5\* |
+| Ampliado | +0,063 a +0,071\* | −0,021 a −0,030\* | 0,153 a 0,183\* | 0,060\* | 2,6 a 3,1\* |
+| Complejo | +0,067 a +0,075\* | −0,019 a −0,027\* | 0,142 a 0,192\* | 0,059\* | 2,4 a 3,3\* |
 
 Efecto verdadero: +0,095\* en promedio. Los rangos van del efecto
-proporcional al de monto fijo.
+proporcional al de monto fijo. El ATE estimado queda por debajo del
+verdadero aun con el T verdadero: es el sesgo de los modelos auxiliares
+con la celda de 3.721 valores y 30.000 hogares de entrenamiento
+(`SIMULACION_SEMISINTETICA.md`, punto 8). Con la celda del 2026-11-02
+era +0,083 a +0,088\*.
 
 **% de la reducción ideal de la brecha (FGT1)**
 
 | Regla | Básico | Ampliado | Complejo |
 |---|---|---|---|
 | *Proporcional, mismos hogares* | | | |
-| PMT por ingreso | 82,2\* | 86,5\* | 84,7\* |
-| PMT por brecha | 79,7\* | 83,8\* | 82,4\* |
-| PMT + CATE (vínculo) | 72,7\* | 77,7\* | 78,4\* |
-| *Control: efecto verdadero* | 82,5\* | 88,1\* | 88,4\* |
-| *Control: CATE con LinearDML* | 73,6\* | 78,6\* | 73,4\* |
-| PMT + CATE (Hot-Deck) | 44,6\* | 47,1\* | 47,6\* |
-| Vigente (Hot-Deck) | 59,7\* | 61,4\* | 60,2\* |
-| Aleatoria | 46,6\* | 46,6\* | 46,6\* |
+| PMT por ingreso | 84,2\* | 88,0\* | 86,7\* |
+| PMT por brecha | 81,7\* | 85,8\* | 84,5\* |
+| PMT + CATE (vínculo) | 68,3\* | 72,9\* | 75,3\* |
+| *Control: efecto verdadero* | 84,6\* | 89,3\* | 89,6\* |
+| *Control: CATE con LinearDML* | 69,8\* | 72,2\* | 68,8\* |
+| PMT + CATE (Hot-Deck) | 34,0\* | 37,4\* | 39,0\* |
+| Vigente (Hot-Deck) | 74,6\* | 75,7\* | 75,0\* |
+| Aleatoria | 46,9\* | 46,9\* | 46,9\* |
 | *Monto fijo, mismo dinero* | | | |
-| PMT por ingreso | 79,8\* | 76,4\* | 76,5\* |
-| PMT por brecha | 77,4\* | 71,4\* | 72,4\* |
-| PMT + CATE (vínculo) | 68,5\* | 64,9\* | 65,6\* |
-| *Control: efecto verdadero* | 79,4\* | 76,1\* | 76,2\* |
-| *Control: CATE con LinearDML* | 69,4\* | 66,9\* | 63,3\* |
-| PMT + CATE (Hot-Deck) | 43,5\* | 48,1\* | 47,2\* |
-| Vigente (Hot-Deck) | 60,8\* | 62,5\* | 61,2\* |
+| PMT por ingreso | 86,8\* | 85,1\* | 85,9\* |
+| PMT por brecha | 78,0\* | 80,2\* | 82,5\* |
+| PMT + CATE (vínculo) | 62,9\* | 67,8\* | 69,4\* |
+| *Control: efecto verdadero* | 86,7\* | 84,7\* | 85,5\* |
+| *Control: CATE con LinearDML* | 64,0\* | 67,1\* | 65,0\* |
+| PMT + CATE (Hot-Deck) | 31,7\* | 48,6\* | 47,8\* |
+| Vigente (Hot-Deck) | 75,4\* | 76,6\* | 75,9\* |
 
 **Diferencia pareada PMT + CATE (vínculo) menos PMT por brecha** (misma
-repetición; puntos del % del ideal, error estándar ≈0,2-0,5)
+repetición; puntos del % del ideal, error estándar ≈0,4-1,2)
 
 | | Básico | Ampliado | Complejo |
 |---|---|---|---|
-| Proporcional, mismos hogares | −7,0\* | −6,1\* | −4,0\* |
-| Monto fijo, mismos hogares | −10,7\* | −8,9\* | −8,5\* |
-| Monto fijo, mismo dinero | −8,9\* | −6,6\* | −6,8\* |
+| Proporcional, mismos hogares | −13,4\* | −12,9\* | −9,2\* |
+| Monto fijo, mismos hogares | −15,2\* | −15,5\* | −15,3\* |
+| Monto fijo, mismo dinero | −15,1\* | −12,4\* | −13,1\* |
 
 **Controles (2026-11-14), diferencias pareadas** (puntos del % del ideal;
 error estándar entre paréntesis)
 
 | | Básico | Ampliado | Complejo |
 |---|---|---|---|
-| Efecto verdadero − PMT por ingreso, proporcional | +0,4\* (0,03) | +1,6\* (0,03) | +3,7\* (0,03) |
-| Efecto verdadero − PMT por ingreso, monto fijo | +0,4\* (0,02) | +1,5\* (0,03) | +3,5\* (0,03) |
-| Efecto verdadero − PMT por ingreso, mismo dinero | −0,3\* (0,02) | −0,3\* (0,02) | −0,3\* (0,02) |
-| LinearDML − Causal Forest, proporcional | +0,9\* (0,27) | +0,9\* (0,33) | −5,0\* (0,30) |
-| LinearDML − Causal Forest, monto fijo | +1,2\* (0,39) | +1,9\* (0,44) | −4,1\* (0,40) |
-| LinearDML − Causal Forest, mismo dinero | +0,9\* (0,30) | +2,0\* (0,29) | −2,3\* (0,26) |
+| Efecto verdadero − PMT por ingreso, proporcional | +0,4\* (0,03) | +1,3\* (0,03) | +3,0\* (0,03) |
+| Efecto verdadero − PMT por ingreso, monto fijo | +0,6\* (0,02) | +1,4\* (0,02) | +2,8\* (0,03) |
+| Efecto verdadero − PMT por ingreso, mismo dinero | −0,2\* (0,02) | −0,5\* (0,02) | −0,4\* (0,02) |
+| LinearDML − Causal Forest, proporcional | +1,5\* (0,34) | −0,7\* (0,45) | −6,5\* (0,35) |
+| LinearDML − Causal Forest, monto fijo | +1,0\* (0,50) | −0,5\* (0,58) | −5,2\* (0,47) |
+| LinearDML − Causal Forest, mismo dinero | +1,1\* (0,49) | −0,7\* (0,45) | −4,4\* (0,36) |
 
 ## Lectura
 
 1. **Con el doble de heterogeneidad, el CATE sigue empeorando la
    focalización.** En todos los niveles y presupuestos, la regla con el
-   CATE queda por debajo de la misma regla con un efecto constante (4 a
-   11 puntos\*) y del PMT por ingreso (6 a 13 puntos\*). Las diferencias
-   son de 14 a 35 errores estándar.
+   CATE queda por debajo de la misma regla con un efecto constante (9 a
+   16 puntos\*) y del PMT por ingreso (11 a 25 puntos\*). Las diferencias
+   son de 13 a 50 errores estándar.
 2. **La brecha se cierra, pero despacio.** Con efecto proporcional, la
-   desventaja del CATE pasa de 7,0\* a 4,0\* puntos del nivel básico al
-   complejo. Con una heterogeneidad todavía mayor el CATE podría llegar a
-   servir; este diseño no muestra en qué punto.
+   desventaja del CATE frente al efecto constante pasa de 13,4\* a 9,2\*
+   puntos del nivel básico al complejo. Con una heterogeneidad todavía
+   mayor el CATE podría llegar a servir; este diseño no muestra en qué
+   punto.
 3. **La razón es la misma en los tres niveles: el error del CATE crece
-   con la heterogeneidad.** El PEHE se mantiene entre 2,2 y 2,9 veces la
+   con la heterogeneidad.** El PEHE se mantiene entre 2,4 y 3,5 veces la
    desviación real del efecto. Más variación verdadera da más señal, pero
-   también más que estimar con los mismos 30.000 hogares.
+   también más que estimar con los mismos 30.000 hogares. Además, el
+   nivel del efecto sale sesgado hacia cero (ATE +0,04 a +0,08\* frente a
+   +0,095\*), más en el nivel básico.
 4. **Con el tratamiento del Hot-Deck no hay nada que estimar.** El ATE
-   estimado es ≈0\* en todos los niveles y la regla con ese CATE queda al
-   nivel del azar (47-48 %\* frente a 46,6 %\*).
+   estimado es negativo (−0,02 a −0,06\*) en todos los niveles y la regla
+   con ese CATE queda por debajo del azar (32-49 %\* frente a 47-56 %\*).
 5. **El orden de las reglas no cambia** con ninguno de los dos
-   presupuestos.
+   presupuestos. La vigente imputada queda en 75-77 %\* en los tres
+   niveles, entre el PMT y las reglas con CATE.
 6. **Conocer el efecto vale más cuanto más varía, pero poco** (control
-   positivo). Con el efecto verdadero, la regla supera al PMT por 0,4\*
-   puntos en el nivel básico, 1,6\* en el ampliado y 3,7\* en el
+   positivo). Con el efecto verdadero, la regla supera al PMT por 0,4-0,6\*
+   puntos en el nivel básico, 1,3-1,4\* en el ampliado y 2,8-3,0\* en el
    complejo. Es el techo de lo que podría aportar un CATE perfecto; el
-   estimado queda 10 a 14 puntos\* por debajo de ese techo. Con el mismo
-   dinero, ni el efecto verdadero supera al PMT (−0,3\*).
+   estimado queda 14 a 26 puntos\* por debajo de ese techo. Con el mismo
+   dinero, ni el efecto verdadero supera al PMT (−0,2 a −0,5\*).
 7. **El modelo importa según la forma del efecto** (modelo base lineal).
-   Cuando el efecto es lineal en las X (básico y ampliado), el LinearDML,
-   que tiene la forma correcta, queda 1 a 2 puntos\* sobre el bosque;
-   cuando tiene interacciones y no linealidades (complejo), el bosque
-   queda 2 a 5 puntos\* arriba. Ninguno de los dos se acerca al PMT: la
+   En el nivel básico, el LinearDML, que tiene la forma correcta, queda 1
+   a 1,5 puntos\* sobre el bosque; en el ampliado empatan; cuando el
+   efecto tiene interacciones y no linealidades (complejo), el bosque
+   queda 4 a 7 puntos\* arriba. Ninguno de los dos se acerca al PMT: la
    conclusión no depende de haber usado un Causal Forest.
+
+Con la celda del 2026-11-02 (993 celdas), las conclusiones eran las
+mismas con distancias menores: el CATE quedaba 4 a 11 puntos\* bajo el
+efecto constante y la vigente en 60-63 %\*.
 
 ## Alcance
 
@@ -137,6 +149,11 @@ error estándar entre paréntesis)
   predecir quién es pobre (`RECOMENDACION_VARIABLES_POBREZA.md`), que es
   lo que hace el proxy de medios. Lo que no sirve, con este tamaño de
   muestra, es estimar el efecto de cada hogar para ordenar por él.
+- Con 30.000 hogares de entrenamiento y 3.721 celdas en los modelos
+  auxiliares (≈8 por celda), el nivel del efecto sale sesgado
+  (`SIMULACION_SEMISINTETICA.md`, punto 8 y sensibilidad 4). Con más
+  hogares las reglas con CATE mejorarían, pero el control positivo acota
+  cuánto: no pasarían del PMT por más de 3 puntos\*.
 
 ## Error encontrado durante el ejercicio
 

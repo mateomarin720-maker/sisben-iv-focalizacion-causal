@@ -31,7 +31,7 @@ noviembre de 2026).
 | Base: datos y enlace | ¿Las fuentes están bien medidas y cómo se vinculan? | Pobreza monetaria reconstruida (33,2 % frente a 31,8 % oficial) e IPM-GEIH; el Hot-Deck vincula solo por celda | `src/ingesta/`, `armonizacion/`, `emparejamiento/`, `indicadores/`, `validacion/` | [`1_datos_y_enlace/`](docs/resultados/README.md#base-datos-y-enlace-entre-fuentes) |
 | 1. Diagnóstico con datos reales | ¿Qué permiten decir los datos sobre la clasificación, la pobreza y el efecto? | El DML sobre el grupo imputado es un placebo (≈0); sin el supuesto del vínculo, ninguna cota excluye el cero; al menos 39 % de los A/B no son pobres monetarios | `src/4_dag_identificacion.py`, `5_estimacion.py`, `diagnostico/` | [`2_diagnostico_datos_reales/`](docs/resultados/README.md#componente-1-diagnóstico-con-datos-reales) |
 | 2. Simulación semisintética | ¿Qué estimador recupera un efecto conocido según el vínculo entre fuentes? | Con el Hot-Deck todo estimador devuelve ≈0\* aunque el efecto sea +0,095\* | `src/simulacion/` | [`3_simulacion/`](docs/resultados/README.md#componente-2-simulación-semisintética) |
-| 3. Reglas de focalización | ¿Cómo cambian los errores de focalización con otras reglas? | Un proxy de medios logra 82-85 %\* de la reducción ideal de la brecha frente a 60 %\* de la clasificación imputada; el CATE estimado no ayuda | `src/focalizacion/` | [`4_focalizacion/`](docs/resultados/README.md#componente-3-reglas-de-focalización) |
+| 3. Reglas de focalización | ¿Cómo cambian los errores de focalización con otras reglas? | Un proxy de medios logra 84-87 %\* de la reducción ideal de la brecha frente a 75 %\* de la clasificación imputada; el CATE estimado no ayuda | `src/focalizacion/` | [`4_focalizacion/`](docs/resultados/README.md#componente-3-reglas-de-focalización) |
 
 \* Resultado simulado.
 
@@ -192,9 +192,9 @@ Cada paso debe reproducir las cifras de `docs/resultados/`.
 | Parte | Estado |
 |---|---|
 | Fuentes | ✅ GEIH 2024 (12 meses), IPM, Sisbén IV nacional y de Bogotá, armonizadas y validadas contra los diccionarios oficiales; ECV 2024 e IPM oficial 2024 para validar el IPM-GEIH. No se solicitarán más datos: la réplica usa solo estas fuentes |
-| Base: enlace y outcomes | ✅ Hot-Deck con 99,98 % en celda exacta; IPM-GEIH y pobreza monetaria contrastada con la base oficial (93,9 % de coincidencia) |
+| Base: enlace y outcomes | ✅ Hot-Deck con 99,92 % en celda exacta (3.721 celdas); IPM-GEIH y pobreza monetaria contrastada con la base oficial (93,9 % de coincidencia) |
 | 1. Diagnóstico con datos reales | ✅ DML y Causal Forest (placebo), cotas por parámetro, errores de focalización por celda, selección (OE1) y recomendación de variables |
-| 2. Simulación semisintética | ✅ Hasta la convergencia (432 repeticiones) y sensibilidad. El módulo `src/simulacion/` tiene hechos los 7 pasos de su diseño, incluidos el modo simulado y el de datos propios |
+| 2. Simulación semisintética | ✅ Hasta la convergencia (456 repeticiones) y sensibilidad. El módulo `src/simulacion/` tiene hechos los 7 pasos de su diseño, incluidos el modo simulado y el de datos propios |
 | 3. Reglas de focalización | ✅ Con el mismo número de hogares, con el mismo dinero y con heterogeneidad ampliada |
 | Documento escrito | En revisión del tutor |
 

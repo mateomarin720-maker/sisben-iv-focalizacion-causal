@@ -132,6 +132,26 @@ abierta y recomendación, no como conclusión causal). Reglas del tutor:
   (`tests/test_local_csv_parser.py`), y pipeline regenerado. Si se toca
   la carga, verificar que agosto no tenga `"1.0"` ni `"nan"`.
 
+- **Las corridas largas reanudan lo guardado si la firma coincide.**
+  Hasta el 2026-11-14 la firma de la simulación, la sensibilidad, las
+  reglas y la heterogeneidad era solo de la configuración: al cambiar la
+  celda del Hot-Deck reanudaron las repeticiones de la celda anterior
+  ("Reanudando: 432 repeticiones ya guardadas") y terminaron en segundos
+  sin error. Ahora la firma suma la huella de los datos
+  (`simulacion.base.firma_con_datos`). Si una corrida larga termina
+  demasiado rápido, buscar "Reanudando" en su salida.
+
+- **LinearDML y Causal Forest se sesgan con pocos hogares por celda de
+  control.** Con la celda de 3.721 valores y encuestas simuladas de
+  30.000 hogares (≈8 por celda), LinearDML da −0,035 con efecto nulo
+  (−0,006 con la celda de 993): la regularización y el ajuste cruzado de
+  los modelos auxiliares dejan confusión entre celdas. No da error. La
+  regresión con efectos fijos exactos no se sesga. Con datos reales (78
+  por celda en promedio) no aparece
+  (`src/diagnostico/comparar_estimadores_celda.py`). Si se cambia la
+  celda o el tamaño de una muestra, comparar el DML con la regresión con
+  efectos fijos antes de leerlo.
+
 ## Diccionarios oficiales de variables
 
 `docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (761 filas: ID/Nombre/Etiqueta/
@@ -213,6 +233,7 @@ poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
 poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
+poetry run python -m src.diagnostico.comparar_estimadores_celda
 poetry run python -m src.diagnostico.cotas_frechet_manski
 poetry run python -m src.diagnostico.cotas_frechet_modelos
 poetry run python -m src.diagnostico.errores_focalizacion_frechet
@@ -229,6 +250,7 @@ poetry run python -m src.simulacion
 poetry run python -m src.focalizacion.reglas_focalizacion
 poetry run python -m src.focalizacion.heterogeneidad_ampliada
 poetry run python -m src.simulacion.sensibilidad_semisintetica
+poetry run python -m src.simulacion.sensibilidad_semisintetica tamano
 poetry run python -m src.diagnostico.variabilidad_hotdeck 2
 poetry run python -m src.diagnostico.proposiciones
 poetry run python -m src.utils.anexo_trazabilidad
@@ -246,7 +268,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 62 de 62 el 2026-11-14). Antes de mapear una
+cuando el error vuelve; 69 de 69 el 2026-11-15). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

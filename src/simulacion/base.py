@@ -8,6 +8,8 @@ celda), el componente no observado U y el efecto verdadero tau(X).
 """
 from __future__ import annotations
 
+import hashlib
+
 import numpy as np
 import pandas as pd
 
@@ -51,6 +53,23 @@ def preparar_base(hogares: pd.DataFrame, p_t_celda: pd.Series) -> pd.DataFrame:
     b["u"] = componente_no_observado(b)
     b["tau"] = efecto_verdadero(b)
     return b
+
+
+def huella(b: pd.DataFrame) -> str:
+    """Huella de los datos de la tabla de trabajo (todas sus columnas y
+    filas). Las corridas largas la suman a la firma de su configuración
+    para reanudar solo si los datos son los mismos: hasta el 2026-11-14 la
+    firma miraba solo la configuración, y al cambiar la celda del Hot-Deck
+    la simulación y las reglas reanudaron las repeticiones de la celda
+    anterior sin dar error."""
+    valores = pd.util.hash_pandas_object(b, index=False).to_numpy()
+    columnas = ",".join(map(str, b.columns)).encode()
+    return hashlib.sha1(columnas + valores.tobytes()).hexdigest()[:12]
+
+
+def firma_con_datos(firma: str, b: pd.DataFrame) -> str:
+    """Firma de la configuración más la huella de los datos."""
+    return hashlib.sha1(f"{firma}|{huella(b)}".encode()).hexdigest()[:12]
 
 
 def celdas_por_nivel(b: pd.DataFrame) -> np.ndarray:

@@ -3,6 +3,9 @@
 Hogares: 290,968 | sin ingreso reconstruido: 0
 Ingreso per cápita UG — mediana: $796,750
 Hogares pobres (ponderado por fex): 27.0% | pobres extremos: 10.4%
+
+Clasificación oficial DANE pegada a 275,057 hogares (94.5 %); sin ella: 15,911 (departamentos con hogares sin oficial: ['81', '85', '86', '88', '91', '94', '95', '97', '99'])
+  Hogares pobres en esos 275,057 (fex) — oficial: 25.8% | reconstruida: 27.0% | misma clasificación: 93.9%
 (La tasa oficial, 31,8 %, es sobre personas; la de personas reconstruida está en docs/reports/validacion_pobreza_monetaria.csv)
 
 Guardado: data\2_models\muestra_estimacion_monetaria_2024.parquet

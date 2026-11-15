@@ -33,13 +33,13 @@ Aporte declarado: un framework para evaluar subsidios y transferencias monetaria
 | --- | --- | --- |
 | Variabilidad de la imputación del Hot-Deck (error relativo y coeficiente de variación) | Hecha el 4 nov | `RESULTADOS_VARIABILIDAD_HOTDECK.md` |
 | Simulación como módulo independiente, con modo de datos propios y modo simulado | Hecho (7 de 7 pasos) | `src/simulacion/`, con contrato de columnas canónicas validado (`contrato.py`); diseño en `docs/metodologia/DISENO_MODULO_SIMULACION.md` |
-| Evaluación semisintética completa | Hecha el 8 nov | 432 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 228 repeticiones. Regenerada con la cadena de respaldos del Hot-Deck y con asterisco |
+| Evaluación semisintética completa | Hecha el 8 nov; regenerada el 15 nov | 456 repeticiones de 30.000 hogares hasta la convergencia, pobreza monetaria binaria, tres niveles de confusión no observada y regla de corte con RD; sensibilidad en 408 repeticiones. Regenerada con la celda que suma personas y menores, su cadena de respaldos y con asterisco |
 | Reglas de focalización (OE3) y cotas con monotonía | Hechas el 4 nov; mismo dinero y heterogeneidad ampliada el 9 nov | `RESULTADOS_REGLAS_FOCALIZACION.md`, `RESULTADOS_HETEROGENEIDAD_AMPLIADA.md` y `RESULTADOS_FRECHET_MANSKI.md` |
 | Cotas de Fréchet por parámetro y errores de focalización con datos reales | Hechas el 9 y 10 nov | `RESULTADOS_FRECHET_MANSKI.md` y `RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md` |
 | Recomendación de variables | Primera versión el 6 nov | `RECOMENDACION_VARIABLES_POBREZA.md`, con la pobreza de la GEIH como resultado |
 | Arquitectura de datos (bronce, plata, oro) y guía de replicación | Primera versión el 8 nov | `docs/metodologia/ARQUITECTURA_Y_REPLICACION.md` |
 | Depuración del repositorio para el jurado | Hecha el 8 nov | Quedan `main` y `ediciones-hotdeck-sdp`; prueba exploratoria de octubre retirada |
-| Pruebas | Hechas | 271 pruebas y 62 mutaciones al 14 nov, con integración continua |
+| Pruebas | Hechas | 283 pruebas y 69 mutaciones al 15 nov, con integración continua |
 
 Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del repositorio.
 
@@ -47,7 +47,7 @@ Fuente: tutoría del 3 de noviembre de 2026 y `docs/seguimiento/README.md` del r
 
 El flujo va de las dos fuentes al emparejamiento, de ahí a la medición de pobreza, a la estimación y a la simulación (6 etapas).
 
-El Hot-Deck copia a cada hogar de la GEIH el grupo A a D de un donante del Sisbén de su misma celda: departamento, ciclo de vida del jefe, cuartos y nivel de pisos (993 celdas, 99,98 % de los hogares en celda exacta). El indicador IPM-GEIH usa 8 de las 15 privaciones, y la pobreza monetaria se reconstruye con ingreso per cápita, arriendo imputado y las líneas del DANE. La estimación usa DML, Causal Forest y cotas de Fréchet-Manski.
+El Hot-Deck copia a cada hogar de la GEIH el grupo A a D de un donante del Sisbén de su misma celda: departamento, ciclo de vida del jefe, cuartos, nivel de pisos, personas y menores de 18 años (3.721 celdas desde el 2026-11-14, 99,92 % de los hogares en celda exacta). El indicador IPM-GEIH usa 8 de las 15 privaciones, y la pobreza monetaria se reconstruye con ingreso per cápita, arriendo imputado y las líneas del DANE. La estimación usa DML, Causal Forest y cotas de Fréchet-Manski.
 
 ## Resultados con datos reales
 
@@ -58,10 +58,10 @@ El DML da efectos de cero en todos los resultados, y las cotas no fijan ni el si
 | Hot-Deck | Grupos A / B / C / D: 14,2 / 29,4 / 34,4 / 22,0 % | El grupo se sortea dentro de la celda y no lleva información del hogar receptor |
 | IPM-GEIH | 8 de 15 privaciones; 13,9 % de hogares con 3 o más (vivienda corregida por zona el 12 nov) | Proxy validado contra la ECV y el IPM 2024 |
 | Pobreza monetaria (personas) | 33,2 % frente a 31,8 % oficial; FGT1 13,5 % frente a 12,6 %; igual clasificación en 93,9 % de 275.057 hogares | El arriendo imputado es la decisión que más pesa: sin él la tasa sube a 38,8 % |
-| DML, ATE con celda exacta | Puntaje IPM-GEIH −0,0029 [−0,0101; +0,0043]; pobreza monetaria −0,0002 [−0,0036; +0,0033] | Efectos despreciables; es un placebo |
-| Cotas de Fréchet-Manski (921 celdas) | `POBRE_GEIH` [−0,256; +0,278]; `POBRE_MONETARIO` [−0,418; +0,648] | Ninguna celda excluye el 0. Con los tres supuestos de monotonía, pobreza monetaria queda en [−0,405; 0] |
-| Cotas de Fréchet por parámetro | ATE, ATT, ATU y CATE por zona, sexo del jefe y paredes, en los cinco resultados | Ninguno de los 50 parámetros excluye el 0; las cotas son 140 a 210 veces más anchas que los IC del DML |
-| Errores de focalización (A/B frente a pobreza monetaria, cotas por celda) | Exclusión [0,9 %; 75,0 %]; inclusión [38,6 %; 84,5 %] | Al menos 39 % de los A/B no son pobres monetarios; la exclusión solo tiene piso en Putumayo, San Andrés y Bogotá |
+| DML, ATE con celda exacta | Puntaje IPM-GEIH +0,0037 [−0,0042; +0,0116]; pobreza monetaria +0,0017 [−0,0021; +0,0055] | Efectos despreciables; es un placebo |
+| Cotas de Fréchet-Manski (3.217 celdas) | `POBRE_GEIH` [−0,260; +0,308]; `POBRE_MONETARIO` [−0,361; +0,637] | Ninguna celda excluye el 0. Con los tres supuestos de monotonía, pobreza monetaria queda en [−0,359; 0] |
+| Cotas de Fréchet por parámetro | ATE, ATT, ATU y CATE por zona, sexo del jefe y paredes, en los cinco resultados | Ninguno de los 50 parámetros excluye el 0; las cotas son 100 a 180 veces más anchas que los IC del DML |
+| Errores de focalización (A/B frente a pobreza monetaria, cotas por celda) | Exclusión [2,8 %; 57,7 %]; inclusión [41,2 %; 74,4 %] | Al menos 41 % de los A/B no son pobres monetarios; la exclusión solo tiene piso donde hay menos A/B que pobres (San Andrés, Putumayo, Bogotá) |
 | OE1: LASSO, Ridge y SHAP | Exactitud 0,53 frente a 0,30 de la línea base; `viv_pisos` es la variable más importante | Predice el grupo asignado, no la pobreza real |
 | Representatividad del Sisbén | Cobertura de 4,8 % (Valle del Cauca) a 26,9 % (Boyacá) en el archivo nacional, 5,6 veces; 16,8 % nacional (mismo marco, corregido el 11 nov) | El registro no es una muestra uniforme de la GEIH |
 
@@ -97,37 +97,37 @@ Los resultados simulados se marcan con asterisco (\*) y no sustituyen la evidenc
 
 ## Evaluación semisintética\*
 
-Usa los hogares reales de la GEIH y simula solo el tratamiento y el efecto (+0,095 sobre el log-ingreso, −0,033 sobre la pobreza monetaria). Corrió hasta la convergencia: 432 repeticiones de 30.000 hogares, con el Causal Forest en 216.
+Usa los hogares reales de la GEIH y simula solo el tratamiento y el efecto (+0,095 sobre el log-ingreso, −0,033 sobre la pobreza monetaria). Corrió hasta la convergencia: 456 repeticiones de 30.000 hogares, con el Causal Forest en 216.
 
-- Con el tratamiento verdadero y confusión observable, los estimadores recuperan el efecto (0,089 a 0,094 en log-ingreso; −0,031 a −0,033 en pobreza)\*.
-- Con Hot-Deck, todo estimador devuelve cerca de cero en los ocho escenarios y los dos resultados\*.
-- Con un vínculo parcial del 50 %, el efecto se reduce a la mitad (0,040 a 0,048)\*.
-- Con confusión no observada ningún estimador la corrige, y en pobreza el signo se invierte (+0,138 con confusión fuerte)\*.
-- Solo la discontinuidad en el corte la resiste (+0,086 frente a +0,090), y solo con vínculo hogar por hogar; con Hot-Deck también da cero\*. La versión difusa, con 80 % de participación entre elegibles, recupera 0,086 frente a 0,090\*.
-- La pérdida es proporcional al tamaño del efecto: con Hot-Deck se pierde todo, y con vínculo del 50 % algo menos de la mitad\*.
+- Con el tratamiento verdadero y confusión observable, la regresión con efectos fijos recupera el efecto (0,090 en log-ingreso; −0,032 en pobreza)\*. LinearDML y Causal Forest se quedan en 0,059-0,061\*: con ≈8 hogares por celda en la encuesta simulada, sus modelos auxiliares dejan confusión entre celdas. Con datos reales (78 por celda en promedio) no aparece.
+- Con Hot-Deck, la regresión con efectos fijos y la RD devuelven cerca de cero en los ocho escenarios y los dos resultados\*.
+- Con un vínculo parcial del 50 %, el efecto se reduce a la mitad (0,043 a 0,048)\*.
+- Con confusión no observada ningún estimador la corrige, y en pobreza el signo se invierte (+0,129 con confusión fuerte)\*.
+- Solo la discontinuidad en el corte la resiste (+0,094 frente a +0,093), y solo con vínculo hogar por hogar; con Hot-Deck también da cero\*. La versión difusa, con 80 % de participación entre elegibles, recupera 0,093 frente a 0,093\*.
+- La pérdida es proporcional al tamaño del efecto: con Hot-Deck se pierde todo, y con vínculo del 50 % algo más de la mitad\*.
 
 La lectura para la tesis: recuperar el efecto exige a la vez un vínculo hogar por hogar y un diseño que resista la confusión no observada. Para una entidad que integre sus propios registros, conviene medir la fracción de hogares bien vinculados antes de estimar.
 
-Fuente: `SIMULACION_SEMISINTETICA.md` (corrida y sensibilidad regeneradas el 8 de noviembre).
+Fuente: `SIMULACION_SEMISINTETICA.md` (corrida y sensibilidad regeneradas el 15 de noviembre).
 
 ## Reglas de focalización (OE3)\*
 
-Un proxy de medios con variables del hogar logra 82 % de la reducción ideal de FGT1 y reduce el error de exclusión de 43,5 % a 18,6 %. Usar los efectos heterogéneos estimados empeora la focalización. Presupuesto igual para todas las reglas; 300 repeticiones; efecto proporcional.
+Un proxy de medios con variables del hogar logra 84 % de la reducción ideal de FGT1 y reduce el error de exclusión de 27,8 % a 16,3 %. Usar los efectos heterogéneos estimados empeora la focalización. Presupuesto igual para todas las reglas; 300 repeticiones; efecto proporcional.
 
 | Regla | Error de inclusión | Error de exclusión | % de la reducción ideal de FGT1 |
 | --- | --- | --- | --- |
-| Vigente (Hot-Deck) | 58,1 %\* | 43,5 %\* | 59,7\* |
-| Aleatoria | 66,9 %\* | 53,4 %\* | 46,6\* |
-| PMT por ingreso | 48,5 %\* | 18,6 %\* | 82,1\* |
-| PMT + CATE (vínculo) | 51,8 %\* | 26,1 %\* | 72,6\* |
-| PMT + CATE (Hot-Deck) | 67,7 %\* | 54,9 %\* | 44,6\* |
-| Ideal | 34,3 %\* | 0 %\* | 100\* |
+| Vigente (Hot-Deck) | 54,8 %\* | 27,8 %\* | 74,6\* |
+| Aleatoria | 66,9 %\* | 53,1 %\* | 46,9\* |
+| PMT por ingreso | 48,3 %\* | 16,3 %\* | 84,2\* |
+| PMT + CATE (vínculo) | 54,9 %\* | 30,2 %\* | 68,3\* |
+| PMT + CATE (Hot-Deck) | 75,7 %\* | 66,6 %\* | 34,0\* |
+| Ideal | 34,6 %\* | 0 %\* | 100\* |
 
 El grupo imputado solo lleva la información de la celda, así que su desempeño no es el del Sisbén real. Fuente: `RESULTADOS_REGLAS_FOCALIZACION.md`.
 
 ## Pruebas y calidad del código
 
-La suite pasa en GitHub Actions: 271 pruebas al 14 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
+La suite pasa en GitHub Actions: 283 pruebas al 15 de noviembre; 7 se saltan allí porque necesitan los datos reales de enero de la GEIH.
 
 | Aspecto | Estado |
 | --- | --- |
@@ -221,7 +221,9 @@ Comprobado contra el repositorio al incorporar este documento:
   −0,0026 del DML en `POBRE_GEIH` (único IC sin el cero) depende de la
   semilla: con 100 sorteos y reglas de Rubin, −0,00003 [−0,0036; +0,0036].
   (Cifras del 4-nov; con el IPM-GEIH corregido el 12-nov el sorteo único da
-  −0,0021 [−0,0045; +0,0004] y Rubin −0,000004 [−0,0033; +0,0033].)
+  −0,0021 [−0,0045; +0,0004] y Rubin −0,000004 [−0,0033; +0,0033]; con la
+  celda de personas y menores, 15-nov, dos sorteos coinciden el 41,2 % de
+  las veces y Rubin da +0,0001 [−0,0035; +0,0038].)
 - **Prioridad 7 hecha el mismo día:** `poetry run pytest` pasa (138) tras
   agregar `pythonpath` en `pyproject.toml`; los tres scripts de
   simulación ya no usan `warnings.filterwarnings("ignore")` (sin el

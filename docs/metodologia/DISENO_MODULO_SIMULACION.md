@@ -168,6 +168,23 @@ tamaño de la encuesta, umbrales de convergencia y número de procesos. Se
 pasan como argumentos o como un archivo de configuración; los nombres de
 columnas no.
 
+**Tamaño de la encuesta simulada (30.000 hogares por defecto).** Se eligió
+por costo de cómputo: cada repetición estima hasta cinco modelos en ocho
+escenarios y tres integraciones, y la corrida necesita ≈450 repeticiones
+para converger. Es ≈10 % de los hogares reales, y el resto hace de
+registro sin llave común, así que la encuesta no puede ser toda la base.
+Las conclusiones que no dependen del estimador (el Hot-Deck pierde el
+efecto, la atenuación con vínculo parcial, la confusión no observada, la
+RD) son estables con este tamaño. Lo que sí depende de él es el desempeño
+de los estimadores con modelos auxiliares regularizados y ajuste cruzado
+(LinearDML, Causal Forest): lo que cuenta son los hogares por celda de
+control. Con la celda de 993 valores había ≈30 y el sesgo de LinearDML
+era −0,006\*; con la de 3.721 hay ≈8 y es −0,035\*. La sensibilidad 4
+(`sensibilidad_semisintetica.py tamano`) lo mide con 30.000, 60.000 y
+120.000 hogares: −0,033\*, −0,017\* y −0,009\*, la mitad cada vez que se
+duplican los hogares por celda. Una entidad que use el módulo con una celda
+fina debería subir `--encuesta` o leer la regresión con efectos fijos.
+
 ## 6. Asterisco en los resultados simulados
 
 Regla del tutor: todo resultado simulado lleva `*` cuando aparece con
@@ -190,9 +207,9 @@ resultados reales o cerca de ellos. En el módulo:
 **Estado (2026-11-11): pasos 1 a 7 hechos.**
 
 - **Paso 6, modo simulado.** `calibrar.py` resume la GEIH y el Sisbén
-  en `parametros/poblacion_2024.json` (239 KB, solo proporciones y
+  en `parametros/poblacion_2024.json` (456 KB, solo proporciones y
   momentos; ningún grupo de menos de 30 hogares; P(T | celda) de las
-  993 celdas). `generador.py` sortea hogares con las columnas canónicas.
+  3.721 celdas). `generador.py` sortea hogares con las columnas canónicas.
   Con 290.968 hogares sintéticos se reproducen la zona (87,1 %), el
   sexo del jefe (49,3 %), el ingreso medio (13,44 en log) y su
   dispersión, P(T | celda) (0,468 frente a 0,467) y el efecto medio. La
@@ -213,7 +230,7 @@ resultados reales o cerca de ellos. En el módulo:
 define una vez (`claves_por_nivel`, en el módulo del Hot-Deck) y la usan
 `hotdeck()` y `vinculo.sortear_donante`; el Hot-Deck del pipeline
 reproduce el Parquet guardado. Con la base real, el 0,03 % de la encuesta
-usa un respaldo. Si no hay celdas vacías, el sorteo es el mismo de antes
+usa un respaldo (0,21 % con la celda de personas y menores, 2026-11-15). Si no hay celdas vacías, el sorteo es el mismo de antes
 (no consume más números aleatorios). Las firmas de configuración subieron
 de versión: las repeticiones guardadas no se mezclan con las nuevas.
 Pasos 1 a 3: Comprobación: con los datos
@@ -223,7 +240,7 @@ de la sensibilidad y de las reglas de focalización coincide con los CSV
 publicados (diferencia máxima 1e-16 con un hilo de BLAS; con varios
 hilos, 1e-6, por el orden de las sumas). Al mover el código apareció un
 error que no daba aviso: los códigos de celda en `int8`/`int16` se
-desbordaban en `regresion_efectos_fijos` (con 993 celdas, por encima de
+desbordaban en `regresion_efectos_fijos` (con las 993 celdas de entonces, por encima de
 32.767 hogares en la encuesta); se corrigió con prueba y mutación. Además,
 `tablas_markdown` no se llamaba en `main`: ahora sí.
 
@@ -278,7 +295,7 @@ Cada error que se encuentre en la implementación agrega su mutación en
    para publicar celdas de encuesta; se cambia en `calibrar.py` si hace
    falta.
 2. **Si P(T | celda) del Sisbén puede versionarse** como agregado de las
-   993 celdas (con la fusión de celdas pequeñas). Viene de microdatos
+   3.721 celdas (con la fusión de celdas pequeñas). Viene de microdatos
    anonimizados públicos; se propone versionarlo.
 3. **Estimación real en el modo de datos propios.** Se limita a los
    estimadores de `5_estimacion.py` (DML con celda exacta y cotas de

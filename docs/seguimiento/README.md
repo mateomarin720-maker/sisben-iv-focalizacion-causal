@@ -55,7 +55,7 @@ OE3 y OE5 no se satisfacen con su formulación actual.
   grupo imputado al azar dentro de la celda, este resultado es una prueba
   placebo del emparejamiento y no una estimación del efecto del Sisbén.
 - **Cotas sin supuesto de independencia.** El efecto sobre pobreza
-  monetaria queda entre −0,418 y +0,648. Ninguna de las 921 celdas
+  monetaria queda entre −0,361 y +0,637. Ninguna de las 3.217 celdas
   excluye el 0.
 - **Simulaciones.** Con efecto verdadero conocido, el diseño actual
   devuelve cero sin importar el efecto. Solo una discontinuidad con el
@@ -111,13 +111,15 @@ Cifras de la última corrida (2 de noviembre). Las salidas crudas están en
 
 290.968 hogares de la GEIH 2024 y 3.106.489 hogares donantes del Sisbén
 (nacional y Bogotá, con filtro de vigencia a 2024). La celda vigente es
-departamento, ciclo de vida del jefe, cuartos y nivel de pisos.
+departamento, ciclo de vida del jefe, cuartos, nivel de pisos, personas
+y menores de 18 años.
 
 | Celda | Celdas | % en celda exacta | A / B / C / D (%) |
 |---|---|---|---|
 | Departamento, edad y cuartos | 376 | 99,999 | 22,0 / 33,8 / 28,7 / 15,6 |
-| **Con pisos (vigente)** | **993** | **99,976** | **14,2 / 29,4 / 34,4 / 22,0** |
+| Con pisos | 993 | 99,976 | 14,2 / 29,4 / 34,4 / 22,0 |
 | Con pisos y paredes | 2.081 | 99,946 | 14,0 / 29,0 / 34,5 / 22,5 |
+| **Con pisos, personas y menores (vigente desde el 2026-11-14)** | **3.721** | **99,915** | **14,9 / 29,7 / 33,8 / 21,6** |
 
 Pisos mejora la separación de hogares pobres sin perder cobertura.
 Paredes no agrega nada encima.
@@ -156,9 +158,9 @@ Forest no muestra heterogeneidad estable entre corridas.
 
 | Outcome | Celdas | Cota del ATE |
 |---|---|---|
-| `POBRE_GEIH` | 921 | [−0,256; +0,278] |
-| `POBRE_MONETARIO` | 921 | [−0,418; +0,648] |
-| `POBRE_MONETARIO_OFICIAL` | 712 | [−0,407; +0,620] |
+| `POBRE_GEIH` | 3.217 | [−0,260; +0,308] |
+| `POBRE_MONETARIO` | 3.217 | [−0,361; +0,637] |
+| `POBRE_MONETARIO_OFICIAL` | 2.666 | [−0,359; +0,619] |
 
 Ninguna celda excluye el 0. Sin el supuesto del Hot-Deck, los datos no
 determinan ni el signo del efecto.
@@ -195,18 +197,22 @@ estimación media según el efecto verdadero.
 **Evaluación semisintética.** Usa los hogares reales de la GEIH y simula
 solo el tratamiento y el efecto (+0,095 sobre el log-ingreso, −0,033
 sobre la pobreza monetaria). Se corrió hasta la convergencia el
-2026-11-03: 432 repeticiones de 30.000 hogares (Causal Forest en 216),
-hasta que el error Monte Carlo de cada celda quedó bajo el umbral.
+2026-11-15, con la celda que suma personas y menores: 456 repeticiones
+de 30.000 hogares (Causal Forest en 216), hasta que el error Monte Carlo
+de cada celda quedó bajo el umbral.
 
-- Con el tratamiento verdadero y confusión observable, los estimadores
-  recuperan el efecto (0,089 a 0,094; −0,031 a −0,033 en pobreza).
-- Con Hot-Deck, todo estimador devuelve cerca de cero en los ocho
-  escenarios y los dos resultados.
-- Con un vínculo del 50 %, el efecto se atenúa a la mitad (0,041 a 0,048).
+- Con el tratamiento verdadero y confusión observable, la regresión con
+  efectos fijos recupera el efecto (0,090; −0,032 en pobreza). LinearDML
+  y Causal Forest se quedan en 0,059-0,061: con ≈8 hogares por celda en la
+  encuesta simulada, sus modelos auxiliares dejan confusión entre
+  celdas. Con datos reales no pasa.
+- Con Hot-Deck, la regresión con efectos fijos y la RD devuelven cerca de
+  cero en los ocho escenarios y los dos resultados.
+- Con un vínculo del 50 %, el efecto se atenúa a la mitad (0,043 a 0,048).
 - Con confusión no observada, ningún estimador la corrige, ni siquiera
   con el tratamiento verdadero, y en pobreza el signo se invierte
-  (+0,138 con confusión fuerte).
-- Solo la discontinuidad en el corte la resiste (+0,086 frente a +0,090),
+  (+0,129 con confusión fuerte).
+- Solo la discontinuidad en el corte la resiste (+0,094 frente a +0,093),
   y solo con vínculo hogar por hogar; con Hot-Deck también da cero.
 
 Detalle en [`SIMULACION_SEMISINTETICA.md`](../resultados/3_simulacion/SIMULACION_SEMISINTETICA.md).
@@ -235,7 +241,7 @@ La cobertura frente a la población de la GEIH, sobre el mismo marco, va de
 |---|---|
 | P1/OE1: determinantes y validez del Sisbén | Implementado (LASSO, Ridge y SHAP). Falta definir grupos y subgrupos de variables y la concordancia con la pobreza. |
 | P2/OE2: efecto causal sobre el bienestar | Estimación y cotas implementadas con indicador proxy de pobreza y con pobreza monetaria. Con los datos actuales el efecto no se identifica; la simulación cierra la parte metodológica. |
-| P3/OE3: reglas de focalización (FGT1) | Hecho en la simulación (2026-11-04): el proxy de medios logra 82-85 % de la reducción ideal de FGT1; las reglas con CATE estimado son peores. Ver [`RESULTADOS_REGLAS_FOCALIZACION.md`](../resultados/4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md). |
+| P3/OE3: reglas de focalización (FGT1) | Hecho en la simulación (2026-11-04; regenerado el 2026-11-15 con la celda nueva): el proxy de medios logra 84-87 % de la reducción ideal de FGT1 y la vigente imputada 75 %; las reglas con CATE estimado son peores. Ver [`RESULTADOS_REGLAS_FOCALIZACION.md`](../resultados/4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md). |
 
 ## 8. Pendientes
 

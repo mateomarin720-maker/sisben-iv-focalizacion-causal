@@ -55,8 +55,9 @@ efecto. Es lo que pasaba con la celda como código numérico antes del
 | Sin confusión en la celda | 0,115 | −0,0005 (error MC 0,0011) |
 | Con confusión en la celda | 0,774 | −0,0005 (error MC 0,0011) |
 
-Con datos reales, el contraste combinado de 100 sorteos es −0,000004 para
-`POBRE_GEIH` (IC [−0,0033; +0,0033]).
+Con datos reales, el contraste combinado de 100 sorteos es +0,0001 para
+`POBRE_GEIH` (IC [−0,0035; +0,0038]; con la celda del 2026-11-02,
+−0,000004 [−0,0033; +0,0033]).
 
 ## Proposición 2: la señal cae en proporción al enlace
 
@@ -138,9 +139,9 @@ fracción de una sola corrida varía entonces unos ±3 puntos alrededor de
 
 | Resultado | Fracción de la varianza que viene del sorteo |
 |---|---|
-| `POBRE_MONETARIO` | 48,9 % |
-| `POBRE_GEIH` | 48,8 % |
-| `log_ingreso_percapita` | 54,5 % |
+| `POBRE_MONETARIO` | 53,2 % |
+| `POBRE_GEIH` | 46,7 % |
+| `log_ingreso_percapita` | 48,6 % |
 | `ipm_geih_score` | no calculada: `variabilidad_hotdeck` combina solo estos tres |
 
 Fuente: `docs/reports/variabilidad_hotdeck_estimacion.csv`.
@@ -170,17 +171,19 @@ un problema de identificación doble: el de los resultados potenciales
 (Manski) y el de la conjunta no observada (Fréchet). Por eso no basta la
 cota clásica.
 
-**Con los datos.** Con las 921 celdas de pobreza monetaria
+**Con los datos.** Con las 3.217 celdas de pobreza monetaria
 (`cotas_frechet_manski_pobre_monetario.csv`, ponderadas por `fex`), el Δ
-medio es 0,200. Entonces 1 + 2 × 0,200 = 1,40, el ancho publicado de
-[−0,571; +0,829]. La cota de ancho 1 del marco teórico es la de bases
+medio es 0,149. Entonces 1 + 2 × 0,149 = 1,30, el ancho publicado de
+[−0,489; +0,808]. Con la celda del 2026-11-02 (921 celdas, sin personas
+ni menores), Δ = 0,200 y el ancho era 1,40: una celda que separa mejor a
+pobres y A/B achica Δ y, con él, la cota. La cota de ancho 1 del marco teórico es la de bases
 enlazadas.
 
 La misma acotación de P₁₁ da los errores de focalización por celda sin
 supuestos causales (`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`). Los
 pobres no elegibles están entre max(0, p − e) y min(p, 1 − e). Agregados
 con factores de expansión, el error de exclusión de A/B frente a pobreza
-monetaria va de 0,9 % a 75,0 %, y el de inclusión de 38,6 % a 84,5 %.
+monetaria va de 2,8 % a 57,7 %, y el de inclusión de 41,2 % a 74,4 %.
 
 \* Resultado simulado.
 

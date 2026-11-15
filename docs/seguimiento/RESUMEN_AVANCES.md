@@ -20,7 +20,7 @@ datos reales, el DML sobre el grupo Sisbén imputado da ≈0, que es lo
 esperado: el Hot-Deck sortea al azar dentro de la celda y el contraste
 es un placebo. Las cotas de Fréchet-Manski no fijan ni el signo del
 efecto. **La evaluación semisintética** (guía del tutor del 2026-10-27)
-corrió hasta la convergencia (432 repeticiones): con hogares reales y
+corrió hasta la convergencia (456 repeticiones): con hogares reales y
 efecto conocido, el Hot-Deck lleva cualquier estimación a ≈0, y solo una
 discontinuidad con puntaje continuo y vínculo hogar por hogar recupera
 el efecto cuando hay confusión no observada
@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 271 pruebas; 62 de 62 errores documentados detectados por mutación (2026-11-14); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 283 pruebas; 69 de 69 errores documentados detectados por mutación (2026-11-15); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -64,9 +64,12 @@ el efecto cuando hay confusión no observada
 
 290.968 hogares GEIH, 3.106.489 donantes. Celda: departamento + ciclo de
 vida del jefe + tramo de cuartos + nivel de pisos homologado
-(`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`); 99,98 % en celda
-exacta (993 celdas). Grupo asignado (ponderado): **A 14,2 · B 29,4 · C
-34,4 · D 22,0 %**. Refleja a los hogares registrados en el Sisbén, no a
+(`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`) + personas del hogar
+(1-2 / 3+) + menores de 18 años (0 / 1 / 2+); 99,92 % en celda exacta
+(3.721 celdas). Grupo asignado (ponderado): **A 14,9 · B 29,7 · C 33,8 ·
+D 21,6 %**. Personas y menores entraron el 2026-11-14 (Δ de Fréchet por
+celda 0,200 → 0,148; correlación con la pobreza monetaria 0,29 → 0,41;
+`RESULTADOS_HOTDECK.md`). Refleja a los hogares registrados en el Sisbén, no a
 la población; válido solo a nivel poblacional.
 
 **Pisos entró a la celda el 2026-11-02.** La correlación entre
@@ -116,10 +119,10 @@ número a la propensión. `docs/resultados/2_diagnostico_datos_reales/DIAGNOSTIC
 
 | Outcome | Cota del ATE sin suponer independencia condicional |
 |---|---|
-| `POBRE_GEIH` | [−0,256; +0,278] |
-| `POBRE_MONETARIO` | [−0,418; +0,648] |
+| `POBRE_GEIH` | [−0,260; +0,308] |
+| `POBRE_MONETARIO` | [−0,361; +0,637] |
 
-Ninguna de las 921 celdas excluye el cero. Sin el supuesto del
+Ninguna de las 3.217 celdas excluye el cero. Sin el supuesto del
 Hot-Deck, los datos no determinan ni el signo del efecto. No es un
 fracaso del modelo: es lo que dos fuentes sin llave común permiten
 decir. `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md`.
@@ -148,20 +151,23 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
    un contraste viene del sorteo: las estimaciones con el grupo imputado
    deberían repetir el sorteo y combinar con Rubin.
 0. **OE3 hecho el 2026-11-04** (`docs/resultados/4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md`):
-   un proxy de medios logra 82-85 % de la reducción ideal de la brecha;
-   las reglas con CATE estimado son peores (72 % con vínculo, 44 % con
+   un proxy de medios logra 84-87 % de la reducción ideal de la brecha,
+   frente a 75 % de la vigente imputada (60 % con la celda anterior); las
+   reglas con CATE estimado son peores (61-68 % con vínculo, 27-34 % con
    Hot-Deck). Siguiente: presupuestos menores que la población pobre y
    heterogeneidad más fuerte.
 
 1. **Evaluación semisintética: hecha hasta la convergencia 2026-11-03**
-   (432 repeticiones; outcome de pobreza, efecto nulo, tres niveles de
+   (456 repeticiones con la celda nueva; outcome de pobreza, efecto nulo, tres niveles de
    confusión no observada y regla de corte con RD incluidos).
    **Sensibilidad hecha 2026-11-04**
    (`src/simulacion/sensibilidad_semisintetica.py`): la pérdida por
    integración es proporcional al tamaño del efecto; la RD difusa (80 %
-   de participación) recupera el efecto en el corte con vínculo (0,086
-   frente a 0,090); el sesgo de LinearDML viene de la regularización de
-   los modelos auxiliares. **Decisión (2026-11-11):** se conserva la
+   de participación) recupera el efecto en el corte con vínculo (0,093
+   frente a 0,093); el sesgo de LinearDML viene de la regularización de
+   los modelos auxiliares y, con la celda de 3.721 valores, del ajuste
+   cruzado con ≈8 hogares por celda (−0,035 con efecto nulo, 2026-11-15;
+   con datos reales no aparece). **Decisión (2026-11-11):** se conserva la
    regularización del proyecto, de la que salen las cifras publicadas; la
    casi nula queda como sensibilidad. La cadena de respaldos del
    Hot-Deck simulado quedó en el código el 2026-11-04 (paso 4 del
@@ -178,8 +184,9 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
    imputado, por celda (D6).
 4. ~~Angostar las cotas con supuestos de monotonía~~ **Hecho
    2026-11-04:** con selección monótona, respuesta monótona y dependencia
-   positiva, la cota del ATE en pobreza monetaria pasa de [−0,571; +0,829]
-   a [−0,405; 0]. El signo lo fija el supuesto, no los datos.
+   positiva, la cota del ATE en pobreza monetaria pasa de [−0,489; +0,808]
+   a [−0,359; 0] (con la celda del 2026-11-02: de [−0,571; +0,829] a
+   [−0,405; 0]). El signo lo fija el supuesto, no los datos.
 5. Construir las 5 privaciones del IPM que faltan en GEIH; refinar
    `sin_cotizacion_pension_jefe`.
 6. Confirmar en ANDA los cortes de `PER002`; 6 hogares de Bogotá con doble

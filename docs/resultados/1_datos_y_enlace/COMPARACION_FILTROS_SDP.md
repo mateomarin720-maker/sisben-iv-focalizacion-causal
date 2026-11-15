@@ -19,12 +19,17 @@ administrativo continuo. Hay dos formas razonables de filtrarlo a "2024":
   subestima el universo vigente y sesga la muestra hacia actualizaciones
   recientes.
 
-## Resultado lado a lado (celda del Hot-Deck con `viv_cuartos` corregido, 2026-10-28)
+## Resultado lado a lado (celda vigente del Hot-Deck, con personas y menores, 2026-11-14)
 
 | Filtro | Hogares Bogotá | Donante total (con nacional) | Grupo nacional (A/B/C/D, %) | Grupo Bogotá (A/B/C/D, %) |
 |---|---|---|---|---|
-| Vigencia ≤31-dic-2024 | 1.274.578 (87,4 %) | 3.106.489 | 22,0 / 33,8 / 28,7 / 15,6 | 3,0 / 18,9 / 46,8 / 31,3 |
-| Año exacto 2024 | 75.488 (5,2 %) | 1.907.399 | 22,4 / 34,8 / 29,4 / 13,5 | 5,0 / 25,2 / 50,8 / 19,0 |
+| Vigencia ≤31-dic-2024 | 1.274.578 (87,4 %) | 3.106.489 | 14,9 / 29,7 / 33,8 / 21,6 | 2,9 / 17,0 / 46,6 / 33,6 |
+| Año exacto 2024 | 75.488 (5,2 %) | 1.907.399 | 15,1 / 30,5 / 34,8 / 19,6 | 3,8 / 21,7 / 52,6 / 21,9 |
+
+Con los dos filtros, 99,92 % de los hogares GEIH quedan en celda exacta.
+(Con la celda del 2026-10-28, sin pisos, personas ni menores, los grupos
+nacionales eran 22,0 / 33,8 / 28,7 / 15,6 y 22,4 / 34,8 / 29,4 / 13,5; la
+diferencia entre filtros era de la misma magnitud.)
 
 Detalle completo (incl. % en celda exacta): `docs/reports/comparacion_filtros_sdp.csv`.
 

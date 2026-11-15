@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import _tramo_edad
-from src.utils.variables_canonicas import CODIGOS_CICLO, JEFE, edad_a_ciclo, es_jefe, normalizar_llave
+from src.utils.variables_canonicas import CODIGOS_CICLO, JEFE, edad_a_ciclo, es_jefe, es_menor, normalizar_llave
 
 
 @pytest.mark.parametrize("entrada, esperado", [
@@ -63,3 +63,13 @@ def test_hotdeck_y_sisben_usan_los_mismos_tramos():
     sisben = _tramo_edad(pd.DataFrame({"jefe_edad": edad_a_ciclo(edades)}), edad_en_codigos=True)
     assert (geih == sisben).all()
     assert set(sisben) == {f"ciclo{c}" for c in CODIGOS_CICLO}
+
+
+def test_menor_de_18_en_anos_y_en_ciclo_de_vida():
+    """Menor = menos de 18 años: 17 cuenta, 18 no (GEIH y Bogotá traen
+    años). En el Sisbén nacional, ciclos 1-3 (hasta 17 años) sí, 4 no.
+    Faltantes no cuentan."""
+    edades = pd.Series([0, 17, 18, 45, np.nan])
+    assert es_menor(edades).tolist() == [True, True, False, False, False]
+    ciclos = pd.Series(["1", "3", "4", "6", None])
+    assert es_menor(ciclos, en_codigos=True).tolist() == [True, True, False, False, False]

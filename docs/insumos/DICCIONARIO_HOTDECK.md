@@ -131,7 +131,7 @@ celdas con menos de 30 donantes.
 
 | Variable | Filtro donde cae | Motivo |
 |---|---|---|
-| Zona (urbano / resto) | 4. No aporta | Homologa (ficha: 1 cabecera, 2-3 resto), pero Δ apenas baja (0,163) y las celdas pequeñas suben a 4,4 %. La celda ya la captura con departamento y pisos |
+| Zona (urbano / resto) | 4. No aporta | Homologa (ficha: 1 cabecera, 2-3 resto), pero sobre la celda final Δ apenas baja (0,148 → 0,144), casi lo mismo que al permutarla dentro de la celda (placebo 0,146), y las celdas pequeñas suben de 3,7 % a 5,3 %. La celda ya la captura con departamento y pisos. Sí se usa para leer resultados (cotas y heterogeneidad por zona) |
 | Paredes | 4. No aporta | Homologa (escala común con `I14`), Δ 0,165 y 4,2 % de celdas pequeñas; desde el 2026-11-02 triplicaba las celdas sin subir la correlación |
 | Sexo del jefe | 4. No aporta | Homologa (2 = mujer en las dos fuentes), Δ 0,161 pero 6,5 % de celdas pequeñas, sobre el umbral |
 | Mayores de 60 en el hogar | 4. No aporta | Homologa (33 % GEIH, 27 % Sisbén nacional, 31 % Bogotá); Δ 0,166 |

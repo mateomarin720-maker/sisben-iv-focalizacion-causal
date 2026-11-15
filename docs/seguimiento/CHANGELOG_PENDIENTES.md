@@ -2,6 +2,67 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-15 (45) — Celda del Hot-Deck con personas y menores; secuencia completa regenerada
+
+### Cambiado
+- **Celda del Hot-Deck:** departamento + ciclo de vida del jefe + tramo de cuartos + nivel de
+  pisos + personas del hogar (1-2, 3 o más) + menores de 18 años (0, 1, 2 o más): 3.721
+  celdas, 99,92 % de los hogares en celda exacta, 3,7 % en celdas con menos de 30 donantes.
+  Δ (ancho medio de la cota de Fréchet por celda) baja de 0,200 a 0,148 (bootstrap pareado
+  −0,053 [−0,055; −0,052]); al barajar personas y menores dentro de la celda anterior, solo a
+  0,198, así que 95 % de la reducción es información. Cadena de respaldos de siete niveles
+  (`sin_menores`, `sin_personas` antes de `sin_pisos`). Se evaluaron las demás variables del
+  catálogo común a las tres fuentes y se descartaron por cuatro filtros (existe en las tres,
+  no es privación del IPM, homologa, aporta sin fragmentar); tabla en
+  `DICCIONARIO_HOTDECK.md` §6.1 y `src/validacion/candidatas_celda_catalogo.py`. Zona sobre
+  la celda final: Δ 0,148 → 0,144, casi lo mismo que su placebo (0,146), con 5,3 % de
+  celdas pequeñas.
+- `hog_num_menores` armonizado en las tres fuentes (GEIH `P6040` < 18; Sisbén `PER002` en
+  1-3; Bogotá desde `fec_nacimiento`, leído de Azure en memoria) y exigido por el contrato de
+  la simulación.
+- Secuencia completa de `CLAUDE.md` vuelta a correr con la celda nueva. Con datos reales:
+  DML con la celda exacta sin efectos (los cinco ATE incluyen el cero); cotas de
+  Fréchet-Manski de pobreza monetaria [−0,361; +0,637] (antes [−0,418; +0,648]) y 1 + 2Δ =
+  1,30 (antes 1,40); errores de focalización A/B exclusión [2,8 %; 57,7 %] e inclusión
+  [41,2 %; 74,4 %]; en la recomendación de variables el estrato pasa de «recomendar» a
+  «considerar» porque el presupuesto de A/B sube de 43,6 % a 44,6 %.
+- Simulación (456 repeticiones), sensibilidad (408), reglas y heterogeneidad (300) con la
+  celda nueva. Las conclusiones se mantienen: con Hot-Deck se pierde todo el efecto, la
+  confusión no observada no se corrige, la RD necesita el vínculo y el proxy de medios es la
+  mejor regla factible (84-87 %\* del ideal). La vigente imputada pasa de 60 %\* a 75 %\* del
+  ideal (exclusión 43,5 %\* → 27,8 %\*): personas y menores llevan información de pobreza.
+- Variabilidad del Hot-Deck: dos sorteos coinciden en el grupo el 41 % de las veces (antes
+  34 %); por celda el error relativo ponderado sube de 3,9 % a 8,5 % (celdas más pequeñas);
+  los agregados siguen estables (CV ≤ 0,006) y Rubin da +0,0001 [−0,0035; +0,0038] en
+  `POBRE_GEIH`.
+
+### Agregado
+- **Hallazgo: LinearDML y Causal Forest se sesgan con pocos hogares por celda.** En la
+  simulación (30.000 hogares, ≈8 por celda) LinearDML da −0,035\* con efecto nulo (−0,006\*
+  con la celda de 993) y recupera 0,059\* de un efecto de 0,095\*; la regresión con efectos
+  fijos da 0,090\*. La regularización explica ≈60 % (casi sin regularizar, −0,015\*); el resto,
+  el ajuste cruzado. Con datos reales no aparece: `src/diagnostico/comparar_estimadores_celda.py`
+  compara LinearDML, casi sin regularizar y la regresión con efectos fijos con la celda
+  exacta (diferencias ≤ 0,0035, todos los IC con el cero). Prueba y mutación.
+- Sensibilidad 4, tamaño de la encuesta simulada (`sensibilidad_semisintetica.py tamano`):
+  con 30.000, 60.000 y 120.000 hogares (≈8, 16 y 32 por celda), el sesgo de LinearDML con
+  efecto nulo es −0,033\*, −0,017\* y −0,009\* (casi sin regularizar, −0,012\*, −0,005\* y
+  −0,003\*) y la regresión con efectos fijos ≈0 en los tres: se reduce a la mitad al duplicar
+  los hogares por celda. Justificación de los 30.000 hogares en `DISENO_MODULO_SIMULACION.md`. Prueba y
+  mutación.
+
+### Corregido
+- **Las corridas largas reanudaban resultados de la celda anterior.** La firma de reanudación
+  de la simulación, la sensibilidad, las reglas y la heterogeneidad era solo de la
+  configuración: al cambiar la celda reanudaron 432 repeticiones viejas y terminaron en
+  segundos, sin error. Ahora suma una huella de los datos (`simulacion.base.firma_con_datos`).
+  Prueba y mutación; lección en `CLAUDE.md`.
+- `DESCRIPCION_TABLAS.md`: códigos GEIH de vivienda (`P4010`, `P4020`, `P5000`).
+- La mutación «corte de menores en 17 años» no la detectaba ninguna prueba (no había un
+  hogar con alguien de 17); prueba agregada en `test_variables_canonicas.py`. Cuatro consolas
+  de `docs/reports/` traían avisos de joblib con la ruta local del equipo; quitados.
+- 283 pruebas; 69 de 69 mutaciones detectadas.
+
 ## 2026-11-14 (44) — Controles de las reglas de focalización, licencia y limpieza para la entrega
 
 ### Agregado

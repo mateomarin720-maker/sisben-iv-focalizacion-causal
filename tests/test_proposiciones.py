@@ -42,5 +42,5 @@ def test_ancho_de_la_cota_es_uno_mas_dos_delta():
 
 def test_ancho_publicado_de_pobreza_monetaria():
     pub = pr.ancho_cota_publicada()
-    assert pub is not None and pub["celdas"] == 921
-    assert round(pub["ancho"], 2) == 1.40 and round(pub["delta_medio"], 2) == 0.20
+    assert pub is not None and pub["celdas"] == 3_217
+    assert round(pub["ancho"], 2) == 1.30 and round(pub["delta_medio"], 3) == 0.149

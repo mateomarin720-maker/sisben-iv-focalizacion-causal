@@ -108,11 +108,11 @@ Los reportes crudos van a `docs/reports/`, y su interpretación, a `docs/resulta
 | Etiquetas contra los diccionarios oficiales | Una columna que "suena bien" pero es otra | `tests/test_armonizacion.py`. Hasta octubre, `viv_paredes` leía en realidad material de pisos, sin dar error |
 | 12 meses, no uno | Formatos que cambian entre meses | Agosto llegó en otro formato y su pobreza salía en 6,9 % frente a ≈17 %, sin error; hay prueba específica |
 | Conservación de hogares | Cruces que pierden filas | 290.968 hogares en toda la cadena; los cruces validan su cardinalidad |
-| Cobertura del Hot-Deck | Celdas sin donante | 99,98 % en celda exacta, 993 celdas |
+| Cobertura del Hot-Deck | Celdas sin donante | 99,92 % en celda exacta, 3.721 celdas |
 | Contraste con cifras oficiales | Resultado mal reconstruido | Pobreza monetaria 33,2 % frente a 31,8 % oficial; misma clasificación que el DANE en el 93,9 % de los hogares |
 | Propensión contra la empírica | Categóricas usadas como número | `5_estimacion.py` la imprime por celda |
 | Equivalencia al refactorizar | Que mover código cambie resultados | `tests/test_simulacion_equivalencia.py` |
-| Pruebas automáticas | Errores conocidos y nuevos | 271 pruebas y 62 errores reintroducidos por mutación, en GitHub Actions en cada cambio |
+| Pruebas automáticas | Errores conocidos y nuevos | 283 pruebas y 69 errores reintroducidos por mutación, en GitHub Actions en cada cambio |
 | Prueba de mutación | Pruebas que pasan aunque el error vuelva | 43 errores reintroducidos, los 43 detectados (`tests/mutaciones.py`) |
 | Convergencia Monte Carlo | Simulaciones con demasiado ruido | Repeticiones hasta que el error estándar Monte Carlo queda bajo el umbral |
 

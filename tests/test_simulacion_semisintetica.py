@@ -193,3 +193,21 @@ def test_los_csv_simulados_quedan_marcados_y_se_pueden_reanudar():
     assert marcada["simulado"].all() and set(marcada["modo"]) == {"semisintetico"}
     pd.testing.assert_frame_equal(sin_marca(marcada), original)
     assert "simulado" not in original
+
+
+def test_la_firma_de_reanudacion_cambia_con_los_datos():
+    """Las corridas largas (simulación, sensibilidad, reglas) reanudan lo
+    guardado solo si la firma coincide. Hasta el 2026-11-14 la firma era
+    solo de la configuración: al cambiar la celda del Hot-Deck, la
+    simulación y las reglas reanudaron las repeticiones de la celda
+    anterior sin dar error."""
+    from src.simulacion.base import firma_con_datos, huella, preparar_base
+    from tests.test_simulacion_equivalencia import hogares_sinteticos
+
+    hogares, p_t = hogares_sinteticos(n=400)
+    b = preparar_base(hogares, p_t)
+    assert huella(b) == huella(b.copy()) and firma_con_datos("cfg", b) == firma_con_datos("cfg", b.copy())
+    otra = b.copy()
+    otra.loc[0, "hotdeck_celda_cat"] = otra["hotdeck_celda_cat"].max() + 1  # otra celda, misma configuración
+    assert firma_con_datos("cfg", otra) != firma_con_datos("cfg", b)
+    assert firma_con_datos("otra_cfg", b) != firma_con_datos("cfg", b)

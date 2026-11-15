@@ -1,0 +1,72 @@
+2026-11-15 17:03:28,293 INFO Lote reps 0-11 en 187 s | celdas sin converger: 29
+2026-11-15 17:06:17,845 INFO Lote reps 12-23 en 170 s | celdas sin converger: 26
+2026-11-15 17:09:06,826 INFO Lote reps 24-35 en 169 s | celdas sin converger: 17
+2026-11-15 17:11:55,716 INFO Lote reps 36-47 en 169 s | celdas sin converger: 14
+2026-11-15 17:14:46,684 INFO Lote reps 48-59 en 171 s | celdas sin converger: 10
+2026-11-15 17:17:37,210 INFO Lote reps 60-71 en 171 s | celdas sin converger: 8
+2026-11-15 17:20:24,211 INFO Lote reps 72-83 en 167 s | celdas sin converger: 4
+2026-11-15 17:23:11,689 INFO Lote reps 84-95 en 167 s | celdas sin converger: 3
+2026-11-15 17:26:00,962 INFO Lote reps 96-107 en 169 s | celdas sin converger: 1
+2026-11-15 17:28:51,188 INFO Lote reps 108-119 en 170 s | celdas sin converger: 0
+
+\* Resultado simulado (semisintético): efecto verdadero fijado por el investigador; no es una estimación con datos reales.
+
+=== Tamaño de la encuesta simulada*: 120 repeticiones, 3,721 celdas ===
+
+--- efecto_nulo_n30000 (30,000 hogares, 8.1 por celda)
+vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+oraculo    regresion_efectos_fijos   120               0.0      0.0011  0.0011     0.9583      0.0023   0.5069                  NaN   0.003
+oraculo                 linear_dml   120               0.0     -0.0333 -0.0333     0.6667      0.0026 -12.8456                  NaN   0.003
+oraculo linear_dml_sin_regularizar   120               0.0     -0.0120 -0.0120     0.8417      0.0029  -4.1857                  NaN   0.003
+hotdeck    regresion_efectos_fijos   120               0.0      0.0019  0.0019     0.9417      0.0023   0.8357                  NaN   0.003
+hotdeck                 linear_dml   120               0.0     -0.0345 -0.0345     0.6917      0.0024 -14.3164                  NaN   0.003
+hotdeck linear_dml_sin_regularizar   120               0.0     -0.0113 -0.0113     0.8333      0.0027  -4.2152                  NaN   0.003
+
+--- confusion_observada_x1.0_n30000 (30,000 hogares, 8.1 por celda)
+vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+oraculo    regresion_efectos_fijos   120            0.0949      0.0909 -0.0040     0.9750      0.0021  -1.9460               0.9574   0.003
+oraculo                 linear_dml   120            0.0949      0.0591 -0.0359     0.6500      0.0023 -15.7038               0.6222   0.003
+oraculo linear_dml_sin_regularizar   120            0.0949      0.0805 -0.0144     0.8750      0.0025  -5.6841               0.8479   0.003
+hotdeck    regresion_efectos_fijos   120            0.0949     -0.0019 -0.0968     0.0083      0.0022 -44.8075              -0.0197   0.003
+hotdeck                 linear_dml   120            0.0949     -0.0378 -0.1327     0.0000      0.0024 -55.3953              -0.3981   0.003
+hotdeck linear_dml_sin_regularizar   120            0.0949     -0.0174 -0.1123     0.0083      0.0027 -42.2988              -0.1833   0.003
+
+--- efecto_nulo_n60000 (60,000 hogares, 16.1 por celda)
+vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+oraculo    regresion_efectos_fijos   120               0.0      0.0014  0.0014     0.9583      0.0014   0.9741                  NaN   0.003
+oraculo                 linear_dml   120               0.0     -0.0171 -0.0171     0.8167      0.0016 -10.9545                  NaN   0.003
+oraculo linear_dml_sin_regularizar   120               0.0     -0.0049 -0.0049     0.9000      0.0017  -2.8856                  NaN   0.003
+hotdeck    regresion_efectos_fijos   120               0.0     -0.0006 -0.0006     0.9583      0.0014  -0.4237                  NaN   0.003
+hotdeck                 linear_dml   120               0.0     -0.0196 -0.0196     0.7667      0.0015 -13.2857                  NaN   0.003
+hotdeck linear_dml_sin_regularizar   120               0.0     -0.0067 -0.0067     0.9333      0.0016  -4.2323                  NaN   0.003
+
+--- confusion_observada_x1.0_n60000 (60,000 hogares, 16.1 por celda)
+vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+oraculo    regresion_efectos_fijos   120            0.0949      0.0913 -0.0037     0.9583      0.0015  -2.3972               0.9614   0.003
+oraculo                 linear_dml   120            0.0949      0.0750 -0.0199     0.7583      0.0017 -11.4990               0.7900   0.003
+oraculo linear_dml_sin_regularizar   120            0.0949      0.0872 -0.0077     0.9000      0.0019  -4.1688               0.9184   0.003
+hotdeck    regresion_efectos_fijos   120            0.0949      0.0020 -0.0929     0.0000      0.0015 -62.2937               0.0215   0.003
+hotdeck                 linear_dml   120            0.0949     -0.0176 -0.1125     0.0000      0.0017 -66.4647              -0.1850   0.003
+hotdeck linear_dml_sin_regularizar   120            0.0949     -0.0061 -0.1010     0.0000      0.0018 -54.9225              -0.0643   0.003
+
+--- efecto_nulo_n120000 (120,000 hogares, 32.2 por celda)
+vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+oraculo    regresion_efectos_fijos   120               0.0     -0.0005 -0.0005     0.9583      0.0010  -0.5313                  NaN   0.003
+oraculo                 linear_dml   120               0.0     -0.0091 -0.0091     0.8833      0.0011  -7.9523                  NaN   0.003
+oraculo linear_dml_sin_regularizar   120               0.0     -0.0028 -0.0028     0.9250      0.0012  -2.3550                  NaN   0.003
+hotdeck    regresion_efectos_fijos   120               0.0      0.0001  0.0001     0.9750      0.0010   0.1338                  NaN   0.003
+hotdeck                 linear_dml   120               0.0     -0.0096 -0.0096     0.8833      0.0010  -9.8385                  NaN   0.003
+hotdeck linear_dml_sin_regularizar   120               0.0     -0.0027 -0.0027     0.9500      0.0010  -2.5980                  NaN   0.003
+
+--- confusion_observada_x1.0_n120000 (120,000 hogares, 32.2 por celda)
+vinculo                  estimador  reps  efecto_verdadero  estimacion   sesgo  cobertura  mcse_sesgo  z_sesgo  fraccion_recuperada  umbral
+oraculo    regresion_efectos_fijos   120            0.0949      0.0920 -0.0029     0.9750      0.0010  -3.0726               0.9690   0.003
+oraculo                 linear_dml   120            0.0949      0.0851 -0.0099     0.9167      0.0010  -9.8145               0.8962   0.003
+oraculo linear_dml_sin_regularizar   120            0.0949      0.0912 -0.0037     0.9583      0.0011  -3.3997               0.9611   0.003
+hotdeck    regresion_efectos_fijos   120            0.0949     -0.0012 -0.0962     0.0000      0.0010 -95.8624              -0.0130   0.003
+hotdeck                 linear_dml   120            0.0949     -0.0100 -0.1049     0.0000      0.0011 -99.0212              -0.1053   0.003
+hotdeck linear_dml_sin_regularizar   120            0.0949     -0.0033 -0.0982     0.0000      0.0011 -87.8191              -0.0347   0.003
+
+Convergencia (MCSE del sesgo ≤ 0.003): alcanzada
+Guardado: docs\reports\sensibilidad_tamano_muestra.csv
+Guardado: docs\reports\sensibilidad_tamano_muestra_resumen.csv
