@@ -19,7 +19,7 @@ columnas de siempre, más `ingreso_percapita`/`POBRE_MONETARIO` de
     variable.
   - `POBRE_MONETARIO_OFICIAL` (robustez, 2026-11-02): la clasificación
     oficial del DANE (catálogo 874) en vez de la reconstruida. Solo
-    existe para 24 departamentos y Bogotá; los 9 que la base no trae
+    existe para 23 departamentos y Bogotá; los 9 que la base no trae
     (Orinoquía, Amazonía, San Andrés) salen de esta corrida. La
     reconstrucción sigue siendo el outcome principal porque cubre todo el
     país.
@@ -275,7 +275,7 @@ def main() -> None:
                              ("log_ingreso_percapita", "log_ingreso_percapita (continuo, log1p(ingreso_percapita))"),
                              ("POBRE_MONETARIO", "POBRE_MONETARIO (binario, reconstrucción GEIH con líneas DANE 2024 por dominio)"),
                              ("POBRE_MONETARIO_OFICIAL", "POBRE_MONETARIO_OFICIAL (robustez: clasificación oficial DANE, "
-                                                         "24 departamentos y Bogotá; sin los 9 que la base no trae)")]:
+                                                         "23 departamentos y Bogotá; sin los 9 que la base no trae)")]:
         print("\n" + "#" * 70)
         print(f"# Outcome: {etiqueta}")
         print("#" * 70)

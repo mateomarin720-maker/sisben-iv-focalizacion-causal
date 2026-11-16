@@ -102,7 +102,7 @@ arriendo imputado, tres líneas de dominio y tasas por persona.
 | Pobreza extrema nacional | 12,5 % | 11,7 % |
 | Gini nacional | 0,565 | 0,551 |
 
-Sobre los 275.057 hogares que mide la base oficial (24 departamentos y
+Sobre los 275.057 hogares que mide la base oficial (23 departamentos y
 Bogotá), la reconstrucción clasifica igual al 93,9 %. La reconstrucción
 es el resultado principal (cubre los 33 departamentos); la clasificación
 oficial, la prueba de robustez.
@@ -154,7 +154,7 @@ datos del proyecto.
 | `POBRE_GEIH` | −0,0021 [−0,0045; +0,0004] |
 | `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
 | `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
-| `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | −0,0005 [−0,0041; +0,0030] |
+| `POBRE_MONETARIO_OFICIAL` (robustez, 23 deptos. y Bogotá) | −0,0005 [−0,0041; +0,0030] |
 
 Siete de ocho ATE (dos especificaciones de controles) incluyen el cero;
 el octavo (`POBRE_GEIH`) desaparece al combinar 100 sorteos del Hot-Deck.
@@ -166,7 +166,7 @@ El CATE medio también es ≈0.
 |---|---|
 | `POBRE_GEIH` | [−0,260; +0,308] |
 | `POBRE_MONETARIO` | [−0,361; +0,637] |
-| `POBRE_MONETARIO_OFICIAL` (robustez, 24 deptos.) | [−0,359; +0,619] |
+| `POBRE_MONETARIO_OFICIAL` (robustez, 23 deptos. y Bogotá) | [−0,359; +0,619] |
 
 - **Con supuestos de monotonía**, la cota del ATE de pobreza monetaria
   queda en **[−0,359; 0]**. Los supuestos son: los A/B son al menos tan

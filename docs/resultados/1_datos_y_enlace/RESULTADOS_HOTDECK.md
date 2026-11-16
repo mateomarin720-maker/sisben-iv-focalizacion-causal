@@ -121,8 +121,11 @@ con la variable agregada barajada dentro de la celda anterior: lo que se
   celdas con menos de 30 donantes, sobre el umbral. La 7 queda en 3,7 %.
 - **Nada más del catálogo entra.** Zona, paredes, sexo del jefe, mayores de
   60, cónyuge, energía, gas, recolección y cocina homologan pero no aportan:
-  su suma en un puntaje P(A/B | variables) da 0,003 de Δ después del placebo
-  y solo fragmenta. Tipo de vivienda, tenencia, dormitorios y sanitario
+  agregadas una a una a la celda final (Δ 0,148) quedan entre 0,144 y 0,148,
+  a lo sumo 0,002 por debajo de su placebo, y casi todas pasan el 5 % de
+  celdas pequeñas; su suma en un puntaje P(A/B | variables) da 0,003 de Δ
+  después del placebo y deja 10-14 % de celdas pequeñas
+  (`candidatas_celda_catalogo.py`, fase 2; actualizado el 2026-11-16). Tipo de vivienda, tenencia, dormitorios y sanitario
   exclusivo no homologan (sus distribuciones no cuadran entre fuentes).
   Estrato, internet, educación y ocupación faltan en una fuente. Acueducto,
   alcantarillado, sanitario y fuente de agua son privaciones del IPM:

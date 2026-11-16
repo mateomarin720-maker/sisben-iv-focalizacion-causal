@@ -85,13 +85,13 @@ llaves de GEIH. Comparación: `src/validacion/comparar_pobreza_monetaria_oficial
 **Universo.** La base oficial tiene 275.057 hogares, todos presentes en
 la reconstrucción. Los 15.911 hogares reconstruidos que no están son de
 los 9 departamentos de la Orinoquía, la Amazonía y San Andrés (81, 85,
-86, 88, 91, 94, 95, 97, 99): la cifra oficial es de 24 departamentos y
+86, 88, 91, 94, 95, 97, 99): la cifra oficial es de 23 departamentos y
 Bogotá. Calculada sobre la base, la tasa oficial da 31,83 %, la cifra
 publicada.
 
 | Hogares comunes, tasas por persona | Oficial | Reconstruida | Reconstruida con líneas oficiales |
 |---|---|---|---|
-| FGT0 nacional (24 deptos.) | 31,8 % | 33,2 % | 32,6 % |
+| FGT0 nacional (23 deptos. y Bogotá) | 31,8 % | 33,2 % | 32,6 % |
 | FGT0 23 ciudades | 25,9 % | 27,4 % | 27,2 % |
 | FGT0 resto urbano | 33,7 % | 37,2 % | 35,2 % |
 | FGT0 rural | 42,5 % | 41,3 % | 41,3 % |
@@ -110,7 +110,7 @@ publicada.
   base. El resto de la diferencia está en el ingreso, sobre todo en el
   resto urbano.
 
-**Implicación.** Para los 24 departamentos y Bogotá existe la
+**Implicación.** Para los 23 departamentos y Bogotá existe la
 clasificación oficial hogar por hogar (`hogares_oficial_2024.parquet` en
 `data/1_processed/pobreza_monetaria/`). La reconstrucción sigue siendo
 necesaria para los 9 departamentos que el DANE no mide y como método
@@ -153,7 +153,7 @@ base.
 | Hogares pobres (fex), mismos 275.057 hogares | 27,0 % | 25,8 % |
 | Misma clasificación hogar por hogar | 93,9 % | |
 | ATE DML, W = celda exacta | +0,0017 [−0,0021; +0,0055] (33 deptos.) | +0,0009 [−0,0029; +0,0048] |
-| Cotas Fréchet-Manski, mismos 24 deptos. y Bogotá (2.666 celdas) | [−0,361; +0,638] | [−0,359; +0,619] |
+| Cotas Fréchet-Manski, mismos 23 deptos. y Bogotá (2.666 celdas) | [−0,361; +0,638] | [−0,359; +0,619] |
 | Cotas Fréchet-Manski, todo el país (3.217 celdas) | [−0,361; +0,637] | — |
 
 Las conclusiones no cambian con la clasificación oficial: el DML sigue

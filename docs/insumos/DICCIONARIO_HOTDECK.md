@@ -1,6 +1,6 @@
 # Diccionario consolidado — Variables para Hot-Deck (GEIH ↔ Sisbén IV)
 
-*(Actualizado 2026-11-14: celda con pisos desde el 2026-11-02 y cadena de
+*(Actualizado 2026-11-16, §6.1 con las excluidas sobre la celda final; 2026-11-14: celda con pisos desde el 2026-11-02 y cadena de
 respaldos desde el 2026-11-04. Toda variable codificada queda con su nombre
 y significado aquí, no solo en comentarios de código — observación del
 tutor.)*
@@ -125,19 +125,23 @@ del SDP). Cada una pasó por cuatro filtros, en este orden: (1) ¿existe en
 las tres fuentes?; (2) ¿es una privación del IPM?; (3) ¿homologa, es decir,
 su distribución cuadra entre fuentes después de llevar los códigos a
 categorías comunes?; (4) ¿aporta sobre la celda sin fragmentarla? Δ es el
-ancho medio de la cota de Fréchet por celda (menor es mejor); la
-referencia es la celda con personas, Δ = 0,167, 2,9 % de hogares en
-celdas con menos de 30 donantes.
+ancho medio de la cota de Fréchet por celda (menor es mejor). Filtro 4
+sobre la celda final (Δ = 0,148, 3,7 % de hogares en celdas con menos de
+30 donantes): cada variable se agrega a la celda y se compara con su
+placebo, la misma variable barajada dentro de cada celda (lo que se gana
+solo por partirla). `src/validacion/candidatas_celda_catalogo.py`, fase 2;
+la fase 1 repite el filtro sobre la celda sin menores, que es como entró
+menores (Δ 0,177 → 0,148; placebo 0,175).
 
 | Variable | Filtro donde cae | Motivo |
 |---|---|---|
 | Zona (urbano / resto) | 4. No aporta | Homologa (ficha: 1 cabecera, 2-3 resto), pero sobre la celda final Δ apenas baja (0,148 → 0,144), casi lo mismo que al permutarla dentro de la celda (placebo 0,146), y las celdas pequeñas suben de 3,7 % a 5,3 %. La celda ya la captura con departamento y pisos. Sí se usa para leer resultados (cotas y heterogeneidad por zona) |
-| Paredes | 4. No aporta | Homologa (escala común con `I14`), Δ 0,165 y 4,2 % de celdas pequeñas; desde el 2026-11-02 triplicaba las celdas sin subir la correlación |
-| Sexo del jefe | 4. No aporta | Homologa (2 = mujer en las dos fuentes), Δ 0,161 pero 6,5 % de celdas pequeñas, sobre el umbral |
-| Mayores de 60 en el hogar | 4. No aporta | Homologa (33 % GEIH, 27 % Sisbén nacional, 31 % Bogotá); Δ 0,166 |
-| Cónyuge en el hogar | 4. No aporta | Δ 0,162 con 5,6 % de celdas pequeñas; además la presencia difiere entre fuentes (50 % frente a 35 %) |
-| Energía, gas, recolección de basuras, combustible de cocina | 4. No aporta | Homologan (sí/no o limpia/otra); Δ 0,164-0,167. Pisos ya resume las condiciones de la vivienda |
-| Suma de todas las débiles (puntaje P(A/B \| variables), en terciles o quintiles) | 4. No aporta | La ganancia aparente (Δ 0,151-0,153) es casi toda partición: con el placebo queda 0,003, y deja 7-12 % de celdas pequeñas |
+| Paredes | 4. No aporta | Homologa (escala común con `I14`). Δ 0,146 frente a 0,147 del placebo: lo que baja es solo partición; 5,1 % de celdas pequeñas. Desde el 2026-11-02 triplicaba las celdas sin subir la correlación |
+| Sexo del jefe | 4. No aporta | Homologa (2 = mujer en las dos fuentes). Δ 0,145 frente a 0,146 del placebo y 7,5 % de celdas pequeñas, sobre el umbral |
+| Mayores de 60 en el hogar | 4. No aporta | Homologa (33 % GEIH, 27 % Sisbén nacional, 31 % Bogotá); Δ 0,147, igual al placebo (0,148) |
+| Cónyuge en el hogar | 4. No aporta | Δ 0,145 frente a 0,146 del placebo, con 7,1 % de celdas pequeñas; además la presencia difiere entre fuentes (50 % frente a 35 %) |
+| Energía, gas, recolección de basuras, combustible de cocina | 4. No aporta | Homologan (sí/no o limpia/otra); Δ 0,145-0,148, a lo sumo 0,001 por debajo de su placebo, con 4,0-6,2 % de celdas pequeñas. Pisos ya resume las condiciones de la vivienda |
+| Suma de todas las excluidas (puntaje P(A/B \| variables), en terciles o quintiles) | 4. No aporta | La ganancia aparente (Δ 0,142 y 0,138) es casi toda partición: frente al placebo quedan 0,003, y deja 10-14 % de celdas pequeñas |
 | Tipo de vivienda | 3. No homologa | "Cuarto" es 2 % en GEIH, 29 % en el Sisbén nacional y 20 % en Bogotá: la pregunta no mide lo mismo |
 | Tenencia de la vivienda | 3. No homologa | Los códigos van al revés entre fuentes y "otra" es 24 %, 53 % y 11 %; no hay equivalencia confiable |
 | Cuartos para dormir | 3. No homologa | Un dormitorio: 40 % GEIH, 70 % Sisbén nacional, 46 % Bogotá. Además es el insumo del hacinamiento (filtro 2) |

@@ -2,6 +2,23 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-16 (46) — Variables descartadas evaluadas sobre la celda final; conteo de departamentos
+
+### Corregido
+- **La tabla de variables descartadas (`DICCIONARIO_HOTDECK.md` §6.1) no se podía reproducir.**
+  Sus cifras eran de la corrida del 14-nov sobre la celda con personas en cuatro tramos
+  (Δ 0,167); la del 15-nov cambió la base a la celda sin menores y no evaluaba zona, paredes
+  ni sexo del jefe, ni el placebo. `candidatas_celda_catalogo.py` ahora corre dos fases con
+  placebo para cada variable: (1) sobre la celda sin menores, como entró menores (Δ 0,177 →
+  0,148; placebo 0,175); (2) sobre la celda final, con zona, paredes y sexo además de las
+  candidatas. Fase 2: todas quedan entre 0,144 y 0,148, a lo sumo 0,002 por debajo de su
+  placebo, y casi todas pasan el 5 % de celdas pequeñas; el puntaje de todas da 0,003 después
+  del placebo con 10-14 % de celdas pequeñas. Las conclusiones no cambian; §6.1 y
+  `RESULTADOS_HOTDECK.md` citan ahora la fase 2.
+- **«24 departamentos y Bogotá» eran 23.** La clasificación oficial de pobreza monetaria trae
+  24 códigos DIVIPOLA, uno de ellos Bogotá. Corregido en los resultados, el seguimiento,
+  `5_estimacion.py` y la etiqueta del reporte de estimación (solo texto, ninguna cifra cambia).
+
 ## 2026-11-15 (45) — Celda del Hot-Deck con personas y menores; secuencia completa regenerada
 
 ### Cambiado
@@ -731,7 +748,7 @@ La muestra de estimación se regeneró en la entrada 43.
 
 ### Decidido
 - Outcome monetario principal: la reconstrucción (33 departamentos).
-  `POBRE_MONETARIO_OFICIAL` (clasificación DANE, 24 departamentos y
+  `POBRE_MONETARIO_OFICIAL` (clasificación DANE, 23 departamentos y
   Bogotá) como prueba de robustez en el DML y las cotas. Los 9
   departamentos no están en la base oficial con otro código ni
   identificador (0 de sus 15.911 hogares por `directorio`).
@@ -783,7 +800,7 @@ La muestra de estimación se regeneró en la entrada 43.
 - Fréchet-Manski: `POBRE_GEIH` [−0,411; +0,323] → [−0,261; +0,380];
   `POBRE_MONETARIO` [−0,538; +0,503] → [−0,418; +0,648]. 921 celdas,
   ninguna excluye el 0.
-- Base oficial: 275.057 hogares (24 departamentos y Bogotá; no trae 81,
+- Base oficial: 275.057 hogares (23 departamentos y Bogotá; no trae 81,
   85, 86, 88, 91, 94, 95, 97, 99), tasa 31,83 %. Sobre esos hogares la
   reconstrucción da 33,24 % y clasifica igual al 93,9 %; con las líneas
   oficiales por área y semestre, 32,62 %.

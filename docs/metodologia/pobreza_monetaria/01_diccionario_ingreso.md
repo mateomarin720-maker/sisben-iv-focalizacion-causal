@@ -9,7 +9,7 @@ cerradas el 2026-11-02 tras la revisión de D1-D7. Implementación:
 
 | # | Decisión | Qué se hizo | Evidencia |
 |---|---|---|---|
-| D1 | Base oficial anonimizada | Descargada el 2026-11-02 (`data/0_raw/pobreza_monetaria/`). Trae las llaves de GEIH: la reconstrucción clasifica igual al 93,9 % de los hogares comunes. Cubre 24 departamentos y Bogotá (no los 9 nuevos) | `src/validacion/comparar_pobreza_monetaria_oficial.py` |
+| D1 | Base oficial anonimizada | Descargada el 2026-11-02 (`data/0_raw/pobreza_monetaria/`). Trae las llaves de GEIH: la reconstrucción clasifica igual al 93,9 % de los hogares comunes. Cubre 23 departamentos y Bogotá (no los 9 nuevos) | `src/validacion/comparar_pobreza_monetaria_oficial.py` |
 | D2 | Pensionista en `P6050` | Base: excluir solo el 10 (servicio doméstico y sus parientes). 11 y 12: sensibilidad | No mueve las tasas (33,2 % en los dos casos) |
 | D3 | Ajuste por vivienda propia | Base: `P5130` (arriendo estimado) para `P5090` ∈ {1, 2, 4}: propietarios y usufructuarios. Sensibilidades sin ajuste y solo propietarios | La ficha del catálogo 874 dice "arriendo imputado para propietarios y usufructuarios" |
 | D4 | Ganancia rural | Base: `P6750` del mes, como `INGLABO`. Sensibilidad con `P550` ÷ 12 | `INGLABO` = `P6750` en el 94,5 % de quienes declaran `P550` (enero) |

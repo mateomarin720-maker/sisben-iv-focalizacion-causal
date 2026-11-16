@@ -118,7 +118,7 @@ W = CELDA EXACTA (indicadoras de _hotdeck_celda, igual al sorteo real)
   Importancia de variables: {'viv_paredes': 0.536, 'jefe_mujer': 0.26, 'geo_zona_urbana': 0.203}
 
 ######################################################################
-# Outcome: POBRE_MONETARIO_OFICIAL (robustez: clasificación oficial DANE, 24 departamentos y Bogotá; sin los 9 que la base no trae)
+# Outcome: POBRE_MONETARIO_OFICIAL (robustez: clasificación oficial DANE, 23 departamentos y Bogotá; sin los 9 que la base no trae)
 ######################################################################
 
 ======================================================================

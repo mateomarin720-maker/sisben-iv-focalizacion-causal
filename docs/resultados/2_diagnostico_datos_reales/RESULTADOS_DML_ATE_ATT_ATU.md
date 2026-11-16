@@ -58,7 +58,7 @@ inclusión ni de exclusión, que son conceptos de focalización.
 | `POBRE_MONETARIO` | CELDA | +0,0017 [−0,0021; +0,0055] | +0,0021 | +0,0013 |
 
 Robustez con la clasificación oficial del DANE (`POBRE_MONETARIO_OFICIAL`,
-275.057 hogares de 24 departamentos y Bogotá; se agregó el 2026-11-02):
+275.057 hogares de 23 departamentos y Bogotá; se agregó el 2026-11-02):
 
 | Outcome | W | ATE [IC 95 %] | ATT | ATU |
 |---|---|---|---|---|

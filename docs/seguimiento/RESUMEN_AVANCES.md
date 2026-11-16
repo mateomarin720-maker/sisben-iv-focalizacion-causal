@@ -34,7 +34,7 @@ el efecto cuando hay confusión no observada
 | **GEIH (DANE)** | ✅ 12 meses | 290.968 hogares, 8 módulos por mes. Agosto se carga desde `.DTA` con el mismo formato de texto que el CSV. |
 | **Sisbén IV nacional (DNP-ANDA)** | ✅ | 1.833.166 hogares, 1.098 municipios, corte mayo 2024. |
 | **Sisbén IV Bogotá (SDP)** | ✅ | Registro continuo; se usan los vigentes al 31-dic-2024 (1.274.578 de 1.458.468). Reemplaza al municipio 11001 del nacional. |
-| **Pobreza monetaria oficial (DANE, catálogo 874)** | ✅ 2026-11-02 | 275.057 hogares con llaves de GEIH, en `data/0_raw/pobreza_monetaria/` y Azure. 24 departamentos y Bogotá (sin los 9 nuevos). |
+| **Pobreza monetaria oficial (DANE, catálogo 874)** | ✅ 2026-11-02 | 275.057 hogares con llaves de GEIH, en `data/0_raw/pobreza_monetaria/` y Azure. 23 departamentos y Bogotá (sin los 9 nuevos). |
 | **Víctimas MPMD (DANE, catálogo 874)** | ✅ 2026-11-02 | Marca de víctima y desplazado por persona con llaves de GEIH (`data/0_raw/victimas_mpmd/`). Sin usar todavía. |
 | **Banco de datos** | ✅ Azure Blob Storage | `src/utils/publicar_banco_datos_azure.py` / `restaurar_banco_datos_azure.py`. |
 
@@ -89,7 +89,7 @@ sin pisos (A 22,0 · D 15,6 %) queda como sensibilidad. Detalle:
   reconstrucción experimental, no la medición oficial (el DANE usa
   registros administrativos no públicos). La decisión que más pesa es el
   arriendo imputado (5,6 puntos). **Contraste con la base oficial del
-  DANE:** sobre los 275.057 hogares que mide (24 departamentos y Bogotá),
+  DANE:** sobre los 275.057 hogares que mide (23 departamentos y Bogotá),
   la reconstrucción clasifica igual al 93,9 %, con razón mediana de
   ingreso 1,00; las líneas oficiales por área explican 0,6 de los 1,4
   puntos de diferencia. `docs/resultados/1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md`.
@@ -175,7 +175,7 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
    2026-11-08 (paso 5), sin cambios en las conclusiones.
 2. ~~Decidir el outcome monetario~~ **Resuelto 2026-11-02:** la
    reconstrucción es el outcome principal (todo el país) y la
-   clasificación oficial (`POBRE_MONETARIO_OFICIAL`, 24 departamentos y
+   clasificación oficial (`POBRE_MONETARIO_OFICIAL`, 23 departamentos y
    Bogotá) la prueba de robustez; las conclusiones no cambian. Los 9
    departamentos no están en la base oficial con ningún otro código.
    Cómo completarla si el DANE entrega esos datos:

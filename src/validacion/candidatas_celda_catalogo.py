@@ -23,12 +23,21 @@ resultado. Y lo que falta en una fuente: estrato (el archivo nacional del
 DNP no lo entrega), internet (no está en la GEIH), educación y ocupación
 (no están en Bogotá).
 
-Resultado del 2026-11-14: solo `menores` aporta (Δ 0,167 → 0,145 sobre
-oficial + personas); la suma de las demás en un puntaje da 0,003 de Δ
-después del placebo, y solo fragmenta la celda.
+Dos fases, cada variable con su placebo (barajada dentro de la celda
+base: lo que se gana solo por partir la celda):
+  1. Sobre la celda sin menores: así entró menores (Δ 0,177 → 0,148;
+     placebo 0,175).
+  2. Sobre la celda final, con zona, paredes y sexo del jefe además de las
+     candidatas: es la tabla de variables descartadas
+     (`docs/insumos/DICCIONARIO_HOTDECK.md` §6.1).
+
+Resultado del 2026-11-16: sobre la celda final (Δ 0,148) ninguna aporta;
+quedan entre 0,144 y 0,148, a lo sumo 0,002 por debajo de su placebo, y
+casi todas pasan el 5 % de celdas pequeñas. La suma de todas en un
+puntaje da 0,003 después del placebo con 10-14 % de celdas pequeñas.
 
 Lee el Sisbén de Bogotá del banco de datos en memoria (no lo descarga).
-Tarda unos 25 minutos.
+Tarda unos 30 minutos.
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.validacion.candidatas_celda_catalogo
@@ -51,7 +60,7 @@ from sklearn.preprocessing import OneHotEncoder
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, SISBEN_BOG, construir_celda
 from src.utils.azure_storage import leer_bytes
 from src.utils.variables_canonicas import es_menor, normalizar_llave
-from src.validacion.comparar_celdas_hotdeck_vivienda import RECEPTOR, _evaluar, delta_frechet
+from src.validacion.comparar_celdas_hotdeck_vivienda import PAREDES, RECEPTOR, _evaluar, delta_placebo
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -82,6 +91,9 @@ MAPAS = {
 CANDIDATAS = ["tipo_viv", "tenencia", "dormitorios", "energia", "gas", "recoleccion", "sanitario", "sanit_excl", "agua",
               "cocina", "conyuge", "menores", "mayores"]
 DEBILES = [c for c in CANDIDATAS if c != "menores"]  # las que, una a una, aportan poco
+# Variables del esquema canónico que no están en la celda (homologadas en `armonizacion/`).
+CANONICAS = ["zona", "paredes", "sexo"]
+EXCLUIDAS = CANONICAS + DEBILES  # todo lo que quedó fuera de la celda final
 
 
 def _mapa(serie: pd.Series, mapa: dict) -> pd.Series:
@@ -203,7 +215,7 @@ def main() -> None:
         rec[c] = normalizar_llave(rec[c])
     rec = rec.merge(candidatas_geih(), on=LLAVE_GEIH, how="left")
     don = pd.read_parquet(SISBEN_BOG, columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion", "llave_hogar_sisben", "fuente",
-                                               "llave_directorio", "llave_hogar"])
+                                               "llave_directorio", "llave_hogar", "geo_zona", "viv_paredes", "jefe_sexo"])
     don = don[don["Clasificacion"].notna()].reset_index(drop=True)
     bog = don["fuente"].str.startswith("sdp")
     d_n = don[~bog].merge(candidatas_sisben_nacional(), on="llave_hogar_sisben", how="left")
@@ -212,41 +224,74 @@ def main() -> None:
     logger.info("Receptores con candidatas: %.4f | donantes nacional %.4f, Bogotá %.4f", rec["tipo_viv"].notna().mean(),
                 d_n["tipo_viv"].notna().mean(), d_b["tipo_viv"].notna().mean())
 
+    # Canónicas fuera de la celda: zona (1 = cabecera en las tres fuentes), paredes por la escala común
+    # de `comparar_celdas_hotdeck_vivienda` y sexo del jefe (2 = mujer en las dos fuentes).
+    for df, fuente in ((rec, "geih"), (don, "sisben")):
+        df["zona"] = np.where(df["geo_zona"].astype(str).str.strip() == "1", "cabecera", "resto")
+        df["paredes"] = df["viv_paredes"].astype(str).map(PAREDES[fuente]).fillna("NA")
+        df["sexo"] = df["jefe_sexo"].astype(str).str.strip().map({"1": "hombre", "2": "mujer"}).fillna("NA")
+    d_n, d_b = don[~don["fuente"].str.startswith("sdp")], don[don["fuente"].str.startswith("sdp")]
+
     w = pd.to_numeric(rec["fex"], errors="coerce").fillna(0)
     print("\n=== Filtro de homologación: distribución por fuente (GEIH ponderada | Sisbén nacional | Sisbén Bogotá)")
-    for c in CANDIDATAS:
+    for c in CANONICAS + CANDIDATAS:
         a = (w.groupby(rec[c]).sum() / w.sum()).round(3).to_dict()
         b = d_n[c].value_counts(normalize=True).round(3).to_dict()
         e = d_b[c].value_counts(normalize=True).round(3).to_dict()
         print(f"{c}: {a} | {b} | {e}")
 
-    # Celda vigente (con personas y menores) y la anterior con solo personas, para medir qué aporta cada candidata.
-    base_r = construir_celda(rec, incluir_menores=False).reset_index(drop=True)
-    base_d = construir_celda(don, edad_en_codigos=True, incluir_menores=False).reset_index(drop=True)
     filas = []
 
-    def evaluar(nombre: str, cr: pd.Series, cd: pd.Series) -> None:
-        fila = _evaluar(nombre, cr.reset_index(drop=True), cd.reset_index(drop=True), rec, don)
-        fila["delta_frechet"] = delta_frechet(cr.reset_index(drop=True), cd.reset_index(drop=True), rec, don)
+    def evaluar(fase: str, nombre: str, base_r: pd.Series, base_d: pd.Series,
+                xr: pd.Series | None = None, xd: pd.Series | None = None) -> None:
+        """Evalúa la celda base o, con (xr, xd), la base más esa variable y su
+        placebo: la variable barajada dentro de cada celda base (lo que se
+        gana solo por partir la celda)."""
+        cr, cd = (base_r, base_d) if xr is None else (base_r + "|" + xr, base_d + "|" + xd)
+        fila = _evaluar(nombre, cr, cd, rec, don)
+        fila["fase"] = fase
+        if xr is not None:
+            fila["delta_frechet_placebo"] = delta_placebo(base_r, xr, base_d, xd, rec, don)
         filas.append(fila)
-        logger.info("%s: delta %.4f | pequeñas %.2f %%", nombre, fila["delta_frechet"], fila["pct_hogares_celda_menos_30_donantes"])
+        logger.info("%s %s: delta %.4f (placebo %.4f) | pequeñas %.2f %%", fase, nombre, fila["delta_frechet"],
+                    fila.get("delta_frechet_placebo", np.nan), fila["pct_hogares_celda_menos_30_donantes"])
 
-    evaluar("oficial_sin_menores", base_r, base_d)
-    evaluar("oficial", construir_celda(rec).reset_index(drop=True), construir_celda(don, edad_en_codigos=True).reset_index(drop=True))
+    def var(df: pd.DataFrame, c: str) -> pd.Series:
+        return df[c].fillna("NA").astype(str).reset_index(drop=True)
+
+    # Fase 1: sobre la celda sin menores, qué aporta cada candidata (así entró menores).
+    base_r = construir_celda(rec, incluir_menores=False).reset_index(drop=True)
+    base_d = construir_celda(don, edad_en_codigos=True, incluir_menores=False).reset_index(drop=True)
+    f1 = "1_sobre_celda_sin_menores"
+    evaluar(f1, "oficial_sin_menores", base_r, base_d)
     for c in CANDIDATAS:
-        evaluar(f"+{c}", base_r + "|" + rec[c].fillna("NA").astype(str).reset_index(drop=True),
-                base_d + "|" + don[c].fillna("NA").astype(str).reset_index(drop=True))
+        evaluar(f1, f"+{c}", base_r, base_d, var(rec, c), var(don, c))
     for nombre, variables in (("todas", CANDIDATAS), ("debiles_sin_menores", DEBILES)):
         for cortes in (3, 5):
             pr, pdn, auc = puntaje(don, rec, variables, cortes)
-            evaluar(f"+puntaje_{nombre}_{cortes}", base_r + "|" + pr, base_d + "|" + pdn)
+            evaluar(f1, f"+puntaje_{nombre}_{cortes}", base_r, base_d, pr, pdn)
             filas[-1]["auc_puntaje"] = auc
-    tabla = pd.DataFrame(filas).set_index("celda")
+
+    # Fase 2: sobre la celda final, qué aportaría cada variable que quedó fuera (tabla de excluidas).
+    fin_r = construir_celda(rec).reset_index(drop=True)
+    fin_d = construir_celda(don, edad_en_codigos=True).reset_index(drop=True)
+    f2 = "2_sobre_celda_final"
+    evaluar(f2, "oficial", fin_r, fin_d)
+    for c in EXCLUIDAS:
+        evaluar(f2, f"+{c}", fin_r, fin_d, var(rec, c), var(don, c))
+    for cortes in (3, 5):
+        pr, pdn, auc = puntaje(don, rec, EXCLUIDAS, cortes)
+        evaluar(f2, f"+puntaje_excluidas_{cortes}", fin_r, fin_d, pr, pdn)
+        filas[-1]["auc_puntaje"] = auc
+
+    tabla = pd.DataFrame(filas).set_index(["fase", "celda"])
     cols = ["celdas_con_receptores", "pct_hogares_celda_exacta", "pct_hogares_celda_menos_30_donantes",
-            "corr_p_t_celda_pobre_monetario", "delta_frechet", "cumple_umbrales", "pct_grupo_A", "pct_grupo_D"]
+            "corr_p_t_celda_pobre_monetario", "delta_frechet", "delta_frechet_placebo", "cumple_umbrales"]
     pd.set_option("display.width", 250)
-    print("\n=== Candidatas sobre la celda sin menores (depto + edad + cuartos + pisos + personas) ===")
-    print(tabla.sort_values("delta_frechet")[cols].round(4).to_string())
+    for fase, titulo in ((f1, "Fase 1: candidatas sobre la celda sin menores (depto + edad + cuartos + pisos + personas)"),
+                         (f2, "Fase 2: variables excluidas sobre la celda final (+ menores)")):
+        print(f"\n=== {titulo} ===")
+        print(tabla.loc[fase].sort_values("delta_frechet")[cols].round(4).to_string())
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     tabla.to_csv(REPORT)
     print(f"\nGuardado: {REPORT}")

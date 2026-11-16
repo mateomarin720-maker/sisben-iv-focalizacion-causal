@@ -52,7 +52,7 @@ no usan el Hot-Deck ni la simulación.
 **Datos.** 290.968 hogares de la GEIH 2024, ponderados con `fex` (≈17,9 millones
 de hogares, ≈4,84 millones pobres por ingreso). El resultado principal es
 `POBRE_MONETARIO`. Se contrastó con la pobreza extrema, con la clasificación
-oficial del DANE (24 departamentos) y con el IPM-GEIH.
+oficial del DANE (23 departamentos y Bogotá) y con el IPM-GEIH.
 
 **Modelos anidados.** Cada uno agrega información al anterior:
 
