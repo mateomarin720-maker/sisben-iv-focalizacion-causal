@@ -107,7 +107,7 @@ def cotas_por_celda() -> Path:
     ax.set_yticks([-1, -0.5, 0, 0.5, 1])
     _coma(ax, dec=1)
     ax.set_title("El intervalo del DML es mucho más estrecho que lo que los datos permiten")
-    ax.legend(loc="lower left", fontsize=8)
+    ax.legend(loc="lower left", fontsize=8, frameon=True, facecolor=FONDO, edgecolor="none", framealpha=0.95)
     return _guardar(fig, "fig_cotas_por_celda.png")
 
 
@@ -139,14 +139,20 @@ def atenuacion() -> Path:
     s = pd.read_csv(R / "simulacion_semisintetica_resumen.csv")
     s = s[(s["escenario"] == "confusion_observada") & (s["outcome"] == "log_ingreso")]
     frac = {"hotdeck": 0.0, "vinculo_parcial_50": 0.5, "oraculo": 1.0}
-    tau = s["efecto_verdadero"].mean()
+    tau, reps = s["efecto_verdadero"].mean(), int(s["reps"].max())
+    # Sesgo propio de LinearDML con pocos hogares por celda: su estimación con efecto nulo
+    nulo = pd.read_csv(R / "simulacion_semisintetica_resumen.csv")
+    nulo = nulo[(nulo["escenario"] == "efecto_nulo") & (nulo["outcome"] == "log_ingreso")
+                & (nulo["estimador"] == "linear_dml")]["estimacion"].mean()
     fig, ax = plt.subplots(figsize=(5.6, 3.6))
     ax.plot([0, 1], [0, tau], color=TENUE, linewidth=1.5, linestyle="--", label="L × efecto verdadero")
+    ax.plot([0, 1], [nulo, tau + nulo], color=NARANJA, linewidth=1, linestyle=":", alpha=0.8,
+            label=f"L × efecto + sesgo con efecto nulo ({nulo:+.3f})".replace(".", ",").replace("-", "−"))
     for est, color, nom in [("regresion_efectos_fijos", AZUL, "Regresión con efectos fijos"),
                             ("linear_dml", NARANJA, "LinearDML")]:
         g = s[s["estimador"] == est].assign(L=lambda t: t["vinculo"].map(frac)).sort_values("L")
         ax.errorbar(g["L"], g["estimacion"], yerr=1.96 * g["mcse_sesgo"], color=color, marker="o", markersize=6,
-                    linewidth=2, capsize=0, label=nom)
+                    linewidth=0, elinewidth=2, capsize=0, label=nom)
     ax.axhline(0, color=TINTA_2, linewidth=0.8)
     ax.set_xticks([0, 0.5, 1], ["0\n(Hot-Deck)", "0,5", "1\n(vínculo hogar a hogar)"])
     ax.set_xlabel("Fracción de hogares bien vinculados (L)")
@@ -155,7 +161,7 @@ def atenuacion() -> Path:
     ax.set_title("La estimación cae en proporción al vínculo faltante*")
     ax.legend(loc="upper left", fontsize=8)
     fig.text(0.01, -0.1, "* Resultado simulado: efecto verdadero fijado en la simulación semisintética "
-             f"({tau:.3f}; 432 repeticiones, confusión observada).".replace(".", ",", 1), fontsize=7, color=TINTA_2)
+             f"({tau:.3f}; {reps} repeticiones, confusión observada).".replace(".", ",", 1), fontsize=7, color=TINTA_2)
     return _guardar(fig, "fig_atenuacion.png")
 
 
@@ -401,7 +407,7 @@ def dag_ignorabilidad_hotdeck() -> Path:
     pos = {"U": (0.50, 1.00), "C": (0.00, 0.55), "T": (0.50, 0.55), "Y": (1.00, 0.55),
            "Td": (0.00, 0.08), "Ti": (0.00, -0.40)}
     etiqueta = {"U": "U\nCapacidad de generar\ningresos",
-                "C": "C\nCelda del Hot-Deck\n(departamento, ciclo de vida,\ncuartos, pisos)",
+                "C": "C\nCelda del Hot-Deck\n(departamento, ciclo de vida,\ncuartos, pisos,\npersonas, menores)",
                 "T": "T\nElegibilidad A/B\nverdadera del hogar",
                 "Y": "Y\nPobreza y bienestar\n(GEIH)",
                 "Td": "T$_d$\nGrupo del donante\n(misma celda, Sisbén)",
