@@ -2,6 +2,19 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-18 (49) — Enlace fraccional por hogar en el banco de datos; metodología de la FHDI
+
+### Agregado
+- **`src/emparejamiento/fhdi/enlace.py`** (fase 1): guarda por hogar GEIH la probabilidad de
+  cada grupo del Sisbén en su celda (`data/2_models/geih_sisben_fhdi_2024.parquet`, 290.968
+  hogares) y la publica en Azure. Verifica que la celda sea la misma de la fusionada del Hot-Deck.
+- **`docs/metodologia/METODOLOGIA_FHDI.md`:** reglas, fórmulas, decisiones con su porqué,
+  propiedades y plan por fases, para llevar a la tesis. Incluye un resultado preliminar*: con
+  vínculo parcial, imputar la probabilidad de la celda en vez de sortear no atenúa el efecto
+  (la regresión con efectos fijos recupera τ, no L·τ); se comprueba en la fase 2 con los
+  estimadores del módulo de simulación.
+- 296 pruebas; 73 de 73 mutaciones detectadas.
+
 ## 2026-11-18 (48) — Imputación fraccional (FHDI) como módulo adicional del enlace
 
 ### Agregado

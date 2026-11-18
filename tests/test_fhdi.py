@@ -121,3 +121,21 @@ def test_jackknife_de_una_media():
     r, se = razon_jackknife(w, a, np.ones_like(a), asignar_grupos(len(a)))
     assert abs(r - a.mean()) < 1e-12
     assert 0.7 < se / (a.std() / np.sqrt(len(a))) < 1.3
+
+
+def test_tabla_de_enlace_por_hogar(datos):
+    """El archivo que leen los demás módulos: una fila por hogar en su
+    orden, probabilidades que suman 1, A/B = A + B, y FEFI de su celda."""
+    from src.emparejamiento.fhdi.enlace import tabla_enlace
+    rec, don = datos
+    rec = rec.assign(llave_hogar=[f"h{i}" for i in range(len(rec))])
+    t = tabla_enlace(rec, don)
+    assert len(t) == len(rec) and (t["llave_hogar"] == rec["llave_hogar"]).all()
+    p = t[[f"fhdi_p_{g}" for g in "ABCD"]].to_numpy()
+    assert np.allclose(p.sum(axis=1), 1)
+    assert np.allclose(t["fhdi_p_AB"], p[:, 0] + p[:, 1])
+    pi, nivel = reglas.probabilidades(rec, don)
+    assert np.allclose(p, pi) and (t["fhdi_nivel"].to_numpy() == nivel).all()
+    exactos = t["fhdi_nivel"] == "celda_exacta"
+    tam = construir_celda(don, edad_en_codigos=True).value_counts()
+    assert (t.loc[exactos, "fhdi_donantes_celda"].to_numpy() == tam.loc[t.loc[exactos, "_hotdeck_celda"]].to_numpy()).all()

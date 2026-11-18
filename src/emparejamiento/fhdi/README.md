@@ -51,6 +51,7 @@ cambia es que cada hogar lleva cuánto se sabe de su grupo, sin ruido.
 | `reglas.py` | Nivel de la cadena, donantes fraccionales calibrados, FEFI y contraste placebo con pesos |
 | `varianza.py` | Jackknife de grupos eliminados para razones ponderadas |
 | `validacion.py` | Acierto del enlace dentro del Sisbén (20 % de hogares con el grupo escondido): sorteo, moda, FHDI, FEFI |
+| `enlace.py` | Paso del pipeline: guarda por hogar la probabilidad de cada grupo (`data/2_models/geih_sisben_fhdi_2024.parquet`) y la publica en Azure |
 | `__main__.py` | Corrida con el banco de Azure (en memoria) y comparación con el Hot-Deck |
 
 ## Uso
@@ -65,4 +66,11 @@ reportes de `variabilidad_hotdeck` y `errores_focalizacion_frechet` de
 `docs/reports/`. Tarda unos 4 minutos. Salidas: `docs/reports/fhdi.txt`,
 `fhdi_validacion.csv`, `fhdi_comparacion.csv`, `fhdi_placebo.csv`.
 Resultados: `docs/resultados/1_datos_y_enlace/RESULTADOS_FHDI.md`.
-Pruebas: `tests/test_fhdi.py`.
+Pruebas: `tests/test_fhdi.py`. Metodología completa, decisiones y plan por fases:
+`docs/metodologia/METODOLOGIA_FHDI.md`.
+
+El enlace por hogar se genera aparte:
+
+```bash
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.emparejamiento.fhdi.enlace --publicar
+```

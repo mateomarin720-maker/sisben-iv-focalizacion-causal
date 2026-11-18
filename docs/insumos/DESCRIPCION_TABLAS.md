@@ -13,6 +13,7 @@ Conteos de filas: última ejecución registrada en [`RESUMEN_AVANCES.md`](../seg
 | `sisben_bogota_estandarizado.parquet` | un hogar del Sisbén IV de Bogotá (SDP) | 1.458.468 | `llave_hogar_sisben` | `src/armonizacion/armonizar_sisben_bogota_sdp.py` |
 | `sisben_estandarizado_2024_con_bogota.parquet` | un hogar del Sisbén: nacional con Bogotá (SDP) en lugar del municipio 11001 | 3.290.379 | `llave_hogar_sisben` | `src/armonizacion/armonizar_sisben_bogota_sdp.py` (fusión) |
 | `geih_sisben_fusionado_2024.parquet` | un hogar GEIH con el grupo Sisbén asignado por Hot-Deck | 290.968 | igual que `geih_estandarizado_2024` | `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py` |
+| `geih_sisben_fhdi_2024.parquet` | un hogar GEIH con la probabilidad de cada grupo del Sisbén en su celda (imputación fraccional) | 290.968 | igual que `geih_estandarizado_2024` | `src/emparejamiento/fhdi/enlace.py` |
 
 Todas las tablas tienen una fila por **hogar**, no por persona: el Sisbén y el GEIH traen varias personas por hogar, y se conserva solo al jefe. Los miembros del mismo hogar no son hogares distintos.
 
@@ -94,3 +95,18 @@ Es `geih_estandarizado_2024` más lo que agrega el Hot-Deck:
 | `_hotdeck_celda` | Celda del hogar receptor (departamento y ciclo de vida del jefe) |
 
 Esta tabla **no identifica al mismo hogar** en las dos fuentes: el emparejamiento solo es válido a nivel poblacional. Ver [`DICCIONARIO_HOTDECK.md`](DICCIONARIO_HOTDECK.md).
+
+## `geih_sisben_fhdi_2024.parquet`
+
+Enlace fraccional (FHDI): en vez del grupo de un donante sorteado, la probabilidad de cada grupo en la celda del hogar, con la misma celda y cadena de respaldos del Hot-Deck. Metodología en [`METODOLOGIA_FHDI.md`](../metodologia/METODOLOGIA_FHDI.md).
+
+| Columna | Significado |
+|---|---|
+| `llave_directorio`, `llave_secuencia_p`, `llave_hogar`, `mes` | Llave del hogar GEIH |
+| `_hotdeck_celda` | Celda exacta, la misma de la fusionada del Hot-Deck |
+| `fhdi_nivel` | Nivel de la cadena de respaldos usado (`celda_exacta`, `sin_menores`, …, `pool_nacional`) |
+| `fhdi_p_A` … `fhdi_p_D` | Probabilidad de cada grupo en la celda (suman 1) |
+| `fhdi_p_AB` | Probabilidad de A o B (el tratamiento T del proyecto) |
+| `fhdi_donantes_celda` | Donantes del Sisbén en la celda usada |
+
+Como la fusionada, no identifica al mismo hogar en las dos fuentes.

@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-18: 72 de 72 mutaciones detectadas.
+Resultado del 2026-11-18: 73 de 73 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -213,6 +213,9 @@ MUTACIONES = [
     ("FHDI: sorteo de donantes sin estratificar por grupo", "src/emparejamiento/fhdi/reglas.py",
      "cupo = cupos_por_grupo(np.bincount(g_pool, minlength=len(GRUPOS)), m)",
      "cupo = np.bincount(rng.choice(g_pool, size=min(m, len(g_pool)), replace=False), minlength=len(GRUPOS))",
+     "tests/test_fhdi.py"),
+    ("FHDI: probabilidad de A/B con otros grupos en el enlace guardado", "src/emparejamiento/fhdi/enlace.py",
+     'out["fhdi_p_AB"] = pi[:, list(reglas.ELEGIBLE)].sum(axis=1)', 'out["fhdi_p_AB"] = pi[:, [0, 2]].sum(axis=1)',
      "tests/test_fhdi.py"),
 ]
 

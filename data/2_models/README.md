@@ -18,6 +18,10 @@ estimación.
   GEIH con `Grupo/Nivel/Clasificacion_hotdeck`, celda
   depto+edad+cuartos de vivienda
   (`src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py`).
+- `geih_sisben_fhdi_2024.parquet` — enlace fraccional (FHDI): por hogar GEIH,
+  la probabilidad de cada grupo del Sisbén en su celda, con la misma celda
+  y cadena de respaldos del Hot-Deck (`src/emparejamiento/fhdi/enlace.py`;
+  `docs/metodologia/METODOLOGIA_FHDI.md`).
 
 **Preprocesamiento y estimación**
 - `muestra_estimacion_2024.parquet` — tabla final a nivel hogar: outcome
