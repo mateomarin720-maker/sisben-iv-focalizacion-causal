@@ -65,6 +65,7 @@ doble de heterogeneidad del efecto.
 | Pobreza monetaria y contraste oficial | `src/indicadores/pobreza_monetaria_geih.py`, `src/3b_preprocesamiento_monetario.py`, `src/validacion/comparar_pobreza_monetaria_oficial.py` | [`RESULTADOS_POBREZA_MONETARIA.md`](1_datos_y_enlace/RESULTADOS_POBREZA_MONETARIA.md) |
 | Representatividad del Sisbén | `src/validacion/verificar_representatividad_sisben.py` | [`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`](1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md) |
 | Variabilidad de la imputación | `src/diagnostico/variabilidad_hotdeck.py` | [`RESULTADOS_VARIABILIDAD_HOTDECK.md`](1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md) |
+| Imputación fraccional (FHDI), alternativa al sorteo | `src/emparejamiento/fhdi/` | [`RESULTADOS_FHDI.md`](1_datos_y_enlace/RESULTADOS_FHDI.md) |
 
 **Hot-Deck.** 290.968 hogares GEIH, 3.106.489 donantes del Sisbén
 (nacional y Bogotá vigente). Celda: departamento, ciclo de vida del jefe,

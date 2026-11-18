@@ -17,7 +17,8 @@ Comandos de reproducción y orden de ejecución: `CLAUDE.md` (sección
 | `2_limpieza.py` | Limpieza de las tablas del IPM: tipos, duplicados y faltantes |
 | `ingesta/` | Lectores de la GEIH (12 meses, CSV o `.DTA`, Latin-1), del Sisbén y de portales Socrata |
 | `armonizacion/` | Lleva la GEIH, el Sisbén nacional y el Sisbén de Bogotá (SDP) a un esquema canónico por hogar |
-| `emparejamiento/` | Hot-Deck por celdas (departamento, ciclo de vida del jefe, cuartos, nivel de pisos) con cadena de respaldos. Vincula solo a nivel de celda |
+| `emparejamiento/` | Hot-Deck por celdas (departamento, ciclo de vida del jefe, cuartos, nivel de pisos, personas, menores) con cadena de respaldos. Vincula solo a nivel de celda |
+| `emparejamiento/fhdi/` | Imputación fraccional (FHDI) sobre la misma celda, sin modificar el Hot-Deck: 10 donantes por hogar con pesos calibrados, FEFI, jackknife y validación del acierto del enlace dentro del Sisbén |
 | `indicadores/` | Pobreza monetaria reconstruida con la metodología del DANE, reglas de las 8 privaciones del IPM-GEIH (`ipm_proxy.py`, definición oficial por zona), homologación del IPM e inventarios de variables de la GEIH |
 | `3_preprocesamiento.py` | Outcome IPM-GEIH (8 de 15 privaciones) y muestra de estimación |
 | `3b_preprocesamiento_monetario.py` | Pega la pobreza monetaria a la muestra de estimación |

@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-18: 70 de 70 mutaciones detectadas.
+Resultado del 2026-11-18: 72 de 72 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -208,6 +208,12 @@ MUTACIONES = [
     ("Azure: sincronización por tamaño, no por contenido (error del 2026-11-18)", "src/utils/azure_storage.py",
      "return bytes(md5_azure) == _md5(archivo)", "return blob.size == archivo.stat().st_size",
      "tests/test_azure_storage.py"),
+    ("FHDI: pesos fraccionales sin calibrar a la celda", "src/emparejamiento/fhdi/reglas.py",
+     "peso = pi[rec, grupo] / conteo[rec, grupo]", "peso = np.ones(len(rec))", "tests/test_fhdi.py"),
+    ("FHDI: sorteo de donantes sin estratificar por grupo", "src/emparejamiento/fhdi/reglas.py",
+     "cupo = cupos_por_grupo(np.bincount(g_pool, minlength=len(GRUPOS)), m)",
+     "cupo = np.bincount(rng.choice(g_pool, size=min(m, len(g_pool)), replace=False), minlength=len(GRUPOS))",
+     "tests/test_fhdi.py"),
 ]
 
 resultados = []

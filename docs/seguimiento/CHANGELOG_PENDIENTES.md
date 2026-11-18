@@ -2,6 +2,27 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-18 (48) — Imputación fraccional (FHDI) como módulo adicional del enlace
+
+### Agregado
+- **`src/emparejamiento/fhdi/`:** imputación fraccional sobre la misma celda y cadena de
+  respaldos del Hot-Deck, sin modificarlo. 10 donantes por hogar, sorteados sin reemplazo y
+  estratificados por grupo, con pesos calibrados a la proporción de cada grupo en la celda (Kim y
+  Fuller, 2004); FEFI; jackknife de grupos; validación del acierto del enlace dentro del Sisbén.
+  Lee el banco de Azure en memoria. Resultados en `RESULTADOS_FHDI.md`:
+  - Techo del enlace por celda (moda): 80,5 % en A/B y 55,2 % en el grupo dentro del Sisbén
+    (78,4 % ponderado por la GEIH), frente a 73,0 % y 44,0 % del sorteo. La moda distorsiona la
+    proporción de A/B por departamento (13,5 pp); la FHDI no acierta más por hogar pero está
+    calibrada (0,002), con la mitad del error cuadrático del sorteo y 0,58 pp por departamento.
+  - Sobre la GEIH reproduce la media de los 100 sorteos (≤ 0,02 pp) en una corrida; sus errores
+    de exclusión e inclusión son el valor con independencia de `errores_focalizacion_frechet`
+    (33,76 % y 59,94 %), dentro de las mismas cotas de Fréchet.
+  - Contraste placebo 0 exacto (Proposición 1 sin el ruido del sorteo).
+  - Ninguna conclusión de la tesis cambia.
+- Con un sorteo simple de 10 donantes, en el 37 % de los hogares (datos de prueba) algún grupo
+  no salía y la calibración no era exacta; por eso el sorteo es estratificado.
+- 295 pruebas; 72 de 72 mutaciones detectadas.
+
 ## 2026-11-18 (47) — Banco de datos de Azure al día; DAG de la Proposición 1 y de la simulación
 
 ### Corregido
