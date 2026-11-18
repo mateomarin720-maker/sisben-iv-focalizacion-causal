@@ -2,6 +2,24 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-18 (47) — Banco de datos de Azure al día; DAG de la Proposición 1 y de la simulación
+
+### Corregido
+- **`2_models` de Azure estaba en la versión del 2026-11-02.** La sincronización omitía todo
+  archivo con el mismo tamaño que el de Azure, sin avisar. Comparado en memoria: la fusionada y
+  las muestras de estimación no tenían `hog_num_menores`, su Hot-Deck era de la celda anterior
+  (grupo, nivel y celda distintos) y la muestra tenía el IPM sin la corrección rural del 11-nov
+  (`POBRE_GEIH`, hacinamiento, acueducto, alcantarillado). Las filas coincidían. `azure_storage`
+  compara ahora el MD5 y lo guarda al subir; `2_models` publicado de nuevo y verificado (14 de 14
+  iguales). En `1_processed`, la GEIH mensual de Azure solo difiere en `_ingestion_timestamp`.
+  Prueba en `tests/test_azure_storage.py` y su mutación.
+- 287 pruebas; 70 de 70 mutaciones detectadas.
+
+### Agregado
+- **DAG de la simulación** (`fig_dag_simulacion.png`, sección 6.1 del documento) con la paleta de
+  las demás figuras, y el de la Proposición 1 reacomodado (T̃ debajo de Y, sin flecha entre
+  ellos). Los dos comprueban por d-separación lo que dice su nota.
+
 ## 2026-11-16 (46) — Variables descartadas evaluadas sobre la celda final; conteo de departamentos
 
 ### Corregido

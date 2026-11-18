@@ -19,6 +19,8 @@
                                 grupo imputado es independiente de Y. Los dos DAG
                                 van en formato APA (sin título en la imagen) y
                                 comprueban con d-separación su nota
+  fig_dag_simulacion.png        DAG del generador de la simulación (sección 6.1):
+                                qué confunde la asignación según γ
   fig_nubes_celda_placebo.png   ilustración simulada* de la Proposición 1: en
                                 una celda, las nubes por T se separan y por T~
                                 son iguales
@@ -317,6 +319,22 @@ def grafo_ignorabilidad_hotdeck():
     return g
 
 
+def grafo_simulacion(gamma: bool = True):
+    """DAG del generador semisintético (sección 6.1), con la notación del
+    documento: C celda, X modificadores del efecto τ(X) (zona, sexo del jefe,
+    paredes), U residuo del ingreso real, Y0 ingreso real, T el tratamiento
+    simulado (sorteo o corte del puntaje), T_d y T~ los del Hot-Deck.
+    Es el mismo grafo de `4_dag_identificacion.grafo_simulacion`."""
+    import networkx as nx
+
+    g = nx.DiGraph()
+    g.add_edges_from([("C", "T"), ("X", "T"), ("C", "Td"), ("Td", "Ti"), ("C", "Y0"), ("X", "Y0"),
+                      ("U", "Y0"), ("Y0", "Y"), ("T", "Y"), ("X", "Y")])
+    if gamma:
+        g.add_edge("U", "T")
+    return g
+
+
 def _puerta_trasera(g, t: str, y: str, ajuste: set[str]) -> bool:
     import networkx as nx
 
@@ -404,8 +422,9 @@ def dag_ignorabilidad_hotdeck() -> Path:
     assert nx.is_d_separator(g, {"Ti"}, {"Y"}, {"C"}), "T~ debería ser independiente de Y dada C"
     assert not nx.is_d_separator(g, {"Ti"}, {"Y"}, set()), "sin C, T~ y Y deberían estar asociadas"
     assert not _puerta_trasera(g, "T", "Y", {"C"}), "U debería dejar abierta la puerta trasera de T"
+    # T̃ queda debajo de Y, sin flecha entre ellos: el único camino es por C.
     pos = {"U": (0.50, 1.00), "C": (0.00, 0.55), "T": (0.50, 0.55), "Y": (1.00, 0.55),
-           "Td": (0.00, 0.08), "Ti": (0.00, -0.40)}
+           "Td": (0.00, 0.00), "Ti": (1.00, 0.00)}
     etiqueta = {"U": "U\nCapacidad de generar\ningresos",
                 "C": "C\nCelda del Hot-Deck\n(departamento, ciclo de vida,\ncuartos, pisos,\npersonas, menores)",
                 "T": "T\nElegibilidad A/B\nverdadera del hogar",
@@ -416,7 +435,36 @@ def dag_ignorabilidad_hotdeck() -> Path:
                         abiertos={("U", "T"), ("U", "Y")}, etiqueta_abiertos="Puerta trasera de T que C no bloquea",
                         bloqueados={("C", "Td"), ("Td", "Ti"), ("C", "Y")},
                         etiqueta_bloqueados="Único camino entre T̃ e Y: pasa por C",
-                        imputado={"Ti"}, curva={("C", "Y"): -0.32})
+                        imputado={"Ti"}, curva={("C", "Y"): 0.30}, tam=(7.6, 5.0))
+
+
+def dag_simulacion() -> Path:
+    """DAG del generador de la simulación (sección 6.1). Comprueba con
+    d-separación lo que dice su nota: con γ = 0, C y X bastan para
+    identificar el efecto de T; con γ > 0, no; y T~ es independiente de Y
+    dada C."""
+    import networkx as nx
+
+    g = grafo_simulacion()
+    assert _puerta_trasera(grafo_simulacion(gamma=False), "T", "Y", {"C", "X"}), "con γ = 0, C y X deberían bastar"
+    assert not _puerta_trasera(g, "T", "Y", {"C", "X"}), "con γ > 0, U debería dejar abierta la puerta trasera"
+    assert nx.is_d_separator(g, {"Ti"}, {"Y"}, {"C"}), "T~ debería ser independiente de Y dada C"
+    # Misma fila central que el DAG de la Proposición 1: C → T → Y.
+    pos = {"U": (0.50, 1.05), "Y0": (1.00, 1.05),
+           "C": (0.00, 0.55), "T": (0.50, 0.55), "Y": (1.00, 0.55),
+           "Td": (0.00, 0.05), "Ti": (0.50, 0.05), "X": (1.00, 0.05)}
+    etiqueta = {"C": "C\nCelda del Hot-Deck",
+                "X": "X\nModificadores del efecto\n(zona, sexo del jefe, paredes)",
+                "U": "U\nResiduo del\ningreso real",
+                "Td": "T$_d$\nGrupo del donante\n(misma celda)",
+                "T": "T*\nTratamiento simulado\n(sorteo o corte del puntaje)",
+                "Y0": "Y(0)\nIngreso real\n(GEIH)",
+                "Ti": "T̃\nGrupo imputado\npor el Hot-Deck",
+                "Y": "Y*\nY(0) + τ(X)·T*"}
+    return _dibujar_dag(g, pos, etiqueta, "fig_dag_simulacion.png", no_observado={"U"},
+                        abiertos={("U", "T")}, etiqueta_abiertos="Confusión no observada: solo con γ > 0",
+                        bloqueados={("T", "Y")}, etiqueta_bloqueados="Efecto verdadero τ(X) que se busca recuperar",
+                        imputado={"Ti"}, curva={("X", "Y0"): 0.45}, tam=(7.8, 5.4))
 
 
 def nubes_celda(efecto: float = 0.8, n: int = 90, semilla: int = 7) -> Path:
@@ -526,7 +574,7 @@ def main(con_datos: bool = True) -> None:
     _estilo()
     rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), estabilidad_hotdeck(),
              importancia_oe1(), dag_ignorabilidad_marco(),
-             dag_ignorabilidad_hotdeck(), nubes_celda(), dml_tres_pasos()]
+             dag_ignorabilidad_hotdeck(), dag_simulacion(), nubes_celda(), dml_tres_pasos()]
     if con_datos:
         rutas.append(propension_celda())
     print("\n".join(f"Guardado: {r}" for r in rutas))

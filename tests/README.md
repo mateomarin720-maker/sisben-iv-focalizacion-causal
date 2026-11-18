@@ -1,6 +1,6 @@
 # Pruebas
 
-283 pruebas en 26 archivos (2026-11-15). Casi todas usan datos
+287 pruebas en 27 archivos (2026-11-18). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -45,6 +45,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_variables_canonicas.py` | `utils/variables_canonicas.py` | Llaves con formatos distintos ("01", "1.0", " 1 "); jefe por fuente; cortes del ciclo de vida de `PER002`; menor de 18 en años (17 sí, 18 no) y en ciclo de vida (1-3 sí, 4 no); GEIH y Sisbén en los mismos tramos del Hot-Deck | `mes` "01" frente a "1" (2026-11-02); celdas que no empatan entre fuentes |
 | `test_ingesta_y_validacion.py` | `ingesta/geih_loader.py`, `validacion/comparar_pobreza_monetaria_oficial.py`, `4_dag_identificacion.py` | Los 8 módulos de los 12 meses con las variantes reales ("No ocupado" en marzo, agosto desde `.DTA`, carpetas vacías); Latin-1; cruce uno a uno con la base oficial; chequeos de identificación de los cinco DAG (placebo del Hot-Deck, registro en el Sisbén, confusión de la simulación) | Meses incompletos sin aviso; cruce vacío con la base oficial |
 | `test_hotdeck_celda.py` | `emparejamiento/…` | Celda con nivel de pisos y tramos de personas y menores, igual entre fuentes; cadena de respaldos en orden (`sin_menores` → `sin_personas` → `sin_pisos` → …); falla si falta una columna de la celda | Celda que cae al respaldo sin avisar; tramo de personas corrido |
+| `test_azure_storage.py` | `utils/azure_storage.py` | La sincronización vuelve a subir un archivo con el mismo tamaño y otro contenido (MD5); sin MD5, el que cambió de tamaño o es más reciente; no sube el idéntico | `2_models` de Azure en la versión del 2026-11-02 (sin `hog_num_menores` ni el IPM rural corregido) hasta el 2026-11-18 |
 | `test_local_csv_parser.py` | `ingesta/local_csv_parser.py` | Códigos de `.DTA` como "1", no "1.0" | Agosto con `POBRE_GEIH` 6,9 % (hasta 2026-11-02) |
 | `test_validar_ipm_geih_ecv.py` | `indicadores/ipm_proxy.py`, `validacion/validar_ipm_geih_ecv.py` | Reglas del proxy (sin y con todas las privaciones, nivel 99), vivienda con la definición oficial por zona (excretas, agua, hacinamiento), jefe no ocupado privado en la ECV como en la GEIH, concordancia ponderada y kappa | Campo con la regla urbana de alcantarillado; jefe no ocupado de la ECV contado como cotizante |
 | `test_preprocesamiento.py` | `3_preprocesamiento.py` | IPM-GEIH con enero real: una fila por hogar, privaciones binarias sin faltantes, puntaje = suma, umbrales monótonos (se salta sin los datos) | |

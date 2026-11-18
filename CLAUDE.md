@@ -152,6 +152,14 @@ abierta y recomendación, no como conclusión causal). Reglas del tutor:
   celda o el tamaño de una muestra, comparar el DML con la regresión con
   efectos fijos antes de leerlo.
 
+- **La sincronización con Azure comparaba solo el tamaño.** Hasta el
+  2026-11-18 `sincronizar_carpeta_local_a_azure` omitía un archivo si en
+  Azure había uno del mismo tamaño: `2_models` quedó en la versión del
+  2026-11-02 (sin `hog_num_menores`, Hot-Deck de la celda anterior e IPM
+  sin la corrección rural) aunque se publicó después. No da error. Ahora
+  compara el MD5 del contenido. Después de publicar, comprobar que Azure
+  coincide con lo local antes de correr algo desde Azure.
+
 ## Diccionarios oficiales de variables
 
 `docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (761 filas: ID/Nombre/Etiqueta/
@@ -268,7 +276,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 69 de 69 el 2026-11-15). Antes de mapear una
+cuando el error vuelve; 70 de 70 el 2026-11-18). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

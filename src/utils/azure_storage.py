@@ -36,6 +36,7 @@ Uso típico:
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 from pathlib import Path
@@ -91,6 +92,9 @@ def subir_archivo(ruta_local: str | Path, ruta_azure: str, sobrescribir: bool = 
 
     container = _cliente_contenedor()
     blob_client = container.get_blob_client(ruta_azure)
+    # El MD5 queda guardado aunque la subida vaya por bloques: es lo que
+    # compara `ya_esta_en_azure` en la próxima sincronización.
+    md5 = _md5(ruta_local)
 
     logger.info(
         "Subiendo %s -> azure://%s/%s (%.2f MB)",
@@ -103,7 +107,7 @@ def subir_archivo(ruta_local: str | Path, ruta_azure: str, sobrescribir: bool = 
         try:
             with open(ruta_local, "rb") as f:
                 blob_client.upload_blob(
-                    f, overwrite=sobrescribir,
+                    f, overwrite=sobrescribir, content_settings=ContentSettings(content_md5=md5),
                     timeout=900, connection_timeout=900, max_concurrency=2,
                 )
             logger.info("Subida completa: %s", ruta_azure)
@@ -149,6 +153,32 @@ def listar_archivos(prefijo: str = "") -> list[str]:
     return [b.name for b in container.list_blobs(name_starts_with=prefijo)]
 
 
+def _md5(ruta: Path) -> bytes:
+    h = hashlib.md5()
+    with open(ruta, "rb") as f:
+        for bloque in iter(lambda: f.read(8 * 1024 * 1024), b""):
+            h.update(bloque)
+    return h.digest()
+
+
+def ya_esta_en_azure(archivo: Path, blob) -> bool:
+    """¿El blob tiene el mismo contenido que el archivo local?
+
+    Hasta el 2026-11-18 se comparaba solo el tamaño, y un parquet
+    regenerado con el mismo tamaño no se subía: la GEIH procesada de Azure
+    quedó en la versión del 2026-10-10 aunque la local era del 2026-11-02.
+    Se compara el MD5 que Azure guarda del contenido; si el blob no lo
+    tiene (subidas por bloques), cuenta como distinto si el tamaño cambia
+    o si el archivo local es más reciente que el blob."""
+    if blob is None:
+        return False
+    md5_azure = blob.content_settings.content_md5 if blob.content_settings else None
+    if md5_azure:
+        return bytes(md5_azure) == _md5(archivo)
+    local_mas_reciente = archivo.stat().st_mtime > blob.last_modified.timestamp()
+    return blob.size == archivo.stat().st_size and not local_mas_reciente
+
+
 def sincronizar_carpeta_local_a_azure(
     carpeta_local: str | Path,
     prefijo_azure: str,
@@ -173,16 +203,15 @@ def sincronizar_carpeta_local_a_azure(
     logger.info("Sincronizando %s archivos de %s hacia azure://%s/%s",
                 len(archivos), carpeta_local, CONTAINER_NAME, prefijo_azure)
 
-    # Reanudable: se omiten los archivos que ya están en Azure con el mismo tamaño.
+    # Reanudable: se omiten los archivos que ya están en Azure con el mismo contenido.
     existentes = {
-        b.name: b.size
-        for b in _cliente_contenedor().list_blobs(name_starts_with=f"{prefijo_azure}/")
+        b.name: b for b in _cliente_contenedor().list_blobs(name_starts_with=f"{prefijo_azure}/")
     }
     subidos = omitidos_ya = 0
     for archivo in archivos:
         ruta_relativa = archivo.relative_to(carpeta_local)
         ruta_azure = f"{prefijo_azure}/{ruta_relativa.as_posix()}"
-        if existentes.get(ruta_azure) == archivo.stat().st_size:
+        if ya_esta_en_azure(archivo, existentes.get(ruta_azure)):
             omitidos_ya += 1
             continue
         subir_archivo(archivo, ruta_azure)

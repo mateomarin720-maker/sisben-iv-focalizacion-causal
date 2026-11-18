@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-15: 69 de 69 mutaciones detectadas.
+Resultado del 2026-11-18: 70 de 70 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -205,6 +205,9 @@ MUTACIONES = [
      "tests/test_variabilidad_hotdeck.py"),
     ("Variabilidad: reglas de Rubin sin el factor (1 + 1/m)", "src/diagnostico/variabilidad_hotdeck.py",
      "total = w + (1 + 1 / m) * b", "total = w + b", "tests/test_variabilidad_hotdeck.py"),
+    ("Azure: sincronización por tamaño, no por contenido (error del 2026-11-18)", "src/utils/azure_storage.py",
+     "return bytes(md5_azure) == _md5(archivo)", "return blob.size == archivo.stat().st_size",
+     "tests/test_azure_storage.py"),
 ]
 
 resultados = []
