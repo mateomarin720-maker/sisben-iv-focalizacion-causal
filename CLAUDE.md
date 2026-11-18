@@ -260,6 +260,7 @@ poetry run python -m src.focalizacion.heterogeneidad_ampliada
 poetry run python -m src.simulacion.sensibilidad_semisintetica
 poetry run python -m src.simulacion.sensibilidad_semisintetica tamano
 poetry run python -m src.simulacion.sensibilidad_semisintetica vinculo   # FHDI frente a Hot-Deck con vínculo parcial
+poetry run python -m src.simulacion.sensibilidad_semisintetica vinculo_diagnostico   # lento (≈50 min)
 poetry run python -m src.diagnostico.variabilidad_hotdeck 2
 poetry run python -m src.emparejamiento.fhdi.enlace --publicar   # enlace fraccional por hogar; lee de Azure y publica
 poetry run python -m src.emparejamiento.fhdi   # lee de Azure en memoria; después de variabilidad_hotdeck y errores_focalizacion_frechet

@@ -85,3 +85,17 @@ def test_repeticion_de_vinculo_sobre_base_sintetica():
     uno = filas[filas["fraccion_vinculada"] == 1].pivot_table(index=["escenario", "estimador"], columns="imputacion",
                                                               values="estimacion")
     assert np.allclose(uno["hotdeck"], uno["fhdi"])
+
+
+def test_repeticion_de_diagnostico_sobre_base_sintetica():
+    """Pregunta 6: cada tamaño × escenario × L × imputación con los tres
+    estimadores (LinearDML en sus dos versiones)."""
+    from src.simulacion.base import preparar_base
+    from tests.test_simulacion_equivalencia import hogares_sinteticos
+
+    hogares, p_t = hogares_sinteticos(n=3_000)
+    b = preparar_base(hogares, p_t)
+    filas = pd.DataFrame(se.una_repeticion_vinculo_diagnostico(b, rep=0, tamanos=(800,), fracciones=(0.5,)))
+    assert len(filas) == len(se.ESCENARIOS_VINCULO) * len(se.IMPUTACIONES) * 3
+    assert set(filas["estimador"]) == {"regresion_efectos_fijos", "linear_dml", "linear_dml_sin_regularizar"}
+    assert filas["estimacion"].notna().all() and set(filas["hogares"]) == {800}

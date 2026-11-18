@@ -2,6 +2,19 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-18 (51) — Por qué LinearDML se sesga con imputación fraccional (pregunta 6)
+
+### Agregado
+- **`sensibilidad_semisintetica.py vinculo_diagnostico`:** la pregunta 5 con LinearDML en sus
+  dos versiones y encuestas de 30.000, 60.000 y 120.000 hogares, 96 repeticiones fijas.
+  Con efecto nulo y L = 0,25, LinearDML con FHDI: −0,161*, −0,091*, −0,047* (sin regularizar
+  −0,105*, −0,052*, −0,025*); la regresión con efectos fijos, ≈0 en todos. El sesgo es sobre
+  todo del tamaño de las celdas (mitad al duplicar), la regularización suma un tercio, y crece
+  como 1/L. Con datos reales (78 por celda) sería ≈ −0,016. Para la fase 2b, LinearDML con FHDI
+  necesita quitar la celda exactamente.
+- `_correr` acepta un número fijo de repeticiones (`min_reps`, `max_reps`).
+- 302 pruebas; 75 de 75 mutaciones detectadas.
+
 ## 2026-11-18 (50) — FHDI en la simulación: vínculo parcial con las dos imputaciones (fase 2a)
 
 ### Agregado

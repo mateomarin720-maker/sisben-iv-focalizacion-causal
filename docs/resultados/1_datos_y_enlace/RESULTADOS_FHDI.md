@@ -124,7 +124,22 @@ de su celda (FHDI). Confusión observada, τ = 0,095*:
   −0,161* con L = 0,25 frente a −0,036*). Hipótesis en
   `METODOLOGIA_FHDI.md` (P6): la parte imputada solo varía entre celdas y
   la regularización de LinearDML no quita del todo los efectos de celda
-  con ≈8 hogares por celda. Pendiente de comprobar.
+  con ≈8 hogares por celda.
+- **Diagnóstico** (`vinculo_diagnostico`, 96 repeticiones). Sesgo con
+  efecto nulo y L = 0,25:
+
+| Hogares por celda | LinearDML, FHDI | LinearDML sin regularizar, FHDI | LinearDML, Hot-Deck | Regresión, FHDI |
+|---|---|---|---|---|
+| ≈8 (30.000 hogares) | −0,161* | −0,105* | −0,038* | +0,004* |
+| ≈16 (60.000) | −0,091* | −0,052* | −0,017* | +0,001* |
+| ≈32 (120.000) | −0,047* | −0,025* | −0,011* | +0,002* |
+
+  El sesgo se reduce a la mitad cada vez que se duplican los hogares por
+  celda; sin regularizar baja un tercio pero no desaparece, y crece como
+  1/L. Es la parte de los efectos de celda que el ajuste cruzado no quita,
+  concentrada en la poca variación de T que aportan los vinculados. La
+  regresión con efectos fijos exactos no se sesga. Con los datos reales
+  (78 hogares por celda) sería del orden de −0,016.
 
 ## Conclusión
 

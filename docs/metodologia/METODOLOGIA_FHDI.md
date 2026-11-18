@@ -167,9 +167,41 @@ sobre ≈8 hogares por celda) no quita del todo los efectos de celda; todo
 lo que queda de la diferencia entre celdas pasa al efecto. Con Hot-Deck la
 parte imputada varía dentro de la celda (ruido) y diluye el sesgo en vez
 de concentrarlo. Es el mismo mecanismo del sesgo de LinearDML con celdas
-pequeñas (CLAUDE.md), amplificado. Prueba de la hipótesis: repetir con
-LinearDML casi sin regularizar (`linear_dml_sin_regularizar`) y con
-encuestas más grandes.
+pequeñas (CLAUDE.md), amplificado.
+
+**Diagnóstico de P6 (pregunta 6 de `sensibilidad_semisintetica.py`,
+2026-11-18, 96 repeticiones, MCSE ≤ 0,006).** Sesgo con efecto nulo y
+L = 0,25:
+
+| Hogares por celda | LinearDML, FHDI | LinearDML sin regularizar, FHDI | LinearDML, Hot-Deck | Regresión, FHDI |
+|---|---|---|---|---|
+| ≈8 (30.000 hogares) | −0,161* | −0,105* | −0,038* | +0,004* |
+| ≈16 (60.000) | −0,091* | −0,052* | −0,017* | +0,001* |
+| ≈32 (120.000) | −0,047* | −0,025* | −0,011* | +0,002* |
+
+- **Es sobre todo el tamaño de las celdas:** el sesgo de LinearDML con
+  FHDI se reduce a la mitad cada vez que se duplican los hogares por celda,
+  con y sin regularizar.
+- **La regularización suma alrededor de un tercio:** sin regularizar el
+  sesgo baja de −0,161* a −0,105*, pero no desaparece. El ajuste cruzado
+  estima los efectos de celda en otras particiones, con pocos hogares, y
+  lo que queda sin quitar pasa al efecto.
+- **Crece como 1/L:** con 30.000 hogares el sesgo por L es casi constante
+  (−0,161 × 0,25 = −0,040; −0,089 × 0,5 = −0,044; −0,062 × 0,75 = −0,047).
+  La fuga de efectos de celda viene de la parte imputada y se divide por
+  la variación de T dentro de la celda, que solo aportan los vinculados
+  (proporcional a L). Con Hot-Deck no depende de L.
+- **La regresión con efectos fijos exactos no se sesga** con ninguna
+  imputación ni tamaño: quita la celda completa, sin estimarla.
+- **Con los datos reales** (78 hogares por celda en promedio, unas 10 veces
+  las encuestas de 30.000) el sesgo extrapolado de LinearDML con FHDI y
+  L = 0,25 sería del orden de −0,016 (−0,010 sin regularizar).
+
+Consecuencia para la fase 2b: con FHDI, LinearDML necesita quitar la celda
+exactamente (no estimarla en el ajuste cruzado) o celdas grandes. Opción a
+evaluar: transformación dentro de la celda (restar la media de la celda a
+Y y a T) antes de LinearDML, que hace con el DML lo que la regresión con
+efectos fijos hace con MCO.
 
 ## 6. Plan e implementación
 
@@ -178,6 +210,7 @@ encuestas más grandes.
 | 0 | Reglas, validación del enlace y comparación con el Hot-Deck (`reglas.py`, `validacion.py`, `__main__.py`) | Hecho el 2026-11-18 |
 | 1 | Enlace fraccional por hogar guardado y publicado en Azure (`enlace.py` → `geih_sisben_fhdi_2024.parquet`) | Hecho el 2026-11-18 |
 | 2a | Sensibilidad del vínculo parcial con las dos imputaciones (pregunta 5 de `sensibilidad_semisintetica.py`): L = 0; 0,25; 0,5; 0,75; 1, Hot-Deck frente a FHDI, regresión con efectos fijos y LinearDML, efecto nulo y confusión observada | Hecho el 2026-11-18 (288 repeticiones; resultados en §5, P5 y P6) |
+| 2a′ | Diagnóstico del sesgo de LinearDML con FHDI (pregunta 6): tamaño de celda, regularización | Hecho el 2026-11-18 (P6) |
 | 2b | Régimen FHDI en la simulación principal (`evaluacion.py`, las 8 filas de la Tabla 6, incluido el Causal Forest y la pobreza monetaria), para ver si quitar el ruido del sorteo mueve los modelos causales | **Pendiente obligatoria**: se hace aunque no sea en la misma corrida que la 2a |
 | 3 | Reglas de focalización con el enlace fraccional (regla vigente con probabilidad; CATE con FHDI no identificable) | Pendiente |
 | 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Pendiente |

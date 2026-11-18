@@ -31,6 +31,14 @@ Tres preguntas que dejó abierta la corrida principal:
    Con (b) y L = 0 no queda variación dentro de la celda: no
    identificable (vacío, no 0). Metodología:
    `docs/metodologia/METODOLOGIA_FHDI.md`.
+6. **Por qué LinearDML se sesga con imputación fraccional** (diagnóstico
+   de la pregunta 5). Con FHDI y L = 0,25, LinearDML da −0,161 con
+   efecto nulo (−0,036 con Hot-Deck). Hipótesis: la parte imputada solo
+   varía entre celdas y la regularización de los modelos auxiliares no
+   quita los efectos de celda con ≈8 hogares por celda. Se repite con
+   LinearDML casi sin regularizar y con encuestas de 30.000, 60.000 y
+   120.000 hogares. Repeticiones fijas (`REPS_DIAGNOSTICO`): basta
+   distinguir sesgos de −0,16 y −0,03.
 
 Solo log-ingreso y estimadores rápidos (regresión con efectos fijos,
 LinearDML en sus dos versiones, RD). Repeticiones hasta que el error
@@ -41,11 +49,13 @@ Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica [n_jobs]
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica tamano [n_jobs]
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica vinculo [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica vinculo_diagnostico [n_jobs]
 Salidas:
     docs/reports/sensibilidad_semisintetica.csv (cada repetición)
     docs/reports/sensibilidad_semisintetica_resumen.csv
     docs/reports/sensibilidad_tamano_muestra{.csv,_resumen.csv} (pregunta 4)
     docs/reports/sensibilidad_vinculo_fhdi{.csv,_resumen.csv} (pregunta 5)
+    docs/reports/sensibilidad_vinculo_fhdi_diagnostico{.csv,_resumen.csv} (pregunta 6)
 """
 from __future__ import annotations
 
@@ -89,6 +99,11 @@ OUT_VINCULO_FIRMA = Path("docs/reports/sensibilidad_vinculo_fhdi_config.json")
 FRACCIONES_VINCULO = (0.0, 0.25, 0.5, 0.75, 1.0)  # L: fracción de hogares con su T verdadero (pregunta 5)
 ESCENARIOS_VINCULO = ("efecto_nulo", "confusion_observada_x1.0")
 IMPUTACIONES = ("hotdeck", "fhdi")
+OUT_DIAG = Path("docs/reports/sensibilidad_vinculo_fhdi_diagnostico.csv")
+OUT_DIAG_RESUMEN = Path("docs/reports/sensibilidad_vinculo_fhdi_diagnostico_resumen.csv")
+OUT_DIAG_FIRMA = Path("docs/reports/sensibilidad_vinculo_fhdi_diagnostico_config.json")
+FRACCIONES_DIAGNOSTICO = (0.25, 0.5, 0.75)
+REPS_DIAGNOSTICO = 96  # MCSE ≈ 0,005: basta para distinguir −0,16 de −0,03
 SEED = 2028
 # MCSE máximo del sesgo. La RD usa solo los hogares cerca del corte y la
 # difusa divide por el salto en la participación: con 0,003 necesitarían
@@ -243,6 +258,42 @@ def una_repeticion_vinculo(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -> li
     return filas
 
 
+def una_repeticion_vinculo_diagnostico(b: pd.DataFrame, rep: int, tamanos: tuple[int, ...] = TAMANOS,
+                                       fracciones: tuple[float, ...] = FRACCIONES_DIAGNOSTICO) -> list[dict]:
+    """Pregunta 6: la pregunta 5 con LinearDML en sus dos versiones y
+    encuestas de distinto tamaño."""
+    filas = []
+    niveles = celdas_por_nivel(b)
+    n_celdas = b["hotdeck_celda_cat"].nunique()
+    for n in tamanos:
+        for i_esc, nombre in enumerate(ESCENARIOS_VINCULO):
+            esc = ESCENARIOS[nombre]
+            rng = np.random.default_rng([SEED, rep, i_esc, n, 6])
+            t_real, _, _ = asignar(b, esc, rng)
+            idx = rng.permutation(len(b))
+            enc, reg = idx[:n], idx[n:]
+            d = b.iloc[enc].reset_index(drop=True)
+            celda = d["hotdeck_celda_cat"].to_numpy()
+            tau = esc.get("factor_tau", 1.0) * d["tau"].to_numpy()
+            y = d["y0"].to_numpy() + tau * t_real[enc]
+            donante = reg[sortear_donante(niveles[enc], niveles[reg], rng)]
+            p = probabilidad_celda(niveles[enc], niveles[reg], t_real[reg])
+            Z = diseno_x(d)
+            u = rng.random(n)
+            for L in fracciones:
+                for imputacion in IMPUTACIONES:
+                    t_obs = t_observado(t_real[enc], t_real[donante], p, u < L, imputacion)
+                    res = {"regresion_efectos_fijos": regresion_efectos_fijos(y, t_obs, Z, celda),
+                           "linear_dml": linear_dml(d, y, t_obs, regularizado=True),
+                           "linear_dml_sin_regularizar": linear_dml(d, y, t_obs, regularizado=False)}
+                    for est, (a, lo, hi) in res.items():
+                        filas.append(dict(rep=rep, escenario=f"{nombre}_n{n}", vinculo=f"{imputacion}_L{L:.2f}",
+                                          estimador=est, efecto_verdadero=float(tau.mean()), estimacion=a,
+                                          ic_lo=lo, ic_hi=hi, imputacion=imputacion, fraccion_vinculada=L,
+                                          hogares=n, hogares_por_celda=n / n_celdas))
+    return filas
+
+
 def resumir(r: pd.DataFrame) -> pd.DataFrame:
     r = r.assign(error=r["estimacion"] - r["efecto_verdadero"],
                  cubre=((r["ic_lo"] <= r["efecto_verdadero"]) & (r["efecto_verdadero"] <= r["ic_hi"])).astype(float))
@@ -272,9 +323,12 @@ def _base() -> pd.DataFrame:
     return preparar_base(pd.read_parquet(HOGARES, columns=contrato.columnas("hogares")), p_t)
 
 
-def _correr(b: pd.DataFrame, una, out: Path, out_firma: Path, firma: str, n_jobs: int) -> pd.DataFrame:
-    """Lotes en paralelo hasta la convergencia; reanuda lo guardado si la
-    firma (configuración y datos) coincide."""
+def _correr(b: pd.DataFrame, una, out: Path, out_firma: Path, firma: str, n_jobs: int,
+            min_reps: int | None = None, max_reps: int | None = None) -> pd.DataFrame:
+    """Lotes en paralelo hasta la convergencia (o hasta `max_reps`); reanuda
+    lo guardado si la firma (configuración y datos) coincide."""
+    min_reps = MIN_REPS if min_reps is None else min_reps
+    max_reps = MAX_REPS if max_reps is None else max_reps
     from joblib import Parallel, delayed, parallel_config
 
     r = sin_marca(pd.read_csv(out)) if (out.exists() and out_firma.exists()
@@ -286,7 +340,7 @@ def _correr(b: pd.DataFrame, una, out: Path, out_firma: Path, firma: str, n_jobs
     while True:
         hechas = 0 if r.empty else r["rep"].nunique()
         pend = 0 if r.empty else len(sin_converger(resumir(r)))
-        if hechas >= MAX_REPS or (hechas >= MIN_REPS and pend == 0):
+        if hechas >= max_reps or (hechas >= min_reps and pend == 0):
             break
         t0 = time.time()
         with parallel_config(backend="loky", inner_max_num_threads=1):
@@ -376,10 +430,40 @@ def main_vinculo(n_jobs: int = 3) -> pd.DataFrame:
     return res
 
 
+def main_vinculo_diagnostico(n_jobs: int = 3) -> pd.DataFrame:
+    """Pregunta 6: ¿el sesgo de LinearDML con imputación fraccional es de
+    la regularización, del tamaño de las celdas o de los dos?"""
+    b = _base()
+    cfg = dict(ESCENARIOS={k: ESCENARIOS[k] for k in ESCENARIOS_VINCULO}, FRACCIONES=FRACCIONES_DIAGNOSTICO,
+               IMPUTACIONES=IMPUTACIONES, TAMANOS=TAMANOS, SEED=SEED, TAU=TAU, version=1)
+    firma = firma_con_datos(hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:12], b)
+    r = _correr(b, una_repeticion_vinculo_diagnostico, OUT_DIAG, OUT_DIAG_FIRMA, firma, n_jobs,
+                min_reps=REPS_DIAGNOSTICO, max_reps=REPS_DIAGNOSTICO)
+
+    res = resumir(r)
+    extra = r.groupby(["escenario", "vinculo", "estimador"]).agg(
+        imputacion=("imputacion", "first"), fraccion_vinculada=("fraccion_vinculada", "first"),
+        hogares=("hogares", "first"), hogares_por_celda=("hogares_por_celda", "first")).reset_index()
+    res = res.merge(extra, on=["escenario", "vinculo", "estimador"])
+    marcar_simulado(res).to_csv(OUT_DIAG_RESUMEN, index=False)
+    pd.set_option("display.width", 220)
+    print(f"\n{NOTA_SIMULADO}")
+    print(f"\n=== Diagnóstico de LinearDML con imputación fraccional*: {r['rep'].nunique()} repeticiones ===")
+    tabla = res.pivot_table(index=["escenario", "imputacion", "fraccion_vinculada"], columns="estimador",
+                            values="sesgo").round(4)
+    print("\nSesgo (estimación − efecto verdadero):")
+    print(tabla.to_string())
+    print(f"\nMCSE del sesgo: máximo {res['mcse_sesgo'].max():.4f}")
+    print(f"Guardado: {OUT_DIAG}\nGuardado: {OUT_DIAG_RESUMEN}")
+    return res
+
+
 if __name__ == "__main__":
     if sys.argv[1:2] == ["tamano"]:
         main_tamano(*[int(a) for a in sys.argv[2:]])
     elif sys.argv[1:2] == ["vinculo"]:
         main_vinculo(*[int(a) for a in sys.argv[2:]])
+    elif sys.argv[1:2] == ["vinculo_diagnostico"]:
+        main_vinculo_diagnostico(*[int(a) for a in sys.argv[2:]])
     else:
         main(*[int(a) for a in sys.argv[1:]])
