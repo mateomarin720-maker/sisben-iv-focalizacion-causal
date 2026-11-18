@@ -22,8 +22,6 @@
 2026-11-18 16:22:30,562 INFO Lote reps 252-263 en 38 s | celdas sin converger: 1
 2026-11-18 16:23:07,239 INFO Lote reps 264-275 en 37 s | celdas sin converger: 1
 2026-11-18 16:23:43,419 INFO Lote reps 276-287 en 36 s | celdas sin converger: 0
-C:\Users\Mateo\OneDrive\Documentos\GitHub\Maestria\sisben_causal\sisben_causal\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:343: UserWarning: resource_tracker: C:\Users\Mateo\AppData\Local\Temp\joblib_memmapping_folder_7296_6ba48eb132fe4bcc8033c38870ab751a_3fd10bb917684f5c9729fcd455263202\7296-1365978945872-0d6b7661e396466caf06da95d45ac636.pkl: PermissionError(13, 'El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso')
-  warnings.warn(
 
 \* Resultado simulado (semisintético): efecto verdadero fijado por el investigador; no es una estimación con datos reales.
 
