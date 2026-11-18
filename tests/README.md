@@ -1,6 +1,6 @@
 # Pruebas
 
-296 pruebas en 28 archivos (2026-11-18). Casi todas usan datos
+301 pruebas en 29 archivos (2026-11-18). Casi todas usan datos
 sintéticos y corren sin el banco de datos; las que necesitan datos reales
 se saltan solas si no están (`skipif`).
 
@@ -46,6 +46,7 @@ equivocados (CLAUDE.md, "Bugs ya encontrados").
 | `test_ingesta_y_validacion.py` | `ingesta/geih_loader.py`, `validacion/comparar_pobreza_monetaria_oficial.py`, `4_dag_identificacion.py` | Los 8 módulos de los 12 meses con las variantes reales ("No ocupado" en marzo, agosto desde `.DTA`, carpetas vacías); Latin-1; cruce uno a uno con la base oficial; chequeos de identificación de los cinco DAG (placebo del Hot-Deck, registro en el Sisbén, confusión de la simulación) | Meses incompletos sin aviso; cruce vacío con la base oficial |
 | `test_hotdeck_celda.py` | `emparejamiento/…` | Celda con nivel de pisos y tramos de personas y menores, igual entre fuentes; cadena de respaldos en orden (`sin_menores` → `sin_personas` → `sin_pisos` → …); falla si falta una columna de la celda | Celda que cae al respaldo sin avisar; tramo de personas corrido |
 | `test_fhdi.py` | `emparejamiento/fhdi/` | Pesos que suman 1 por hogar; donantes de la misma celda y sin repetir; calibración exacta en todos los hogares (FHDI = FEFI); FEFI = proporción de la celda; mismo nivel de la cadena que el Hot-Deck; contraste placebo 0 exacto; tabla del enlace por hogar (orden, probabilidades que suman 1, A/B = A + B); la moda acierta más por hogar y FEFI tiene el menor error cuadrático; jackknife de una media | Sorteo simple de 10 donantes sin estratificar: 37 % de hogares sin calibrar (2026-11-18) |
+| `test_vinculo_fhdi.py` | `simulacion/vinculo.py`, `estimadores.py`, `sensibilidad_semisintetica.py` (pregunta 5) | Probabilidad de la celda con la cadena de respaldos; con imputación fraccional y L = 0, no identificable (vacío, no 0); T observado por imputación; con L = 0,5 el sorteo da L·τ y la imputación fraccional τ; repetición completa sobre base sintética | Leer la recta L·τ como propia de toda imputación por celda; reportar un 0 donde no hay identificación |
 | `test_azure_storage.py` | `utils/azure_storage.py` | La sincronización vuelve a subir un archivo con el mismo tamaño y otro contenido (MD5); sin MD5, el que cambió de tamaño o es más reciente; no sube el idéntico | `2_models` de Azure en la versión del 2026-11-02 (sin `hog_num_menores` ni el IPM rural corregido) hasta el 2026-11-18 |
 | `test_local_csv_parser.py` | `ingesta/local_csv_parser.py` | Códigos de `.DTA` como "1", no "1.0" | Agosto con `POBRE_GEIH` 6,9 % (hasta 2026-11-02) |
 | `test_validar_ipm_geih_ecv.py` | `indicadores/ipm_proxy.py`, `validacion/validar_ipm_geih_ecv.py` | Reglas del proxy (sin y con todas las privaciones, nivel 99), vivienda con la definición oficial por zona (excretas, agua, hacinamiento), jefe no ocupado privado en la ECV como en la GEIH, concordancia ponderada y kappa | Campo con la regla urbana de alcantarillado; jefe no ocupado de la ECV contado como cotizante |

@@ -132,9 +132,44 @@ diferencia entre un error de medición clásico (atenúa) y uno de Berkson
 
 Límites: con L = 0 (el caso de la tesis) no se identifica; la FHDI no
 agrega información frente a usar solo los vinculados; supone que los
-vinculados se parecen a los demás dentro de su celda. Falta comprobarlo
-con LinearDML y Causal Forest en el módulo de simulación; la tabla viene de un
-script provisional y se reemplaza por la corrida de la fase 2.
+vinculados se parecen a los demás dentro de su celda. La tabla anterior
+viene de un script provisional; la comprobación con los hogares reales del
+módulo de simulación es la de abajo.
+
+**Comprobación con el módulo de simulación (fase 2a, 2026-11-18).**
+`sensibilidad_semisintetica.py vinculo`: hogares reales de la GEIH,
+encuestas de 30.000 hogares (≈8 por celda), 288 repeticiones, MCSE del
+sesgo ≤ 0,003. Confusión observada, τ = 0,095*:
+
+| L | Regresión, Hot-Deck | Regresión, FHDI | L·τ | LinearDML, Hot-Deck | LinearDML, FHDI |
+|---|---|---|---|---|---|
+| 0 | +0,000* | no identificable | 0 | −0,036* | no identificable |
+| 0,25 | +0,023* | **+0,092*** | +0,024 | −0,012* | −0,071* |
+| 0,50 | +0,046* | **+0,093*** | +0,047 | +0,014* | +0,005* |
+| 0,75 | +0,069* | **+0,093*** | +0,071 | +0,036* | +0,034* |
+| 1 | +0,092* | +0,092* | +0,095 | +0,061* | +0,061* |
+
+Con efecto nulo, la regresión con FHDI da entre −0,003* y −0,005*
+(cobertura 0,96-0,97) y LinearDML con FHDI −0,161*, −0,089* y −0,062* en
+L = 0,25; 0,5; 0,75 (con Hot-Deck, −0,036* en todos los L). Cobertura de la
+regresión con FHDI: 0,95-0,98; su desviación entre repeticiones es mayor
+cuanto menor es L (0,046* con L = 0,25 frente a 0,023* con Hot-Deck),
+porque solo informan los vinculados.
+
+**P5 se confirma para la regresión con efectos fijos:** con FHDI recupera τ
+(97-98 %) en todo L > 0; con Hot-Deck, L·τ.
+
+**P6. LinearDML con FHDI empeora** (resultado no esperado). Con L = 0,25
+el sesgo con efecto nulo es −0,161*, cuatro veces el de Hot-Deck. Hipótesis
+(pendiente de comprobar): la parte imputada solo varía entre celdas, y la
+regularización de los modelos auxiliares de LinearDML (Ridge alpha = 1
+sobre ≈8 hogares por celda) no quita del todo los efectos de celda; todo
+lo que queda de la diferencia entre celdas pasa al efecto. Con Hot-Deck la
+parte imputada varía dentro de la celda (ruido) y diluye el sesgo en vez
+de concentrarlo. Es el mismo mecanismo del sesgo de LinearDML con celdas
+pequeñas (CLAUDE.md), amplificado. Prueba de la hipótesis: repetir con
+LinearDML casi sin regularizar (`linear_dml_sin_regularizar`) y con
+encuestas más grandes.
 
 ## 6. Plan e implementación
 
@@ -142,10 +177,43 @@ script provisional y se reemplaza por la corrida de la fase 2.
 |---|---|---|
 | 0 | Reglas, validación del enlace y comparación con el Hot-Deck (`reglas.py`, `validacion.py`, `__main__.py`) | Hecho el 2026-11-18 |
 | 1 | Enlace fraccional por hogar guardado y publicado en Azure (`enlace.py` → `geih_sisben_fhdi_2024.parquet`) | Hecho el 2026-11-18 |
-| 2 | Régimen FHDI en la simulación junto al Hot-Deck (`vinculo.py`, `evaluacion.py`, sensibilidad del vínculo parcial); «no identificable» cuando no hay variación; recta de atenuación con las dos curvas | Pendiente |
+| 2a | Sensibilidad del vínculo parcial con las dos imputaciones (pregunta 5 de `sensibilidad_semisintetica.py`): L = 0; 0,25; 0,5; 0,75; 1, Hot-Deck frente a FHDI, regresión con efectos fijos y LinearDML, efecto nulo y confusión observada | Hecho el 2026-11-18 (288 repeticiones; resultados en §5, P5 y P6) |
+| 2b | Régimen FHDI en la simulación principal (`evaluacion.py`, las 8 filas de la Tabla 6, incluido el Causal Forest y la pobreza monetaria), para ver si quitar el ruido del sorteo mueve los modelos causales | **Pendiente obligatoria**: se hace aunque no sea en la misma corrida que la 2a |
 | 3 | Reglas de focalización con el enlace fraccional (regla vigente con probabilidad; CATE con FHDI no identificable) | Pendiente |
 | 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Pendiente |
 | 5 | Texto de la tesis: Proposición 2 acotada al sorteo, figura de la recta con las dos curvas, párrafo de la FHDI como alternativa evaluada | Después de 2-4 |
+
+## 6.1 Implementación de la fase 2
+
+- **Imputación en la simulación** (`src/simulacion/vinculo.py`):
+  `probabilidad_celda` da a cada hogar de la encuesta la proporción de
+  T = 1 entre los donantes del registro de su celda, con la misma cadena
+  de respaldos que `sortear_donante`. Es FEFI, que por R4 equivale a la
+  FHDI con pesos calibrados.
+- **T observado** (`sensibilidad_semisintetica.t_observado`): el T
+  verdadero en una fracción L de hogares (vinculados) y, en el resto, el
+  del donante sorteado (Hot-Deck) o la probabilidad de la celda (FHDI).
+  Los mismos hogares vinculados en las dos imputaciones, para que la
+  comparación sea pareada.
+- **No identificable** (`estimadores.identificable`): si T no varía
+  dentro de las celdas (FHDI con L = 0), no se estima y se reporta vacío
+  con `identificable = False`, no 0. Un 0 se leería como «efecto nulo
+  estimado», y no lo es.
+- **LinearDML con tratamiento continuo.** Con la FHDI, T en los no
+  vinculados es una probabilidad. Se ajusta LinearDML con tratamiento
+  continuo y, para T, el mismo modelo de regresión que para Y (en vez de
+  la logística). Decisión frente a la alternativa de expandir a 10
+  donantes con pesos: por R4 dan lo mismo, y la base expandida obligaría
+  a que los donantes de un mismo hogar no queden en particiones distintas
+  del ajuste cruzado.
+- **Datos.** La simulación lee `muestra_estimacion_monetaria_2024` y
+  `sisben_estandarizado_2024_con_bogota` de `data/2_models/`; antes de la
+  corrida del 2026-11-18 se verificó que son idénticos (MD5) a los del
+  banco de Azure.
+- **Pruebas:** `tests/test_vinculo_fhdi.py` (probabilidad de la celda con
+  respaldos, no identificable con L = 0, T observado, la recta con sorteo
+  frente a la imputación fraccional en datos sintéticos, y la repetición
+  completa sobre una base sintética).
 
 ## 7. Qué decir en la tesis (borrador de ideas, no texto final)
 

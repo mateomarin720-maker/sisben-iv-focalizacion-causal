@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-18: 73 de 73 mutaciones detectadas.
+Resultado del 2026-11-18: 75 de 75 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -217,6 +217,11 @@ MUTACIONES = [
     ("FHDI: probabilidad de A/B con otros grupos en el enlace guardado", "src/emparejamiento/fhdi/enlace.py",
      'out["fhdi_p_AB"] = pi[:, list(reglas.ELEGIBLE)].sum(axis=1)', 'out["fhdi_p_AB"] = pi[:, [0, 2]].sum(axis=1)',
      "tests/test_fhdi.py"),
+    ("Simulación: la imputación fraccional usa el T del donante sorteado", "src/simulacion/sensibilidad_semisintetica.py",
+     'imputado = {"hotdeck": t_donante, "fhdi": p_celda}[imputacion]',
+     'imputado = {"hotdeck": t_donante, "fhdi": t_donante}[imputacion]', "tests/test_vinculo_fhdi.py"),
+    ("Simulación: sin control de identificación (se reporta un número con L = 0)", "src/simulacion/estimadores.py",
+     "return bool(np.mean(td**2) > tol)", "return True", "tests/test_vinculo_fhdi.py"),
 ]
 
 resultados = []

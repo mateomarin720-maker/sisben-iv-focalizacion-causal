@@ -100,6 +100,32 @@ Es la Proposición 1 sin ruido: el Hot-Deck llega a lo mismo en promedio
 (los IC de Rubin contienen el 0), pero cada sorteo da un número distinto
 y la mitad de su varianza es del sorteo.
 
+## 4. Vínculo parcial en la simulación*: la recta de atenuación con las dos imputaciones
+
+`src/simulacion/sensibilidad_semisintetica.py vinculo` (pregunta 5; salidas
+`docs/reports/sensibilidad_vinculo_fhdi*.csv` y `.txt`). Hogares reales de
+la GEIH con tratamiento y efecto simulados*, encuestas de 30.000 hogares,
+288 repeticiones. A una fracción L de los hogares se le da su T verdadero;
+al resto, el T de un donante sorteado (Hot-Deck) o la proporción de T = 1
+de su celda (FHDI). Confusión observada, τ = 0,095*:
+
+| L | Regresión, Hot-Deck | Regresión, FHDI | L·τ | LinearDML, Hot-Deck | LinearDML, FHDI |
+|---|---|---|---|---|---|
+| 0 | +0,000* | no identificable | 0 | −0,036* | no identificable |
+| 0,25 | +0,023* | **+0,092*** | +0,024 | −0,012* | −0,071* |
+| 0,50 | +0,046* | **+0,093*** | +0,047 | +0,014* | +0,005* |
+| 0,75 | +0,069* | **+0,093*** | +0,071 | +0,036* | +0,034* |
+| 1 | +0,092* | +0,092* | +0,095 | +0,061* | +0,061* |
+
+- **Regresión con efectos fijos:** con Hot-Deck cae a L·τ (la recta de la
+  Proposición 2); con FHDI recupera τ en todo L > 0, con cobertura de
+  0,95-0,98 y más varianza cuanto menor es L. Con L = 0 no se identifica.
+- **LinearDML con FHDI se sesga más que con Hot-Deck** (con efecto nulo,
+  −0,161* con L = 0,25 frente a −0,036*). Hipótesis en
+  `METODOLOGIA_FHDI.md` (P6): la parte imputada solo varía entre celdas y
+  la regularización de LinearDML no quita del todo los efectos de celda
+  con ≈8 hogares por celda. Pendiente de comprobar.
+
 ## Conclusión
 
 La FHDI es una alternativa al Hot-Deck que **no cambia ninguna conclusión

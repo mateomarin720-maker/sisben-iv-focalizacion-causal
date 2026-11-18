@@ -2,6 +2,27 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-18 (50) — FHDI en la simulación: vínculo parcial con las dos imputaciones (fase 2a)
+
+### Agregado
+- **Pregunta 5 de `sensibilidad_semisintetica.py` (`vinculo`):** L = 0 a 1 con Hot-Deck o
+  imputación fraccional (proporción de T = 1 de la celda, `vinculo.probabilidad_celda`) en los
+  no vinculados; regresión con efectos fijos y LinearDML (continuo cuando T es probabilidad);
+  «no identificable» cuando T no varía dentro de la celda (`estimadores.identificable`).
+  288 repeticiones:
+  - Regresión con efectos fijos: con Hot-Deck, L·τ; con FHDI, τ en todo L > 0 (+0,092* a
+    +0,093* frente a 0,095*), cobertura 0,95-0,98. La recta de la Proposición 2 es del sorteo.
+  - LinearDML con FHDI se sesga más que con Hot-Deck (efecto nulo: −0,161* con L = 0,25 frente
+    a −0,036*). Hipótesis: regularización con celdas pequeñas; pendiente de comprobar.
+- Fase 2b (FHDI en la simulación principal) registrada como pendiente obligatoria.
+
+### Corregido
+- `vinculo.py` describía la cadena de respaldos sin personas ni menores.
+- Riesgo evitado: `regresion_efectos_fijos` descarta en silencio las columnas sin variación
+  dentro de la celda; con FHDI y L = 0 habría devuelto el coeficiente de otra variable como
+  efecto. Ahora se comprueba la identificación antes de estimar (prueba y mutación).
+- 301 pruebas; 75 de 75 mutaciones detectadas.
+
 ## 2026-11-18 (49) — Enlace fraccional por hogar en el banco de datos; metodología de la FHDI
 
 ### Agregado

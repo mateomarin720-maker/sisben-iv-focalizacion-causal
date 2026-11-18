@@ -259,6 +259,7 @@ poetry run python -m src.focalizacion.reglas_focalizacion
 poetry run python -m src.focalizacion.heterogeneidad_ampliada
 poetry run python -m src.simulacion.sensibilidad_semisintetica
 poetry run python -m src.simulacion.sensibilidad_semisintetica tamano
+poetry run python -m src.simulacion.sensibilidad_semisintetica vinculo   # FHDI frente a Hot-Deck con vínculo parcial
 poetry run python -m src.diagnostico.variabilidad_hotdeck 2
 poetry run python -m src.emparejamiento.fhdi.enlace --publicar   # enlace fraccional por hogar; lee de Azure y publica
 poetry run python -m src.emparejamiento.fhdi   # lee de Azure en memoria; después de variabilidad_hotdeck y errores_focalizacion_frechet
@@ -278,7 +279,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 73 de 73 el 2026-11-18). Antes de mapear una
+cuando el error vuelve; 75 de 75 el 2026-11-18). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

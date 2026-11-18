@@ -49,6 +49,16 @@ def regresion_efectos_fijos(y: np.ndarray, t: np.ndarray, Z: np.ndarray, celda: 
     return beta[0], beta[0] - 1.96 * se, beta[0] + 1.96 * se
 
 
+def identificable(t: np.ndarray, celda: np.ndarray, tol: float = 1e-10) -> bool:
+    """¿Queda variación del tratamiento dentro de las celdas? Con la
+    imputación fraccional y sin vínculo (L = 0), cada hogar de una celda
+    tiene la misma probabilidad y ningún estimador que controle por la
+    celda puede estimar el efecto: se reporta como no identificable, no
+    como 0 (`docs/metodologia/METODOLOGIA_FHDI.md`)."""
+    td = dentro_de_celda(np.asarray(t, dtype=float), celda)
+    return bool(np.mean(td**2) > tol)
+
+
 def pesos_rd(puntaje: np.ndarray, corte: float, h: float) -> np.ndarray:
     return np.clip(1 - np.abs(puntaje - corte) / h, 0, None)  # kernel triangular
 

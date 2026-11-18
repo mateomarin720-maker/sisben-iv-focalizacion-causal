@@ -1,8 +1,15 @@
-"""Integración de la encuesta con el registro: Hot-Deck simulado por celda,
-con la misma cadena de respaldos del pipeline
-(`claves_por_nivel` en `src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py`):
-celda exacta → sin pisos → depto + edad → depto → todo el registro. Las
-celdas de cada nivel las calcula `base.preparar_base`.
+"""Integración de la encuesta con el registro, con la misma cadena de
+respaldos del pipeline (`claves_por_nivel` en
+`src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py`): celda exacta →
+sin menores → sin personas → sin pisos → depto + edad → depto → todo el
+registro. Las celdas de cada nivel las calcula `base.preparar_base`.
+
+Dos formas de imputar el tratamiento a un hogar de la encuesta:
+  - Hot-Deck (`sortear_donante`, `hotdeck_celda`): el T de un donante
+    sorteado en su celda.
+  - Imputación fraccional (`probabilidad_celda`): la proporción de T = 1
+    entre los donantes de su celda, que es lo que da la FHDI con pesos
+    calibrados (`docs/metodologia/METODOLOGIA_FHDI.md`, regla R4).
 """
 from __future__ import annotations
 
@@ -55,3 +62,27 @@ def hotdeck_celda(celdas_receptor: np.ndarray, celdas_donante: np.ndarray, t_don
                   rng: np.random.Generator) -> np.ndarray:
     """T de un donante de la misma celda (o de la de respaldo)."""
     return np.asarray(t_donante)[sortear_donante(celdas_receptor, celdas_donante, rng)]
+
+
+def probabilidad_celda(celdas_receptor: np.ndarray, celdas_donante: np.ndarray, t_donante: np.ndarray) -> np.ndarray:
+    """Proporción de T = 1 entre los donantes de la celda de cada receptor,
+    en el primer nivel de la cadena con donantes (todo el registro si
+    ninguno tiene). Es la imputación fraccional (FEFI) del tratamiento."""
+    r, d = np.asarray(celdas_receptor), np.asarray(celdas_donante)
+    if r.ndim == 1:
+        r, d = r[:, None], d[:, None]
+    t = np.asarray(t_donante, dtype=float)
+    p = np.full(len(r), np.nan)
+    for k in range(r.shape[1]):
+        falta = np.isnan(p)
+        if not falta.any():
+            break
+        tam = int(max(d[:, k].max(), r[:, k].max())) + 1
+        n = np.bincount(d[:, k], minlength=tam)
+        suma = np.bincount(d[:, k], t, minlength=tam)
+        rk = r[falta, k]
+        con = n[rk] > 0
+        idx = np.flatnonzero(falta)[con]
+        p[idx] = suma[rk[con]] / n[rk[con]]
+    p[np.isnan(p)] = t.mean()
+    return p

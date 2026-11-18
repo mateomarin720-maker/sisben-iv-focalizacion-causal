@@ -21,6 +21,16 @@ Tres preguntas que dejó abierta la corrida principal:
    efectos fijos y LinearDML en sus dos versiones, con efecto nulo y con
    confusión observada, oráculo y Hot-Deck, en encuestas de 30.000,
    60.000 y 120.000 hogares (`TAMANOS`).
+5. **Imputación fraccional y vínculo parcial** (2026-11-18). Con vínculo
+   parcial, ¿la recta L·τ de la Proposición 2 es del sorteo del Hot-Deck o
+   de cualquier imputación por celda? A una fracción L de los hogares se
+   le da su T verdadero y al resto se le imputa: (a) el T de un donante
+   sorteado en su celda (Hot-Deck) o (b) la proporción de T = 1 entre los
+   donantes de su celda (FHDI con pesos calibrados = FEFI). L de 0 a 1 en
+   pasos de 0,25, los mismos hogares vinculados en las dos imputaciones.
+   Con (b) y L = 0 no queda variación dentro de la celda: no
+   identificable (vacío, no 0). Metodología:
+   `docs/metodologia/METODOLOGIA_FHDI.md`.
 
 Solo log-ingreso y estimadores rápidos (regresión con efectos fijos,
 LinearDML en sus dos versiones, RD). Repeticiones hasta que el error
@@ -30,10 +40,12 @@ la RD, ver `UMBRAL_MCSE`).
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica [n_jobs]
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica tamano [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica vinculo [n_jobs]
 Salidas:
     docs/reports/sensibilidad_semisintetica.csv (cada repetición)
     docs/reports/sensibilidad_semisintetica_resumen.csv
     docs/reports/sensibilidad_tamano_muestra{.csv,_resumen.csv} (pregunta 4)
+    docs/reports/sensibilidad_vinculo_fhdi{.csv,_resumen.csv} (pregunta 5)
 """
 from __future__ import annotations
 
@@ -53,11 +65,11 @@ from src.simulacion.asignacion import asignar
 from src.simulacion.base import celdas_por_nivel, diseno_x, firma_con_datos, preparar_base
 from src.simulacion.escenarios import ESCENARIOS as ESCENARIOS_BASE
 from src.simulacion.escenarios import H_RD, N_ENCUESTA, TAU, VINCULOS
-from src.simulacion.estimadores import (discontinuidad, discontinuidad_difusa, estimacion5, pesos_rd,
-                                        regresion_efectos_fijos)
+from src.simulacion.estimadores import (discontinuidad, discontinuidad_difusa, estimacion5, identificable,
+                                        pesos_rd, regresion_efectos_fijos)
 from src.simulacion.evaluacion import HOGARES, REGISTRO, p_t_por_celda
 from src.simulacion.reportes import NOTA_SIMULADO, marcar_simulado, sin_marca
-from src.simulacion.vinculo import sortear_donante
+from src.simulacion.vinculo import probabilidad_celda, sortear_donante
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -71,6 +83,12 @@ OUT_TAMANO_FIRMA = Path("docs/reports/sensibilidad_tamano_muestra_config.json")
 TAMANOS = (30_000, 60_000, 120_000)  # hogares de la encuesta simulada (pregunta 4)
 ESCENARIOS_TAMANO = ("efecto_nulo", "confusion_observada_x1.0")
 VINCULOS_TAMANO = ("oraculo", "hotdeck")
+OUT_VINCULO = Path("docs/reports/sensibilidad_vinculo_fhdi.csv")
+OUT_VINCULO_RESUMEN = Path("docs/reports/sensibilidad_vinculo_fhdi_resumen.csv")
+OUT_VINCULO_FIRMA = Path("docs/reports/sensibilidad_vinculo_fhdi_config.json")
+FRACCIONES_VINCULO = (0.0, 0.25, 0.5, 0.75, 1.0)  # L: fracción de hogares con su T verdadero (pregunta 5)
+ESCENARIOS_VINCULO = ("efecto_nulo", "confusion_observada_x1.0")
+IMPUTACIONES = ("hotdeck", "fhdi")
 SEED = 2028
 # MCSE máximo del sesgo. La RD usa solo los hogares cerca del corte y la
 # difusa divide por el salto en la participación: con 0,003 necesitarían
@@ -98,7 +116,14 @@ def linear_dml(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, regularizado: bool
     # `regularizado`: la del proyecto (alpha 1, C 10); si no, casi nula.
     extra = {} if regularizado else est5.CASI_SIN_REGULARIZAR
     modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA, **extra)
-    m = LinearDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=True, random_state=SEED)
+    # Con la imputación fraccional T no es 0/1 (probabilidad de la celda en
+    # los no vinculados): tratamiento continuo y, para T, el mismo modelo
+    # de regresión que para Y.
+    discreto = bool(np.isin(t, (0, 1)).all())
+    if not discreto:
+        from sklearn.base import clone
+        modelo_t = clone(modelo_y)
+    m = LinearDML(model_y=modelo_y, model_t=modelo_t, discrete_treatment=discreto, random_state=SEED)
     X = d[est5.X_COLS].to_numpy(float)
     m.fit(y, t, X=X, W=d[est5.W_CELDA[0]].to_numpy(float))
     lo, hi = m.ate_interval(X, alpha=0.05)
@@ -171,6 +196,50 @@ def una_repeticion_tamano(b: pd.DataFrame, rep: int, tamanos: tuple[int, ...] = 
                     filas.append(dict(rep=rep, escenario=f"{nombre}_n{n}", vinculo=vinculo, estimador=est,
                                       efecto_verdadero=float(tau.mean()), estimacion=a, ic_lo=lo, ic_hi=hi,
                                       hogares=n, hogares_por_celda=n / n_celdas))
+    return filas
+
+
+def t_observado(t_hogar: np.ndarray, t_donante: np.ndarray, p_celda: np.ndarray, vinculado: np.ndarray,
+                imputacion: str) -> np.ndarray:
+    """T que ve el estimador: el verdadero en los hogares vinculados y, en
+    el resto, el del donante sorteado (Hot-Deck) o la proporción de T = 1
+    de la celda (FHDI)."""
+    imputado = {"hotdeck": t_donante, "fhdi": p_celda}[imputacion]
+    return np.where(vinculado, t_hogar, imputado).astype(float)
+
+
+def una_repeticion_vinculo(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -> list[dict]:
+    """Pregunta 5: recta de atenuación con las dos imputaciones."""
+    filas = []
+    niveles = celdas_por_nivel(b)
+    for i_esc, nombre in enumerate(ESCENARIOS_VINCULO):
+        esc = ESCENARIOS[nombre]
+        rng = np.random.default_rng([SEED, rep, i_esc, 5])
+        t_real, _, _ = asignar(b, esc, rng)
+        idx = rng.permutation(len(b))
+        enc, reg = idx[:n], idx[n:]
+        d = b.iloc[enc].reset_index(drop=True)
+        celda = d["hotdeck_celda_cat"].to_numpy()
+        tau = esc.get("factor_tau", 1.0) * d["tau"].to_numpy()
+        y = d["y0"].to_numpy() + tau * t_real[enc]
+        donante = reg[sortear_donante(niveles[enc], niveles[reg], rng)]
+        p = probabilidad_celda(niveles[enc], niveles[reg], t_real[reg])
+        Z = diseno_x(d)
+        u = rng.random(n)  # los mismos hogares vinculados en las dos imputaciones
+        for L in FRACCIONES_VINCULO:
+            vinculado = u < L
+            for imputacion in IMPUTACIONES:
+                t_obs = t_observado(t_real[enc], t_real[donante], p, vinculado, imputacion)
+                ok = identificable(t_obs, celda)
+                if ok:
+                    res = {"regresion_efectos_fijos": regresion_efectos_fijos(y, t_obs, Z, celda),
+                           "linear_dml": linear_dml(d, y, t_obs, regularizado=True)}
+                else:
+                    res = {e: (np.nan, np.nan, np.nan) for e in ("regresion_efectos_fijos", "linear_dml")}
+                for est, (a, lo, hi) in res.items():
+                    filas.append(dict(rep=rep, escenario=nombre, vinculo=f"{imputacion}_L{L:.2f}", estimador=est,
+                                      efecto_verdadero=float(tau.mean()), estimacion=a, ic_lo=lo, ic_hi=hi,
+                                      imputacion=imputacion, fraccion_vinculada=L, identificable=ok))
     return filas
 
 
@@ -275,8 +344,42 @@ def main_tamano(n_jobs: int = 3) -> pd.DataFrame:
     return res
 
 
+def main_vinculo(n_jobs: int = 3) -> pd.DataFrame:
+    """Pregunta 5: recta de atenuación con Hot-Deck y con imputación
+    fraccional en los hogares sin vínculo."""
+    b = _base()
+    cfg = dict(ESCENARIOS={k: ESCENARIOS[k] for k in ESCENARIOS_VINCULO}, FRACCIONES=FRACCIONES_VINCULO,
+               IMPUTACIONES=IMPUTACIONES, SEED=SEED, TAU=TAU, n=N_ENCUESTA, version=1)
+    firma = firma_con_datos(hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:12], b)
+    r = _correr(b, una_repeticion_vinculo, OUT_VINCULO, OUT_VINCULO_FIRMA, firma, n_jobs)
+
+    res = resumir(r)
+    extra = r.groupby(["escenario", "vinculo", "estimador"]).agg(
+        imputacion=("imputacion", "first"), fraccion_vinculada=("fraccion_vinculada", "first"),
+        pct_identificable=("identificable", lambda v: float(np.mean(v) * 100))).reset_index()
+    res = res.merge(extra, on=["escenario", "vinculo", "estimador"])
+    res["L_por_tau"] = res["fraccion_vinculada"] * res["efecto_verdadero"]
+    marcar_simulado(res).to_csv(OUT_VINCULO_RESUMEN, index=False)
+    pd.set_option("display.width", 220)
+    print(f"\n{NOTA_SIMULADO}")
+    print(f"\n=== Vínculo parcial con Hot-Deck o imputación fraccional*: {r['rep'].nunique()} repeticiones, "
+          f"{N_ENCUESTA:,} hogares por encuesta ===")
+    cols = ["imputacion", "fraccion_vinculada", "estimador", "reps", "pct_identificable", "efecto_verdadero",
+            "L_por_tau", "estimacion", "sesgo", "mcse_sesgo", "cobertura", "fraccion_recuperada"]
+    for esc, g in res.groupby("escenario", sort=False):
+        print(f"\n--- {esc}")
+        print(g.sort_values(["estimador", "imputacion", "fraccion_vinculada"])[cols].round(4).to_string(index=False))
+    pend = sin_converger(res)
+    print(f"\nConvergencia (MCSE del sesgo ≤ {UMBRAL_MCSE_DEFECTO}): "
+          f"{'alcanzada' if pend.empty else f'NO en {len(pend)} celdas'}")
+    print(f"Guardado: {OUT_VINCULO}\nGuardado: {OUT_VINCULO_RESUMEN}")
+    return res
+
+
 if __name__ == "__main__":
     if sys.argv[1:2] == ["tamano"]:
         main_tamano(*[int(a) for a in sys.argv[2:]])
+    elif sys.argv[1:2] == ["vinculo"]:
+        main_vinculo(*[int(a) for a in sys.argv[2:]])
     else:
         main(*[int(a) for a in sys.argv[1:]])
