@@ -308,7 +308,7 @@ versiones dentro de la celda deberían llevarlas a lo que da la regresión.
 | 2a′ | Diagnóstico del sesgo de LinearDML con FHDI (pregunta 6): tamaño de celda, regularización | Hecho el 2026-11-18 (P6) |
 | 2a″ | LinearDML dentro de la celda (pregunta 7): la celda se quita exactamente antes del DML | Hecho el 2026-11-19 (P7); no cambia la simulación principal |
 | 2a‴ | Causal Forest dentro de la celda (pregunta 8): efecto promedio y por hogar | Hecho el 2026-11-19 (P8) |
-| 2b | Régimen FHDI y estimadores dentro de la celda en la simulación principal (`src/simulacion/ampliada.py`): los 8 escenarios, las 3 integraciones vigentes más FHDI con vínculo del 50 % y sin vínculo, log-ingreso y pobreza monetaria; LinearDML y Causal Forest dentro de la celda junto a los vigentes | Implementada el 2026-11-19 (código y pruebas); corrida en curso |
+| 2b | Régimen FHDI y estimadores dentro de la celda en la simulación principal (`src/simulacion/ampliada.py`): los 8 escenarios, las 3 integraciones vigentes más FHDI con vínculo del 50 % y sin vínculo, log-ingreso y pobreza monetaria; LinearDML y Causal Forest dentro de la celda junto a los vigentes | Hecha el 2026-11-19: 600 repeticiones (Causal Forest en 216); resultados en `RESULTADOS_FHDI.md` §5 |
 | 3 | Reglas de focalización con el enlace fraccional (regla vigente con probabilidad; CATE con FHDI no identificable) | Pendiente |
 | 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Pendiente |
 | 5 | Texto de la tesis: Proposición 2 acotada al sorteo, figura de la recta con las dos curvas, párrafo de la FHDI como alternativa evaluada | Después de 2-4 |

@@ -211,6 +211,67 @@ efecto por hogar:
 - **Costo:** el mismo tiempo de ajuste que el vigente (≈17 s con 30.000
   hogares).
 
+## 5. Simulación principal ampliada*: los 8 escenarios con estimadores dentro de la celda y FHDI
+
+`python -m src.simulacion ampliada` (`src/simulacion/ampliada.py`;
+salidas `docs/reports/simulacion_ampliada*`, tabla completa en
+`simulacion_ampliada_tablas.md`). Mismas encuestas, donantes y hogares con
+donante que la corrida de la Tabla 6, que no cambia: la regresión con
+efectos fijos la reproduce repetición por repetición (diferencia máxima
+8,9e-16). 600 repeticiones (el máximo; Causal Forest en 216), 30.000
+hogares por encuesta. Extracto de log-ingreso (τ = 0,095*; efecto
+promedio y, entre paréntesis, cobertura del IC del 95 %):
+
+| Escenario | Integración | Regresión EF celda | LinearDML vigente | LinearDML dentro de la celda | Causal Forest vigente | Causal Forest dentro de la celda |
+|---|---|---|---|---|---|---|
+| Aleatoria | Oráculo | +0,094\* (0,97\*) | +0,094\* (0,93\*) | +0,095\* (0,97\*) | +0,093\* (1,00\*) | +0,093\* (1,00\*) |
+| Confusión observada | Oráculo | +0,090\* (0,94\*) | +0,059\* (0,64\*) | **+0,092\* (0,95\*)** | +0,061\* (1,00\*) | **+0,092\* (1,00\*)** |
+| | Hot-Deck | +0,001\* (0,03\*) | −0,034\* (0,00\*) | +0,000\* (0,03\*) | −0,034\* (0,50\*) | −0,000\* (0,86\*) |
+| | FHDI, vínculo 50 % | +0,091\* (0,94\*) | +0,004\* (0,24\*) | **+0,093\* (0,94\*)** | — | **+0,094\* (1,00\*)** |
+| Efecto nulo (τ = 0) | Oráculo | −0,001\* (0,97\*) | −0,035\* (0,65\*) | −0,001\* (0,96\*) | −0,038\* (1,00\*) | −0,004\* (1,00\*) |
+| | FHDI, vínculo 50 % | −0,001\* (0,95\*) | −0,092\* (0,24\*) | −0,001\* (0,95\*) | — | −0,003\* (1,00\*) |
+| Solapamiento débil | Oráculo | +0,085\* (0,97\*) | −0,016\* (0,24\*) | **+0,082\* (0,96\*)** | −0,015\* (0,99\*) | **+0,085\* (1,00\*)** |
+| | FHDI, vínculo 50 % | +0,087\* (0,97\*) | −0,164\* (0,00\*) | **+0,085\* (0,96\*)** | — | **+0,086\* (1,00\*)** |
+| Confusión no observada media | Oráculo | −0,604\* (0,00\*) | −0,603\* (0,00\*) | −0,594\* (0,00\*) | −0,605\* (0,00\*) | −0,597\* (0,00\*) |
+
+FHDI sin vínculo: no identificable en todos los escenarios y estimadores
+(T = p_celda es función de la celda).
+
+- **Dentro de la celda, LinearDML y Causal Forest dan lo mismo que la
+  regresión con efectos fijos en los 8 escenarios** (diferencias ≤ 0,01
+  salvo en la regla de corte, donde las tres se sesgan en torno a −2), con
+  cualquier integración y en los dos outcomes.
+- **Las filas vigentes de LinearDML y Causal Forest de la Tabla 6 llevan
+  el sesgo de estimar la celda.** Se ve donde la regresión acierta: con
+  efecto nulo el LinearDML vigente da −0,035* en log-ingreso y +0,015* en
+  pobreza en todas las integraciones; con confusión observada da +0,059*
+  frente a +0,092*; con solapamiento débil, −0,016* frente a +0,082*. La
+  versión dentro de la celda quita esas diferencias y recupera la
+  cobertura nominal (0,95-0,97 en el oráculo).
+- **Con Hot-Deck los estimadores dentro de la celda dan ≈0, como la
+  regresión** (la atenuación completa del placebo). Los −0,03* del
+  LinearDML y el Causal Forest vigentes con Hot-Deck no son información
+  del enlace sino el mismo sesgo.
+- **La FHDI con vínculo del 50 % recupera τ con la regresión y con los
+  estimadores dentro de la celda** (cobertura 0,94-0,97), en todos los
+  escenarios en que el oráculo lo recupera. Con el LinearDML vigente falla
+  (+0,004*, −0,092* con efecto nulo, −0,164* con solapamiento débil): es la
+  combinación en la que más pesa el sesgo.
+- **No corrige la falta de identificación:** con confusión no observada o
+  regla de corte todos los estimadores se sesgan casi igual, con o sin la
+  corrección. La corrección quita un sesgo del estimador, no del diseño.
+- **Pobreza monetaria** (τ = −0,033*) repite el patrón: el LinearDML
+  vigente se aleja de la regresión en +0,013* a +0,015* con Hot-Deck y
+  efecto nulo, y la versión dentro de la celda coincide con ella.
+- **Convergencia:** 9 de las 168 combinaciones identificables quedaron sobre el umbral del
+  MCSE al llegar al máximo de repeticiones (600, o 200 del Causal Forest).
+  Ocho tienen sesgos de −0,7 a −2,1 (confusión no observada y regla de
+  corte, MCSE del sesgo 0,0033-0,0063 frente a un umbral de 0,003) y una es
+  la cobertura del Causal Forest con Hot-Deck en el escenario aleatorio
+  (0,56, MCSE 0,034). Ninguna cambia una lectura.
+- **Costo:** 4 h 7 min con 4 procesos (lotes de 24 repeticiones: 11-13 min
+  con Causal Forest, 4-17 min sin él).
+
 ## Conclusión
 
 La FHDI es una alternativa al Hot-Deck que **no cambia ninguna conclusión

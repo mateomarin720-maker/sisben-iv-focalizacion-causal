@@ -2,6 +2,16 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-19 (55) — Simulación principal ampliada (fase 2b): resultados
+
+### Agregado
+- Corrida de `python -m src.simulacion ampliada` (600 repeticiones; Causal Forest en 216) y su
+  lectura en `RESULTADOS_FHDI.md` §5. La regresión con efectos fijos reproduce la corrida vigente
+  (diferencia máxima 8,9e-16). Dentro de la celda, LinearDML y Causal Forest coinciden con la
+  regresión en los 8 escenarios; las filas vigentes de LinearDML y Causal Forest de la Tabla 6
+  llevan el sesgo de estimar la celda (−0,035* con efecto nulo). FHDI con vínculo del 50 %
+  recupera τ con los estimadores dentro de la celda. La Tabla 6 no cambia.
+
 ## 2026-11-19 (54) — Simulación principal ampliada (fase 2b): código y pruebas
 
 ### Agregado
