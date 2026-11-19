@@ -58,6 +58,7 @@ Diseño del módulo: `docs/metodologia/DISENO_MODULO_SIMULACION.md`.
 
 | Ruta | Qué hace |
 |---|---|
+| `focalizacion/reglas_ampliadas.py` | Reglas del OE3 con el Causal Forest dentro de la celda y con el enlace fraccional (vigente en valor esperado; CATE con FHDI sin vínculo no identificable), con los mismos sorteos que `reglas_focalizacion.py`, que no cambia |
 | `focalizacion/reglas_focalizacion.py` | Compara reglas (vigente, proxy de medios, CATE con Causal Forest, ideal) con el mismo número de hogares y con el mismo dinero, más dos controles: el efecto verdadero (control positivo) y el CATE de un LinearDML (modelo base lineal) |
 | `focalizacion/heterogeneidad_ampliada.py` | Las mismas reglas con un efecto más heterogéneo (niveles ampliado y complejo) |
 

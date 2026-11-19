@@ -202,14 +202,21 @@ hogares es 0,028\*.
    sesgado hacia cero (ATE +0,061 frente a +0,095) por las celdas con
    pocos hogares en la muestra de entrenamiento. Un LinearDML con la forma
    correcta del efecto da casi lo mismo (62-70 %), y el efecto verdadero
-   apenas supera al PMT: ver los controles.
+   apenas supera al PMT: ver los controles. *Actualización 2026-11-19:*
+   con el Causal Forest dentro de la celda el sesgo del nivel desaparece y
+   la regla sube a 74-76 %; sigue por debajo del PMT (ver «Causal Forest
+   dentro de la celda y enlace fraccional»).
 
 4. **Con el CATE estimado desde el Hot-Deck, la regla es mucho peor que
    el azar** (27-34 % frente a 47 % del ideal, exclusión 67 %). Ese CATE
    es ruido alrededor de un valor negativo (ATE estimado −0,034 a −0,057
    frente a +0,095), lo que invierte el orden de los hogares. Es la
    consecuencia práctica de P2: con las fuentes actuales no hay efectos
-   heterogéneos utilizables para focalizar.
+   heterogéneos utilizables para focalizar. *Actualización 2026-11-19:*
+   el «peor que el azar» venía del sesgo del Causal Forest; dentro de la
+   celda el ATE con Hot-Deck es ≈0 y la regla queda en el azar (49-51 %).
+   La conclusión práctica no cambia: con Hot-Deck no hay heterogeneidad
+   utilizable.
 
 5. **Ordenar por la reducción esperada de la brecha no mejora sobre
    ordenar por ingreso predicho** (77-82 % frente a 84-86 %). Con este
@@ -242,6 +249,59 @@ hogares es 0,028\*.
   tratamiento imputado por Hot-Deck, no hay heterogeneidad que estimar.
   Aun con el CATE perfecto, la ganancia sobre el PMT sería de menos de un
   punto con esta heterogeneidad.
+
+## Causal Forest dentro de la celda y enlace fraccional (2026-11-19)
+
+`src/focalizacion/reglas_ampliadas.py` (salidas
+`docs/reports/reglas_ampliadas*`): las mismas repeticiones de la corrida
+vigente, que no cambia, con tres reglas más (fase 3 de
+`docs/metodologia/METODOLOGIA_FHDI.md`). Control: la vigente, el PMT por
+ingreso y la ideal recalculados coinciden con la corrida vigente
+repetición por repetición (diferencia máxima 1,4e-14). 300 repeticiones.
+Porcentaje de la reducción ideal de FGT1:
+
+| Regla | Proporcional | Monto fijo | Monto fijo, mismo dinero |
+|---|---|---|---|
+| Vigente (Hot-Deck, un sorteo) | 74,6\* | 75,4\* | 75,4\* |
+| **Vigente con FHDI** (probabilidad A/B de la celda) | **74,2\*** | **75,2\*** | **75,2\*** |
+| PMT por ingreso | 84,2\* | 86,4\* | 86,8\* |
+| PMT por brecha | 81,7\* | 76,7\* | 78,0\* |
+| PMT + CATE (vínculo), Causal Forest vigente | 68,3\* | 61,4\* | 62,9\* |
+| **PMT + CATE (vínculo), Causal Forest dentro de la celda** | **76,1\*** | **74,3\*** | **75,5\*** |
+| PMT + CATE (Hot-Deck), Causal Forest vigente | 34,0\* | 27,4\* | 31,7\* |
+| **PMT + CATE (Hot-Deck), Causal Forest dentro de la celda** | **49,1\*** | **49,2\*** | **51,3\*** |
+| PMT + CATE con FHDI sin vínculo | no identificable | no identificable | no identificable |
+| Aleatoria | 46,9\* | 46,9\* | 52,5\* |
+| Control positivo (efecto verdadero) | 84,6\* | 87,0\* | 86,7\* |
+
+- **El Causal Forest dentro de la celda corrige el nivel del efecto y
+  mejora la regla con CATE.** ATE +0,093\* (proporcional) y +0,091\*
+  (monto fijo) frente a +0,061\* y +0,038\* del vigente, con τ = 0,095\*;
+  PEHE 0,066\*-0,080\* frente a 0,084\*-0,098\*. La regla con CATE sube
+  de 61-68 % a 74-76 % del ideal, al nivel de la vigente y cerca del PMT
+  por brecha.
+- **No cambia la respuesta al OE3.** Sigue por debajo del PMT por ingreso
+  (84-87 %): el error del CATE por hogar (0,066\*-0,080\*) sigue siendo más
+  del doble de la variación real del efecto (0,028\*). La desventaja frente
+  al PMT baja de 16-25 puntos a 8-12.
+- **Con Hot-Deck, el CATE ya no es peor que el azar: es el azar.** Dentro
+  de la celda el ATE con T imputado es ≈0 (+0,001\* y −0,001\*), como
+  predice P2, y la regla queda en 49-51 % (la aleatoria, 47-53 %). El
+  «peor que el azar» de la corrida vigente venía de un efecto estimado
+  negativo por el sesgo, no del enlace.
+- **La vigente con FHDI da lo mismo que la vigente** (0,2-0,4 puntos
+  menos; errores de inclusión y exclusión 0,1 puntos más altos). Es el
+  valor esperado sobre los sorteos del Hot-Deck: el sorteo único que usa
+  la vigente no la favorece ni la perjudica.
+- **Con FHDI y sin vínculo, la regla con CATE no existe:** con T =
+  probabilidad de la celda no hay variación del tratamiento dentro de la
+  celda para estimar un efecto.
+- **Convergencia:** las reglas con CATE dentro de la celda quedaron sobre
+  el umbral del error Monte Carlo en algunas métricas al llegar al máximo
+  (300 repeticiones; también le pasa a la corrida vigente). El mayor error
+  Monte Carlo es 0,009 en la exclusión y 0,9 puntos en el % del ideal,
+  menor que todas las diferencias que se leen arriba.
+- **Costo:** 27 minutos con 3 procesos.
 
 ### ¿Qué representa el CATE con monto fijo?
 
@@ -285,6 +345,7 @@ el efecto verdadero.
 
 ```bash
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.reglas_focalizacion 3 > docs/reports/reglas_focalizacion.txt 2>&1
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.reglas_ampliadas 3 > docs/reports/reglas_ampliadas.txt 2>&1
 poetry run pytest tests/test_reglas_focalizacion.py
 ```
 

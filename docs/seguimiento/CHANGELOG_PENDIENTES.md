@@ -2,6 +2,19 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-19 (56) — Reglas de focalización con FHDI y Causal Forest dentro de la celda (fase 3)
+
+### Agregado
+- **`src/focalizacion/reglas_ampliadas.py`** (`python -m src.focalizacion.reglas_ampliadas`): con los
+  mismos sorteos de `reglas_focalizacion.py`, que no cambia (control: diferencia máxima 1,4e-14), la
+  vigente con la probabilidad A/B de la FHDI, el CATE del Causal Forest dentro de la celda con T
+  verdadero y con Hot-Deck, y el CATE con FHDI sin vínculo como no identificable. 300 repeticiones.
+- Lectura en `RESULTADOS_REGLAS_FOCALIZACION.md`: la regla con CATE (vínculo) sube de 61-68 % a
+  74-76 % del ideal y sigue bajo el PMT por ingreso (84-87 %); con Hot-Deck pasa de peor que el azar
+  (27-34 %) a igual al azar (49-51 %); la vigente con FHDI da lo mismo que la vigente. La respuesta
+  al OE3 no cambia.
+- 4 pruebas (`test_reglas_ampliadas.py`) y 2 mutaciones: 314 pruebas; 80 de 80 mutaciones.
+
 ## 2026-11-19 (55) — Simulación principal ampliada (fase 2b): resultados
 
 ### Agregado

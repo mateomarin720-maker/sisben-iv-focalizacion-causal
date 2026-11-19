@@ -309,7 +309,7 @@ versiones dentro de la celda deberían llevarlas a lo que da la regresión.
 | 2a″ | LinearDML dentro de la celda (pregunta 7): la celda se quita exactamente antes del DML | Hecho el 2026-11-19 (P7); no cambia la simulación principal |
 | 2a‴ | Causal Forest dentro de la celda (pregunta 8): efecto promedio y por hogar | Hecho el 2026-11-19 (P8) |
 | 2b | Régimen FHDI y estimadores dentro de la celda en la simulación principal (`src/simulacion/ampliada.py`): los 8 escenarios, las 3 integraciones vigentes más FHDI con vínculo del 50 % y sin vínculo, log-ingreso y pobreza monetaria; LinearDML y Causal Forest dentro de la celda junto a los vigentes | Hecha el 2026-11-19: 600 repeticiones (Causal Forest en 216); resultados en `RESULTADOS_FHDI.md` §5 |
-| 3 | Reglas de focalización con el enlace fraccional (regla vigente con probabilidad; CATE con FHDI no identificable) | Pendiente |
+| 3 | Reglas de focalización con el enlace fraccional y el Causal Forest dentro de la celda (`src/focalizacion/reglas_ampliadas.py`): vigente en valor esperado con la probabilidad A/B de la FHDI; CATE dentro de la celda con T verdadero y con Hot-Deck; CATE con FHDI sin vínculo no identificable | Hecha el 2026-11-19: 300 repeticiones; resultados en `RESULTADOS_REGLAS_FOCALIZACION.md` |
 | 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Pendiente |
 | 5 | Texto de la tesis: Proposición 2 acotada al sorteo, figura de la recta con las dos curvas, párrafo de la FHDI como alternativa evaluada | Después de 2-4 |
 
@@ -374,6 +374,30 @@ versiones dentro de la celda deberían llevarlas a lo que da la regresión.
     fraccional.
   - *Convergencia:* las mismas reglas de la corrida vigente (MCSE del
     sesgo y de la cobertura; Causal Forest entre 50 y 200 repeticiones).
+
+## 6.2 Implementación de la fase 3
+
+Las reglas del OE3 (`reglas_focalizacion.py`) no cambian. Las nuevas van
+en `src/focalizacion/reglas_ampliadas.py`, con estas decisiones:
+
+- *Comparación pareada.* Repite los sorteos de la corrida vigente (mismas
+  muestras, mundo y donante) y recalcula tres reglas como control
+  (`vigente_hotdeck`, `pmt_ingreso`, `ideal`), que deben dar lo mismo
+  repetición por repetición. Las reglas nuevas desempatan con su propio
+  generador.
+- *Vigente con el enlace fraccional (`vigente_fhdi`).* Cada hogar cuenta
+  con su probabilidad de A/B (`fhdi_p_AB`) en vez del grupo de un sorteo:
+  es el valor esperado de la vigente sobre los sorteos del Hot-Deck, sin su
+  ruido. Exclusión, FGT0 y FGT1 son exactos (lineales en el tratamiento de
+  cada hogar); la inclusión es el cociente de los valores esperados. Trata
+  en promedio el mismo número de hogares que la vigente.
+- *CATE dentro de la celda.* `pmt_brecha_cate` y `pmt_brecha_cate_hd` con
+  el Causal Forest de la pregunta 8 (Y, T y controles sin la media de la
+  celda; el CATE depende de X). Se agregan junto a las vigentes.
+- *CATE con FHDI sin vínculo: no identificable.* Con T = probabilidad de
+  la celda no hay variación del tratamiento dentro de la celda. Se reporta
+  como no identificable; no se reemplaza por otra regla (por ejemplo el
+  proxy de medios), para no presentar como CATE algo que no lo es.
 
 ## 7. Qué decir en la tesis (borrador de ideas, no texto final)
 

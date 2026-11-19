@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-19: 78 de 78 mutaciones detectadas.
+Resultado del 2026-11-19: 80 de 80 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -233,6 +233,13 @@ MUTACIONES = [
      "        t_vinculos = {}\n        for nombre_v, frac in VINCULOS.items():",
      "        t_vinculos = {}\n        rng.random(n)\n        for nombre_v, frac in VINCULOS.items():",
      "tests/test_simulacion_ampliada.py"),
+    ("Reglas ampliadas: no consume el sorteo de la regla aleatoria (cambia los desempates de la vigente)",
+     "src/focalizacion/reglas_ampliadas.py",
+     "        rng.random(len(ev))\n        elegidos = {}", "        elegidos = {}", "tests/test_reglas_ampliadas.py"),
+    ("Reglas ampliadas: la vigente con FHDI olvida la brecha de los no tratados",
+     "src/focalizacion/reglas_ampliadas.py",
+     "np.average(p * rf.brecha(x1) + (1 - p) * rf.brecha(x0), weights=w)",
+     "np.average(p * rf.brecha(x1), weights=w)", "tests/test_reglas_ampliadas.py"),
 ]
 
 resultados = []
