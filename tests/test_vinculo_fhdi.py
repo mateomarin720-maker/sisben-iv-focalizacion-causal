@@ -1,7 +1,8 @@
-"""Imputación fraccional en la simulación (pregunta 5 de
+"""Imputación fraccional en la simulación (preguntas 5 a 7 de
 `sensibilidad_semisintetica.py`; `docs/metodologia/METODOLOGIA_FHDI.md`):
 probabilidad de la celda con la cadena de respaldos, no identificable sin
-vínculo, y la recta de atenuación con sorteo frente a imputación fraccional."""
+vínculo, la recta de atenuación con sorteo frente a imputación fraccional
+y LinearDML dentro de la celda."""
 from __future__ import annotations
 
 import numpy as np
@@ -99,3 +100,59 @@ def test_repeticion_de_diagnostico_sobre_base_sintetica():
     assert len(filas) == len(se.ESCENARIOS_VINCULO) * len(se.IMPUTACIONES) * 3
     assert set(filas["estimador"]) == {"regresion_efectos_fijos", "linear_dml", "linear_dml_sin_regularizar"}
     assert filas["estimacion"].notna().all() and set(filas["hogares"]) == {800}
+
+
+def _celdas_pequenas(seed: int, n: int = 8_000, k: int = 1_000, L: float = 0.25):
+    """Efecto nulo, confusión por celda y ≈8 hogares por celda; T con la
+    imputación fraccional en los no vinculados (el caso de la pregunta 6)."""
+    rng = np.random.default_rng(seed)
+    celda = rng.integers(0, k, n)
+    a = rng.normal(0, 1, k)
+    d = pd.DataFrame({"geo_zona_urbana": rng.integers(0, 2, n), "jefe_mujer": rng.integers(0, 2, n),
+                      "viv_paredes": rng.choice([1, 1, 1, 5], n).astype(float), "hotdeck_celda_cat": celda})
+    t = (rng.random(n) < 1 / (1 + np.exp(-a[celda]))).astype(float)
+    y = 0.5 * a[celda] + rng.normal(0, 0.3, n)
+    p = probabilidad_celda(celda[:, None], celda[:, None], t)
+    return d, y, se.t_observado(t, t, p, rng.random(n) < L, "fhdi")
+
+
+def test_linear_dml_dentro_de_la_celda_quita_el_sesgo_de_celdas_pequenas():
+    """Pregunta 7: con FHDI y celdas pequeñas, LinearDML vigente se sesga
+    (estima la celda en el ajuste cruzado) y dentro de la celda no (la
+    quita exactamente, como la regresión con efectos fijos)."""
+    vigente, intra = [], []
+    for s in range(4):
+        d, y, t = _celdas_pequenas(s)
+        vigente.append(se.linear_dml(d, y, t, regularizado=True)[0])
+        intra.append(se.linear_dml_intra_celda(d, y, t)[0])
+    assert np.mean(vigente) > 0.08
+    assert abs(np.mean(intra)) < 0.02
+
+
+def test_linear_dml_dentro_de_la_celda_con_celdas_grandes_coincide_con_la_regresion():
+    """Con vínculo parcial (L = 0,5): FHDI recupera τ y Hot-Deck da L·τ,
+    igual que la regresión con efectos fijos."""
+    b = _base(n=8_000, seed=3)
+    rng = np.random.default_rng(103)
+    t = asignar(b, ESCENARIOS["confusion_observada"], rng)[0].astype(float)
+    y = b["y0"].to_numpy() + b["tau"].to_numpy() * t
+    Z, celda = diseno_x(b), b["hotdeck_celda_cat"].to_numpy()
+    td, p, v = hotdeck_celda(celda, celda, t, rng), probabilidad_celda(celda, celda, t), rng.random(len(b)) < 0.5
+    tau = b["tau"].mean()
+    tf = se.t_observado(t, td, p, v, "fhdi")
+    a, lo, hi = se.linear_dml_intra_celda(b, y, tf)
+    assert abs(a - regresion_efectos_fijos(y, tf, Z, celda)[0]) < 0.005 and lo < tau < hi
+    assert abs(se.linear_dml_intra_celda(b, y, se.t_observado(t, td, p, v, "hotdeck"))[0] - 0.5 * tau) < 0.02
+
+
+def test_repeticion_intra_celda_sobre_base_sintetica():
+    from src.simulacion.base import preparar_base
+    from tests.test_simulacion_equivalencia import hogares_sinteticos
+
+    hogares, p_t = hogares_sinteticos(n=3_000)
+    b = preparar_base(hogares, p_t)
+    filas = pd.DataFrame(se.una_repeticion_intra_celda(b, rep=0, n=1_200))
+    assert len(filas) == len(se.ESCENARIOS_VINCULO) * len(se.FRACCIONES_VINCULO) * len(se.IMPUTACIONES) * 3
+    cero = filas[(filas["imputacion"] == "fhdi") & (filas["fraccion_vinculada"] == 0)]
+    assert cero["estimacion"].isna().all()
+    assert filas.drop(cero.index)["estimacion"].notna().all()

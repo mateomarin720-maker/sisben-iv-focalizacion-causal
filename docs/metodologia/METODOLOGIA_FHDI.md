@@ -203,6 +203,58 @@ evaluar: transformación dentro de la celda (restar la media de la celda a
 Y y a T) antes de LinearDML, que hace con el DML lo que la regresión con
 efectos fijos hace con MCO.
 
+**P7. LinearDML dentro de la celda quita el sesgo** (pregunta 7 de
+`sensibilidad_semisintetica.py`, `linear_dml_intra_celda`, 2026-11-19).
+
+Regla: antes de LinearDML se resta la media de la celda a Y, a T y a los
+controles de `diseno_x`; la celda ya no entra a los modelos auxiliares
+(está quitada); T transformado es continuo (Ridge para Y y para T, con la
+regularización vigente); los modificadores del efecto X no se
+transforman; el IC se multiplica por √(n / (n − celdas)), la corrección
+de grados de libertad de la regresión con efectos fijos. Es el estimador
+de Robinson con efectos fijos de celda: la celda se quita sin estimarla,
+y el DML queda para la parte de X.
+
+Encuestas de 30.000 hogares (≈8 por celda), 264 repeticiones, MCSE del
+sesgo ≤ 0,003. Confusión observada, τ = 0,095*:
+
+| L | Imputación | Regresión con efectos fijos | LinearDML vigente | LinearDML dentro de la celda | L·τ |
+|---|---|---|---|---|---|
+| 0 | Hot-Deck | +0,001* | −0,034* | +0,001* | 0 |
+| 0,25 | Hot-Deck | +0,024* | −0,011* | +0,024* | +0,024 |
+| 0,50 | Hot-Deck | +0,046* | +0,013* | +0,047* | +0,047 |
+| 0,75 | Hot-Deck | +0,069* | +0,037* | +0,070* | +0,071 |
+| 0,25 | FHDI | +0,093* | −0,067* | **+0,094*** | |
+| 0,50 | FHDI | +0,093* | +0,007* | **+0,094*** | |
+| 0,75 | FHDI | +0,091* | +0,034* | **+0,092*** | |
+| 1 | (vínculo exacto) | +0,092* | +0,060* | **+0,094*** | +0,095 |
+
+Con efecto nulo, LinearDML dentro de la celda da entre −0,003* y +0,001*
+en todos los L y las dos imputaciones (la regresión, lo mismo); el
+vigente, −0,035* a −0,037* con Hot-Deck y −0,160*, −0,088*, −0,063* con
+FHDI y L = 0,25; 0,5; 0,75. Cobertura del IC 95 %: 0,93-0,96 dentro de la
+celda (como la regresión) frente a 0,06-0,67 del vigente. Con Hot-Deck y
+L < 1 la cobertura de τ es baja en los tres estimadores porque estiman
+L·τ, no τ (la Proposición 2).
+
+Lectura:
+
+- **El sesgo de LinearDML era de estimar la celda, no del DML:** quitada
+  exactamente, LinearDML coincide con la regresión con efectos fijos
+  (diferencias ≤ 0,0015) con las dos imputaciones y en todo L.
+- **Con FHDI recupera τ en todo L > 0** (P5 se cumple también para el
+  DML); con Hot-Deck da L·τ (la Proposición 2 no cambia).
+- **También corrige el sesgo vigente sin imputación:** con el vínculo
+  exacto (L = 1) el LinearDML vigente da +0,060* (−0,035* con efecto
+  nulo), el sesgo por celdas pequeñas de CLAUDE.md; dentro de la celda,
+  +0,094* (−0,002*). Por eso adoptarlo **movería las filas de LinearDML
+  de la Tabla 6** (simulación principal), no solo las de la FHDI. No se
+  ha cambiado: `linear_dml`, `estimadores.dml` y la simulación principal
+  siguen como estaban; la decisión es de la fase 2b.
+- **Límites:** no cubre el Causal Forest (su sesgo con celdas pequeñas
+  queda por medir con la misma transformación); con datos reales (78
+  hogares por celda) la diferencia esperada es pequeña (≈0,016 según P6).
+
 ## 6. Plan e implementación
 
 | Fase | Qué | Estado |
@@ -211,6 +263,7 @@ efectos fijos hace con MCO.
 | 1 | Enlace fraccional por hogar guardado y publicado en Azure (`enlace.py` → `geih_sisben_fhdi_2024.parquet`) | Hecho el 2026-11-18 |
 | 2a | Sensibilidad del vínculo parcial con las dos imputaciones (pregunta 5 de `sensibilidad_semisintetica.py`): L = 0; 0,25; 0,5; 0,75; 1, Hot-Deck frente a FHDI, regresión con efectos fijos y LinearDML, efecto nulo y confusión observada | Hecho el 2026-11-18 (288 repeticiones; resultados en §5, P5 y P6) |
 | 2a′ | Diagnóstico del sesgo de LinearDML con FHDI (pregunta 6): tamaño de celda, regularización | Hecho el 2026-11-18 (P6) |
+| 2a″ | LinearDML dentro de la celda (pregunta 7): la celda se quita exactamente antes del DML | Hecho el 2026-11-19 (P7); no cambia la simulación principal |
 | 2b | Régimen FHDI en la simulación principal (`evaluacion.py`, las 8 filas de la Tabla 6, incluido el Causal Forest y la pobreza monetaria), para ver si quitar el ruido del sorteo mueve los modelos causales | **Pendiente obligatoria**: se hace aunque no sea en la misma corrida que la 2a |
 | 3 | Reglas de focalización con el enlace fraccional (regla vigente con probabilidad; CATE con FHDI no identificable) | Pendiente |
 | 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Pendiente |
@@ -247,6 +300,12 @@ efectos fijos hace con MCO.
   respaldos, no identificable con L = 0, T observado, la recta con sorteo
   frente a la imputación fraccional en datos sintéticos, y la repetición
   completa sobre una base sintética).
+- **LinearDML dentro de la celda** (`sensibilidad_semisintetica.linear_dml_intra_celda`,
+  pregunta 7): función nueva al lado de `linear_dml`, que no cambia.
+  Pruebas: con celdas de 8 hogares, efecto nulo y FHDI con L = 0,25 el
+  vigente se sesga (+0,13 en la base de prueba) y el nuevo no; con celdas
+  grandes coincide con la regresión (FHDI τ, Hot-Deck L·τ). Mutación: el
+  estimador sin quitar la media de la celda.
 
 ## 7. Qué decir en la tesis (borrador de ideas, no texto final)
 
@@ -258,6 +317,9 @@ efectos fijos hace con MCO.
 - La Proposición 2 (recta L·τ) es de la imputación por un solo sorteo;
   con imputación fraccional el vínculo parcial reduce la precisión pero no
   sesga (si la fase 2 lo confirma con los estimadores del proyecto).
+- Con un enlace por celdas, el estimador debe quitar la celda
+  exactamente: el DML que la estima en el ajuste cruzado se sesga con
+  celdas pequeñas, y más con imputación fraccional (P6, P7).
 
 ## Referencias
 

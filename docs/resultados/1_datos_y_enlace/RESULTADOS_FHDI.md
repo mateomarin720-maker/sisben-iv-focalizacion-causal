@@ -141,6 +141,40 @@ de su celda (FHDI). Confusión observada, τ = 0,095*:
   regresión con efectos fijos exactos no se sesga. Con los datos reales
   (78 hogares por celda) sería del orden de −0,016.
 
+### LinearDML dentro de la celda (pregunta 7)
+
+`sensibilidad_semisintetica.py intra_celda` (salidas
+`docs/reports/sensibilidad_intra_celda*`): antes de LinearDML se resta la
+media de la celda a Y, a T y a los controles, como en la regresión con
+efectos fijos. 264 repeticiones, 30.000 hogares por encuesta. Confusión
+observada, τ = 0,095*:
+
+| L | Imputación | Regresión con efectos fijos | LinearDML vigente | LinearDML dentro de la celda | L·τ |
+|---|---|---|---|---|---|
+| 0 | Hot-Deck | +0,001* | −0,034* | +0,001* | 0 |
+| 0,25 | Hot-Deck | +0,024* | −0,011* | +0,024* | +0,024 |
+| 0,50 | Hot-Deck | +0,046* | +0,013* | +0,047* | +0,047 |
+| 0,75 | Hot-Deck | +0,069* | +0,037* | +0,070* | +0,071 |
+| 0,25 | FHDI | +0,093* | −0,067* | **+0,094*** | |
+| 0,50 | FHDI | +0,093* | +0,007* | **+0,094*** | |
+| 0,75 | FHDI | +0,091* | +0,034* | **+0,092*** | |
+| 1 | (vínculo exacto) | +0,092* | +0,060* | **+0,094*** | +0,095 |
+
+Con efecto nulo, LinearDML dentro de la celda da entre −0,003* y +0,001*
+en todos los L y las dos imputaciones (la regresión, lo mismo); el
+vigente, −0,035* a −0,037* con Hot-Deck y −0,160*, −0,088*, −0,063* con
+FHDI y L = 0,25; 0,5; 0,75. Cobertura del IC 95 %: 0,93-0,96 dentro de la
+celda (como la regresión) frente a 0,06-0,67 del vigente. Con Hot-Deck y
+L < 1 la cobertura de τ es baja en los tres estimadores porque estiman
+L·τ, no τ (la Proposición 2).
+
+- Quitada la celda exactamente, LinearDML coincide con la regresión con
+  efectos fijos: con FHDI recupera τ; con Hot-Deck, L·τ.
+- Corrige también el sesgo del LinearDML vigente con vínculo exacto
+  (+0,060* frente a τ = 0,095*). Adoptarlo movería las filas de LinearDML
+  de la Tabla 6; por ahora no se cambió nada de lo vigente (decisión de la
+  fase 2b, `METODOLOGIA_FHDI.md` P7).
+
 ## Conclusión
 
 La FHDI es una alternativa al Hot-Deck que **no cambia ninguna conclusión

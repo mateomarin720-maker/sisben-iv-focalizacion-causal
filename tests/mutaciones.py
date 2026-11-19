@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-18: 75 de 75 mutaciones detectadas.
+Resultado del 2026-11-19: 76 de 76 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -222,6 +222,8 @@ MUTACIONES = [
      'imputado = {"hotdeck": t_donante, "fhdi": t_donante}[imputacion]', "tests/test_vinculo_fhdi.py"),
     ("Simulación: sin control de identificación (se reporta un número con L = 0)", "src/simulacion/estimadores.py",
      "return bool(np.mean(td**2) > tol)", "return True", "tests/test_vinculo_fhdi.py"),
+    ("Simulación: LinearDML dentro de la celda sin quitar la media de la celda", "src/simulacion/sensibilidad_semisintetica.py",
+     "yd, td = dentro_de_celda(y, celda), dentro_de_celda(t, celda)", "yd, td = y, t", "tests/test_vinculo_fhdi.py"),
 ]
 
 resultados = []

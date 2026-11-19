@@ -2,6 +2,21 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-19 (52) — LinearDML dentro de la celda (pregunta 7)
+
+### Agregado
+- **`sensibilidad_semisintetica.linear_dml_intra_celda`** y modo `intra_celda`: LinearDML sobre
+  Y, T y controles sin la media de su celda (la celda se quita exactamente, no se estima en el
+  ajuste cruzado), IC con la corrección de grados de libertad de los efectos fijos. 264
+  repeticiones con el diseño de la pregunta 5:
+  - Con FHDI recupera τ en todo L > 0 (+0,092* a +0,094* frente a 0,095*; el vigente −0,067* a
+    +0,034*); con Hot-Deck, L·τ. Coincide con la regresión con efectos fijos (≤ 0,0015).
+  - Con efecto nulo, −0,003* a +0,001* (el vigente −0,035* a −0,160*); cobertura 0,93-0,96.
+  - Con vínculo exacto corrige también el sesgo vigente (+0,094* frente a +0,060*): adoptarlo
+    movería las filas de LinearDML de la Tabla 6. No se cambió `linear_dml`, `estimadores.dml`
+    ni la simulación principal; decisión de la fase 2b.
+- 3 pruebas (`test_vinculo_fhdi.py`) y su mutación: 305 pruebas; 76 de 76 mutaciones detectadas.
+
 ## 2026-11-18 (51) — Por qué LinearDML se sesga con imputación fraccional (pregunta 6)
 
 ### Agregado

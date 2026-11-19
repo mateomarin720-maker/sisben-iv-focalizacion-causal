@@ -39,6 +39,14 @@ Tres preguntas que dejó abierta la corrida principal:
    LinearDML casi sin regularizar y con encuestas de 30.000, 60.000 y
    120.000 hogares. Repeticiones fijas (`REPS_DIAGNOSTICO`): basta
    distinguir sesgos de −0,16 y −0,03.
+7. **LinearDML dentro de la celda** (2026-11-18, corrección propuesta
+   por la pregunta 6). Antes de LinearDML se resta la media de la celda a
+   Y, a T y a los controles (la transformación de la regresión con efectos
+   fijos), de modo que la celda se quita exactamente en vez de estimarse
+   en el ajuste cruzado (`linear_dml_intra_celda`). Mismo diseño de la
+   pregunta 5 (L de 0 a 1, Hot-Deck y FHDI), con la regresión y el
+   LinearDML vigente como referencia. Ni `linear_dml` ni la simulación
+   principal cambian: esta pregunta mide cuánto se moverían.
 
 Solo log-ingreso y estimadores rápidos (regresión con efectos fijos,
 LinearDML en sus dos versiones, RD). Repeticiones hasta que el error
@@ -50,12 +58,14 @@ Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica tamano [n_jobs]
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica vinculo [n_jobs]
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica vinculo_diagnostico [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica intra_celda [n_jobs]
 Salidas:
     docs/reports/sensibilidad_semisintetica.csv (cada repetición)
     docs/reports/sensibilidad_semisintetica_resumen.csv
     docs/reports/sensibilidad_tamano_muestra{.csv,_resumen.csv} (pregunta 4)
     docs/reports/sensibilidad_vinculo_fhdi{.csv,_resumen.csv} (pregunta 5)
     docs/reports/sensibilidad_vinculo_fhdi_diagnostico{.csv,_resumen.csv} (pregunta 6)
+    docs/reports/sensibilidad_intra_celda{.csv,_resumen.csv} (pregunta 7)
 """
 from __future__ import annotations
 
@@ -72,7 +82,7 @@ import pandas as pd
 
 from src.simulacion import contrato
 from src.simulacion.asignacion import asignar
-from src.simulacion.base import celdas_por_nivel, diseno_x, firma_con_datos, preparar_base
+from src.simulacion.base import celdas_por_nivel, dentro_de_celda, diseno_x, firma_con_datos, preparar_base
 from src.simulacion.escenarios import ESCENARIOS as ESCENARIOS_BASE
 from src.simulacion.escenarios import H_RD, N_ENCUESTA, TAU, VINCULOS
 from src.simulacion.estimadores import (discontinuidad, discontinuidad_difusa, estimacion5, identificable,
@@ -104,6 +114,9 @@ OUT_DIAG_RESUMEN = Path("docs/reports/sensibilidad_vinculo_fhdi_diagnostico_resu
 OUT_DIAG_FIRMA = Path("docs/reports/sensibilidad_vinculo_fhdi_diagnostico_config.json")
 FRACCIONES_DIAGNOSTICO = (0.25, 0.5, 0.75)
 REPS_DIAGNOSTICO = 96  # MCSE ≈ 0,005: basta para distinguir −0,16 de −0,03
+OUT_INTRA = Path("docs/reports/sensibilidad_intra_celda.csv")
+OUT_INTRA_RESUMEN = Path("docs/reports/sensibilidad_intra_celda_resumen.csv")
+OUT_INTRA_FIRMA = Path("docs/reports/sensibilidad_intra_celda_config.json")
 SEED = 2028
 # MCSE máximo del sesgo. La RD usa solo los hogares cerca del corte y la
 # difusa divide por el salto en la participación: con 0,003 necesitarían
@@ -143,6 +156,42 @@ def linear_dml(d: pd.DataFrame, y: np.ndarray, t: np.ndarray, regularizado: bool
     m.fit(y, t, X=X, W=d[est5.W_CELDA[0]].to_numpy(float))
     lo, hi = m.ate_interval(X, alpha=0.05)
     return float(m.ate(X)), float(lo), float(hi)
+
+
+def linear_dml_intra_celda(d: pd.DataFrame, y: np.ndarray, t: np.ndarray) -> tuple[float, float, float]:
+    """LinearDML sobre los datos transformados dentro de la celda
+    (pregunta 7). Y, T y los controles (`diseno_x`) pierden la media de su
+    celda, como en la regresión con efectos fijos, y la celda ya no entra
+    a los modelos auxiliares: queda quitada exactamente, no estimada en el
+    ajuste cruzado con pocos hogares por celda (el sesgo de la pregunta 6).
+    T transformado deja de ser 0/1: tratamiento continuo y Ridge para Y y
+    para T. X (modificadores del efecto) no se transforma: el efecto puede
+    variar con variables constantes en la celda, porque T transformado sí
+    varía dentro de ella. El IC se corrige por los grados de libertad que
+    consumen las medias de celda (factor √(n / (n − celdas)), el mismo de
+    la regresión con efectos fijos)."""
+    from econml.dml import LinearDML
+    from sklearn.linear_model import Ridge
+    from sklearn.pipeline import make_pipeline
+
+    est5 = estimacion5()
+    celda = d["hotdeck_celda_cat"].to_numpy()
+    yd, td = dentro_de_celda(y, celda), dentro_de_celda(t, celda)
+    W = dentro_de_celda(diseno_x(d), celda)
+    nombres_w = [f"w{i}" for i in range(W.shape[1])]
+    columnas = est5.X_COLS + nombres_w
+
+    def modelo():
+        return make_pipeline(est5._codificador(columnas, est5.X_CATEGORICAS, []), Ridge(alpha=est5.ALPHA_Y))
+
+    m = LinearDML(model_y=modelo(), model_t=modelo(), discrete_treatment=False, random_state=SEED)
+    X = d[est5.X_COLS].to_numpy(float)
+    m.fit(yd, td, X=X, W=W)
+    ate = float(m.ate(X))
+    lo, hi = m.ate_interval(X, alpha=0.05)
+    n, g = len(y), len(np.unique(celda))
+    f = np.sqrt(n / max(n - g, 1))
+    return ate, ate - f * (ate - float(lo)), ate + f * (float(hi) - ate)
 
 
 def una_repeticion(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -> list[dict]:
@@ -291,6 +340,43 @@ def una_repeticion_vinculo_diagnostico(b: pd.DataFrame, rep: int, tamanos: tuple
                                           estimador=est, efecto_verdadero=float(tau.mean()), estimacion=a,
                                           ic_lo=lo, ic_hi=hi, imputacion=imputacion, fraccion_vinculada=L,
                                           hogares=n, hogares_por_celda=n / n_celdas))
+    return filas
+
+
+def una_repeticion_intra_celda(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -> list[dict]:
+    """Pregunta 7: el diseño de la pregunta 5 con LinearDML dentro de la
+    celda junto a la regresión con efectos fijos y el LinearDML vigente."""
+    filas = []
+    niveles = celdas_por_nivel(b)
+    for i_esc, nombre in enumerate(ESCENARIOS_VINCULO):
+        esc = ESCENARIOS[nombre]
+        rng = np.random.default_rng([SEED, rep, i_esc, 7])
+        t_real, _, _ = asignar(b, esc, rng)
+        idx = rng.permutation(len(b))
+        enc, reg = idx[:n], idx[n:]
+        d = b.iloc[enc].reset_index(drop=True)
+        celda = d["hotdeck_celda_cat"].to_numpy()
+        tau = esc.get("factor_tau", 1.0) * d["tau"].to_numpy()
+        y = d["y0"].to_numpy() + tau * t_real[enc]
+        donante = reg[sortear_donante(niveles[enc], niveles[reg], rng)]
+        p = probabilidad_celda(niveles[enc], niveles[reg], t_real[reg])
+        Z = diseno_x(d)
+        u = rng.random(n)
+        for L in FRACCIONES_VINCULO:
+            for imputacion in IMPUTACIONES:
+                t_obs = t_observado(t_real[enc], t_real[donante], p, u < L, imputacion)
+                ok = identificable(t_obs, celda)
+                estimadores = ("regresion_efectos_fijos", "linear_dml", "linear_dml_intra_celda")
+                if ok:
+                    res = {"regresion_efectos_fijos": regresion_efectos_fijos(y, t_obs, Z, celda),
+                           "linear_dml": linear_dml(d, y, t_obs, regularizado=True),
+                           "linear_dml_intra_celda": linear_dml_intra_celda(d, y, t_obs)}
+                else:
+                    res = {e: (np.nan, np.nan, np.nan) for e in estimadores}
+                for est, (a, lo, hi) in res.items():
+                    filas.append(dict(rep=rep, escenario=nombre, vinculo=f"{imputacion}_L{L:.2f}", estimador=est,
+                                      efecto_verdadero=float(tau.mean()), estimacion=a, ic_lo=lo, ic_hi=hi,
+                                      imputacion=imputacion, fraccion_vinculada=L, identificable=ok))
     return filas
 
 
@@ -458,6 +544,37 @@ def main_vinculo_diagnostico(n_jobs: int = 3) -> pd.DataFrame:
     return res
 
 
+def main_intra_celda(n_jobs: int = 3) -> pd.DataFrame:
+    """Pregunta 7: ¿quitar la celda exactamente antes de LinearDML elimina
+    su sesgo con las dos imputaciones?"""
+    b = _base()
+    cfg = dict(ESCENARIOS={k: ESCENARIOS[k] for k in ESCENARIOS_VINCULO}, FRACCIONES=FRACCIONES_VINCULO,
+               IMPUTACIONES=IMPUTACIONES, SEED=SEED, TAU=TAU, n=N_ENCUESTA, version=1)
+    firma = firma_con_datos(hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:12], b)
+    r = _correr(b, una_repeticion_intra_celda, OUT_INTRA, OUT_INTRA_FIRMA, firma, n_jobs)
+
+    res = resumir(r)
+    extra = r.groupby(["escenario", "vinculo", "estimador"]).agg(
+        imputacion=("imputacion", "first"), fraccion_vinculada=("fraccion_vinculada", "first"),
+        pct_identificable=("identificable", lambda v: float(np.mean(v) * 100))).reset_index()
+    res = res.merge(extra, on=["escenario", "vinculo", "estimador"])
+    res["L_por_tau"] = res["fraccion_vinculada"] * res["efecto_verdadero"]
+    marcar_simulado(res).to_csv(OUT_INTRA_RESUMEN, index=False)
+    pd.set_option("display.width", 220)
+    print(f"\n{NOTA_SIMULADO}")
+    print(f"\n=== LinearDML dentro de la celda*: {r['rep'].nunique()} repeticiones, "
+          f"{N_ENCUESTA:,} hogares por encuesta ===")
+    for col in ("estimacion", "sesgo", "cobertura"):
+        print(f"\n{col}:")
+        print(res.pivot_table(index=["escenario", "imputacion", "fraccion_vinculada"], columns="estimador",
+                              values=col).round(4).to_string())
+    pend = sin_converger(res)
+    print(f"\nConvergencia (MCSE del sesgo ≤ {UMBRAL_MCSE_DEFECTO}): "
+          f"{'alcanzada' if pend.empty else f'NO en {len(pend)} celdas'}")
+    print(f"Guardado: {OUT_INTRA}\nGuardado: {OUT_INTRA_RESUMEN}")
+    return res
+
+
 if __name__ == "__main__":
     if sys.argv[1:2] == ["tamano"]:
         main_tamano(*[int(a) for a in sys.argv[2:]])
@@ -465,5 +582,7 @@ if __name__ == "__main__":
         main_vinculo(*[int(a) for a in sys.argv[2:]])
     elif sys.argv[1:2] == ["vinculo_diagnostico"]:
         main_vinculo_diagnostico(*[int(a) for a in sys.argv[2:]])
+    elif sys.argv[1:2] == ["intra_celda"]:
+        main_intra_celda(*[int(a) for a in sys.argv[2:]])
     else:
         main(*[int(a) for a in sys.argv[1:]])
