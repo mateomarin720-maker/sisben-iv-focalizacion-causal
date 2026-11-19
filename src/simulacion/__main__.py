@@ -1,11 +1,15 @@
 """Línea de comandos del módulo de simulación.
 
-Tres usos:
+Cuatro usos:
 
   Corrida de la tesis (hogares de la GEIH 2024 y Sisbén del banco de datos):
     python -m src.simulacion [n_jobs]
     Salidas en docs/reports/simulacion_semisintetica* y
     docs/resultados/3_simulacion/simulacion_semisintetica_convergencia.png
+
+  Corrida ampliada de la tesis (estimadores dentro de la celda y régimen
+  FHDI, junto a la Tabla 6 vigente, que no cambia; `ampliada.py`):
+    python -m src.simulacion ampliada [n_jobs]
 
   Modo simulado (sin microdatos; población sintética desde los agregados
   de src/simulacion/parametros/poblacion_2024.json):
@@ -72,6 +76,11 @@ def main(argv: list[str]) -> None:
     from src.simulacion import evaluacion, generador
     from src.simulacion.base import preparar_base
 
+    if argv[:1] == ["ampliada"]:
+        from src.simulacion import ampliada
+
+        ampliada.main(*[int(x) for x in argv[1:]])
+        return
     if not argv or argv[0].isdigit():  # corrida de la tesis
         evaluacion.main(*[int(a) for a in argv])
         return

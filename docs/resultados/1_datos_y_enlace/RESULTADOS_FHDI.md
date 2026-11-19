@@ -175,6 +175,42 @@ L·τ, no τ (la Proposición 2).
   de la Tabla 6; por ahora no se cambió nada de lo vigente (decisión de la
   fase 2b, `METODOLOGIA_FHDI.md` P7).
 
+### Causal Forest dentro de la celda (pregunta 8)
+
+`sensibilidad_semisintetica.py bosque_intra_celda` (salidas
+`docs/reports/sensibilidad_bosque_intra_celda*`): la misma
+transformación antes del Causal Forest, con sus hiperparámetros vigentes.
+96 repeticiones, 30.000 hogares por encuesta; PEHE es el error en el
+efecto por hogar:
+
+| Escenario | Vínculo | Regresión con efectos fijos | Causal Forest vigente | Causal Forest dentro de la celda | PEHE vigente | PEHE dentro de la celda |
+|---|---|---|---|---|---|---|
+| Confusión observada (τ = 0,095*) | Hot-Deck, L = 1 (vínculo exacto) | +0,090* | +0,058* | **+0,092*** | 0,085* | **0,067*** |
+| | Hot-Deck, L = 0 | −0,001* | −0,036* | −0,002* | 0,159* | 0,119* |
+| | FHDI, L = 0,25 | +0,089* | −0,073* | **+0,091*** | 0,257* | **0,129*** |
+| | FHDI, L = 0,5 | +0,086* | −0,002* | **+0,089*** | 0,160* | **0,094*** |
+| Efecto nulo | Hot-Deck, L = 1 | −0,002* | −0,037* | −0,001* | 0,087* | 0,064* |
+| | Hot-Deck, L = 0 | +0,001* | −0,037* | +0,000* | 0,088* | 0,063* |
+| | FHDI, L = 0,25 | −0,002* | −0,167* | −0,002* | 0,261* | 0,132* |
+| | FHDI, L = 0,5 | −0,004* | −0,094* | −0,004* | 0,159* | 0,091* |
+
+- **El Causal Forest se corrige igual que LinearDML:** dentro de la celda
+  su efecto promedio coincide con la regresión con efectos fijos y con
+  LinearDML dentro de la celda (diferencias ≤ 0,003) en los ocho casos;
+  el vigente se sesga −0,035* con vínculo exacto y hasta −0,167* con FHDI.
+- **Mejora también el efecto por hogar (PEHE),** que es para lo que se usa
+  el Causal Forest (heterogeneidad): baja entre 21 % y 50 %, más con FHDI
+  (0,257* → 0,129* con L = 0,25). La celda mal quitada contaminaba el
+  efecto de cada hogar, no solo el promedio.
+- **Sus IC son demasiado anchos en las dos versiones:** cobertura de 1,00
+  en casi todos los casos (el vigente también; en la simulación principal
+  su IC es unas tres veces más ancho que el de LinearDML). Con Hot-Deck y
+  L = 0 el corregido «cubre» τ el 84 % de las veces aunque estima ≈0. El
+  IC del Causal Forest no sirve para decidir si hay efecto; para eso
+  están la regresión y LinearDML.
+- **Costo:** el mismo tiempo de ajuste que el vigente (≈17 s con 30.000
+  hogares).
+
 ## Conclusión
 
 La FHDI es una alternativa al Hot-Deck que **no cambia ninguna conclusión

@@ -47,6 +47,14 @@ Tres preguntas que dejó abierta la corrida principal:
    pregunta 5 (L de 0 a 1, Hot-Deck y FHDI), con la regresión y el
    LinearDML vigente como referencia. Ni `linear_dml` ni la simulación
    principal cambian: esta pregunta mide cuánto se moverían.
+8. **Causal Forest dentro de la celda** (2026-11-19). La misma
+   transformación de la pregunta 7 antes de `CausalForestDML`
+   (`causal_forest_intra_celda`) frente al Causal Forest vigente (el de
+   `estimadores.dml`, con tratamiento continuo cuando T es una
+   probabilidad). Además del sesgo del efecto promedio, el error en el
+   efecto por hogar (PEHE), porque el Causal Forest se usa para la
+   heterogeneidad. Solo los vínculos que informan (`VINCULOS_BOSQUE_INTRA`)
+   y repeticiones fijas (`REPS_BOSQUE_INTRA`): cada ajuste tarda ≈17 s.
 
 Solo log-ingreso y estimadores rápidos (regresión con efectos fijos,
 LinearDML en sus dos versiones, RD). Repeticiones hasta que el error
@@ -59,6 +67,7 @@ Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica vinculo [n_jobs]
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica vinculo_diagnostico [n_jobs]
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica intra_celda [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.simulacion.sensibilidad_semisintetica bosque_intra_celda [n_jobs]
 Salidas:
     docs/reports/sensibilidad_semisintetica.csv (cada repetición)
     docs/reports/sensibilidad_semisintetica_resumen.csv
@@ -66,6 +75,7 @@ Salidas:
     docs/reports/sensibilidad_vinculo_fhdi{.csv,_resumen.csv} (pregunta 5)
     docs/reports/sensibilidad_vinculo_fhdi_diagnostico{.csv,_resumen.csv} (pregunta 6)
     docs/reports/sensibilidad_intra_celda{.csv,_resumen.csv} (pregunta 7)
+    docs/reports/sensibilidad_bosque_intra_celda{.csv,_resumen.csv} (pregunta 8)
 """
 from __future__ import annotations
 
@@ -117,6 +127,12 @@ REPS_DIAGNOSTICO = 96  # MCSE ≈ 0,005: basta para distinguir −0,16 de −0,0
 OUT_INTRA = Path("docs/reports/sensibilidad_intra_celda.csv")
 OUT_INTRA_RESUMEN = Path("docs/reports/sensibilidad_intra_celda_resumen.csv")
 OUT_INTRA_FIRMA = Path("docs/reports/sensibilidad_intra_celda_config.json")
+OUT_BOSQUE = Path("docs/reports/sensibilidad_bosque_intra_celda.csv")
+OUT_BOSQUE_RESUMEN = Path("docs/reports/sensibilidad_bosque_intra_celda_resumen.csv")
+OUT_BOSQUE_FIRMA = Path("docs/reports/sensibilidad_bosque_intra_celda_config.json")
+# (imputación, L): sin vínculo y vínculo exacto con Hot-Deck; vínculo parcial con FHDI.
+VINCULOS_BOSQUE_INTRA = (("hotdeck", 0.0), ("hotdeck", 1.0), ("fhdi", 0.25), ("fhdi", 0.5))
+REPS_BOSQUE_INTRA = 96
 SEED = 2028
 # MCSE máximo del sesgo. La RD usa solo los hogares cerca del corte y la
 # difusa divide por el salto en la participación: con 0,003 necesitarían
@@ -192,6 +208,63 @@ def linear_dml_intra_celda(d: pd.DataFrame, y: np.ndarray, t: np.ndarray) -> tup
     n, g = len(y), len(np.unique(celda))
     f = np.sqrt(n / max(n - g, 1))
     return ate, ate - f * (ate - float(lo)), ate + f * (float(hi) - ate)
+
+
+def _bosque(model_y, model_t, discreto: bool):
+    from econml.dml import CausalForestDML
+
+    # Los mismos hiperparámetros que `estimadores.dml` (simulación principal).
+    return CausalForestDML(model_y=model_y, model_t=model_t, discrete_treatment=discreto, n_estimators=200,
+                           min_samples_leaf=50, random_state=SEED, n_jobs=1)
+
+
+def causal_forest(d: pd.DataFrame, y: np.ndarray, t: np.ndarray) -> tuple[float, float, float, np.ndarray]:
+    """Causal Forest vigente (`estimadores.dml(bosque=True)`: W = celda
+    exacta, modelos auxiliares del proyecto). Con la imputación fraccional
+    T no es 0/1: tratamiento continuo y Ridge también para T, como en
+    `linear_dml`. Devuelve (ate, lo, hi, efecto por hogar)."""
+    est5 = estimacion5()
+    modelo_y, modelo_t = est5._modelos_auxiliares(est5.W_CELDA)
+    discreto = bool(np.isin(t, (0, 1)).all())
+    if not discreto:
+        from sklearn.base import clone
+        modelo_t = clone(modelo_y)
+    m = _bosque(modelo_y, modelo_t, discreto)
+    X = d[est5.X_COLS].to_numpy(float)
+    m.fit(y, t, X=X, W=d[est5.W_CELDA[0]].to_numpy(float))
+    lo, hi = m.ate_interval(X, alpha=0.05)
+    return float(m.ate(X)), float(lo), float(hi), np.ravel(m.effect(X))
+
+
+def _intra_celda(d: pd.DataFrame, y: np.ndarray, t: np.ndarray):
+    """Y, T y controles sin la media de su celda, y los modelos auxiliares
+    para ellos (Ridge con la regularización vigente, sin la celda)."""
+    from sklearn.linear_model import Ridge
+    from sklearn.pipeline import make_pipeline
+
+    est5 = estimacion5()
+    celda = d["hotdeck_celda_cat"].to_numpy()
+    yd, td = dentro_de_celda(y, celda), dentro_de_celda(t, celda)
+    W = dentro_de_celda(diseno_x(d), celda)
+    columnas = est5.X_COLS + [f"w{i}" for i in range(W.shape[1])]
+
+    def modelo():
+        return make_pipeline(est5._codificador(columnas, est5.X_CATEGORICAS, []), Ridge(alpha=est5.ALPHA_Y))
+
+    factor = np.sqrt(len(y) / max(len(y) - len(np.unique(celda)), 1))
+    return yd, td, W, d[est5.X_COLS].to_numpy(float), modelo, factor
+
+
+def causal_forest_intra_celda(d: pd.DataFrame, y: np.ndarray, t: np.ndarray) -> tuple[float, float, float, np.ndarray]:
+    """Causal Forest sobre los datos transformados dentro de la celda
+    (pregunta 8), con las mismas reglas de `linear_dml_intra_celda` y los
+    hiperparámetros del vigente. Devuelve (ate, lo, hi, efecto por hogar)."""
+    yd, td, W, X, modelo, f = _intra_celda(d, y, t)
+    m = _bosque(modelo(), modelo(), discreto=False)
+    m.fit(yd, td, X=X, W=W)
+    ate = float(m.ate(X))
+    lo, hi = m.ate_interval(X, alpha=0.05)
+    return ate, ate - f * (ate - float(lo)), ate + f * (float(hi) - ate), np.ravel(m.effect(X))
 
 
 def una_repeticion(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -> list[dict]:
@@ -377,6 +450,42 @@ def una_repeticion_intra_celda(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA) -
                     filas.append(dict(rep=rep, escenario=nombre, vinculo=f"{imputacion}_L{L:.2f}", estimador=est,
                                       efecto_verdadero=float(tau.mean()), estimacion=a, ic_lo=lo, ic_hi=hi,
                                       imputacion=imputacion, fraccion_vinculada=L, identificable=ok))
+    return filas
+
+
+def una_repeticion_bosque_intra_celda(b: pd.DataFrame, rep: int, n: int = N_ENCUESTA,
+                                      vinculos: tuple = VINCULOS_BOSQUE_INTRA) -> list[dict]:
+    """Pregunta 8: Causal Forest vigente y dentro de la celda, con la
+    regresión con efectos fijos y LinearDML dentro de la celda como
+    referencia. `pehe`: raíz del error cuadrático medio del efecto por
+    hogar frente al verdadero (solo los bosques)."""
+    filas = []
+    niveles = celdas_por_nivel(b)
+    for i_esc, nombre in enumerate(ESCENARIOS_VINCULO):
+        esc = ESCENARIOS[nombre]
+        rng = np.random.default_rng([SEED, rep, i_esc, 8])
+        t_real, _, _ = asignar(b, esc, rng)
+        idx = rng.permutation(len(b))
+        enc, reg = idx[:n], idx[n:]
+        d = b.iloc[enc].reset_index(drop=True)
+        celda = d["hotdeck_celda_cat"].to_numpy()
+        tau = esc.get("factor_tau", 1.0) * d["tau"].to_numpy()
+        y = d["y0"].to_numpy() + tau * t_real[enc]
+        donante = reg[sortear_donante(niveles[enc], niveles[reg], rng)]
+        p = probabilidad_celda(niveles[enc], niveles[reg], t_real[reg])
+        Z = diseno_x(d)
+        u = rng.random(n)
+        for imputacion, L in vinculos:
+            t_obs = t_observado(t_real[enc], t_real[donante], p, u < L, imputacion)
+            res = {"regresion_efectos_fijos": (*regresion_efectos_fijos(y, t_obs, Z, celda), None),
+                   "linear_dml_intra_celda": (*linear_dml_intra_celda(d, y, t_obs), None)}
+            for est, fn in (("causal_forest", causal_forest), ("causal_forest_intra_celda", causal_forest_intra_celda)):
+                a, lo, hi, cate = fn(d, y, t_obs)
+                res[est] = (a, lo, hi, float(np.sqrt(np.mean((cate - tau) ** 2))))
+            for est, (a, lo, hi, pehe) in res.items():
+                filas.append(dict(rep=rep, escenario=nombre, vinculo=f"{imputacion}_L{L:.2f}", estimador=est,
+                                  efecto_verdadero=float(tau.mean()), estimacion=a, ic_lo=lo, ic_hi=hi, pehe=pehe,
+                                  imputacion=imputacion, fraccion_vinculada=L))
     return filas
 
 
@@ -575,6 +684,35 @@ def main_intra_celda(n_jobs: int = 3) -> pd.DataFrame:
     return res
 
 
+def main_bosque_intra_celda(n_jobs: int = 3) -> pd.DataFrame:
+    """Pregunta 8: ¿quitar la celda exactamente corrige también el Causal
+    Forest, en el efecto promedio y en el efecto por hogar?"""
+    b = _base()
+    cfg = dict(ESCENARIOS={k: ESCENARIOS[k] for k in ESCENARIOS_VINCULO}, VINCULOS=VINCULOS_BOSQUE_INTRA,
+               SEED=SEED, TAU=TAU, n=N_ENCUESTA, version=1)
+    firma = firma_con_datos(hashlib.sha1(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest()[:12], b)
+    r = _correr(b, una_repeticion_bosque_intra_celda, OUT_BOSQUE, OUT_BOSQUE_FIRMA, firma, n_jobs,
+                min_reps=REPS_BOSQUE_INTRA, max_reps=REPS_BOSQUE_INTRA)
+
+    res = resumir(r)
+    extra = r.groupby(["escenario", "vinculo", "estimador"]).agg(
+        imputacion=("imputacion", "first"), fraccion_vinculada=("fraccion_vinculada", "first"),
+        pehe=("pehe", "mean")).reset_index()
+    res = res.merge(extra, on=["escenario", "vinculo", "estimador"])
+    marcar_simulado(res).to_csv(OUT_BOSQUE_RESUMEN, index=False)
+    pd.set_option("display.width", 220)
+    print(f"\n{NOTA_SIMULADO}")
+    print(f"\n=== Causal Forest dentro de la celda*: {r['rep'].nunique()} repeticiones, "
+          f"{N_ENCUESTA:,} hogares por encuesta ===")
+    for col in ("estimacion", "sesgo", "cobertura", "pehe"):
+        print(f"\n{col}:")
+        print(res.pivot_table(index=["escenario", "imputacion", "fraccion_vinculada"], columns="estimador",
+                              values=col).round(4).to_string())
+    print(f"\nMCSE del sesgo: máximo {res['mcse_sesgo'].max():.4f}")
+    print(f"Guardado: {OUT_BOSQUE}\nGuardado: {OUT_BOSQUE_RESUMEN}")
+    return res
+
+
 if __name__ == "__main__":
     if sys.argv[1:2] == ["tamano"]:
         main_tamano(*[int(a) for a in sys.argv[2:]])
@@ -584,5 +722,7 @@ if __name__ == "__main__":
         main_vinculo_diagnostico(*[int(a) for a in sys.argv[2:]])
     elif sys.argv[1:2] == ["intra_celda"]:
         main_intra_celda(*[int(a) for a in sys.argv[2:]])
+    elif sys.argv[1:2] == ["bosque_intra_celda"]:
+        main_bosque_intra_celda(*[int(a) for a in sys.argv[2:]])
     else:
         main(*[int(a) for a in sys.argv[1:]])

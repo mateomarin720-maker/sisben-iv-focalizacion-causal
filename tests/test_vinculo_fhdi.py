@@ -156,3 +156,27 @@ def test_repeticion_intra_celda_sobre_base_sintetica():
     cero = filas[(filas["imputacion"] == "fhdi") & (filas["fraccion_vinculada"] == 0)]
     assert cero["estimacion"].isna().all()
     assert filas.drop(cero.index)["estimacion"].notna().all()
+
+
+def test_causal_forest_dentro_de_la_celda_quita_el_sesgo_de_celdas_pequenas():
+    """Pregunta 8: lo mismo que LinearDML con el Causal Forest."""
+    vigente, intra = [], []
+    for s in range(3):
+        d, y, t = _celdas_pequenas(s)
+        vigente.append(se.causal_forest(d, y, t)[0])
+        intra.append(se.causal_forest_intra_celda(d, y, t)[0])
+    assert np.mean(vigente) > 0.08
+    assert abs(np.mean(intra)) < 0.03
+
+
+def test_repeticion_bosque_intra_celda_sobre_base_sintetica():
+    from src.simulacion.base import preparar_base
+    from tests.test_simulacion_equivalencia import hogares_sinteticos
+
+    hogares, p_t = hogares_sinteticos(n=3_000)
+    b = preparar_base(hogares, p_t)
+    vinculos = (("hotdeck", 1.0), ("fhdi", 0.5))
+    filas = pd.DataFrame(se.una_repeticion_bosque_intra_celda(b, rep=0, n=1_200, vinculos=vinculos))
+    assert len(filas) == len(se.ESCENARIOS_VINCULO) * len(vinculos) * 4
+    bosques = filas[filas["estimador"].str.startswith("causal_forest")]
+    assert filas["estimacion"].notna().all() and bosques["pehe"].notna().all() and (bosques["pehe"] >= 0).all()

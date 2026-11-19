@@ -255,6 +255,7 @@ poetry run python -m src.validacion.candidatas_celda_catalogo   # lento (25 min)
 poetry run python -m src.simulacion.calibrar
 poetry run python -m src.validacion.validar_ipm_geih_ecv
 poetry run python -m src.simulacion
+poetry run python -m src.simulacion ampliada   # estimadores dentro de la celda y FHDI junto a la Tabla 6 (lento)
 poetry run python -m src.focalizacion.reglas_focalizacion
 poetry run python -m src.focalizacion.heterogeneidad_ampliada
 poetry run python -m src.simulacion.sensibilidad_semisintetica
@@ -262,6 +263,7 @@ poetry run python -m src.simulacion.sensibilidad_semisintetica tamano
 poetry run python -m src.simulacion.sensibilidad_semisintetica vinculo   # FHDI frente a Hot-Deck con vínculo parcial
 poetry run python -m src.simulacion.sensibilidad_semisintetica vinculo_diagnostico   # lento (≈50 min)
 poetry run python -m src.simulacion.sensibilidad_semisintetica intra_celda   # LinearDML sin la media de la celda
+poetry run python -m src.simulacion.sensibilidad_semisintetica bosque_intra_celda   # lo mismo con el Causal Forest (≈40 min)
 poetry run python -m src.diagnostico.variabilidad_hotdeck 2
 poetry run python -m src.emparejamiento.fhdi.enlace --publicar   # enlace fraccional por hogar; lee de Azure y publica
 poetry run python -m src.emparejamiento.fhdi   # lee de Azure en memoria; después de variabilidad_hotdeck y errores_focalizacion_frechet
@@ -281,7 +283,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 76 de 76 el 2026-11-19). Antes de mapear una
+cuando el error vuelve; 78 de 78 el 2026-11-19). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

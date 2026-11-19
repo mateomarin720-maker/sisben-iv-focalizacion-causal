@@ -255,6 +255,49 @@ Lectura:
   queda por medir con la misma transformación); con datos reales (78
   hogares por celda) la diferencia esperada es pequeña (≈0,016 según P6).
 
+**P8. El Causal Forest dentro de la celda también se corrige** (pregunta 8
+de `sensibilidad_semisintetica.py`, `causal_forest_intra_celda`,
+2026-11-19). Mismas reglas de P7 con los hiperparámetros del Causal
+Forest vigente (200 árboles, hoja mínima de 50). Encuestas de 30.000
+hogares, 96 repeticiones fijas (cada ajuste tarda ≈17 s), MCSE del sesgo
+≤ 0,005. Media de la estimación del efecto promedio y PEHE (raíz del
+error cuadrático medio del efecto por hogar):
+
+| Escenario | Vínculo | Regresión con efectos fijos | Causal Forest vigente | Causal Forest dentro de la celda | PEHE vigente | PEHE dentro de la celda |
+|---|---|---|---|---|---|---|
+| Confusión observada (τ = 0,095*) | Hot-Deck, L = 1 (vínculo exacto) | +0,090* | +0,058* | **+0,092*** | 0,085* | **0,067*** |
+| | Hot-Deck, L = 0 | −0,001* | −0,036* | −0,002* | 0,159* | 0,119* |
+| | FHDI, L = 0,25 | +0,089* | −0,073* | **+0,091*** | 0,257* | **0,129*** |
+| | FHDI, L = 0,5 | +0,086* | −0,002* | **+0,089*** | 0,160* | **0,094*** |
+| Efecto nulo | Hot-Deck, L = 1 | −0,002* | −0,037* | −0,001* | 0,087* | 0,064* |
+| | Hot-Deck, L = 0 | +0,001* | −0,037* | +0,000* | 0,088* | 0,063* |
+| | FHDI, L = 0,25 | −0,002* | −0,167* | −0,002* | 0,261* | 0,132* |
+| | FHDI, L = 0,5 | −0,004* | −0,094* | −0,004* | 0,159* | 0,091* |
+
+- **El Causal Forest se corrige igual que LinearDML:** dentro de la celda
+  su efecto promedio coincide con la regresión con efectos fijos y con
+  LinearDML dentro de la celda (diferencias ≤ 0,003) en los ocho casos;
+  el vigente se sesga −0,035* con vínculo exacto y hasta −0,167* con FHDI.
+- **Mejora también el efecto por hogar (PEHE),** que es para lo que se usa
+  el Causal Forest (heterogeneidad): baja entre 21 % y 50 %, más con FHDI
+  (0,257* → 0,129* con L = 0,25). La celda mal quitada contaminaba el
+  efecto de cada hogar, no solo el promedio.
+- **Sus IC son demasiado anchos en las dos versiones:** cobertura de 1,00
+  en casi todos los casos (el vigente también; en la simulación principal
+  su IC es unas tres veces más ancho que el de LinearDML). Con Hot-Deck y
+  L = 0 el corregido «cubre» τ el 84 % de las veces aunque estima ≈0. El
+  IC del Causal Forest no sirve para decidir si hay efecto; para eso
+  están la regresión y LinearDML.
+- **Costo:** el mismo tiempo de ajuste que el vigente (≈17 s con 30.000
+  hogares).
+
+**Qué implica para la simulación principal (Tabla 6).** El sesgo de
+estimar la celda está en las filas vigentes de LinearDML y del Causal
+Forest: con confusión observada y vínculo exacto, −0,036* y −0,034*
+frente a −0,004* de la regresión; con solapamiento débil, −0,111* y
+−0,110* frente a −0,010*; con Hot-Deck, −0,129* frente a −0,094*. Las
+versiones dentro de la celda deberían llevarlas a lo que da la regresión.
+
 ## 6. Plan e implementación
 
 | Fase | Qué | Estado |
@@ -264,7 +307,8 @@ Lectura:
 | 2a | Sensibilidad del vínculo parcial con las dos imputaciones (pregunta 5 de `sensibilidad_semisintetica.py`): L = 0; 0,25; 0,5; 0,75; 1, Hot-Deck frente a FHDI, regresión con efectos fijos y LinearDML, efecto nulo y confusión observada | Hecho el 2026-11-18 (288 repeticiones; resultados en §5, P5 y P6) |
 | 2a′ | Diagnóstico del sesgo de LinearDML con FHDI (pregunta 6): tamaño de celda, regularización | Hecho el 2026-11-18 (P6) |
 | 2a″ | LinearDML dentro de la celda (pregunta 7): la celda se quita exactamente antes del DML | Hecho el 2026-11-19 (P7); no cambia la simulación principal |
-| 2b | Régimen FHDI en la simulación principal (`evaluacion.py`, las 8 filas de la Tabla 6, incluido el Causal Forest y la pobreza monetaria), para ver si quitar el ruido del sorteo mueve los modelos causales | **Pendiente obligatoria**: se hace aunque no sea en la misma corrida que la 2a |
+| 2a‴ | Causal Forest dentro de la celda (pregunta 8): efecto promedio y por hogar | Hecho el 2026-11-19 (P8) |
+| 2b | Régimen FHDI y estimadores dentro de la celda en la simulación principal (`src/simulacion/ampliada.py`): los 8 escenarios, las 3 integraciones vigentes más FHDI con vínculo del 50 % y sin vínculo, log-ingreso y pobreza monetaria; LinearDML y Causal Forest dentro de la celda junto a los vigentes | Implementada el 2026-11-19 (código y pruebas); corrida en curso |
 | 3 | Reglas de focalización con el enlace fraccional (regla vigente con probabilidad; CATE con FHDI no identificable) | Pendiente |
 | 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Pendiente |
 | 5 | Texto de la tesis: Proposición 2 acotada al sorteo, figura de la recta con las dos curvas, párrafo de la FHDI como alternativa evaluada | Después de 2-4 |
@@ -306,6 +350,30 @@ Lectura:
   vigente se sesga (+0,13 en la base de prueba) y el nuevo no; con celdas
   grandes coincide con la regresión (FHDI τ, Hot-Deck L·τ). Mutación: el
   estimador sin quitar la media de la celda.
+- **Causal Forest dentro de la celda** (`causal_forest_intra_celda`,
+  pregunta 8; `causal_forest` es el vigente con tratamiento continuo
+  cuando T es una probabilidad). Prueba con celdas de 8 hogares y su
+  mutación (ajustar el bosque sin quitar la media de la celda).
+- **Simulación principal ampliada** (`src/simulacion/ampliada.py`, fase
+  2b). Decisiones:
+  - *No reemplaza la corrida vigente.* `evaluacion.py` y la Tabla 6 no
+    cambian; la ampliada se guarda aparte
+    (`docs/reports/simulacion_ampliada*`) y su tabla pone los vigentes al
+    lado de los nuevos.
+  - *Comparación pareada.* Las mismas semillas y los mismos sorteos que
+    `evaluacion.py` en el mismo orden; los del régimen FHDI van después.
+    Control: la regresión con efectos fijos debe reproducir la de la
+    corrida vigente repetición por repetición (prueba y mutación; la
+    corrida imprime la diferencia máxima).
+  - *Solo se estima lo nuevo:* LinearDML y Causal Forest dentro de la
+    celda; en el régimen FHDI también la regresión y el LinearDML vigente.
+    Los vigentes en las integraciones vigentes salen de la corrida de la
+    Tabla 6.
+  - *Causal Forest donde ya estaba* (log-ingreso, oráculo y Hot-Deck) y en
+    FHDI con vínculo del 50 %. Diferencia de medias y RD no aplican a T
+    fraccional.
+  - *Convergencia:* las mismas reglas de la corrida vigente (MCSE del
+    sesgo y de la cobertura; Causal Forest entre 50 y 200 repeticiones).
 
 ## 7. Qué decir en la tesis (borrador de ideas, no texto final)
 

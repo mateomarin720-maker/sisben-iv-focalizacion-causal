@@ -2,6 +2,30 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-19 (54) — Simulación principal ampliada (fase 2b): código y pruebas
+
+### Agregado
+- **`src/simulacion/ampliada.py`** (`python -m src.simulacion ampliada`): los 8 escenarios con
+  LinearDML y Causal Forest dentro de la celda y el régimen FHDI (vínculo del 50 % y sin vínculo,
+  no identificable), con los mismos sorteos que la corrida de la Tabla 6, que no cambia. La tabla
+  comparativa pone los vigentes al lado de los nuevos. Control: la regresión con efectos fijos
+  reproduce la de la corrida vigente repetición por repetición (diferencia < 1e-12 en la prueba).
+- 3 pruebas (`test_simulacion_ampliada.py`) y su mutación: 310 pruebas; 78 de 78 mutaciones.
+
+### Corregido
+- `src/README.md` describía `sensibilidad_semisintetica.py` solo por sus dos primeras preguntas.
+
+## 2026-11-19 (53) — Causal Forest dentro de la celda (pregunta 8)
+
+### Agregado
+- **`sensibilidad_semisintetica.causal_forest_intra_celda`** y modo `bosque_intra_celda`; también
+  `causal_forest` (el vigente, con tratamiento continuo cuando T es una probabilidad). 96
+  repeticiones: dentro de la celda el efecto promedio coincide con la regresión con efectos fijos
+  (≤ 0,003) con Hot-Deck y FHDI; el vigente se sesga −0,035* con vínculo exacto y hasta −0,167* con
+  FHDI. El error en el efecto por hogar (PEHE) baja 21-50 %. Los IC del Causal Forest son
+  demasiado anchos en las dos versiones (cobertura ≈1,00).
+- 2 pruebas y su mutación: 307 pruebas; 77 de 77 mutaciones detectadas.
+
 ## 2026-11-19 (52) — LinearDML dentro de la celda (pregunta 7)
 
 ### Agregado
