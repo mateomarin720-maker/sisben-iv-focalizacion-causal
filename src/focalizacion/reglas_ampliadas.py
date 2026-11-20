@@ -33,12 +33,19 @@ Métricas de `vigente_fhdi`: el valor esperado con tratamiento de Bernoulli
 inclusión es el cociente de los valores esperados (con miles de hogares
 tratados, igual al esperado del cociente hasta el tercer decimal).
 
+Reutilizable con otro efecto verdadero y otros modificadores X
+(`correr`): el modo `heterogeneidad` aplica las mismas reglas nuevas a los
+niveles de `heterogeneidad_ampliada.py` (efecto con más modificadores y
+el Causal Forest viéndolos todos), comparando con su corrida vigente.
+
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.reglas_ampliadas [n_jobs]
+    PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.reglas_ampliadas heterogeneidad [n_jobs] [nivel ...]
 Salidas:
     docs/reports/reglas_ampliadas.csv (cada repetición)
     docs/reports/reglas_ampliadas_resumen.csv
     docs/reports/reglas_ampliadas_tablas.md (vigentes y nuevas lado a lado)
+    docs/reports/heterogeneidad_<nivel>_ampliadas{.csv,_resumen.csv,_config.json,_tablas.md}
 """
 from __future__ import annotations
 
@@ -53,7 +60,7 @@ import pandas as pd
 
 from src.focalizacion import reglas_focalizacion as rf
 from src.simulacion.asignacion import asignar
-from src.simulacion.base import celdas_por_nivel, firma_con_datos
+from src.simulacion.base import celdas_por_nivel, dentro_de_celda, diseno_x, firma_con_datos
 from src.simulacion.escenarios import ESCENARIOS
 from src.simulacion.reportes import NOTA_SIMULADO, marcar_simulado, sin_marca
 from src.simulacion.sensibilidad_semisintetica import _bosque, _intra_celda
@@ -80,18 +87,19 @@ NO_IDENTIFICABLES = ("pmt_brecha_cate_fhdi",)
 # Piezas
 # --------------------------------------------------------------------------
 
-def cargar_base() -> pd.DataFrame:
+def cargar_base() -> tuple[pd.DataFrame, pd.DataFrame]:
     """La tabla de trabajo de las reglas con la probabilidad A/B de la FHDI
     de cada hogar (el parquet guarda los hogares en el orden de la muestra
-    de estimación; se comprueba con las llaves)."""
-    b, _ = rf.cargar_base()
+    de estimación; se comprueba con las llaves). Devuelve también la tabla
+    de hogares de origen, como `rf.cargar_base`."""
+    b, hogares = rf.cargar_base()
     df = pd.read_parquet(rf.HOGARES, columns=LLAVES)  # las mismas filas y el mismo orden que la tabla de trabajo
     f = pd.read_parquet(FHDI, columns=[*LLAVES, "fhdi_p_AB"])
     iguales = all((normalizar_llave(f[c]).to_numpy() == normalizar_llave(df[c]).to_numpy()).all() for c in LLAVES)
     if len(f) != len(df) or not iguales:
         raise ValueError(f"{FHDI} no tiene los hogares de la muestra en el mismo orden")
     b["p_ab_fhdi"] = f["fhdi_p_AB"].to_numpy(float)
-    return b
+    return b, hogares
 
 
 def metricas_fraccionales(d: pd.DataFrame, p: np.ndarray, tipo: str) -> dict:
@@ -112,26 +120,46 @@ def metricas_fraccionales(d: pd.DataFrame, p: np.ndarray, tipo: str) -> dict:
     )
 
 
-def bosque_intra_celda(en: pd.DataFrame, y: np.ndarray, t: np.ndarray, ev: pd.DataFrame) -> tuple[float, np.ndarray]:
+def bosque_intra_celda(en: pd.DataFrame, y: np.ndarray, t: np.ndarray, ev: pd.DataFrame,
+                       x_cols: list[str] | None = None) -> tuple[float, np.ndarray]:
     """Causal Forest dentro de la celda (`sensibilidad_semisintetica`,
     pregunta 8) entrenado en `en`; devuelve su ATE en `en` y el CATE en
     los hogares de `ev` (la celda solo entra al quitar medias: el CATE
-    depende de X)."""
-    yd, td, W, X, modelo, _ = _intra_celda(en, y, t)
+    depende de X). `x_cols`: modificadores del efecto (por defecto, los de
+    `5_estimacion.py`, con la función de la pregunta 8 tal cual); las
+    categóricas sin orden van como indicadoras en los modelos auxiliares."""
+    from sklearn.linear_model import Ridge
+    from sklearn.pipeline import make_pipeline
+
+    est5 = rf.estimacion5()
+    if not x_cols or list(x_cols) == list(est5.X_COLS):
+        x_cols = list(est5.X_COLS)
+        yd, td, W, X, modelo, _ = _intra_celda(en, y, t)
+    else:
+        x_cols = list(x_cols)
+        celda = en["hotdeck_celda_cat"].to_numpy()
+        yd, td = dentro_de_celda(y, celda), dentro_de_celda(t, celda)
+        W = dentro_de_celda(diseno_x(en), celda)
+        X = en[x_cols].to_numpy(float)
+        columnas = x_cols + [f"w{i}" for i in range(W.shape[1])]
+        categoricas = [c for c in x_cols if c in {*est5.X_CATEGORICAS, *rf.X_CATEGORICAS_EXTRA}]
+
+        def modelo():
+            return make_pipeline(est5._codificador(columnas, categoricas, []), Ridge(alpha=est5.ALPHA_Y))
     m = _bosque(modelo(), modelo(), discreto=False)
     m.fit(yd, td, X=X, W=W)
-    x_ev = ev[rf.estimacion5().X_COLS].to_numpy(float)
-    return float(m.ate(X)), np.ravel(m.effect(x_ev))
+    return float(m.ate(X)), np.ravel(m.effect(ev[x_cols].to_numpy(float)))
 
 
 # --------------------------------------------------------------------------
 # Una repetición
 # --------------------------------------------------------------------------
 
-def una_repeticion(b: pd.DataFrame, rep: int) -> list[dict]:
+def una_repeticion(b: pd.DataFrame, rep: int, x_cols: list[str] | None = None) -> list[dict]:
     """Las reglas nuevas y las de control en la repetición `rep` de
-    `rf.una_repeticion`, con sus mismos sorteos. Los modificadores X son
-    los de `5_estimacion.py` (los de la corrida vigente)."""
+    `rf.una_repeticion`, con sus mismos sorteos. `x_cols`: los
+    modificadores que ve el Causal Forest, los mismos que se pasaron a la
+    corrida vigente (por defecto, los de `5_estimacion.py`)."""
     rng = np.random.default_rng([rf.SEED, rep])
     rng_dinero = np.random.default_rng([rf.SEED, rep, 1])
     rng_nuevo = np.random.default_rng([rf.SEED, rep, 3])         # las reglas nuevas no mueven a las demás
@@ -160,7 +188,7 @@ def una_repeticion(b: pd.DataFrame, rep: int) -> list[dict]:
             y_en = y0_en + tau_en * t_en
         else:
             y_en = np.minimum(rf.ingreso_relativo(y0_en, lp_en), 10) + tau_en * t_en
-        cate = {nombre: bosque_intra_celda(en, y_en, t, ev)
+        cate = {nombre: bosque_intra_celda(en, y_en, t, ev, x_cols)
                 for nombre, t in [("verdadero", t_en), ("hotdeck", t_mundo[donante])]}
         lp, y0, tau = ev["lp"].to_numpy(), ev["y0"].to_numpy(), ev["tau"].to_numpy()
 
@@ -276,48 +304,89 @@ def tabla_comparativa(nueva: pd.DataFrame, vigente: Path = rf.OUT_RESUMEN) -> st
     return "\n".join(partes)
 
 
-def main(n_jobs: int = 3) -> pd.DataFrame:
+def correr(b: pd.DataFrame, salidas: tuple[Path, Path, Path, Path], firma_cfg: str, n_jobs: int,
+           vigente: tuple[Path, Path], titulo: str, x_cols: list[str] | None = None) -> pd.DataFrame:
+    """Repite en lotes hasta la convergencia (o el máximo), con las reglas
+    de `rf`, reanudando lo guardado si la firma (configuración y datos) no
+    cambió. `salidas`: (repeticiones, resumen, firma, tablas); `vigente`:
+    (repeticiones, resumen) de la corrida con la que se compara, que debe
+    haberse hecho con la misma base y los mismos `x_cols`. Imprime el
+    control de reproducción y la tabla comparativa; devuelve el resumen."""
     from joblib import Parallel, delayed, parallel_config
 
-    b = cargar_base()
-    firma = firma_con_datos(rf.firma(ampliadas=1, NUEVAS=NUEVAS), b)
+    out, out_resumen, out_firma, out_tablas = salidas
+    firma = firma_con_datos(firma_cfg, b)
     r = pd.DataFrame()
-    if OUT.exists() and OUT_FIRMA.exists() and json.loads(OUT_FIRMA.read_text()).get("firma") == firma:
-        r = sin_marca(pd.read_csv(OUT))
+    if out.exists() and out_firma.exists() and json.loads(out_firma.read_text()).get("firma") == firma:
+        r = sin_marca(pd.read_csv(out))
         logger.info("Reanudando: %d repeticiones ya guardadas", r["rep"].nunique())
     else:
-        OUT_FIRMA.write_text(json.dumps(dict(firma=firma)))
+        out_firma.write_text(json.dumps(dict(firma=firma)))
     while True:
         hechas = 0 if r.empty else r["rep"].nunique()
         if hechas >= rf.MAX_REPS or (hechas >= rf.MIN_REPS and not rf.pendientes(rf.resumir(r))):
             break
         t0 = time.time()
         with parallel_config(backend="loky", inner_max_num_threads=1):
-            partes = Parallel(n_jobs=n_jobs)(delayed(una_repeticion)(b, rep) for rep in range(hechas, hechas + rf.LOTE))
+            partes = Parallel(n_jobs=n_jobs)(delayed(una_repeticion)(b, rep, x_cols)
+                                             for rep in range(hechas, hechas + rf.LOTE))
         r = pd.concat([r, pd.DataFrame([f for p in partes for f in p])], ignore_index=True)
-        marcar_simulado(r).to_csv(OUT, index=False)
+        marcar_simulado(r).to_csv(out, index=False)
         logger.info("Lote reps %d-%d en %.0f s | métricas sin converger: %d", hechas, hechas + rf.LOTE - 1,
                     time.time() - t0, len(rf.pendientes(rf.resumir(r))))
     res = rf.resumir(r)
-    marcar_simulado(res).to_csv(OUT_RESUMEN, index=False)
-    tablas = tabla_comparativa(res)
-    OUT_TABLAS.write_text(tablas, encoding="utf-8")
+    marcar_simulado(res).to_csv(out_resumen, index=False)
+    tablas = tabla_comparativa(res, vigente[1])
+    out_tablas.write_text(tablas, encoding="utf-8")
 
     p = rf.pendientes(res)
     print(f"\n{NOTA_SIMULADO}")
-    print(f"\n=== Reglas de focalización ampliadas*: {r['rep'].nunique()} repeticiones, evaluación en "
-          f"{rf.N_EVAL:,} hogares reales ===")
+    print(f"\n=== {titulo}*: {r['rep'].nunique()} repeticiones, evaluación en {rf.N_EVAL:,} hogares reales ===")
     print(f"Convergencia: {'alcanzada' if not p else 'NO alcanzada: ' + ', '.join(p)}")
     print(f"Control: las reglas vigentes recalculadas reproducen la corrida vigente "
-          f"(diferencia máxima por repetición {control_reproduccion(r):.2e})")
+          f"(diferencia máxima por repetición {control_reproduccion(r, vigente[0]):.2e})")
     for tipo, g in r[r["presupuesto"] == "hogares"].groupby("efecto", sort=False):
         print(f"Causal Forest dentro de la celda ({tipo}): ATE con T verdadero {g['ate_cf_intra_verdadero'].mean():+.4f}, "
               f"con T por Hot-Deck {g['ate_cf_intra_hotdeck'].mean():+.4f}; PEHE {g['pehe_cf_intra_verdadero'].mean():.4f} "
               f"y {g['pehe_cf_intra_hotdeck'].mean():.4f} frente a una desviación de tau de {g['sd_tau'].mean():.4f}")
     print("\n" + tablas)
-    print(f"Guardado: {OUT}\nGuardado: {OUT_RESUMEN}\nGuardado: {OUT_TABLAS}")
+    print("\n".join(f"Guardado: {x}" for x in (out, out_resumen, out_tablas)))
     return res
 
 
+def main(n_jobs: int = 3) -> pd.DataFrame:
+    """Las reglas nuevas con el efecto y los modificadores del generador."""
+    b, _ = cargar_base()
+    return correr(b, (OUT, OUT_RESUMEN, OUT_FIRMA, OUT_TABLAS), rf.firma(ampliadas=1, NUEVAS=NUEVAS), n_jobs,
+                  (rf.OUT, rf.OUT_RESUMEN), "Reglas de focalización ampliadas")
+
+
+def main_heterogeneidad(n_jobs: int = 3, *niveles: str) -> None:
+    """Las reglas nuevas con los niveles de `heterogeneidad_ampliada.py`:
+    su efecto verdadero, sus modificadores X y su firma, comparando con su
+    corrida vigente (`docs/reports/heterogeneidad_<nivel>*`)."""
+    from src.focalizacion import heterogeneidad_ampliada as ha
+
+    b, hogares = cargar_base()
+    b = ha.modificadores(b, hogares)
+    for nivel in niveles or ha.NIVELES:
+        bn = b.copy()
+        bn["tau"] = ha.efecto_por_nivel(bn, nivel)
+        logger.info("Nivel %s: tau media %.4f, desviación %.4f", nivel, bn["tau"].mean(), bn["tau"].std())
+        vig_csv, vig_resumen, _ = ha.rutas(nivel)
+        base = Path("docs/reports") / f"heterogeneidad_{nivel}_ampliadas"
+        salidas = (base.with_suffix(".csv"), Path(f"{base}_resumen.csv"), Path(f"{base}_config.json"),
+                   Path(f"{base}_tablas.md"))
+        firma = rf.firma(nivel=nivel, COEF_AMPLIADO=ha.COEF_AMPLIADO, COEF_COMPLEJO=ha.COEF_COMPLEJO,
+                         X=ha.X_POR_NIVEL[nivel], TAU_NIVEL=[ha.TAU_MEDIA, ha.TAU_DESVIACION, ha.TAU_PISO,
+                                                             ha.SEMILLA_DEPTO], ampliadas=1, NUEVAS=NUEVAS)
+        correr(bn, salidas, firma, n_jobs, (vig_csv, vig_resumen),
+               f"Reglas ampliadas con heterogeneidad {nivel}", ha.X_POR_NIVEL[nivel])
+
+
 if __name__ == "__main__":
-    main(*[int(a) for a in sys.argv[1:]])
+    args = sys.argv[1:]
+    if args[:1] == ["heterogeneidad"]:
+        main_heterogeneidad(int(args[1]) if len(args) > 1 else 3, *args[2:])
+    else:
+        main(*[int(a) for a in args])

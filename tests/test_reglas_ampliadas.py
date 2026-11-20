@@ -80,3 +80,26 @@ def test_metricas_fraccionales_son_el_promedio_de_los_sorteos():
     esperado = ra.metricas_fraccionales(d, p, "monto_fijo")
     for c in esperado:
         assert esperado[c] == pytest.approx(sorteos[c], abs=3e-3)
+
+
+def test_con_los_modificadores_de_la_heterogeneidad_reproduce_su_corrida():
+    """Modo `heterogeneidad`: con el efecto y las X del nivel ampliado, las
+    reglas de control coinciden con `rf.una_repeticion` con esas mismas X, y
+    el CATE dentro de la celda usa esas X (cambia frente a las 3 de base)."""
+    from src.focalizacion import heterogeneidad_ampliada as ha
+    from tests.test_simulacion_equivalencia import hogares_sinteticos
+
+    hogares, _ = hogares_sinteticos(n=3_000)
+    b = ha.modificadores(_base(), hogares)
+    b["tau"] = ha.efecto_por_nivel(b, "ampliado")
+    x = ha.X_POR_NIVEL["ampliado"]
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(rf, "N_EVAL", 900)
+        mp.setattr(rf, "N_ENTRENA", 900)
+        vigente = pd.DataFrame(rf.una_repeticion(b, rep=1, x_cols=x))
+        nueva = pd.DataFrame(ra.una_repeticion(b, rep=1, x_cols=x))
+        base = pd.DataFrame(ra.una_repeticion(b, rep=1))
+    v = vigente[vigente["regla"].isin(ra.CONTROL)].set_index(rf.CLAVES)[rf.METRICAS]
+    a = nueva[nueva["regla"].isin(ra.CONTROL)].set_index(rf.CLAVES)[rf.METRICAS]
+    np.testing.assert_allclose(a.loc[v.index].to_numpy(float), v.to_numpy(float), atol=1e-12)
+    assert not np.isclose(nueva["pehe_cf_intra_verdadero"].iloc[0], base["pehe_cf_intra_verdadero"].iloc[0])

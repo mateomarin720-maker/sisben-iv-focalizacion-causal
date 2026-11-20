@@ -151,15 +151,26 @@ datos del proyecto.
 
 | Outcome | ATE, controles = celda exacta [IC 95 %] |
 |---|---|
-| `ipm_geih_score` | −0,0029 [−0,0101; +0,0043] |
-| `POBRE_GEIH` | −0,0021 [−0,0045; +0,0004] |
-| `log_ingreso_percapita` | +0,0006 [−0,0128; +0,0141] |
-| `POBRE_MONETARIO` | −0,0002 [−0,0036; +0,0033] |
-| `POBRE_MONETARIO_OFICIAL` (robustez, 23 deptos. y Bogotá) | −0,0005 [−0,0041; +0,0030] |
+| `ipm_geih_score` | +0,0037 [−0,0042; +0,0116] |
+| `POBRE_GEIH` | +0,0009 [−0,0018; +0,0037] |
+| `log_ingreso_percapita` | +0,0013 [−0,0131; +0,0158] |
+| `POBRE_MONETARIO` | +0,0017 [−0,0021; +0,0055] |
+| `POBRE_MONETARIO_OFICIAL` (robustez, 23 deptos. y Bogotá) | +0,0009 [−0,0029; +0,0048] |
 
-Siete de ocho ATE (dos especificaciones de controles) incluyen el cero;
-el octavo (`POBRE_GEIH`) desaparece al combinar 100 sorteos del Hot-Deck.
-El CATE medio también es ≈0.
+Con la celda exacta los cinco ATE incluyen el cero. Con el proxy, tres
+lo excluyen porque el proxy no cruza las variables de la celda
+(`RESULTADOS_DML_ATE_ATT_ATU.md`); no es un efecto. Un sorteo subestima
+la incertidumbre: con 100 sorteos y Rubin, `POBRE_GEIH` da [−0,0035;
++0,0038]. El CATE medio también es ≈0.
+
+- **Dentro de la celda (2026-11-20):** la regresión con efectos fijos de
+  celda y el LinearDML con Y y T sin la media de la celda dan lo mismo
+  que el LinearDML vigente (diferencias de 0,004 o menos, todos los IC
+  con el cero): con 78 hogares por celda no aparece el sesgo de la
+  simulación.
+- **Con el enlace fraccional (FHDI)** el tratamiento es la proporción de
+  A/B de la celda y no varía dentro de ella: el DML es **no
+  identificable** con las dos especificaciones de controles.
 
 **Cotas de Fréchet-Manski.**
 
@@ -245,7 +256,7 @@ imperfecta, no una validación universal de los estimadores.
 | Paso | Script | Documento |
 |---|---|---|
 | Reglas con el mismo número de hogares y con el mismo dinero | `src/focalizacion/reglas_focalizacion.py` | [`RESULTADOS_REGLAS_FOCALIZACION.md`](4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md) |
-| Heterogeneidad ampliada y compleja del efecto | `src/focalizacion/heterogeneidad_ampliada.py` | [`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`](4_focalizacion/RESULTADOS_HETEROGENEIDAD_AMPLIADA.md) |
+| Heterogeneidad ampliada y compleja del efecto | `src/focalizacion/heterogeneidad_ampliada.py`, `src/focalizacion/reglas_ampliadas.py heterogeneidad` | [`RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`](4_focalizacion/RESULTADOS_HETEROGENEIDAD_AMPLIADA.md) |
 
 Mismo mundo semisintético; presupuesto = los hogares A/B vigentes
 (47,0 %). 300 repeticiones.
@@ -266,6 +277,14 @@ Mismo mundo semisintético; presupuesto = los hogares A/B vigentes
   9 a 16 puntos\* por debajo de la misma regla con efecto constante. Con
   el efecto verdadero, la ganancia sobre el PMT sube a 1,3-3,0\* puntos;
   el LinearDML le gana al bosque si el efecto es lineal y pierde si no.
+- **Causal Forest dentro de la celda y enlace fraccional (2026-11-19/20):**
+  sin el sesgo de estimar la celda, el CATE con vínculo mejora 3 a 13
+  puntos\* y queda en 74-79 %\* del ideal, todavía 2 a 11 puntos\* bajo
+  el PMT por brecha; con Hot-Deck queda en el azar (49-55 %\*), no por
+  debajo. Con el enlace fraccional sin vínculo el CATE no es
+  identificable, y la vigente da lo mismo que con el sorteo (74-77 %\*).
+  La conclusión no cambia (`RESULTADOS_REGLAS_FOCALIZACION.md`,
+  `RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`).
 - **Controles (2026-11-14):** con el efecto verdadero en vez del CATE
   estimado, la regla llega a 85\* / 87\* % del ideal, casi igual que el
   proxy de medios; con un LinearDML, que tiene la forma correcta del

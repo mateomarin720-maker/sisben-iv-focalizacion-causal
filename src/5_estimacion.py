@@ -99,17 +99,36 @@ este contraste da ≈0 sea cual sea el efecto verdadero.
   - El Sisbén solo cubre hogares inscritos (selección).
   - Falta DPS/RUI como confusores (canal de la Figura 2 sin datos todavía).
 
+Dos modos más (2026-11-20, fase 4 de `docs/metodologia/METODOLOGIA_FHDI.md`;
+la corrida por defecto no cambia):
+  - `fhdi`: el tratamiento del enlace fraccional (probabilidad de A/B de
+    la celda, `geih_sisben_fhdi_2024.parquet`) en vez del grupo sorteado.
+    Es función de la celda: con `W_CELDA` no queda variación de T dentro
+    de la celda y el efecto es **no identificable**; con `W_PROXY`, la
+    variación que queda es entre celdas, no entre hogares, y no se estima.
+    El contraste placebo con efectos fijos es 0 exacto
+    (`RESULTADOS_FHDI.md` §3, `python -m src.emparejamiento.fhdi`).
+  - `intra_celda`: chequeo de robustez del DML con `W_CELDA`: Y y T sin la
+    media de su celda antes del LinearDML (como en la simulación,
+    `sensibilidad_semisintetica.py`, pregunta 7), junto a la regresión con
+    efectos fijos de celda y al LinearDML vigente. Con datos reales hay
+    ≈78 hogares por celda y el sesgo de estimar la celda debería ser
+    pequeño. Sigue siendo el placebo del emparejamiento (un sorteo, el de
+    la semilla 42); no es un efecto del Sisbén.
+
 Uso (requiere correr primero 3_preprocesamiento.py y
 3b_preprocesamiento_monetario.py, en ese orden):
     poetry run python src/3_preprocesamiento.py
     poetry run python src/3b_preprocesamiento_monetario.py
-    poetry run python src/5_estimacion.py
+    poetry run python src/5_estimacion.py [fhdi | intra_celda]
 Salida: docs/reports/estimacion_ate_att_atu_cate.txt (vía redirección de
-consola) y resumen interpretado en docs/resultados/.
+consola; `estimacion_fhdi.txt` y `estimacion_intra_celda.txt` para los
+otros modos) y resumen interpretado en docs/resultados/.
 """
 from __future__ import annotations
 
 import logging
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -125,6 +144,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 DATA = Path("data/2_models/muestra_estimacion_monetaria_2024.parquet")
+FHDI = Path("data/2_models/geih_sisben_fhdi_2024.parquet")
+LLAVES = ["llave_directorio", "llave_secuencia_p", "llave_hogar", "mes"]
 SEED = 42
 N_SUB_CATE = 80_000
 
@@ -258,6 +279,127 @@ def _cate(df: pd.DataFrame, y_col: str, w_spec: tuple[list[str], list[str]]) -> 
     print("  Importancia de variables:", imp.round(3).to_dict())
 
 
+OUTCOMES = [("ipm_geih_score", "ipm_geih_score (continuo, 0-8 privaciones)"),
+            ("POBRE_GEIH", "POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)"),
+            ("log_ingreso_percapita", "log_ingreso_percapita (continuo, log1p(ingreso_percapita))"),
+            ("POBRE_MONETARIO", "POBRE_MONETARIO (binario, reconstrucción GEIH con líneas DANE 2024 por dominio)"),
+            ("POBRE_MONETARIO_OFICIAL", "POBRE_MONETARIO_OFICIAL (robustez: clasificación oficial DANE, "
+                                        "23 departamentos y Bogotá; sin los 9 que la base no trae)")]
+
+
+def _llave(s: pd.Series) -> np.ndarray:
+    """La llave como texto de entero (la regla de
+    `src/utils/variables_canonicas.normalizar_llave`; este script corre
+    como archivo y no importa el paquete `src`)."""
+    num = pd.to_numeric(s, errors="coerce")
+    return np.where(num.notna(), num.astype("Int64").astype(str), s.astype(str).str.strip())
+
+
+def _con_fhdi(df: pd.DataFrame, ruta: Path = FHDI) -> pd.DataFrame:
+    """Agrega `T_fhdi` (probabilidad de A/B de la FHDI). El parquet guarda
+    los hogares en el orden de la muestra de estimación; se comprueba con
+    las llaves en vez de suponerlo."""
+    f = pd.read_parquet(ruta, columns=[*LLAVES, "fhdi_p_AB"])
+    if len(f) != len(df) or not all((_llave(f[c]) == _llave(df[c])).all() for c in LLAVES):
+        raise ValueError(f"{ruta} no tiene los hogares de la muestra en el mismo orden")
+    return df.assign(T_fhdi=f["fhdi_p_AB"].to_numpy(float))
+
+
+def _sin_media(v: np.ndarray, grupo: np.ndarray) -> np.ndarray:
+    """Resta la media del grupo (transformación de efectos fijos)."""
+    v = np.asarray(v, float)
+    cuenta = np.maximum(np.bincount(grupo), 1)
+    return v - (np.bincount(grupo, v) / cuenta)[grupo]
+
+
+def _fraccion_dentro(t: np.ndarray, grupo: np.ndarray) -> float:
+    """Parte de la varianza de T que queda dentro de los grupos (0: T es
+    función del grupo)."""
+    t = np.asarray(t, float)
+    return float(np.var(_sin_media(t, grupo)) / max(np.var(t), 1e-300))
+
+
+def _fhdi(df: pd.DataFrame) -> dict:
+    """Modo `fhdi`: identificabilidad del efecto con el tratamiento
+    fraccional, con cada W. No ajusta ningún modelo: con T función de la
+    celda no hay qué estimar. Devuelve las dos fracciones."""
+    t = df["T_fhdi"].to_numpy(float)
+    celda = df["hotdeck_celda_cat"].to_numpy()
+    proxy = df.groupby(W_PROXY[0] + W_PROXY[1], dropna=False).ngroup().to_numpy()
+    f_celda, f_proxy = _fraccion_dentro(t, celda), _fraccion_dentro(t, proxy)
+    print(f"T fraccional (probabilidad de A/B): media {t.mean():.4f} | sorteo de la semilla 42: {df['T'].mean():.4f}")
+    for nombre, frac in [("la celda exacta (W_CELDA)", f_celda), ("los grupos de W_PROXY", f_proxy)]:
+        print(f"Varianza de T dentro de {nombre}: {frac:.2e} del total -> "
+              + ("NO IDENTIFICABLE" if frac < 1e-10 else
+                 "queda variación, pero T es función de la celda: compara celdas (que también difieren en la "
+                 "pobreza), no hogares con y sin tratamiento. No se estima."))
+    if f_proxy < 1e-10:
+        print("  (W_PROXY usa los valores de edad, cuartos, personas y menores, más finos que los tramos de la "
+              "celda: cada grupo cae dentro de una celda.)")
+    print("Contraste placebo con efectos fijos de celda: 0 exacto en los tres outcomes "
+          "(RESULTADOS_FHDI.md §3; python -m src.emparejamiento.fhdi).")
+    return dict(dentro_celda=f_celda, dentro_proxy=f_proxy)
+
+
+def _intra_celda(df: pd.DataFrame, y_col: str) -> dict:
+    """Modo `intra_celda`: regresión con efectos fijos de celda y LinearDML
+    con Y y T sin la media de la celda (tratamiento continuo, modelos
+    auxiliares sin la celda), sobre el sorteo guardado. El IC del LinearDML
+    se escala por sqrt(n / (n − celdas)), los grados de libertad que
+    consumen las medias. Devuelve las dos estimaciones."""
+    d = df.dropna(subset=[y_col, "T", "hotdeck_celda_cat", *X_COLS])
+    celda = d["hotdeck_celda_cat"].astype("category").cat.codes.to_numpy()
+    n, k = len(d), int(celda.max()) + 1
+    yd = _sin_media(d[y_col].to_numpy(float), celda)
+    td = _sin_media(d["T"].to_numpy(float), celda)
+    X = d[X_COLS].to_numpy(dtype=float)
+
+    beta = float(td @ yd / (td @ td))
+    resid = yd - beta * td
+    ee = float(np.sqrt(resid @ resid / (n - k - 1) / (td @ td)))
+    print(f"  Regresión con efectos fijos de celda: {beta:+.4f}  IC95%=({beta - 1.96 * ee:+.4f}, {beta + 1.96 * ee:+.4f})"
+          f" | {n:,} hogares en {k:,} celdas ({n / k:.0f} por celda)")
+
+    def modelo():
+        return make_pipeline(_codificador(X_COLS, X_CATEGORICAS, []), Ridge(alpha=ALPHA_Y))
+
+    est = LinearDML(model_y=modelo(), model_t=modelo(), discrete_treatment=False, random_state=SEED)
+    est.fit(yd, td, X=X)
+    ate = float(est.ate(X))
+    lo, hi = est.ate_interval(X, alpha=0.05)
+    f = np.sqrt(n / max(n - k, 1))
+    print(f"  LinearDML dentro de la celda: {ate:+.4f}  IC95%=({ate - f * (ate - lo):+.4f}, {ate + f * (hi - ate):+.4f})")
+    return dict(regresion=beta, linear_dml_intra=ate)
+
+
+def main_fhdi() -> None:
+    df = _con_fhdi(_preparar(pd.read_parquet(DATA)))
+    logger.info("n=%s | T fraccional medio %.4f", f"{len(df):,}", df["T_fhdi"].mean())
+    print("=" * 70)
+    print("Modo FHDI: tratamiento = probabilidad de A/B de la celda (enlace fraccional, sin vínculo)")
+    print("=" * 70)
+    _fhdi(df)
+    print("\nVale para los cinco outcomes: la identificabilidad depende solo de T y de W.")
+
+
+def main_intra_celda() -> None:
+    df = _preparar(pd.read_parquet(DATA))
+    logger.info("n=%s | T=1 (Grupo A/B): %.1f%%", f"{len(df):,}", df["T"].mean() * 100)
+    for y_col, etiqueta in OUTCOMES:
+        print("\n" + "#" * 70)
+        print(f"# Outcome: {etiqueta}")
+        print("#" * 70)
+        print("LinearDML vigente (W = celda exacta en los modelos auxiliares):")
+        _ate_att_atu(df, y_col, W_CELDA)
+        print("Dentro de la celda:")
+        _intra_celda(df, y_col)
+    print("\n" + "=" * 70)
+    print("Placebo del emparejamiento con un sorteo (semilla 42): se espera ≈0 en todos. Si el LinearDML")
+    print("vigente se aleja de la regresión, es el sesgo de estimar la celda; para leer un IC del placebo,")
+    print("ver la combinación de 100 sorteos con Rubin (RESULTADOS_VARIABILIDAD_HOTDECK.md).")
+    print("=" * 70)
+
+
 def main() -> None:
     logger.info("Cargando %s", DATA)
     if not DATA.exists():
@@ -295,4 +437,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    modo = sys.argv[1] if len(sys.argv) > 1 else ""
+    {"fhdi": main_fhdi, "intra_celda": main_intra_celda}.get(modo, main)()

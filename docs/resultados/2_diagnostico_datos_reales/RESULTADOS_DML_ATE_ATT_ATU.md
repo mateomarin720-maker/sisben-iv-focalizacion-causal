@@ -113,6 +113,34 @@ y no tratados dentro de cada valor de W es menor.
   Las diferencias son de milésimas, muy por debajo del ancho de los IC.
   La regresión con efectos fijos usa la misma función que la simulación
   (`simulacion.estimadores.regresion_efectos_fijos`, X en indicadoras).
+- **Dentro de la celda (fase 4, 2026-11-20).** El modo `intra_celda`
+  quita la media de la celda a Y y a T antes del LinearDML (tratamiento
+  continuo, modelos auxiliares sin la celda), como en la simulación
+  (`SIMULACION_SEMISINTETICA.md`, sensibilidad 7). Con el sorteo de la
+  semilla 42:
+
+  | Outcome | LinearDML (proyecto) | Regresión con efectos fijos de celda | LinearDML dentro de la celda |
+  |---|---|---|---|
+  | `ipm_geih_score` | +0,0037 | −0,0001 | +0,0001 |
+  | `POBRE_GEIH` | +0,0009 | −0,0003 | −0,0005 |
+  | `log_ingreso_percapita` | +0,0013 | +0,0029 | +0,0034 |
+  | `POBRE_MONETARIO` | +0,0017 | −0,0002 | −0,0003 |
+  | `POBRE_MONETARIO_OFICIAL` | +0,0009 | +0,0004 | +0,0001 |
+
+  Todos los IC incluyen el cero. Dentro de la celda, el LinearDML
+  coincide con la regresión (0,0005 o menos); el vigente se aleja 0,004
+  como máximo. La regresión de esta tabla quita la media de la celda sin
+  X; por eso difiere en la cuarta cifra de la de la tabla anterior.
+  Reporte: `docs/reports/estimacion_intra_celda.txt`.
+- **Con el enlace fraccional (fase 4, 2026-11-20).** En el modo `fhdi`
+  el tratamiento es la probabilidad de A/B de la celda
+  (`geih_sisben_fhdi_2024.parquet`, media 0,4712 frente a 0,4696 del
+  sorteo). La varianza de T dentro de la celda es 1,8·10⁻²⁸ del total, y
+  dentro de los grupos del proxy 2,8·10⁻³² (el proxy usa los valores de
+  edad, cuartos, personas y menores, más finos que los tramos de la
+  celda). Con las dos especificaciones el efecto es **no identificable**
+  y no se estima; el contraste placebo con efectos fijos es 0 exacto
+  (`RESULTADOS_FHDI.md` §3). Reporte: `docs/reports/estimacion_fhdi.txt`.
 - La conclusión anterior de que "el residuo no colapsa a 0" y de que la
   vivienda explicaba ese residuo dependía del error de codificación. Con
   la celda controlada, el residuo desaparece.

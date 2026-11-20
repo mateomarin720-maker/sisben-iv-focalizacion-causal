@@ -254,6 +254,13 @@ Efecto verdadero en el corte (objetivo de la RD): log-ingreso +0,093\*, pobreza 
    con el cero). La sensibilidad 4 lo confirma: el sesgo se reduce a la
    mitad cada vez que se duplican los hogares por celda (−0,033, −0,017
    y −0,009 con 8, 16 y 32).
+   *Actualización 2026-11-19/20:* el LinearDML y el Causal Forest
+   ajustados dentro de la celda (Y y T sin la media de la celda) no se
+   sesgan y ya están en la simulación principal junto a los vigentes
+   (`python -m src.simulacion ampliada`, `RESULTADOS_FHDI.md` §5). Con
+   datos reales, el LinearDML dentro de la celda coincide con el vigente
+   y con la regresión (`5_estimacion.py intra_celda`,
+   `RESULTADOS_DML_ATE_ATT_ATU.md`).
 
 9. **Causal Forest no recupera la heterogeneidad.** Su error del CATE
    (PEHE 0,05 con asignación aleatoria; 0,08-0,18 con confusión observada
@@ -263,6 +270,12 @@ Efecto verdadero en el corte (objetivo de la RD): log-ingreso +0,093\*, pobreza 
    (0,20-0,54 frente a 0,07-0,23), y por eso "cubre" aun cuando estima
    ≈0 o un valor sesgado con Hot-Deck (0,50-0,97): es conservador, no
    más acertado.
+   *Actualización 2026-11-20:* dentro de la celda el Causal Forest
+   recupera el nivel del efecto (ATE +0,091 a +0,094\* frente a +0,095\*),
+   pero su PEHE sigue siendo 2,4 a 3,4 veces la desviación de tau, también
+   con el doble de heterogeneidad: lo que falla es la varianza del CATE
+   por hogar, no el sesgo (`RESULTADOS_REGLAS_FOCALIZACION.md` y
+   `RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`).
 
 10. **Con confusión no observada la "degradación" por integración sale
     negativa** (el Hot-Deck tiene menor RMSE que el oráculo). No es una

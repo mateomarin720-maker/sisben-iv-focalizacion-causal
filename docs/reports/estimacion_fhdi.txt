@@ -1,0 +1,11 @@
+2026-11-20 15:25:21,781 INFO n=290,968 | T fraccional medio 0.4712
+======================================================================
+Modo FHDI: tratamiento = probabilidad de A/B de la celda (enlace fraccional, sin vínculo)
+======================================================================
+T fraccional (probabilidad de A/B): media 0.4712 | sorteo de la semilla 42: 0.4696
+Varianza de T dentro de la celda exacta (W_CELDA): 1.78e-28 del total -> NO IDENTIFICABLE
+Varianza de T dentro de los grupos de W_PROXY: 2.83e-32 del total -> NO IDENTIFICABLE
+  (W_PROXY usa los valores de edad, cuartos, personas y menores, más finos que los tramos de la celda: cada grupo cae dentro de una celda.)
+Contraste placebo con efectos fijos de celda: 0 exacto en los tres outcomes (RESULTADOS_FHDI.md §3; python -m src.emparejamiento.fhdi).
+
+Vale para los cinco outcomes: la identificabilidad depende solo de T y de W.

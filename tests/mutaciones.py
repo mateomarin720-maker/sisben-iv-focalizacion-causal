@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-19: 80 de 80 mutaciones detectadas.
+Resultado del 2026-11-20: 83 de 83 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -240,6 +240,14 @@ MUTACIONES = [
      "src/focalizacion/reglas_ampliadas.py",
      "np.average(p * rf.brecha(x1) + (1 - p) * rf.brecha(x0), weights=w)",
      "np.average(p * rf.brecha(x1), weights=w)", "tests/test_reglas_ampliadas.py"),
+    ("Reglas ampliadas: el Causal Forest dentro de la celda ignora las X de la heterogeneidad",
+     "src/focalizacion/reglas_ampliadas.py",
+     "    if not x_cols or list(x_cols) == list(est5.X_COLS):", "    if True:", "tests/test_reglas_ampliadas.py"),
+    ("DML dentro de la celda: no se quita la media de la celda", "src/5_estimacion.py",
+     "    return v - (np.bincount(grupo, v) / cuenta)[grupo]", "    return v", "tests/test_estimacion_fhdi.py"),
+    ("DML con FHDI: se pega el tratamiento sin comprobar el orden de los hogares", "src/5_estimacion.py",
+     "    if len(f) != len(df) or not all(", "    if len(f) != len(df) and not all(",
+     "tests/test_estimacion_fhdi.py"),
 ]
 
 resultados = []

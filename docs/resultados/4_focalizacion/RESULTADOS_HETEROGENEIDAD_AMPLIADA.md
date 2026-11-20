@@ -98,6 +98,57 @@ error estándar entre paréntesis)
 | LinearDML − Causal Forest, monto fijo | +1,0\* (0,50) | −0,5\* (0,58) | −5,2\* (0,47) |
 | LinearDML − Causal Forest, mismo dinero | +1,1\* (0,49) | −0,7\* (0,45) | −4,4\* (0,36) |
 
+### Causal Forest dentro de la celda y enlace fraccional (2026-11-20)
+
+La misma corrida con el Causal Forest ajustado dentro de la celda (Y, T y
+controles sin la media de la celda, como en
+`sensibilidad_semisintetica.py bosque_intra_celda`) y con las reglas del
+enlace fraccional (fase 3 de `METODOLOGIA_FHDI.md`). Son los mismos
+sorteos: las reglas vigentes recalculadas reproducen la corrida anterior
+(diferencia máxima 1,4·10⁻¹⁴). Las tablas de arriba no cambian; estas
+filas se suman a ellas. El nivel básico es la corrida de
+`reglas_ampliadas.py` (`RESULTADOS_REGLAS_FOCALIZACION.md`).
+
+| Nivel | ATE dentro de la celda, T verdadero | ATE dentro de la celda, T por Hot-Deck | PEHE, T verdadero | Desviación de tau | PEHE / desviación |
+|---|---|---|---|---|---|
+| Básico | +0,091 a +0,093\* | ≈0\* | 0,066 a 0,080\* | 0,028\* | 2,4 a 2,9\* |
+| Ampliado | +0,091 a +0,092\* | +0,001 a 0,000\* | 0,148 a 0,188\* | 0,060\* | 2,5 a 3,1\* |
+| Complejo | +0,092 a +0,094\* | +0,001 a 0,000\* | 0,139 a 0,202\* | 0,059\* | 2,4 a 3,4\* |
+
+**% de la reducción ideal de la brecha (FGT1)**
+
+| Regla | Básico | Ampliado | Complejo |
+|---|---|---|---|
+| *Proporcional, mismos hogares* | | | |
+| PMT + CATE dentro de la celda (vínculo) | 76,1\* | 77,1\* | 78,6\* |
+| PMT + CATE dentro de la celda (Hot-Deck) | 49,1\* | 48,8\* | 48,7\* |
+| Vigente con enlace fraccional | 74,2\* | 75,5\* | 74,7\* |
+| *Monto fijo, mismos hogares* | | | |
+| PMT + CATE dentro de la celda (vínculo) | 74,3\* | 74,8\* | 76,2\* |
+| PMT + CATE dentro de la celda (Hot-Deck) | 49,2\* | 49,9\* | 49,7\* |
+| Vigente con enlace fraccional | 75,2\* | 76,5\* | 75,8\* |
+| *Monto fijo, mismo dinero* | | | |
+| PMT + CATE dentro de la celda (vínculo) | 75,5\* | 71,3\* | 73,7\* |
+| PMT + CATE dentro de la celda (Hot-Deck) | 51,3\* | 54,8\* | 54,1\* |
+| Vigente con enlace fraccional | 75,2\* | 76,5\* | 75,8\* |
+
+PMT + CATE con el enlace fraccional y sin vínculo: no identificable (el
+tratamiento es función de la celda).
+
+**Diferencias pareadas** (puntos del % del ideal; error estándar entre
+paréntesis)
+
+| | Básico | Ampliado | Complejo |
+|---|---|---|---|
+| CATE dentro − PMT por brecha, proporcional | −5,7\* (0,55) | −8,7\* (0,31) | −5,9\* (0,35) |
+| CATE dentro − PMT por brecha, monto fijo | −2,4\* (1,36) | −11,0\* (0,72) | −9,7\* (0,58) |
+| CATE dentro − PMT por brecha, mismo dinero | −2,5\* (1,23) | −8,9\* (0,47) | −8,8\* (0,43) |
+| CATE dentro − CATE vigente, proporcional | +7,7\* (0,47) | +4,2\* (0,29) | +3,3\* (0,25) |
+| CATE dentro − CATE vigente, monto fijo | +12,8\* (0,61) | +4,5\* (0,40) | +5,6\* (0,35) |
+| CATE dentro − CATE vigente, mismo dinero | +12,6\* (0,62) | +3,5\* (0,29) | +4,3\* (0,27) |
+| CATE dentro (Hot-Deck) − aleatoria, mismos hogares | +2,2 a +2,3\* | +1,9 a +3,0\* | +1,8 a +2,8\* |
+| CATE dentro (Hot-Deck) − aleatoria, mismo dinero | −1,2\* (0,81) | −1,4\* (0,40) | −1,1\* (0,43) |
+
 ## Lectura
 
 1. **Con el doble de heterogeneidad, el CATE sigue empeorando la
@@ -116,9 +167,24 @@ error estándar entre paréntesis)
    también más que estimar con los mismos 30.000 hogares. Además, el
    nivel del efecto sale sesgado hacia cero (ATE +0,04 a +0,08\* frente a
    +0,095\*), más en el nivel básico.
+   *Actualización 2026-11-20:* el sesgo del nivel es de estimar la celda
+   y desaparece dentro de ella (ATE +0,091 a +0,094\*), pero el PEHE no
+   baja: sigue entre 2,4 y 3,4 veces la desviación del efecto. Lo que
+   falla para ordenar hogares es la varianza del CATE por hogar, no el
+   sesgo. Dentro de la celda el CATE mejora 3 a 13 puntos\* y aun así
+   queda 6 a 11 puntos\* bajo el PMT por brecha en los niveles ampliado y
+   complejo (2 a 6\* en el básico, con 2 errores estándar en monto fijo).
+   La conclusión 1 se mantiene, con distancias menores.
 4. **Con el tratamiento del Hot-Deck no hay nada que estimar.** El ATE
    estimado es negativo (−0,02 a −0,06\*) en todos los niveles y la regla
    con ese CATE queda por debajo del azar (32-49 %\* frente a 47-56 %\*).
+   *Actualización 2026-11-20:* el ATE negativo y el quedar bajo el azar
+   eran el sesgo de estimar la celda. Dentro de la celda el ATE es ≈0\* y
+   la regla queda en el azar (49-55 %\*, entre −1,4 y +3,0 puntos\* de la
+   aleatoria). La lectura es la misma: sin vínculo, el CATE no aporta.
+   Con el enlace fraccional ni siquiera se puede estimar (no
+   identificable), y la vigente con ese enlace da lo mismo que con el
+   sorteo (74-77 %\*).
 5. **El orden de las reglas no cambia** con ninguno de los dos
    presupuestos. La vigente imputada queda en 75-77 %\* en los tres
    niveles, entre el PMT y las reglas con CATE.
@@ -173,6 +239,9 @@ cambian (diferencia máxima 7·10⁻¹⁵).
 ```bash
 PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.heterogeneidad_ampliada 6 > docs/reports/heterogeneidad_ampliada.txt 2>&1
 poetry run pytest tests/test_heterogeneidad_ampliada.py
+# Causal Forest dentro de la celda y enlace fraccional (2026-11-20; 40 a 65 minutos por nivel con 3 procesos)
+PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe -m src.focalizacion.reglas_ampliadas heterogeneidad 3 > docs/reports/heterogeneidad_ampliadas.txt 2>&1
+poetry run pytest tests/test_reglas_ampliadas.py
 ```
 
 El primer argumento es el número de procesos; el segundo, opcional, un

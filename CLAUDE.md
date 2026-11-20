@@ -241,6 +241,7 @@ poetry run python -m src.indicadores.pobreza_monetaria_geih
 poetry run python -m src.validacion.comparar_pobreza_monetaria_oficial
 poetry run python src/3b_preprocesamiento_monetario.py
 poetry run python src/5_estimacion.py
+poetry run python src/5_estimacion.py fhdi   # y intra_celda: tratamiento fraccional y DML dentro de la celda
 poetry run python -m src.diagnostico.comparar_estimadores_celda
 poetry run python -m src.diagnostico.cotas_frechet_manski
 poetry run python -m src.diagnostico.cotas_frechet_modelos
@@ -258,6 +259,7 @@ poetry run python -m src.simulacion
 poetry run python -m src.simulacion ampliada   # estimadores dentro de la celda y FHDI junto a la Tabla 6 (lento)
 poetry run python -m src.focalizacion.reglas_focalizacion
 poetry run python -m src.focalizacion.reglas_ampliadas   # Causal Forest dentro de la celda y FHDI en las reglas
+poetry run python -m src.focalizacion.reglas_ampliadas heterogeneidad   # lo mismo con la heterogeneidad ampliada (lento)
 poetry run python -m src.focalizacion.heterogeneidad_ampliada
 poetry run python -m src.simulacion.sensibilidad_semisintetica
 poetry run python -m src.simulacion.sensibilidad_semisintetica tamano
@@ -284,7 +286,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 80 de 80 el 2026-11-19). Antes de mapear una
+cuando el error vuelve; 83 de 83 el 2026-11-20). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

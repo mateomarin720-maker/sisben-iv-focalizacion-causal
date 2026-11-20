@@ -310,7 +310,7 @@ versiones dentro de la celda deberían llevarlas a lo que da la regresión.
 | 2a‴ | Causal Forest dentro de la celda (pregunta 8): efecto promedio y por hogar | Hecho el 2026-11-19 (P8) |
 | 2b | Régimen FHDI y estimadores dentro de la celda en la simulación principal (`src/simulacion/ampliada.py`): los 8 escenarios, las 3 integraciones vigentes más FHDI con vínculo del 50 % y sin vínculo, log-ingreso y pobreza monetaria; LinearDML y Causal Forest dentro de la celda junto a los vigentes | Hecha el 2026-11-19: 600 repeticiones (Causal Forest en 216); resultados en `RESULTADOS_FHDI.md` §5 |
 | 3 | Reglas de focalización con el enlace fraccional y el Causal Forest dentro de la celda (`src/focalizacion/reglas_ampliadas.py`): vigente en valor esperado con la probabilidad A/B de la FHDI; CATE dentro de la celda con T verdadero y con Hot-Deck; CATE con FHDI sin vínculo no identificable | Hecha el 2026-11-19: 300 repeticiones; resultados en `RESULTADOS_REGLAS_FOCALIZACION.md` |
-| 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Pendiente |
+| 4 | Estimación con datos reales en modo FHDI (`5_estimacion.py`): contraste 0 exacto y DML marcado como no identificable | Hecha el 2026-11-20: modos `fhdi` e `intra_celda` de `5_estimacion.py` (la corrida por defecto no cambia); resultados en `RESULTADOS_DML_ATE_ATT_ATU.md`. La heterogeneidad ampliada con el Causal Forest dentro de la celda y la FHDI quedó en `RESULTADOS_HETEROGENEIDAD_AMPLIADA.md` |
 | 5 | Texto de la tesis: Proposición 2 acotada al sorteo, figura de la recta con las dos curvas, párrafo de la FHDI como alternativa evaluada | Después de 2-4 |
 
 ## 6.1 Implementación de la fase 2

@@ -2,6 +2,37 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-20 (58) — Estimación con datos reales con FHDI y dentro de la celda (fase 4)
+
+### Agregado
+- **`src/5_estimacion.py fhdi`**: tratamiento = probabilidad de A/B de la FHDI. La varianza de T
+  dentro de la celda es 1,8e-28 del total y dentro de los grupos del proxy 2,8e-32: el DML es no
+  identificable con las dos W y no se estima. Reporte `docs/reports/estimacion_fhdi.txt`.
+- **`src/5_estimacion.py intra_celda`**: regresión con efectos fijos de celda y LinearDML con Y y T
+  sin la media de la celda, junto al LinearDML vigente, en los cinco outcomes. Todos ≈0 con el cero
+  en el IC; el vigente se aleja de la regresión 0,004 como máximo. Reporte
+  `docs/reports/estimacion_intra_celda.txt`.
+- La corrida por defecto de `5_estimacion.py` no cambia (salida idéntica al reporte vigente).
+- Lectura en `RESULTADOS_DML_ATE_ATT_ATU.md`; fase 4 cerrada en `METODOLOGIA_FHDI.md`.
+- 5 pruebas (`test_estimacion_fhdi.py`) y 2 mutaciones: 320 pruebas; 83 de 83 mutaciones.
+
+### Corregido
+- La tabla del DML en `docs/resultados/README.md` era de la celda anterior al 2026-11-14; ahora trae
+  los ATE vigentes (los de `RESULTADOS_DML_ATE_ATT_ATU.md`).
+
+## 2026-11-20 (57) — Heterogeneidad ampliada con Causal Forest dentro de la celda y FHDI
+
+### Agregado
+- **`python -m src.focalizacion.reglas_ampliadas heterogeneidad`**: las reglas de la fase 3 con los
+  niveles ampliado y complejo de `heterogeneidad_ampliada.py` (mismos sorteos; control 1,4e-14).
+  300 repeticiones por nivel. Reportes `docs/reports/heterogeneidad_*_ampliadas*`.
+- Lectura en `RESULTADOS_HETEROGENEIDAD_AMPLIADA.md`: dentro de la celda el ATE del bosque llega a
+  +0,091-0,094 (frente a +0,095), pero el PEHE sigue en 2,4-3,4 veces la desviación del efecto. El
+  CATE con vínculo mejora 3 a 13 puntos y queda 6 a 11 bajo el PMT por brecha (2 a 6 en el nivel
+  básico); con Hot-Deck queda en el azar, no por debajo. Las conclusiones no cambian.
+- Notas de actualización en los puntos 8 y 9 de `SIMULACION_SEMISINTETICA.md` y en el índice.
+- 1 prueba y 1 mutación.
+
 ## 2026-11-19 (56) — Reglas de focalización con FHDI y Causal Forest dentro de la celda (fase 3)
 
 ### Agregado
