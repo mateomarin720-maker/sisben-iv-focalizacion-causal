@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-22: 89 de 89 mutaciones detectadas.
+Resultado del 2026-11-22: 90 de 90 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -34,7 +34,8 @@ MUTACIONES = [
     ("Fréchet-Manski: ATE sin ponderar por peso de celda", "src/diagnostico/cotas_frechet_manski.py",
      'w = df["peso_fex"] / df["peso_fex"].sum()', 'w = 1 / len(df)', "tests/test_cotas_frechet_manski.py"),
     ("OE1: una privación del Sisbén entra como predictor", "src/diagnostico/seleccion_variables_lasso_shap.py",
-     'NUMERICAS = ["hog_num_personas", "viv_cuartos", "jefe_edad"]', 'NUMERICAS = ["hog_num_personas", "viv_cuartos", "jefe_edad", "I1"]',
+     'NUMERICAS = ["hog_num_personas", "hog_num_menores", "viv_cuartos", "jefe_edad"]',
+     'NUMERICAS = ["hog_num_personas", "hog_num_menores", "viv_cuartos", "jefe_edad", "I1"]',
      "tests/test_armonizacion.py"),
     ("SDP: filtro por año exacto en vez de vigencia", "src/armonizacion/armonizar_sisben_bogota_sdp.py",
      "mask = fec_encuesta <= FECHA_CORTE", "mask = fec_encuesta.dt.year == ANIO_CORTE", "tests/test_armonizacion.py"),
@@ -258,6 +259,8 @@ MUTACIONES = [
      "src/validacion/verificar_representatividad_sisben.py",
      "pd.Series(peso_donante(sisben), index=sisben.index)", "pd.Series(1.0, index=sisben.index)",
      "tests/test_ingesta_y_validacion.py"),
+    ("OE1: muestra sin ponderar por el fex del Sisbén", "src/diagnostico/seleccion_variables_lasso_shap.py",
+     "replace=True, p=peso[pos] / peso[pos].sum())", "replace=True)", "tests/test_armonizacion.py"),
     ("Catálogo de candidatas: distribución del Sisbén sin expandir", "src/validacion/candidatas_celda_catalogo.py",
      "    w = pd.Series(np.asarray(peso, float), index=serie.index)",
      "    w = pd.Series(1.0, index=serie.index)", "tests/test_hotdeck_celda.py"),

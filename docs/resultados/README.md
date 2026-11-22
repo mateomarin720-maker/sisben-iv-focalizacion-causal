@@ -214,7 +214,7 @@ focalización:
 
 | Modelo | Objetivo | Resultado |
 |---|---|---|
-| Clasificación (OE1) | Grupo del Sisbén (A-D) | LASSO, Ridge y SHAP sobre 150.000 hogares: exactitud ≈53 % (línea base 30 %); `viv_pisos` es la variable más importante; sensibilidad 0,64 en A y 0,22-0,39 en D; con partición por municipio el F1 macro cae de 0,50 a 0,44 |
+| Clasificación (OE1) | Grupo del Sisbén (A-D) | LASSO, Ridge y SHAP sobre 150.000 hogares muestreados según el `fex`: exactitud ≈55 % (línea base 34 %); los pisos y el número de menores son las variables más importantes; sensibilidad 0,62-0,67 en A y 0,29-0,41 en D; con partición por municipio el F1 macro baja de 0,52 a 0,50 |
 | Pobreza | Pobreza monetaria de la GEIH, independiente del Sisbén | Calcular la composición del hogar con lo que ya se recoge reduce el error de exclusión 5,64 puntos; todas las variables nuevas, 1,37. La cuenta de ahorros (−0,84) tiene el aporte más claro y estable; el estrato pasa el umbral por poco (−0,55, "recomendar"; con el presupuesto anterior, −0,49, "considerar") |
 
 La concordancia entre el grupo y la pobreza de un mismo hogar no se puede

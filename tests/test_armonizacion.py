@@ -230,7 +230,8 @@ def test_seleccion_de_variables_nunca_usa_las_privaciones_del_sisben():
     rng = np.random.default_rng(0)
     n = 200
     df = pd.DataFrame({
-        "hog_num_personas": rng.integers(1, 6, n), "viv_cuartos": rng.integers(1, 5, n), "jefe_edad": rng.integers(3, 7, n),
+        "hog_num_personas": rng.integers(1, 6, n), "hog_num_menores": rng.integers(0, 3, n),
+        "viv_cuartos": rng.integers(1, 5, n), "jefe_edad": rng.integers(3, 7, n),
         **{c: rng.choice(["1", "2"], n) for c in sel.CATEGORICAS}, "geo_depto": rng.choice(["05", "11"], n),
         "Grupo": rng.choice(list("ABCD"), n), **{c: rng.integers(0, 2, n) for c in prohibidas},
     })
@@ -238,3 +239,15 @@ def test_seleccion_de_variables_nunca_usa_las_privaciones_del_sisben():
     assert not prohibidas & set(mapa.values())
     assert not any(c.split("_")[0] in prohibidas or c.startswith("H_5") for c in X.columns)
     assert len(X) == n and set(y) <= set("ABCD")
+
+
+def test_seleccion_de_variables_muestrea_segun_el_fex_del_sisben():
+    """La muestra del OE1 representa a la población expandida: con 100 hogares
+    de factor 1 y 100 de factor 9, el 90 % de la muestra son los segundos; y
+    ningún hogar queda a la vez en entrenamiento y en prueba."""
+    from src.diagnostico import seleccion_variables_lasso_shap as sel
+
+    peso = np.r_[np.ones(100), np.full(100, 9.0)]
+    tr, te = sel.muestra_ponderada(peso, 20_000, seed=1)
+    assert abs((np.r_[tr, te] >= 100).mean() - 0.9) < 0.02
+    assert not set(tr) & set(te)

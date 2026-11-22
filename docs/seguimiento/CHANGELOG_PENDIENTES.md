@@ -16,8 +16,11 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 ### Agregado
 - Figura A1 (arquitectura del repositorio) en `figuras_tesis.py`, con celdas, pruebas y
   mutaciones leídas del repositorio.
-- 326 pruebas y 89 mutaciones (bootstrap sin perturbar los pesos; distribución del catálogo sin
-  expandir).
+- OE1 (`seleccion_variables_lasso_shap.py`) con el número de menores y la muestra sorteada según el
+  `fex`: pisos y menores son las variables más importantes; exactitud 0,55 frente a 0,34 de la línea
+  base. Figura SHAP nueva (`fig_shap_oe1.png`).
+- 327 pruebas y 90 mutaciones (bootstrap sin perturbar los pesos; distribución del catálogo sin
+  expandir; muestra del OE1 sin ponderar).
 
 ## 2026-11-21 (59) — Factor de expansión del Sisbén en el enlace
 

@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 326 pruebas; 89 de 89 errores documentados detectados por mutación (2026-11-21); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 327 pruebas; 90 de 90 errores documentados detectados por mutación (2026-11-21); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 

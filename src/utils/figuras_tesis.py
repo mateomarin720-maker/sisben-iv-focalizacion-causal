@@ -15,6 +15,8 @@
                                 hogar (100 sorteos)
   fig_importancia_variables_oe1 importancia de las variables en el grupo del
                                 Sisbén (LASSO, Ridge, SHAP)
+  fig_shap_oe1.png              figura SHAP del OE1: efecto de cada variable sobre
+                                P(A/B), hogar por hogar, con su valor en color
   fig_dag_ignorabilidad_marco   DAG genérico de la ignorabilidad condicional
                                 (sección 2.2, notación T, Y, X, W)
   fig_dag_ignorabilidad_hotdeck DAG de la Proposición 1: dada la celda C, el
@@ -275,27 +277,88 @@ def estabilidad_hotdeck() -> Path:
 ETIQUETAS_OE1 = {"geo_depto": "Departamento", "viv_pisos": "Material de pisos", "hog_num_personas": "Personas del hogar",
                  "viv_alcantarillado": "Alcantarillado", "viv_paredes": "Material de paredes", "jefe_sexo": "Sexo del jefe",
                  "viv_cuartos": "Cuartos", "viv_acueducto": "Acueducto", "geo_zona": "Zona (urbano/rural)",
-                 "jefe_edad": "Edad del jefe"}
+                 "jefe_edad": "Edad del jefe", "hog_num_menores": "Menores del hogar"}
+
+
+def _guardar_apa(fig, nombre: str) -> Path:
+    """Formato de las figuras del documento: fondo blanco, 300 dpi, sin título
+    en la imagen (APA: número y título van en el texto)."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    ruta = OUT / nombre
+    fig.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    return ruta
 
 
 def importancia_oe1() -> Path:
-    """Importancia normalizada de cada variable al predecir el grupo del Sisbén."""
+    """Importancia normalizada de cada variable al predecir el grupo del Sisbén
+    (LASSO, Ridge y SHAP), en formato APA."""
     d = pd.read_csv(R / "seleccion_variables_lasso_ridge_shap.csv").sort_values("promedio")
-    fig, ax = plt.subplots(figsize=(7, 4.6))
-    y = np.arange(len(d))
-    alto = 0.26
-    for k, (col, nom, color) in enumerate([("lasso_norm", "LASSO", AZUL), ("ridge_norm", "Ridge", NARANJA),
-                                           ("shap_norm", "SHAP (bosque aleatorio)", AGUA)]):
-        ax.barh(y + (k - 1) * alto, d[col], height=alto - 0.04, color=color, label=nom)
-    ax.set_yticks(y, [ETIQUETAS_OE1.get(v, v) + (" (control)" if g else "") for v, g in
-                      zip(d["variable"], d["es_control_geografico"])])
-    ax.set_xlim(0, 1.05)
-    ax.set_xlabel("Importancia normalizada (1 = la mayor de cada método)")
-    _coma(ax, "x", 1)
-    ax.grid(axis="y", visible=False)
-    ax.set_title("Qué variables explican el grupo del Sisbén (OE1)")
-    ax.legend(loc="lower right", fontsize=8)
-    return _guardar(fig, "fig_importancia_variables_oe1.png")
+    with plt.rc_context({"font.family": ["Arial", "DejaVu Sans"], "figure.facecolor": "white",
+                         "axes.facecolor": "white"}):
+        fig, ax = plt.subplots(figsize=(7.4, 4.8))
+        y = np.arange(len(d))
+        alto = 0.26
+        for k, (col, nom, color) in enumerate([("lasso_norm", "LASSO", AZUL), ("ridge_norm", "Ridge", NARANJA),
+                                               ("shap_norm", "SHAP (bosque aleatorio)", AGUA)]):
+            ax.barh(y + (k - 1) * alto, d[col], height=alto - 0.04, color=color, label=nom)
+        ax.set_yticks(y, [ETIQUETAS_OE1.get(v, v) + (" (control)" if g else "") for v, g in
+                          zip(d["variable"], d["es_control_geografico"])])
+        ax.set_xlim(0, 1.05)
+        ax.set_xlabel("Importancia normalizada (1 = la mayor de cada método)")
+        _coma(ax, "x", 1)
+        ax.grid(axis="y", visible=False)
+        ax.legend(loc="lower right", fontsize=8)
+        return _guardar_apa(fig, "fig_importancia_variables_oe1.png")
+
+
+ETIQUETAS_SHAP = {"viv_pisos": "Material de pisos (alto = acabado)", "viv_paredes": "Material de paredes (alto = ladrillo)",
+                  "jefe_sexo": "Jefatura femenina", "geo_zona": "Zona rural", "geo_depto": "Departamento (control)",
+                  "jefe_edad": "Ciclo de vida del jefe"}
+
+
+def shap_oe1(semilla: int = 7) -> Path:
+    """Figura SHAP del OE1: efecto de cada variable sobre la probabilidad de
+    pertenecer a A o B, hogar por hogar (bosque aleatorio, muestra ponderada
+    por `fex`). Color: valor de la variable de bajo (azul) a alto (naranja);
+    gris si no tiene un orden verificado."""
+    from matplotlib.colors import LinearSegmentedColormap
+    d = pd.read_csv(R / "seleccion_variables_shap_ab.csv")
+    variables = [c[5:] for c in d.columns if c.startswith("shap_")]
+    orden = sorted(variables, key=lambda v: d[f"shap_{v}"].abs().mean())  # la más importante arriba
+    cmap = LinearSegmentedColormap.from_list("bajo_alto", [AZUL, "#d9d8d3", NARANJA])
+    rng = np.random.default_rng(semilla)
+    with plt.rc_context({"font.family": ["Arial", "DejaVu Sans"], "figure.facecolor": "white",
+                         "axes.facecolor": "white"}):
+        fig, ax = plt.subplots(figsize=(7.4, 5.2))
+        for i, v in enumerate(orden):
+            s = d[f"shap_{v}"].to_numpy()
+            # enjambre: separación vertical proporcional a la densidad local
+            conteo, bordes = np.histogram(s, bins=60)
+            dens = conteo[np.clip(np.digitize(s, bordes) - 1, 0, len(conteo) - 1)] / conteo.max()
+            yy = i + rng.uniform(-1, 1, len(s)) * 0.38 * dens
+            if f"valor_{v}" in d:
+                x = d[f"valor_{v}"].to_numpy(float)
+                lo, hi = np.nanpercentile(x, [5, 95])  # como SHAP: unos pocos hogares grandes no estiran la escala
+                if hi <= lo:
+                    lo, hi = np.nanmin(x), np.nanmax(x)
+                c = cmap(np.clip((x - lo) / (hi - lo), 0, 1)) if hi > lo else np.array([TENUE] * len(x))
+                if hi > lo:
+                    c[np.isnan(x)] = matplotlib.colors.to_rgba(TENUE)
+                ax.scatter(s, yy, s=3, c=c, linewidths=0, alpha=0.8, rasterized=True)
+            else:
+                ax.scatter(s, yy, s=3, color=TENUE, linewidths=0, alpha=0.6, rasterized=True)
+        ax.axvline(0, color=TINTA_2, linewidth=0.8)
+        ax.set_yticks(range(len(orden)), [ETIQUETAS_SHAP.get(v, ETIQUETAS_OE1.get(v, v)) for v in orden])
+        ax.set_xlabel("Efecto sobre la probabilidad de pertenecer a A o B (valor SHAP)")
+        _coma(ax, "x", 2)
+        ax.grid(axis="y", visible=False)
+        ax.grid(axis="x", color=REJILLA, linewidth=0.6)
+        barra = fig.colorbar(plt.cm.ScalarMappable(cmap=cmap), ax=ax, fraction=0.03, pad=0.02, ticks=[0, 1])
+        barra.ax.set_yticklabels(["Bajo", "Alto"])
+        barra.set_label("Valor de la variable", fontsize=8)
+        barra.outline.set_visible(False)
+        return _guardar_apa(fig, "fig_shap_oe1.png")
 
 
 def grafo_ignorabilidad_marco():
@@ -718,7 +781,7 @@ def main(con_datos: bool = True) -> None:
     _estilo()
     rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), arquitectura_repositorio(),
              estabilidad_hotdeck(),
-             importancia_oe1(), dag_ignorabilidad_marco(),
+             importancia_oe1(), shap_oe1(), dag_ignorabilidad_marco(),
              dag_ignorabilidad_hotdeck(), dag_simulacion(), nubes_celda(), dml_tres_pasos()]
     if con_datos:
         rutas.append(propension_celda())

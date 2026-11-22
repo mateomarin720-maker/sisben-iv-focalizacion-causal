@@ -23,7 +23,8 @@ canónico ya armonizado en `sisben_estandarizado_2024_con_bogota.parquet`
 ## Variables y por qué van numéricas u one-hot
 
 - **Cardinales/ordinales con orden establecido** (van numéricas tal
-  cual): `hog_num_personas` (conteo), `viv_cuartos` (conteo), `jefe_edad`
+  cual): `hog_num_personas` y `hog_num_menores` (conteos; menores desde el
+  2026-11-22, como en la celda del Hot-Deck), `viv_cuartos` (conteo), `jefe_edad`
   (código de ciclo de vida 3-6, orden corroborado indirectamente — ver
   `docs/insumos/DICCIONARIO_HOTDECK.md` §5).
 - **Categóricas SIN dirección/orden verificado** (van one-hot, nunca
@@ -71,7 +72,9 @@ from scipy.stats import spearmanr
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import accuracy_score, brier_score_loss, confusion_matrix, f1_score, precision_recall_fscore_support
-from sklearn.model_selection import GroupShuffleSplit, train_test_split
+from sklearn.model_selection import GroupShuffleSplit
+
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import PISOS_NIVEL, peso_donante
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -79,10 +82,12 @@ logger = logging.getLogger(__name__)
 SISBEN_PATH = Path("data/2_models/sisben_estandarizado_2024_con_bogota.parquet")
 REPORT = Path("docs/reports/seleccion_variables_lasso_ridge_shap.csv")
 REPORT_CLASES = Path("docs/reports/seleccion_variables_metricas_por_clase.csv")
+REPORT_SHAP = Path("docs/reports/seleccion_variables_shap_ab.csv")
 SEED = 42
-N_MUESTRA = 150_000  # submuestra estratificada por Grupo, por costo de LogisticRegressionCV/SHAP
+N_MUESTRA = 150_000  # submuestra ponderada por fex, por costo de LogisticRegressionCV/SHAP
+N_SHAP_FIGURA = 4_000  # hogares cuyo valor SHAP se guarda para la figura
 
-NUMERICAS = ["hog_num_personas", "viv_cuartos", "jefe_edad"]
+NUMERICAS = ["hog_num_personas", "hog_num_menores", "viv_cuartos", "jefe_edad"]
 CATEGORICAS = ["viv_paredes", "viv_pisos", "viv_alcantarillado", "viv_acueducto", "jefe_sexo", "geo_zona"]
 CONTROL = ["geo_depto"]
 TODAS = NUMERICAS + CATEGORICAS + CONTROL
@@ -114,10 +119,38 @@ def _importancia_por_variable(pesos: np.ndarray, columnas: list[str], mapa: dict
     return s.groupby([mapa[c] for c in columnas]).sum().sort_values(ascending=False)
 
 
-def _muestra_estratificada(X: pd.DataFrame, y: pd.Series, n: int, seed: int) -> tuple[pd.DataFrame, pd.Series]:
-    frac = min(1.0, n / len(X))
-    idx = y.groupby(y).sample(frac=frac, random_state=seed).index
-    return X.loc[idx], y.loc[idx]
+def muestra_ponderada(peso: np.ndarray, n: int, seed: int, prueba: float = 0.3) -> tuple[np.ndarray, np.ndarray]:
+    """Posiciones de entrenamiento y prueba que representan a la población:
+    el Sisbén nacional es una muestra con `fex` (Bogotá trae 1), así que se
+    sortean hogares con probabilidad proporcional al `fex`, con reemplazo.
+    Los hogares se separan antes en dos grupos disjuntos, para que un hogar
+    repetido no quede en entrenamiento y en prueba a la vez. Hasta el
+    2026-11-22 la submuestra se estratificaba por grupo sin ponderar."""
+    rng = np.random.default_rng(seed)
+    en_prueba = rng.random(len(peso)) < prueba
+    salida = []
+    for mascara, m in ((~en_prueba, round(n * (1 - prueba))), (en_prueba, round(n * prueba))):
+        pos = np.flatnonzero(mascara)
+        salida.append(rng.choice(pos, size=m, replace=True, p=peso[pos] / peso[pos].sum()))
+    return salida[0], salida[1]
+
+
+def _valor_ordinal(d: pd.DataFrame) -> pd.DataFrame:
+    """Valor de cada variable en una escala de bajo a alto, para colorear la
+    figura SHAP. Solo variables con orden verificado (pisos y paredes por la
+    escala común; sexo 2 = mujer y zona 1 = cabecera en las dos fuentes);
+    departamento y servicios quedan sin color."""
+    pisos = d["viv_pisos"].astype(str).map(PISOS_NIVEL["sisben"]).map({"tierra": 0, "cemento_madera": 1, "acabado": 2})
+    paredes = d["viv_paredes"].astype(str).map({"1": 2, "4": 2, "2": 1, "3": 1, "5": 0, "6": 0, "7": 0, "0": 0})
+    return pd.DataFrame({
+        "hog_num_personas": pd.to_numeric(d["hog_num_personas"], errors="coerce"),
+        "hog_num_menores": pd.to_numeric(d["hog_num_menores"], errors="coerce"),
+        "viv_cuartos": pd.to_numeric(d["viv_cuartos"], errors="coerce"),
+        "jefe_edad": pd.to_numeric(d["jefe_edad"], errors="coerce"),
+        "viv_pisos": pisos, "viv_paredes": paredes,
+        "jefe_sexo": (d["jefe_sexo"].astype(str) == "2").astype(float),
+        "geo_zona": (d["geo_zona"].astype(str) != "1").astype(float),
+    }, index=d.index)
 
 
 def _metricas_por_clase(nombre: str, modelo, X_te, y_te) -> pd.DataFrame:
@@ -180,34 +213,44 @@ def _shap_rf(X_tr, y_tr, X_te, y_te, columnas, mapa):
     acc, f1 = accuracy_score(y_te, pred), f1_score(y_te, pred, average="macro")
 
     n_shap = min(20_000, len(X_te))
-    X_shap = X_te.sample(n_shap, random_state=SEED)
+    X_shap = X_te.iloc[np.random.default_rng(SEED).choice(len(X_te), n_shap, replace=False)]
     explainer = shap.TreeExplainer(modelo)
     sv = explainer.shap_values(X_shap)
     # shap >=0.45 con RandomForestClassifier multiclase: array (n, n_features, n_clases)
     sv = np.asarray(sv)
-    if sv.ndim == 3:
-        pesos = np.abs(sv).mean(axis=0).sum(axis=1)  # media |shap| por fila, sumado sobre clases
-    else:  # binario: una sola matriz (n, n_features)
-        pesos = np.abs(sv).mean(axis=0)
+    pesos = np.abs(sv).mean(axis=0).sum(axis=1)  # media |shap| por fila, sumado sobre clases
     importancia = _importancia_por_variable(pesos, columnas, mapa)
-    return modelo, importancia, acc, f1
+    # Efecto de cada variable sobre P(A) + P(B), sumando sus columnas dummy.
+    clases = list(modelo.classes_)
+    ab = sv[:, :, [clases.index("A"), clases.index("B")]].sum(axis=2)
+    shap_ab = pd.DataFrame(ab, columns=columnas, index=X_shap.index).T.groupby([mapa[c] for c in columnas]).sum().T
+    return modelo, importancia, acc, f1, shap_ab
 
 
 def main() -> None:
     logger.info("Cargando %s", SISBEN_PATH)
-    df = pd.read_parquet(SISBEN_PATH, columns=[*TODAS, "Grupo", "cod_mpio"])
+    df = pd.read_parquet(SISBEN_PATH, columns=[*TODAS, "Grupo", "cod_mpio", "fex"])
     X, y, mapa = _preparar(df)
     municipios = df.loc[X.index, "cod_mpio"].astype(str)
+    peso = peso_donante(df.loc[X.index])
     logger.info("Hogares con las %s variables completas: %s", len(TODAS), f"{len(X):,}")
 
-    X_m, y_m = _muestra_estratificada(X, y, N_MUESTRA, SEED)
-    logger.info("Submuestra estratificada por Grupo: %s hogares", f"{len(X_m):,}")
-    X_tr, X_te, y_tr, y_te = train_test_split(X_m, y_m, test_size=0.3, stratify=y_m, random_state=SEED)
+    tr_pos, te_pos = muestra_ponderada(peso, N_MUESTRA, SEED)
+    X_tr, y_tr = X.iloc[tr_pos].reset_index(drop=True), y.iloc[tr_pos].reset_index(drop=True)
+    X_te, y_te = X.iloc[te_pos].reset_index(drop=True), y.iloc[te_pos].reset_index(drop=True)
+    X_m, y_m = pd.concat([X_tr, X_te], ignore_index=True), pd.concat([y_tr, y_te], ignore_index=True)
+    mpio_m = pd.concat([municipios.iloc[tr_pos], municipios.iloc[te_pos]], ignore_index=True)
+    origen_te = X.index[te_pos]  # fila del Sisbén de cada hogar de prueba
     columnas = list(X.columns)
+    poblacion = pd.Series(peso, index=X.index).groupby(y.values).sum() / peso.sum() * 100
 
     print("\n=== Selección de variables — Sisbén, outcome = Grupo (A-D) ===")
-    print(f"n total con variables completas: {len(X):,} | submuestra usada: {len(X_m):,} "
+    print(f"n total con variables completas: {len(X):,} | submuestra ponderada por fex: {len(X_m):,} "
           f"(train={len(X_tr):,}, test={len(X_te):,})")
+    print("Grupos en la población (fex), %: " + ", ".join(f"{g} {v:.1f}" for g, v in poblacion.items()))
+    print("Grupos en la submuestra, %: " + ", ".join(f"{g} {v:.1f}" for g, v in
+                                                     (y_m.value_counts(normalize=True).sort_index() * 100).items()))
+    print(f"Línea base (siempre el grupo más frecuente): exactitud {y_te.value_counts(normalize=True).max():.3f}")
 
     m_lasso, imp_lasso, eliminadas, acc_l, f1_l = _lasso(X_tr, y_tr, X_te, y_te, columnas, mapa)
     print(f"\n--- LASSO (L1) --- accuracy={acc_l:.3f} f1_macro={f1_l:.3f}")
@@ -218,7 +261,13 @@ def main() -> None:
     print(f"\n--- Ridge (L2) --- accuracy={acc_r:.3f} f1_macro={f1_r:.3f}")
     print(imp_ridge.round(3).to_string())
 
-    m_rf, imp_shap, acc_s, f1_s = _shap_rf(X_tr, y_tr, X_te, y_te, columnas, mapa)
+    m_rf, imp_shap, acc_s, f1_s, shap_ab = _shap_rf(X_tr, y_tr, X_te, y_te, columnas, mapa)
+    figura = shap_ab.iloc[:N_SHAP_FIGURA]
+    valores = _valor_ordinal(df.loc[origen_te[figura.index]]).reset_index(drop=True)
+    figura = pd.concat([figura.reset_index(drop=True).add_prefix("shap_"), valores.add_prefix("valor_")], axis=1)
+    figura.round(5).to_csv(REPORT_SHAP, index=False)
+    print("Media |SHAP| sobre P(A/B): " + ", ".join(f"{k} {v:.4f}" for k, v in
+                                                     shap_ab.abs().mean().sort_values(ascending=False).items()))
     print(f"\n--- SHAP sobre RandomForestClassifier --- accuracy={acc_s:.3f} f1_macro={f1_s:.3f}")
     print(imp_shap.round(4).to_string())
 
@@ -229,7 +278,7 @@ def main() -> None:
     # Partición por municipio: ningún municipio queda en entrenamiento y prueba a
     # la vez, para que la nota no se apoye en hogares vecinos o registros repetidos.
     tr, te = next(GroupShuffleSplit(n_splits=1, test_size=0.3, random_state=SEED)
-                  .split(X_m, y_m, groups=municipios.loc[X_m.index]))
+                  .split(X_m, y_m, groups=mpio_m))
     rf_g = RandomForestClassifier(n_estimators=300, max_depth=10, min_samples_leaf=20,
                                   random_state=SEED, n_jobs=-1).fit(X_m.iloc[tr], y_m.iloc[tr])
     pred_g = rf_g.predict(X_m.iloc[te])

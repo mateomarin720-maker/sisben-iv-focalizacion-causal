@@ -1,180 +1,134 @@
 # Resultados — Selección de variables: LASSO, Ridge y SHAP (OE1)
 
-Generado 2026-11-02 por
-`src/diagnostico/seleccion_variables_lasso_shap.py`. Salida completa:
-`docs/reports/seleccion_variables_lasso_ridge_shap.txt` (consola) y
-`docs/reports/seleccion_variables_lasso_ridge_shap.csv` (tabla
-combinada) y `docs/reports/seleccion_variables_metricas_por_clase.csv`
-(por grupo).
+Generado 2026-11-02 por `src/diagnostico/seleccion_variables_lasso_shap.py`;
+regenerado el 2026-11-22 con el número de menores (la celda del Hot-Deck lo
+usa desde el 2026-11-14) y la muestra ponderada por el `fex` del Sisbén.
+Salidas: `docs/reports/seleccion_variables_lasso_ridge_shap.txt` (consola),
+`seleccion_variables_lasso_ridge_shap.csv` (importancia combinada),
+`seleccion_variables_metricas_por_clase.csv` (por grupo) y
+`seleccion_variables_shap_ab.csv` (valores SHAP de la figura). Figuras:
+`docs/anexos_tesis/figuras/fig_importancia_variables_oe1.png` y
+`fig_shap_oe1.png`.
 
 ## Qué es
 
-Responde al objetivo específico 1: "determinar grupos y subgrupos de
-variables para LASSO, Ridge y SHAP". **No es inferencia causal** — no
-estima ningún efecto del Sisbén, es un ejercicio de selección/
-importancia de variables: ¿qué características del hogar predicen mejor
-el `Grupo` (A-D) que le asigna el Sisbén? Se usan tres métodos
-complementarios para no depender de uno solo:
-- **LASSO** (`LogisticRegressionCV`, regularización L1, multinomial):
-  además de rankear importancia, lleva coeficientes exactamente a 0 —
-  dice qué variables sobrarían del todo.
-- **Ridge** (la misma regresión con L2): no elimina nada, pero su ranking
-  de magnitud sirve para comparar contra LASSO — si coinciden, la señal
-  es estable; si no, el L1 puede estar siendo agresivo con alguna
-  variable correlacionada con otra.
-- **SHAP** sobre `RandomForestClassifier`: importancia no lineal/con
-  interacciones, para contrastar contra los dos modelos lineales.
+Responde al objetivo específico 1: qué características del hogar se asocian
+con el grupo (A-D) que asigna el Sisbén. **No es inferencia causal**: es
+importancia de variables para predecir la clasificación. Tres métodos, para
+no depender de uno:
 
-## Por qué no hay circularidad
-
-El Sisbén calcula `Grupo` internamente a partir de `I1`-`I15`/`H_5`
-(privaciones ya agregadas) — CLAUDE.md prohíbe usarlas como outcome en la
-parte causal por circularidad; aquí se extiende la misma regla a
-predictores: usarlas equivaldría a redescubrir la fórmula propia del
-Sisbén, no a aportar información nueva. Los predictores usados son
-características del hogar independientes de ese cálculo interno —
-vivienda, demografía del jefe y geografía, el mismo esquema canónico ya
-armonizado para el Hot-Deck.
+- **LASSO** (logística multinomial con L1, `LogisticRegressionCV`): ordena
+  las variables y puede llevar coeficientes a 0.
+- **Ridge** (la misma regresión con L2): no elimina nada; si coincide con
+  LASSO, la señal es estable.
+- **SHAP** sobre un bosque aleatorio: importancia no lineal y con
+  interacciones, hogar por hogar.
 
 ## Cómo se usa aquí
 
-- **Outcome:** `Grupo` (A/B/C/D), sobre `sisben_estandarizado_2024_con_
-  bogota.parquet` (3.093.411 hogares con las 10 variables completas).
-- **Predictores numéricos** (orden establecido, van tal cual):
-  `hog_num_personas`, `viv_cuartos` (conteos), `jefe_edad` (ciclo de vida
-  3-6).
-- **Predictores categóricos** (dirección/orden SIN verificar, van
-  one-hot, nunca numéricos — mismo criterio que evitó el bug de
-  `LinearDRLearner` con categóricas sin orden, ver CLAUDE.md):
-  `viv_paredes`, `viv_pisos`, `viv_alcantarillado`, `viv_acueducto`,
-  `jefe_sexo`, `geo_zona`.
-- **Control geográfico** (incluido para no atribuirle a vivienda/
-  demografía variación que es solo geografía; reportado aparte, no en el
-  ranking principal): `geo_depto` (33 categorías, one-hot).
-- **Submuestra:** 150.000 hogares (estratificada por `Grupo`, preserva
-  las proporciones reales — B 30,4 %, C 29,7 %, A 23,4 %, D 16,5 %), por
-  costo computacional de `LogisticRegressionCV` y SHAP. Split 70/30
-  train/test.
+- **Resultado:** `Grupo` (A/B/C/D) del Sisbén IV nacional y de Bogotá
+  (3.093.411 hogares con las 11 variables completas).
+- **Predictores:** las variables canónicas comunes a las fuentes, sin las
+  privaciones `I1`-`I15`/`H_5` (redescubrirían la fórmula del Sisbén).
+  Numéricas: personas, **menores** (desde el 2026-11-22), cuartos y ciclo
+  de vida del jefe. Categóricas, en one-hot (su orden no se asume): paredes,
+  pisos, alcantarillado, acueducto, sexo del jefe y zona. Control
+  geográfico: departamento (33 categorías), reportado aparte.
+- **Muestra:** 150.000 hogares sorteados con probabilidad proporcional al
+  `fex` (el Sisbén nacional es una muestra expandible; Bogotá trae 1), con
+  reemplazo, después de separar los hogares en entrenamiento (70 %) y
+  prueba (30 %) para que un hogar repetido no quede en los dos. La muestra
+  reproduce la población: A 26,0 %, B 33,8 %, C 26,4 %, D 13,9 % (población
+  expandida: 25,9 %, 33,7 %, 26,6 %, 13,9 %). Hasta el 2026-11-22 se
+  estratificaba por grupo sin ponderar (A 23,4 %, B 30,4 %, C 29,7 %,
+  D 16,5 %).
 
 ## Resultado
 
-| Variable | LASSO (Σ\|coef\|) | Ridge (Σ\|coef\|) | SHAP (RF, media \|valor\|) | Normalizado promedio |
+| Variable | LASSO | Ridge | SHAP (bosque) | Promedio normalizado |
 |---|---|---|---|---|
-| `geo_depto` (control) | 23,650 | 31,428 | 0,1584 | 0,846 |
-| `viv_pisos` | 8,290 | 9,218 | 0,2952 | 0,548 |
-| `hog_num_personas` | 1,566 | 1,569 | 0,1335 | 0,189 |
-| `viv_alcantarillado` | 1,047 | 1,061 | 0,1321 | 0,175 |
-| `viv_paredes` | 2,189 | 2,716 | 0,0701 | 0,139 |
-| `jefe_sexo` | 1,736 | 1,743 | 0,0842 | 0,138 |
-| `viv_cuartos` | 1,065 | 1,067 | 0,0695 | 0,105 |
-| `viv_acueducto` | 0,140 | 0,172 | 0,0454 | 0,055 |
-| `geo_zona` | 0,243 | 0,571 | 0,0291 | 0,042 |
-| `jefe_edad` | 0,262 | 0,264 | 0,0230 | 0,033 |
+| Departamento (control) | 1,000 | 1,000 | 0,306 | 0,769 |
+| Material de pisos | 0,303 | 0,322 | 1,000 | 0,542 |
+| Menores del hogar | 0,085 | 0,079 | 0,597 | 0,254 |
+| Alcantarillado | 0,034 | 0,031 | 0,391 | 0,152 |
+| Material de paredes | 0,076 | 0,079 | 0,211 | 0,122 |
+| Personas del hogar | 0,014 | 0,018 | 0,304 | 0,112 |
+| Cuartos | 0,024 | 0,022 | 0,247 | 0,098 |
+| Sexo del jefe | 0,037 | 0,035 | 0,216 | 0,096 |
+| Acueducto | 0,008 | 0,008 | 0,171 | 0,063 |
+| Zona | 0,034 | 0,035 | 0,052 | 0,040 |
+| Ciclo de vida del jefe | 0,013 | 0,012 | 0,060 | 0,028 |
 
-Correlación de Spearman entre rankings: **LASSO-Ridge = 0,988** (casi
-perfecta), LASSO-SHAP = 0,794, Ridge-SHAP = 0,806.
+Importancia normalizada dentro de cada método (1 = la mayor). Correlación de
+Spearman entre rankings: LASSO-Ridge 0,96; LASSO-SHAP 0,64; Ridge-SHAP 0,47.
+Ninguna variable queda eliminada por LASSO.
 
-Precisión de clasificación (4 clases, test n=45.000; línea base — predecir
-siempre la clase mayoritaria `B`, 30,4 % — sería ~0,30 de exactitud):
+**Efecto sobre la probabilidad de A/B (SHAP, media del valor absoluto):**
+pisos 0,125; menores 0,076; alcantarillado 0,056; cuartos 0,036;
+departamento 0,032; sexo del jefe 0,028; personas 0,028; paredes 0,027;
+acueducto 0,025; ciclo de vida 0,007; zona 0,006. En la figura SHAP, un piso
+de tierra sube la probabilidad de A/B hasta en 0,20 y un piso con acabado la
+baja en cerca de 0,19; más menores y menos cuartos la suben; la jefatura
+femenina la sube en ≈0,03.
 
 | Modelo | Exactitud | F1 macro |
 |---|---|---|
-| LASSO | 0,530 | 0,526 |
-| Ridge | 0,530 | 0,526 |
-| RandomForest (base de SHAP) | 0,527 | 0,499 |
+| LASSO | 0,547 | 0,536 |
+| Ridge | 0,547 | 0,536 |
+| Bosque aleatorio (base de SHAP) | 0,546 | 0,521 |
+| Línea base (siempre B) | 0,337 | — |
 
-Ninguna variable quedó eliminada por LASSO (todas con al menos un
-coeficiente distinto de 0 en alguna de las 4 clases).
+## Rendimiento por grupo, confusión y calibración
 
-## Rendimiento por grupo, confusión y calibración (2026-11-02)
-
-Agregado a pedido de la revisión: la exactitud global esconde diferencias
-grandes entre grupos. Salida: `docs/reports/seleccion_variables_metricas_por_clase.csv`.
-
-| Grupo | LASSO: precisión / sensibilidad | RandomForest: precisión / sensibilidad |
+| Grupo | LASSO: precisión / sensibilidad | Bosque: precisión / sensibilidad |
 |---|---|---|
-| A | 0,63 / 0,64 | 0,63 / 0,65 |
-| B | 0,48 / 0,48 | 0,48 / 0,46 |
-| C | 0,50 / 0,58 | 0,49 / 0,67 |
-| D | 0,55 / **0,39** | 0,62 / **0,22** |
+| A | 0,67 / 0,62 | 0,65 / 0,67 |
+| B | 0,50 / 0,61 | 0,50 / 0,63 |
+| C | 0,51 / 0,46 | 0,51 / 0,46 |
+| D | 0,55 / **0,41** | 0,61 / **0,29** |
 
-Matriz de confusión de LASSO (% de cada grupo real): el 45 % de los
-hogares D se predicen como C, y el 31,5 % de los A como B. Los errores
-casi siempre caen en el grupo vecino; casi nunca hay saltos de dos grupos
-(A predicho como D: 0,1 %).
+Los errores caen en el grupo vecino: con LASSO, el 35 % de los hogares A se
+predicen B y el 38 % de los D se predicen C; de A a D, el 0,1 %. La
+probabilidad media predicha coincide con la tasa de cada grupo (A: 0,260
+frente a 0,261) y el Brier va de 0,09 (D) a 0,20 (B): bien calibrados en
+promedio; el problema es separar grupos vecinos.
 
-**Calibración:** la probabilidad media predicha coincide con la tasa
-observada en cada grupo (por ejemplo D: 0,164 frente a 0,165) y el Brier
-por grupo va de 0,11 (A, D) a 0,19 (B). Los modelos están bien
-calibrados en promedio; el problema es de discriminación entre grupos
-vecinos.
-
-**Partición por municipio** (ningún municipio en entrenamiento y prueba a
-la vez, RandomForest): F1 macro cae de 0,499 a **0,435** y la
-sensibilidad de D de 0,22 a 0,12. La exactitud sube (0,527 → 0,541) solo
-porque los municipios de prueba tienen más hogares A y B, que son los
-más fáciles; no es una mejora. Parte del rendimiento de la partición
-aleatoria venía de reconocer patrones locales del municipio.
-
-**Lectura:** las variables del esquema canónico separan bien los
-extremos pobres (A) y mal al grupo D, que se confunde con C. El modelo
-predice el grupo **asignado** por el Sisbén, no la pobreza real: un 53 %
-de exactitud no mide la validez del Sisbén frente a la pobreza.
+**Partición por municipio** (ningún municipio en entrenamiento y prueba,
+bosque aleatorio): F1 macro de 0,521 a 0,502 y sensibilidad de D de 0,29 a
+0,27. Parte del rendimiento viene de reconocer patrones locales.
 
 ## Cómo leerlo
 
-- **`viv_pisos` es, con ventaja, la variable individual más importante en
-  los tres métodos** (descontando `geo_depto`, que es un control, no una
-  variable sustantiva) — consistente con que el material de piso sea uno
-  de los componentes de mayor peso dentro del propio índice Sisbén.
-- **LASSO y Ridge casi no difieren entre sí** (Spearman 0,988) — la
-  regularización L1 no está siendo agresiva con ninguna variable
-  correlacionada, y ninguna variable se elimina del todo. La señal de
-  "qué importa" es estable entre los dos modelos lineales.
-- **SHAP (no lineal) reordena el tercio medio de la tabla**: `hog_num_
-  personas` y `viv_alcantarillado` suben notablemente (de los últimos
-  lugares en LASSO/Ridge a 3º-4º en SHAP), mientras `viv_paredes` y
-  `jefe_sexo` bajan. Esto sugiere que el tamaño del hogar y el acceso a
-  alcantarillado interactúan con otras variables de forma no lineal que
-  los modelos lineales no capturan — justo el tipo de divergencia que
-  justifica correr los tres métodos en vez de solo uno.
-- **`geo_depto` domina el ranking lineal por un motivo mecánico, no
-  necesariamente sustantivo**: tiene 33 columnas dummy, así que la suma
-  de `|coef|` se acumula sobre muchas más columnas que cualquier otra
-  variable (que tiene 2-8). No es comparable uno a uno contra una
-  variable con menos categorías — por eso se reporta aparte como
-  "control", no se compara directamente en el ranking principal. SHAP
-  (que promedia en vez de sumar) lo muestra de forma más moderada
-  (2º lugar, no 1º).
-- **La exactitud (~53 %) es muy superior a la línea base (~30 %) pero
-  está lejos de ser perfecta** — las variables disponibles explican una
-  parte real pero parcial de la clasificación del Sisbén; el resto
-  depende de las ~15 privaciones (`I1`-`I15`/`H_5`) que, por diseño, NO
-  se usan aquí (ver "Por qué no hay circularidad").
+- **El material de pisos es la variable sustantiva más importante** en los
+  tres métodos (el departamento es un control: suma 33 columnas en los
+  modelos lineales, por eso domina allí y no en SHAP).
+- **El número de menores es la segunda**, por encima de las demás de
+  vivienda. Entró a la celda del Hot-Deck el 2026-11-14 por la misma razón.
+- **SHAP reordena el tercio medio:** personas, alcantarillado y cuartos
+  pesan más en el bosque que en los modelos lineales; sugieren
+  interacciones que la logística no capta. Por eso se corren los tres.
+- **Exactitud de ≈55 % frente a 34 % de la línea base:** las variables
+  comunes explican una parte real pero parcial de la clasificación; el
+  resto está en lo que el Sisbén recoge y aquí no se usa.
+- Se predice el grupo **asignado** por el Sisbén, no la pobreza: la
+  correspondencia con la pobreza monetaria está en la celda (correlación de
+  0,41 entre P(A/B | celda) y la pobreza, `RESULTADOS_HOTDECK.md`) y en las
+  cotas de los errores (`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`).
 
 ## Limitaciones
 
-- Solo usa el esquema canónico armonizado para el Hot-Deck (10
-  variables) — el Sisbén real recoge muchas más (ingresos, activos,
-  educación de todos los miembros, etc.) que no están en la tabla
-  estandarizada de este repositorio.
-- Se usan los códigos del Sisbén en one-hot, dentro de una sola fuente.
-  `viv_paredes`/`viv_pisos` ya están verificados con la ficha
-  (`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`); `jefe_sexo` no.
-- Submuestra de 150.000 (no los 3,09 millones completos) por costo
-  computacional — no se probó si el ranking cambia con el total.
-- `RandomForestClassifier` con hiperparámetros fijos (300 árboles,
-  profundidad 10, hoja mínima 20) sin búsqueda de hiperparámetros — un
-  ajuste más fino podría mejorar su F1 macro (0,499, el más bajo de los
-  tres) y cambiar algo el ranking de SHAP.
-- No es un modelo causal: una variable importante para PREDECIR el
-  `Grupo` no implica que el Sisbén la use con una dirección "correcta"
-  de política, ni dice nada sobre el bienestar del hogar — ver
-  `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md` y
-  `RESULTADOS_CAUSALFOREST_CATE.md` para la parte causal del proyecto.
+- Solo usa el esquema canónico (11 variables); el Sisbén recoge muchas más.
+- Códigos del Sisbén en one-hot dentro de una sola fuente; paredes y pisos
+  están verificados con la ficha (`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`).
+- Submuestra de 150.000 hogares por costo de cómputo.
+- Bosque con hiperparámetros fijos (300 árboles, profundidad 10, hoja mínima
+  20), sin búsqueda.
+- No es causal: una variable que predice el grupo no dice qué haría la
+  política (`RESULTADOS_DML_ATE_ATT_ATU.md`).
 
 ## Cómo reproducirlo
 
 ```bash
 poetry run python -m src.diagnostico.seleccion_variables_lasso_shap
+poetry run python -m src.utils.figuras_tesis
 ```

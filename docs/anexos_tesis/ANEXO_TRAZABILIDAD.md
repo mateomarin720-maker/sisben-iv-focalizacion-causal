@@ -35,7 +35,7 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 | Parámetros de los modelos (ATE, ATT, ATU y CATE por subgrupo) cuya cota excluye el cero | 0 de 50 | `cotas_frechet_modelos.csv` | filas con `muestra` = `todas`, columna `excluye_0` | `poetry run python -m src.diagnostico.cotas_frechet_modelos` |
 | Error de exclusión (A/B frente a pobreza monetaria), cota por celda agregada | [4,4 %; 59,5 %] | `errores_focalizacion_frechet.csv` | fila nacional, elegible `A-B`, `exclusion_lo` / `exclusion_hi` | `poetry run python -m src.diagnostico.errores_focalizacion_frechet` |
 | Error de inclusión, cota por celda agregada | [39,0 %; 74,2 %] | `errores_focalizacion_frechet.csv` | fila nacional, elegible `A-B`, `inclusion_lo` / `inclusion_hi` | `poetry run python -m src.diagnostico.errores_focalizacion_frechet` |
-| Exactitud al predecir el grupo del Sisbén (LASSO; F1 macro) | 53,0 %; 0,53 | `seleccion_variables_lasso_ridge_shap.txt` | línea «LASSO (L1)» | `poetry run python -m src.diagnostico.seleccion_variables_lasso_shap` |
+| Exactitud al predecir el grupo del Sisbén (LASSO; F1 macro) | 54,7 %; 0,54 | `seleccion_variables_lasso_ridge_shap.txt` | línea «LASSO (L1)» | `poetry run python -m src.diagnostico.seleccion_variables_lasso_shap` |
 | Reducción del error de exclusión al calcular la composición del hogar (puntos) | 5,64 | `variables_candidatas_deltas.csv` | `ficha` frente a `ficha_derivadas`, métrica `exclusion`, logística | `poetry run python -m src.diagnostico.variables_candidatas_pobreza 6` |
 | Reducción del error de exclusión con todas las variables nuevas (puntos) | 1,37 [+1,11; +1,58] | `variables_candidatas_deltas.csv` | `todo` frente a `ficha_derivadas` | `poetry run python -m src.diagnostico.variables_candidatas_pobreza 6` |
 | Aporte del estrato al error de exclusión (puntos) | −0,55 | `variables_candidatas_deltas.csv` | `+estrato` frente a `ficha_derivadas` | `poetry run python -m src.diagnostico.variables_candidatas_pobreza 6` |
@@ -77,5 +77,5 @@ Cada cifra de la tesis con el archivo de `docs/reports/` del que sale y el coman
 
 | Cifra | Valor | Archivo | Dónde | Comando |
 |---|---|---|---|---|
-| Pruebas automáticas | 326 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
-| Errores conocidos reintroducidos por la prueba de mutación | 89 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |
+| Pruebas automáticas | 327 | `tests/` | `pytest --collect-only` | `poetry run python -m pytest tests/` |
+| Errores conocidos reintroducidos por la prueba de mutación | 90 | `tests/mutaciones.py` | lista `MUTACIONES` | `python tests/mutaciones.py` |
