@@ -1,102 +1,102 @@
-2026-11-16 17:16:56,485 INFO Leyendo azure://datos-inferencia-causal/sisben/bogota/Sisben_03082026_bog.zip
-2026-11-16 17:17:20,936 INFO Receptores con candidatas: 1.0000 | donantes nacional 1.0000, Bogotá 1.0000
-2026-11-16 17:17:35,204 INFO 1_sobre_celda_sin_menores oficial_sin_menores: delta 0.1769 (placebo nan) | pequeñas 1.43 %
-2026-11-16 17:17:43,913 INFO 1_sobre_celda_sin_menores +tipo_viv: delta 0.1753 (placebo 0.1743) | pequeñas 9.53 %
-2026-11-16 17:17:52,289 INFO 1_sobre_celda_sin_menores +tenencia: delta 0.1669 (placebo 0.1744) | pequeñas 5.48 %
-2026-11-16 17:18:00,875 INFO 1_sobre_celda_sin_menores +dormitorios: delta 0.1749 (placebo 0.1757) | pequeñas 3.28 %
-2026-11-16 17:18:09,294 INFO 1_sobre_celda_sin_menores +energia: delta 0.1772 (placebo 0.1767) | pequeñas 1.63 %
-2026-11-16 17:18:17,966 INFO 1_sobre_celda_sin_menores +gas: delta 0.1748 (placebo 0.1755) | pequeñas 2.71 %
-2026-11-16 17:18:25,954 INFO 1_sobre_celda_sin_menores +recoleccion: delta 0.1753 (placebo 0.1759) | pequeñas 2.16 %
-2026-11-16 17:18:33,961 INFO 1_sobre_celda_sin_menores +sanitario: delta 0.1731 (placebo 0.1749) | pequeñas 3.19 %
-2026-11-16 17:18:42,217 INFO 1_sobre_celda_sin_menores +sanit_excl: delta 0.1741 (placebo 0.1755) | pequeñas 2.49 %
-2026-11-16 17:18:50,630 INFO 1_sobre_celda_sin_menores +agua: delta 0.1757 (placebo 0.1759) | pequeñas 2.43 %
-2026-11-16 17:18:58,936 INFO 1_sobre_celda_sin_menores +cocina: delta 0.1757 (placebo 0.1755) | pequeñas 2.86 %
-2026-11-16 17:19:07,134 INFO 1_sobre_celda_sin_menores +conyuge: delta 0.1725 (placebo 0.1756) | pequeñas 3.52 %
-2026-11-16 17:19:15,176 INFO 1_sobre_celda_sin_menores +menores: delta 0.1482 (placebo 0.1751) | pequeñas 3.75 %
-2026-11-16 17:19:22,883 INFO 1_sobre_celda_sin_menores +mayores: delta 0.1762 (placebo 0.1763) | pequeñas 2.08 %
-2026-11-16 17:20:01,047 INFO 1_sobre_celda_sin_menores +puntaje_todas_3: delta 0.1587 (placebo 0.1745) | pequeñas 4.65 %
-2026-11-16 17:20:38,373 INFO 1_sobre_celda_sin_menores +puntaje_todas_5: delta 0.1529 (placebo 0.1725) | pequeñas 7.16 %
-2026-11-16 17:21:14,107 INFO 1_sobre_celda_sin_menores +puntaje_debiles_sin_menores_3: delta 0.1696 (placebo 0.1745) | pequeñas 5.14 %
-2026-11-16 17:21:50,656 INFO 1_sobre_celda_sin_menores +puntaje_debiles_sin_menores_5: delta 0.1666 (placebo 0.1724) | pequeñas 7.21 %
-2026-11-16 17:22:00,090 INFO 2_sobre_celda_final oficial: delta 0.1482 (placebo nan) | pequeñas 3.75 %
-2026-11-16 17:22:11,077 INFO 2_sobre_celda_final +zona: delta 0.1443 (placebo 0.1464) | pequeñas 5.29 %
-2026-11-16 17:22:20,103 INFO 2_sobre_celda_final +paredes: delta 0.1464 (placebo 0.1466) | pequeñas 5.13 %
-2026-11-16 17:22:29,385 INFO 2_sobre_celda_final +sexo: delta 0.1453 (placebo 0.1461) | pequeñas 7.47 %
-2026-11-16 17:22:39,677 INFO 2_sobre_celda_final +tipo_viv: delta 0.1451 (placebo 0.1446) | pequeñas 15.41 %
-2026-11-16 17:22:50,221 INFO 2_sobre_celda_final +tenencia: delta 0.1389 (placebo 0.1442) | pequeñas 11.07 %
-2026-11-16 17:23:00,959 INFO 2_sobre_celda_final +dormitorios: delta 0.1479 (placebo 0.1457) | pequeñas 8.05 %
-2026-11-16 17:23:10,225 INFO 2_sobre_celda_final +energia: delta 0.1482 (placebo 0.1480) | pequeñas 3.96 %
-2026-11-16 17:23:19,556 INFO 2_sobre_celda_final +gas: delta 0.1453 (placebo 0.1464) | pequeñas 6.24 %
-2026-11-16 17:23:28,205 INFO 2_sobre_celda_final +recoleccion: delta 0.1458 (placebo 0.1469) | pequeñas 5.11 %
-2026-11-16 17:23:37,252 INFO 2_sobre_celda_final +sanitario: delta 0.1439 (placebo 0.1452) | pequeñas 7.31 %
-2026-11-16 17:23:46,586 INFO 2_sobre_celda_final +sanit_excl: delta 0.1456 (placebo 0.1463) | pequeñas 5.84 %
-2026-11-16 17:23:56,378 INFO 2_sobre_celda_final +agua: delta 0.1461 (placebo 0.1466) | pequeñas 5.74 %
-2026-11-16 17:24:06,259 INFO 2_sobre_celda_final +cocina: delta 0.1458 (placebo 0.1463) | pequeñas 5.46 %
-2026-11-16 17:24:15,994 INFO 2_sobre_celda_final +conyuge: delta 0.1449 (placebo 0.1464) | pequeñas 7.09 %
-2026-11-16 17:24:25,014 INFO 2_sobre_celda_final +mayores: delta 0.1471 (placebo 0.1475) | pequeñas 4.64 %
-2026-11-16 17:25:09,131 INFO 2_sobre_celda_final +puntaje_excluidas_3: delta 0.1420 (placebo 0.1445) | pequeñas 10.04 %
-2026-11-16 17:25:55,040 INFO 2_sobre_celda_final +puntaje_excluidas_5: delta 0.1379 (placebo 0.1414) | pequeñas 14.19 %
+2026-11-21 19:57:20,860 INFO Leyendo azure://datos-inferencia-causal/sisben/bogota/Sisben_03082026_bog.zip
+2026-11-21 19:57:52,167 INFO Receptores con candidatas: 1.0000 | donantes nacional 1.0000, Bogotá 1.0000
+2026-11-21 19:58:09,244 INFO 1_sobre_celda_sin_menores oficial_sin_menores: delta 0.1809 (placebo nan) | pequeñas 1.43 %
+2026-11-21 19:58:19,797 INFO 1_sobre_celda_sin_menores +tipo_viv: delta 0.1757 (placebo 0.1744) | pequeñas 9.53 %
+2026-11-21 19:58:29,622 INFO 1_sobre_celda_sin_menores +tenencia: delta 0.1690 (placebo 0.1757) | pequeñas 5.48 %
+2026-11-21 19:58:38,725 INFO 1_sobre_celda_sin_menores +dormitorios: delta 0.1773 (placebo 0.1775) | pequeñas 3.28 %
+2026-11-21 19:58:47,764 INFO 1_sobre_celda_sin_menores +energia: delta 0.1810 (placebo 0.1807) | pequeñas 1.63 %
+2026-11-21 19:58:56,725 INFO 1_sobre_celda_sin_menores +gas: delta 0.1759 (placebo 0.1783) | pequeñas 2.71 %
+2026-11-21 19:59:05,952 INFO 1_sobre_celda_sin_menores +recoleccion: delta 0.1774 (placebo 0.1793) | pequeñas 2.16 %
+2026-11-21 19:59:15,202 INFO 1_sobre_celda_sin_menores +sanitario: delta 0.1750 (placebo 0.1776) | pequeñas 3.19 %
+2026-11-21 19:59:24,626 INFO 1_sobre_celda_sin_menores +sanit_excl: delta 0.1757 (placebo 0.1788) | pequeñas 2.49 %
+2026-11-21 19:59:35,813 INFO 1_sobre_celda_sin_menores +agua: delta 0.1783 (placebo 0.1791) | pequeñas 2.43 %
+2026-11-21 19:59:46,607 INFO 1_sobre_celda_sin_menores +cocina: delta 0.1770 (placebo 0.1790) | pequeñas 2.86 %
+2026-11-21 19:59:56,647 INFO 1_sobre_celda_sin_menores +conyuge: delta 0.1750 (placebo 0.1782) | pequeñas 3.52 %
+2026-11-21 20:00:05,828 INFO 1_sobre_celda_sin_menores +menores: delta 0.1489 (placebo 0.1772) | pequeñas 3.75 %
+2026-11-21 20:00:14,831 INFO 1_sobre_celda_sin_menores +mayores: delta 0.1798 (placebo 0.1796) | pequeñas 2.08 %
+2026-11-21 20:00:54,401 INFO 1_sobre_celda_sin_menores +puntaje_todas_3: delta 0.1571 (placebo 0.1763) | pequeñas 4.74 %
+2026-11-21 20:01:36,271 INFO 1_sobre_celda_sin_menores +puntaje_todas_5: delta 0.1484 (placebo 0.1721) | pequeñas 7.06 %
+2026-11-21 20:02:15,373 INFO 1_sobre_celda_sin_menores +puntaje_debiles_sin_menores_3: delta 0.1704 (placebo 0.1762) | pequeñas 5.37 %
+2026-11-21 20:02:53,491 INFO 1_sobre_celda_sin_menores +puntaje_debiles_sin_menores_5: delta 0.1664 (placebo 0.1731) | pequeñas 7.03 %
+2026-11-21 20:03:03,911 INFO 2_sobre_celda_final oficial: delta 0.1489 (placebo nan) | pequeñas 3.75 %
+2026-11-21 20:03:16,235 INFO 2_sobre_celda_final +zona: delta 0.1451 (placebo 0.1469) | pequeñas 5.29 %
+2026-11-21 20:03:26,843 INFO 2_sobre_celda_final +paredes: delta 0.1462 (placebo 0.1466) | pequeñas 5.13 %
+2026-11-21 20:03:37,532 INFO 2_sobre_celda_final +sexo: delta 0.1448 (placebo 0.1454) | pequeñas 7.47 %
+2026-11-21 20:03:48,577 INFO 2_sobre_celda_final +tipo_viv: delta 0.1430 (placebo 0.1426) | pequeñas 15.41 %
+2026-11-21 20:03:59,039 INFO 2_sobre_celda_final +tenencia: delta 0.1376 (placebo 0.1430) | pequeñas 11.07 %
+2026-11-21 20:04:09,128 INFO 2_sobre_celda_final +dormitorios: delta 0.1468 (placebo 0.1450) | pequeñas 8.05 %
+2026-11-21 20:04:19,869 INFO 2_sobre_celda_final +energia: delta 0.1488 (placebo 0.1486) | pequeñas 3.96 %
+2026-11-21 20:04:30,657 INFO 2_sobre_celda_final +gas: delta 0.1448 (placebo 0.1460) | pequeñas 6.24 %
+2026-11-21 20:04:41,579 INFO 2_sobre_celda_final +recoleccion: delta 0.1458 (placebo 0.1474) | pequeñas 5.11 %
+2026-11-21 20:04:53,035 INFO 2_sobre_celda_final +sanitario: delta 0.1434 (placebo 0.1448) | pequeñas 7.31 %
+2026-11-21 20:05:04,898 INFO 2_sobre_celda_final +sanit_excl: delta 0.1462 (placebo 0.1464) | pequeñas 5.84 %
+2026-11-21 20:05:16,704 INFO 2_sobre_celda_final +agua: delta 0.1463 (placebo 0.1470) | pequeñas 5.74 %
+2026-11-21 20:05:28,540 INFO 2_sobre_celda_final +cocina: delta 0.1451 (placebo 0.1465) | pequeñas 5.46 %
+2026-11-21 20:05:39,721 INFO 2_sobre_celda_final +conyuge: delta 0.1451 (placebo 0.1460) | pequeñas 7.09 %
+2026-11-21 20:05:50,476 INFO 2_sobre_celda_final +mayores: delta 0.1476 (placebo 0.1479) | pequeñas 4.64 %
+2026-11-21 20:06:39,396 INFO 2_sobre_celda_final +puntaje_excluidas_3: delta 0.1400 (placebo 0.1435) | pequeñas 9.57 %
+2026-11-21 20:07:26,383 INFO 2_sobre_celda_final +puntaje_excluidas_5: delta 0.1344 (placebo 0.1395) | pequeñas 14.10 %
 
-=== Filtro de homologación: distribución por fuente (GEIH ponderada | Sisbén nacional | Sisbén Bogotá)
-zona: {'cabecera': 0.784, 'resto': 0.216} | {'resto': 0.54, 'cabecera': 0.46} | {'cabecera': 0.994, 'resto': 0.006}
-paredes: {'ladrillo': 0.912, 'precaria': 0.052, 'tapia_bahareque': 0.036} | {'ladrillo': 0.537, 'tapia_bahareque': 0.235, 'precaria': 0.228} | {'ladrillo': 0.986, 'precaria': 0.01, 'tapia_bahareque': 0.004}
-sexo: {'hombre': 0.553, 'mujer': 0.447} | {'mujer': 0.518, 'hombre': 0.482} | {'mujer': 0.544, 'hombre': 0.456}
-tipo_viv: {'apto': 0.481, 'casa': 0.488, 'cuarto': 0.021, 'otro': 0.009} | {'casa': 0.616, 'cuarto': 0.29, 'apto': 0.061, 'otro': 0.034} | {'apto': 0.559, 'casa': 0.24, 'cuarto': 0.201, 'otro': 0.001}
-tenencia: {'NA': 0.005, 'arriendo': 0.403, 'otra': 0.242, 'propia': 0.35} | {'otra': 0.534, 'propia': 0.244, 'arriendo': 0.222} | {'arriendo': 0.629, 'propia': 0.265, 'otra': 0.106}
-dormitorios: {'d1': 0.399, 'd2': 0.404, 'd3': 0.197} | {'d1': 0.704, 'd2': 0.227, 'd3': 0.07} | {'d1': 0.462, 'd2': 0.351, 'd3': 0.187}
-energia: {'no': 0.009, 'si': 0.991} | {'si': 0.871, 'no': 0.129} | {'si': 0.998, 'no': 0.002}
-gas: {'no': 0.287, 'si': 0.713} | {'no': 0.754, 'si': 0.246} | {'si': 0.933, 'no': 0.067}
-recoleccion: {'no': 0.153, 'si': 0.847} | {'no': 0.541, 'si': 0.459} | {'si': 0.992, 'no': 0.008}
-sanitario: {'alc': 0.767, 'otro': 0.063, 'pozo': 0.17} | {'alc': 0.348, 'pozo': 0.335, 'otro': 0.317} | {'alc': 0.982, 'pozo': 0.01, 'otro': 0.007}
-sanit_excl: {'NA': 0.028, 'comp': 0.03, 'excl': 0.942} | {'excl': 0.563, 'comp': 0.333, 'NA': 0.103} | {'excl': 0.671, 'comp': 0.328, 'NA': 0.001}
-agua: {'acued': 0.861, 'otra': 0.139} | {'acued': 0.515, 'otra': 0.485} | {'acued': 0.989, 'otra': 0.011}
-cocina: {'NA': 0.015, 'limpia': 0.893, 'otra': 0.092} | {'otra': 0.485, 'limpia': 0.484, 'NA': 0.031} | {'limpia': 0.959, 'NA': 0.027, 'otra': 0.014}
-conyuge: {'no': 0.497, 'si': 0.503} | {'no': 0.649, 'si': 0.351} | {'no': 0.644, 'si': 0.356}
-menores: {'m0': 0.534, 'm1': 0.243, 'm2': 0.222} | {'m0': 0.542, 'm1': 0.232, 'm2': 0.226} | {'m0': 0.609, 'm1': 0.243, 'm2': 0.149}
-mayores: {'a0': 0.666, 'a1': 0.334} | {'a0': 0.729, 'a1': 0.271} | {'a0': 0.692, 'a1': 0.308}
+=== Filtro de homologación: distribución por fuente, ponderada por fex (GEIH | Sisbén nacional | Sisbén Bogotá)
+zona: {'cabecera': 0.784, 'resto': 0.216} | {'cabecera': 0.694, 'resto': 0.306} | {'cabecera': 0.994, 'resto': 0.006}
+paredes: {'ladrillo': 0.912, 'precaria': 0.052, 'tapia_bahareque': 0.036} | {'ladrillo': 0.671, 'precaria': 0.186, 'tapia_bahareque': 0.142} | {'ladrillo': 0.986, 'precaria': 0.01, 'tapia_bahareque': 0.004}
+sexo: {'hombre': 0.553, 'mujer': 0.447} | {'hombre': 0.424, 'mujer': 0.576} | {'hombre': 0.456, 'mujer': 0.544}
+tipo_viv: {'apto': 0.481, 'casa': 0.488, 'cuarto': 0.021, 'otro': 0.009} | {'apto': 0.17, 'casa': 0.519, 'cuarto': 0.282, 'otro': 0.03} | {'apto': 0.559, 'casa': 0.24, 'cuarto': 0.201, 'otro': 0.001}
+tenencia: {'NA': 0.005, 'arriendo': 0.403, 'otra': 0.242, 'propia': 0.35} | {'arriendo': 0.32, 'otra': 0.471, 'propia': 0.208} | {'arriendo': 0.629, 'otra': 0.106, 'propia': 0.265}
+dormitorios: {'d1': 0.399, 'd2': 0.404, 'd3': 0.197} | {'d1': 0.69, 'd2': 0.22, 'd3': 0.089} | {'d1': 0.462, 'd2': 0.351, 'd3': 0.187}
+energia: {'no': 0.009, 'si': 0.991} | {'no': 0.099, 'si': 0.901} | {'no': 0.002, 'si': 0.998}
+gas: {'no': 0.287, 'si': 0.713} | {'no': 0.572, 'si': 0.428} | {'no': 0.067, 'si': 0.933}
+recoleccion: {'no': 0.153, 'si': 0.847} | {'no': 0.357, 'si': 0.643} | {'no': 0.008, 'si': 0.992}
+sanitario: {'alc': 0.767, 'otro': 0.063, 'pozo': 0.17} | {'alc': 0.541, 'otro': 0.224, 'pozo': 0.235} | {'alc': 0.982, 'otro': 0.007, 'pozo': 0.01}
+sanit_excl: {'NA': 0.028, 'comp': 0.03, 'excl': 0.942} | {'NA': 0.066, 'comp': 0.39, 'excl': 0.543} | {'NA': 0.001, 'comp': 0.328, 'excl': 0.671}
+agua: {'acued': 0.861, 'otra': 0.139} | {'acued': 0.656, 'otra': 0.344} | {'acued': 0.989, 'otra': 0.011}
+cocina: {'NA': 0.015, 'limpia': 0.893, 'otra': 0.092} | {'NA': 0.039, 'limpia': 0.651, 'otra': 0.311} | {'NA': 0.027, 'limpia': 0.959, 'otra': 0.014}
+conyuge: {'no': 0.497, 'si': 0.503} | {'no': 0.68, 'si': 0.32} | {'no': 0.644, 'si': 0.356}
+menores: {'m0': 0.534, 'm1': 0.243, 'm2': 0.222} | {'m0': 0.555, 'm1': 0.238, 'm2': 0.207} | {'m0': 0.609, 'm1': 0.243, 'm2': 0.149}
+mayores: {'a0': 0.666, 'a1': 0.334} | {'a0': 0.733, 'a1': 0.267} | {'a0': 0.692, 'a1': 0.308}
 
 === Fase 1: candidatas sobre la celda sin menores (depto + edad + cuartos + pisos + personas) ===
                                 celdas_con_receptores  pct_hogares_celda_exacta  pct_hogares_celda_menos_30_donantes  corr_p_t_celda_pobre_monetario  delta_frechet  delta_frechet_placebo  cumple_umbrales
 celda                                                                                                                                                                                                      
-+menores                                         3721                   99.9151                               3.7489                          0.4098         0.1482                 0.1751             True
-+puntaje_todas_5                                 6255                   99.7453                               7.1620                          0.4067         0.1529                 0.1725            False
-+puntaje_todas_3                                 4201                   99.8447                               4.6538                          0.4034         0.1587                 0.1745             True
-+puntaje_debiles_sin_menores_5                   6346                   99.7460                               7.2070                          0.3565         0.1666                 0.1724            False
-+tenencia                                        4632                   99.3353                               5.4779                          0.3765         0.1669                 0.1744            False
-+puntaje_debiles_sin_menores_3                   4273                   99.8574                               5.1415                          0.3621         0.1696                 0.1745            False
-+conyuge                                         3265                   99.8911                               3.5227                          0.3662         0.1725                 0.1756             True
-+sanitario                                       4181                   99.8866                               3.1928                          0.3556         0.1731                 0.1749             True
-+sanit_excl                                      3426                   99.9113                               2.4944                          0.3591         0.1741                 0.1755             True
-+gas                                             2961                   99.9447                               2.7113                          0.3565         0.1748                 0.1755             True
-+dormitorios                                     3128                   99.8966                               3.2766                          0.3551         0.1749                 0.1757             True
-+tipo_viv                                        3972                   99.7481                               9.5254                          0.3529         0.1753                 0.1743            False
-+recoleccion                                     2944                   99.9429                               2.1580                          0.3550         0.1753                 0.1759             True
-+cocina                                          3659                   99.7563                               2.8587                          0.3580         0.1757                 0.1755             True
-+agua                                            3133                   99.8900                               2.4278                          0.3550         0.1757                 0.1759             True
-+mayores                                         2403                   99.9392                               2.0841                          0.3558         0.1762                 0.1763             True
-oficial_sin_menores                              1802                   99.9643                               1.4335                          0.3562         0.1769                    NaN             True
-+energia                                         2201                   99.9557                               1.6260                          0.3565         0.1772                 0.1767             True
++puntaje_todas_5                                 6269                   99.7264                               7.0609                          0.4028         0.1484                 0.1721            False
++menores                                         3721                   99.9151                               3.7489                          0.4072         0.1489                 0.1772             True
++puntaje_todas_3                                 4264                   99.8460                               4.7404                          0.3998         0.1571                 0.1763             True
++puntaje_debiles_sin_menores_5                   6284                   99.7587                               7.0255                          0.3531         0.1664                 0.1731            False
++tenencia                                        4632                   99.3353                               5.4779                          0.3739         0.1690                 0.1757            False
++puntaje_debiles_sin_menores_3                   4306                   99.8419                               5.3676                          0.3577         0.1704                 0.1762            False
++sanitario                                       4181                   99.8866                               3.1928                          0.3500         0.1750                 0.1776             True
++conyuge                                         3265                   99.8911                               3.5227                          0.3631         0.1750                 0.1782             True
++sanit_excl                                      3426                   99.9113                               2.4944                          0.3580         0.1757                 0.1788             True
++tipo_viv                                        3972                   99.7481                               9.5254                          0.3456         0.1757                 0.1744            False
++gas                                             2961                   99.9447                               2.7113                          0.3507         0.1759                 0.1783             True
++cocina                                          3659                   99.7563                               2.8587                          0.3533         0.1770                 0.1790             True
++dormitorios                                     3128                   99.8966                               3.2766                          0.3500         0.1773                 0.1775             True
++recoleccion                                     2944                   99.9429                               2.1580                          0.3505         0.1774                 0.1793             True
++agua                                            3133                   99.8900                               2.4278                          0.3501         0.1783                 0.1791             True
++mayores                                         2403                   99.9392                               2.0841                          0.3532         0.1798                 0.1796             True
+oficial_sin_menores                              1802                   99.9643                               1.4335                          0.3540         0.1809                    NaN             True
++energia                                         2201                   99.9557                               1.6260                          0.3542         0.1810                 0.1807             True
 
 === Fase 2: variables excluidas sobre la celda final (+ menores) ===
                       celdas_con_receptores  pct_hogares_celda_exacta  pct_hogares_celda_menos_30_donantes  corr_p_t_celda_pobre_monetario  delta_frechet  delta_frechet_placebo  cumple_umbrales
 celda                                                                                                                                                                                            
-+puntaje_excluidas_5                  11552                   99.3638                              14.1926                          0.4219         0.1379                 0.1414            False
-+tenencia                              8738                   99.1174                              11.0665                          0.4205         0.1389                 0.1442            False
-+puntaje_excluidas_3                   8141                   99.6113                              10.0355                          0.4172         0.1420                 0.1445            False
-+sanitario                             7721                   99.7391                               7.3139                          0.4089         0.1439                 0.1452            False
-+zona                                  5737                   99.8866                               5.2903                          0.4096         0.1443                 0.1464            False
-+conyuge                               6131                   99.7677                               7.0860                          0.4139         0.1449                 0.1464            False
-+tipo_viv                              7224                   99.4529                              15.4113                          0.4049         0.1451                 0.1446            False
-+gas                                   5827                   99.8381                               6.2392                          0.4095         0.1453                 0.1464            False
-+sexo                                  6514                   99.7687                               7.4699                          0.4141         0.1453                 0.1461            False
-+sanit_excl                            6110                   99.8288                               5.8405                          0.4128         0.1456                 0.1463            False
-+recoleccion                           5705                   99.8505                               5.1102                          0.4091         0.1458                 0.1469            False
-+cocina                                6427                   99.6165                               5.4618                          0.4122         0.1458                 0.1463            False
-+agua                                  6018                   99.7732                               5.7398                          0.4083         0.1461                 0.1466            False
-+paredes                               6463                   99.8137                               5.1322                          0.4112         0.1464                 0.1466            False
-+mayores                               4716                   99.8780                               4.6431                          0.4100         0.1471                 0.1475             True
-+dormitorios                           6307                   99.7388                               8.0487                          0.4116         0.1479                 0.1457            False
-+energia                               4232                   99.8917                               3.9647                          0.4102         0.1482                 0.1480             True
-oficial                                3721                   99.9151                               3.7489                          0.4098         0.1482                    NaN             True
++puntaje_excluidas_5                  11573                   99.3391                              14.0957                          0.4133         0.1344                 0.1395            False
++tenencia                              8738                   99.1174                              11.0665                          0.4162         0.1376                 0.1430            False
++puntaje_excluidas_3                   8219                   99.6275                               9.5677                          0.4103         0.1400                 0.1435            False
++tipo_viv                              7224                   99.4529                              15.4113                          0.3960         0.1430                 0.1426            False
++sanitario                             7721                   99.7391                               7.3139                          0.4018         0.1434                 0.1448            False
++sexo                                  6514                   99.7687                               7.4699                          0.4095         0.1448                 0.1454            False
++gas                                   5827                   99.8381                               6.2392                          0.4032         0.1448                 0.1460            False
++zona                                  5737                   99.8866                               5.2903                          0.4046         0.1451                 0.1469            False
++conyuge                               6131                   99.7677                               7.0860                          0.4098         0.1451                 0.1460            False
++cocina                                6427                   99.6165                               5.4618                          0.4066         0.1451                 0.1465            False
++recoleccion                           5705                   99.8505                               5.1102                          0.4041         0.1458                 0.1474            False
++sanit_excl                            6110                   99.8288                               5.8405                          0.4099         0.1462                 0.1464            False
++paredes                               6463                   99.8137                               5.1322                          0.4074         0.1462                 0.1466            False
++agua                                  6018                   99.7732                               5.7398                          0.4032         0.1463                 0.1470            False
++dormitorios                           6307                   99.7388                               8.0487                          0.4060         0.1468                 0.1450            False
++mayores                               4716                   99.8780                               4.6431                          0.4065         0.1476                 0.1479             True
++energia                               4232                   99.8917                               3.9647                          0.4075         0.1488                 0.1486             True
+oficial                                3721                   99.9151                               3.7489                          0.4072         0.1489                    NaN             True
 
 Guardado: docs\reports\candidatas_celda_catalogo.csv

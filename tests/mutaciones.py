@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-21: 87 de 87 mutaciones detectadas.
+Resultado del 2026-11-21: 88 de 88 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -256,6 +256,9 @@ MUTACIONES = [
      "src/validacion/verificar_representatividad_sisben.py",
      "pd.Series(peso_donante(sisben), index=sisben.index)", "pd.Series(1.0, index=sisben.index)",
      "tests/test_ingesta_y_validacion.py"),
+    ("Catálogo de candidatas: distribución del Sisbén sin expandir", "src/validacion/candidatas_celda_catalogo.py",
+     "    w = pd.Series(np.asarray(peso, float), index=serie.index)",
+     "    w = pd.Series(1.0, index=serie.index)", "tests/test_hotdeck_celda.py"),
     ("DML dentro de la celda: no se quita la media de la celda", "src/5_estimacion.py",
      "    return v - (np.bincount(grupo, v) / cuenta)[grupo]", "    return v", "tests/test_estimacion_fhdi.py"),
     ("DML con FHDI: se pega el tratamiento sin comprobar el orden de los hogares", "src/5_estimacion.py",

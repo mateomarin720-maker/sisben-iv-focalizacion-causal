@@ -27,8 +27,8 @@ Formato: más reciente primero. Rama de trabajo: `main`.
 - Reglas de focalización\*: vigente 72-73 % del ideal, PMT por ingreso 83-86 %; el orden no cambia.
 
 ### Pruebas
-- 324 pruebas (4 nuevas) y 4 mutaciones nuevas (sorteo y proporción sin ponderar, π de la FHDI sin
-  ponderar, cobertura sin expandir).
+- 325 pruebas (5 nuevas) y 5 mutaciones nuevas (sorteo y proporción sin ponderar, π de la FHDI sin
+  ponderar, cobertura sin expandir, distribución del catálogo de candidatas sin expandir).
 
 ## 2026-11-20 (58) — Estimación con datos reales con FHDI y dentro de la celda (fase 4)
 

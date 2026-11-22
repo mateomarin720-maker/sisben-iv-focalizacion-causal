@@ -110,3 +110,11 @@ def test_hotdeck_exige_el_factor_de_expansion_del_donante():
         hotdeck(_geih(), _sisben().drop(columns="fex"))
     with pytest.raises(ValueError, match="fex"):
         hotdeck(_geih(), _sisben(fex=[0.0]))
+
+
+def test_catalogo_de_candidatas_expande_la_distribucion_del_sisben():
+    """La distribución por fuente del filtro de homologación pondera por `fex`:
+    tres hogares «cuarto» con factor 1 y uno «casa» con factor 3 son 50 % y 50 %."""
+    from src.validacion.candidatas_celda_catalogo import distribucion
+    serie = pd.Series(["cuarto", "cuarto", "cuarto", "casa"])
+    assert distribucion(serie, [1, 1, 1, 3]) == {"casa": 0.5, "cuarto": 0.5}

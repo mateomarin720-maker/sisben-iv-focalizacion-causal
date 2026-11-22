@@ -13,8 +13,8 @@ cortado en terciles o quintiles, como una sola dimensión más de la celda.
 
 Primero el filtro de homologación: la distribución de cada variable en
 las tres fuentes. Una variable cuya distribución no cuadra entre fuentes
-(por ejemplo "cuarto" como tipo de vivienda: 2 % en GEIH, 29 % en el
-Sisbén nacional) no se puede usar aunque mejore las métricas.
+(por ejemplo "cuarto" como tipo de vivienda: 2 % en GEIH, 28 % en el
+Sisbén nacional, expandido con su `fex`) no se puede usar aunque mejore las métricas.
 
 Fuera de la evaluación, por principio: las privaciones del IPM (acueducto,
 alcantarillado, sanitario, fuente de agua, educación, salud, ocupación):
@@ -25,16 +25,17 @@ DNP no lo entrega), internet (no está en la GEIH), educación y ocupación
 
 Dos fases, cada variable con su placebo (barajada dentro de la celda
 base: lo que se gana solo por partir la celda):
-  1. Sobre la celda sin menores: así entró menores (Δ 0,177 → 0,148;
-     placebo 0,175).
+  1. Sobre la celda sin menores: así entró menores (Δ 0,181 → 0,149;
+     placebo 0,177).
   2. Sobre la celda final, con zona, paredes y sexo del jefe además de las
      candidatas: es la tabla de variables descartadas
      (`docs/insumos/DICCIONARIO_HOTDECK.md` §6.1).
 
-Resultado del 2026-11-16: sobre la celda final (Δ 0,148) ninguna aporta;
-quedan entre 0,144 y 0,148, a lo sumo 0,002 por debajo de su placebo, y
-casi todas pasan el 5 % de celdas pequeñas. La suma de todas en un
-puntaje da 0,003 después del placebo con 10-14 % de celdas pequeñas.
+Resultado del 2026-11-21 (donantes ponderados por `fex`): sobre la celda
+final (Δ 0,149) ninguna aporta; quedan entre 0,138 y 0,149, a lo sumo
+0,005 por debajo de su placebo, y casi todas pasan el 5 % de celdas
+pequeñas. La suma de todas en un puntaje da 0,004-0,005 después del
+placebo con 10-14 % de celdas pequeñas.
 
 Lee el Sisbén de Bogotá del banco de datos en memoria (no lo descarga).
 Tarda unos 30 minutos.
@@ -57,7 +58,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import OneHotEncoder
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, SISBEN_BOG, construir_celda
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, SISBEN_BOG, construir_celda, peso_donante
 from src.utils.azure_storage import leer_bytes
 from src.utils.variables_canonicas import es_menor, normalizar_llave
 from src.validacion.comparar_celdas_hotdeck_vivienda import PAREDES, RECEPTOR, _evaluar, delta_placebo
@@ -195,18 +196,27 @@ def candidatas_sdp() -> pd.DataFrame:
     return out
 
 
+def distribucion(serie: pd.Series, peso) -> dict:
+    """Proporción de cada categoría ponderada por `peso` (el `fex` de la
+    fuente: el Sisbén nacional es una muestra expandida)."""
+    w = pd.Series(np.asarray(peso, float), index=serie.index)
+    return (w.groupby(serie).sum() / w.sum()).round(3).to_dict()
+
+
 def puntaje(don: pd.DataFrame, rec: pd.DataFrame, variables: list[str], cortes: int) -> tuple[pd.Series, pd.Series, float]:
-    """P(A/B | variables) estimada en el Sisbén y aplicada a la GEIH, en
-    `cortes` tramos por cuantiles del Sisbén; devuelve (receptor, donante, AUC)."""
+    """P(A/B | variables) estimada en el Sisbén (ponderado por `fex`) y
+    aplicada a la GEIH, en `cortes` tramos por cuantiles del Sisbén;
+    devuelve (receptor, donante, AUC)."""
     enc = OneHotEncoder(handle_unknown="ignore", min_frequency=100)
     xd = enc.fit_transform(don[variables].fillna("NA").astype(str))
     xr = enc.transform(rec[variables].fillna("NA").astype(str))
     y = don["Grupo"].isin(["A", "B"]).astype(int)
-    modelo = LogisticRegression(max_iter=2000).fit(xd, y)
+    w = peso_donante(don)
+    modelo = LogisticRegression(max_iter=2000).fit(xd, y, sample_weight=w)
     sd, sr = modelo.predict_proba(xd)[:, 1], modelo.predict_proba(xr)[:, 1]
     q = np.quantile(sd, np.arange(1, cortes) / cortes)
     tramo = lambda s: pd.Series(np.digitize(s, q)).map(lambda i: f"q{i}")
-    return tramo(sr), tramo(sd), float(roc_auc_score(y, sd))
+    return tramo(sr), tramo(sd), float(roc_auc_score(y, sd, sample_weight=w))
 
 
 def main() -> None:
@@ -215,8 +225,9 @@ def main() -> None:
         rec[c] = normalizar_llave(rec[c])
     rec = rec.merge(candidatas_geih(), on=LLAVE_GEIH, how="left")
     don = pd.read_parquet(SISBEN_BOG, columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion", "llave_hogar_sisben", "fuente",
-                                               "llave_directorio", "llave_hogar", "geo_zona", "viv_paredes", "jefe_sexo"])
+                                               "llave_directorio", "llave_hogar", "geo_zona", "viv_paredes", "jefe_sexo", "fex"])
     don = don[don["Clasificacion"].notna()].reset_index(drop=True)
+    don["fex"] = peso_donante(don)
     bog = don["fuente"].str.startswith("sdp")
     d_n = don[~bog].merge(candidatas_sisben_nacional(), on="llave_hogar_sisben", how="left")
     d_b = don[bog].astype({"llave_directorio": str, "llave_hogar": str}).merge(candidatas_sdp(), on=["llave_directorio", "llave_hogar"], how="left")
@@ -233,11 +244,11 @@ def main() -> None:
     d_n, d_b = don[~don["fuente"].str.startswith("sdp")], don[don["fuente"].str.startswith("sdp")]
 
     w = pd.to_numeric(rec["fex"], errors="coerce").fillna(0)
-    print("\n=== Filtro de homologación: distribución por fuente (GEIH ponderada | Sisbén nacional | Sisbén Bogotá)")
+    print("\n=== Filtro de homologación: distribución por fuente, ponderada por fex (GEIH | Sisbén nacional | Sisbén Bogotá)")
     for c in CANONICAS + CANDIDATAS:
-        a = (w.groupby(rec[c]).sum() / w.sum()).round(3).to_dict()
-        b = d_n[c].value_counts(normalize=True).round(3).to_dict()
-        e = d_b[c].value_counts(normalize=True).round(3).to_dict()
+        a = distribucion(rec[c], w)
+        b = distribucion(d_n[c], d_n["fex"])
+        e = distribucion(d_b[c], d_b["fex"])
         print(f"{c}: {a} | {b} | {e}")
 
     filas = []
