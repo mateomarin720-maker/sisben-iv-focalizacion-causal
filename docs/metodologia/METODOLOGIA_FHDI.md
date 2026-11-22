@@ -87,7 +87,7 @@ de imputación, que R3 elimina.
 | M = 10 | M mayor | Con la calibración, M no cambia ninguna cantidad que dependa del grupo; 10 deja la base expandida en 2,9 millones de filas |
 | Guardar la probabilidad, no la base expandida | Guardar los 2,9 millones de filas | Por R4 dan lo mismo; la probabilidad es lo que leen los módulos |
 | Sin variante de vecinos dentro de la celda (ordenar donantes por zona, paredes, sexo) | Usarla como método | Esas variables suben el techo del enlace entre 0,1 y 0,3 pp y ya están descartadas con placebo |
-| Jackknife sobre la GEIH | Bootstrap de donantes | El Sisbén es casi un censo de la población registrada; la varianza está en la muestra de la GEIH |
+| Jackknife sobre la GEIH más bootstrap de los donantes (2026-11-22) | Solo jackknife | Hasta el 2026-11-22 se usaba solo el jackknife, suponiendo que el Sisbén era casi un censo. El nacional es una muestra con `fex` de cola larga (tamaño efectivo ≈151.000) y su varianza pesa más que la de la GEIH en la proporción de grupos; el error total suma las dos |
 | El Hot-Deck sigue siendo el enlace principal | Reemplazarlo por la FHDI | Los resultados descriptivos coinciden; la FHDI entra como módulo adicional y comprobación de robustez |
 
 ## 5. Propiedades

@@ -1,7 +1,7 @@
-2026-11-21 17:21:10,114 INFO Leyendo azure://datos-inferencia-causal/2_models/muestra_estimacion_monetaria_2024.parquet
-2026-11-21 17:21:14,208 INFO Leyendo azure://datos-inferencia-causal/2_models/sisben_estandarizado_2024_con_bogota.parquet
-2026-11-21 17:21:24,349 INFO GEIH 290,968 hogares | Sisbén 3,093,411 donantes (Azure, 14 s)
-2026-11-21 17:25:16,224 INFO Listo en 246 s
+2026-11-22 13:28:00,435 INFO Leyendo azure://datos-inferencia-causal/2_models/muestra_estimacion_monetaria_2024.parquet
+2026-11-22 13:28:04,226 INFO Leyendo azure://datos-inferencia-causal/2_models/sisben_estandarizado_2024_con_bogota.parquet
+2026-11-22 13:28:14,941 INFO GEIH 290,968 hogares | Sisbén 3,093,411 donantes (Azure, 15 s)
+2026-11-22 13:37:11,378 INFO Listo en 551 s
 === Imputación fraccional (FHDI) frente al Hot-Deck: datos reales del banco de Azure ===
 GEIH 290,968 hogares | Sisbén 3,093,411 donantes | M = 10
 Nivel de la cadena: celda_exacta 99.92 %, sin_menores 0.05 %, sin_pisos 0.02 %, sin_personas 0.01 %, solo_depto_edad 0.00 %
@@ -16,22 +16,22 @@ Donantes por hogar: mediana 10; base expandida 2,891,870 filas; hogares con peso
 sin celda (todo el registro)      0.5189         0.2705    0.2400          0.0059         14.7899          618907           99.9654               100.0
 
 2. Cantidades (en %, o proporción en tasas y pobreza):
-                     cantidad  hotdeck_semilla_42    fhdi  fhdi_error_jackknife    fefi  fefi_error_jackknife  hotdeck_100_media  hotdeck_100_sd_entre_sorteos  frechet_lo  frechet_independencia  frechet_hi
-                  pct_grupo_A             13.6209 13.6355                0.0590 13.6355                0.0590            13.6387                        0.0747         NaN                    NaN         NaN
-                  pct_grupo_B             28.6303 28.7581                0.0541 28.7581                0.0541            28.7692                        0.1384         NaN                    NaN         NaN
-                  pct_grupo_C             36.3528 36.0779                0.0516 36.0779                0.0516            36.0622                        0.1588         NaN                    NaN         NaN
-                  pct_grupo_D             21.3960 21.5285                0.0656 21.5285                0.0656            21.5299                        0.1104         NaN                    NaN         NaN
-                       pct_ab             42.2511 42.3936                0.0957 42.3936                0.0957                NaN                           NaN         NaN                    NaN         NaN
-    exclusion_POBRE_MONETARIO              0.3638  0.3606                0.0017  0.3606                0.0017                NaN                           NaN      0.0439                 0.3606      0.5947
-    inclusion_POBRE_MONETARIO              0.5930  0.5923                0.0017  0.5923                0.0017                NaN                           NaN      0.3904                 0.5923      0.7416
-pobreza_en_ab_POBRE_MONETARIO              0.4070  0.4077                0.0017  0.4077                0.0017                NaN                           NaN         NaN                    NaN         NaN
-pobreza_en_cd_POBRE_MONETARIO              0.1703  0.1692                0.0013  0.1692                0.0013                NaN                           NaN         NaN                    NaN         NaN
-         exclusion_POBRE_GEIH              0.3117  0.3080                0.0022  0.3080                0.0022                NaN                           NaN      0.0224                 0.3080      0.5817
-         inclusion_POBRE_GEIH              0.7640  0.7636                0.0016  0.7636                0.0016                NaN                           NaN      0.6660                 0.7636      0.8571
-     pobreza_en_ab_POBRE_GEIH              0.2360  0.2364                0.0016  0.2364                0.0016                NaN                           NaN         NaN                    NaN         NaN
-     pobreza_en_cd_POBRE_GEIH              0.0782  0.0774                0.0008  0.0774                0.0008                NaN                           NaN         NaN                    NaN         NaN
+                     cantidad  hotdeck_semilla_42    fhdi  fhdi_error_jackknife    fefi  fefi_error_jackknife  fefi_error_sisben  fefi_error_total  hotdeck_100_media  hotdeck_100_sd_entre_sorteos  frechet_lo  frechet_independencia  frechet_hi
+                  pct_grupo_A             13.6209 13.6355                0.0590 13.6355                0.0590             0.0832            0.1020            13.6387                        0.0747         NaN                    NaN         NaN
+                  pct_grupo_B             28.6303 28.7581                0.0541 28.7581                0.0541             0.1433            0.1531            28.7692                        0.1384         NaN                    NaN         NaN
+                  pct_grupo_C             36.3528 36.0779                0.0516 36.0779                0.0516             0.1943            0.2010            36.0622                        0.1588         NaN                    NaN         NaN
+                  pct_grupo_D             21.3960 21.5285                0.0656 21.5285                0.0656             0.1529            0.1664            21.5299                        0.1104         NaN                    NaN         NaN
+                       pct_ab             42.2511 42.3936                0.0957 42.3936                0.0957             0.1399            0.1695                NaN                           NaN         NaN                    NaN         NaN
+    exclusion_POBRE_MONETARIO              0.3638  0.3606                0.0017  0.3606                0.0017             0.0016            0.0023                NaN                           NaN      0.0439                 0.3606      0.5947
+    inclusion_POBRE_MONETARIO              0.5930  0.5923                0.0017  0.5923                0.0017             0.0007            0.0018                NaN                           NaN      0.3904                 0.5923      0.7416
+pobreza_en_ab_POBRE_MONETARIO              0.4070  0.4077                0.0017  0.4077                0.0017             0.0007            0.0018                NaN                           NaN         NaN                    NaN         NaN
+pobreza_en_cd_POBRE_MONETARIO              0.1703  0.1692                0.0013  0.1692                0.0013             0.0005            0.0013                NaN                           NaN         NaN                    NaN         NaN
+         exclusion_POBRE_GEIH              0.3117  0.3080                0.0022  0.3080                0.0022             0.0011            0.0025                NaN                           NaN      0.0224                 0.3080      0.5817
+         inclusion_POBRE_GEIH              0.7640  0.7636                0.0016  0.7636                0.0016             0.0006            0.0017                NaN                           NaN      0.6660                 0.7636      0.8571
+     pobreza_en_ab_POBRE_GEIH              0.2360  0.2364                0.0016  0.2364                0.0016             0.0006            0.0017                NaN                           NaN         NaN                    NaN         NaN
+     pobreza_en_cd_POBRE_GEIH              0.0782  0.0774                0.0008  0.0774                0.0008             0.0002            0.0009                NaN                           NaN         NaN                    NaN         NaN
 
-   A/B por departamento (33): |FHDI − FEFI| máx 0.0000 pp; |sorteo 42 − FEFI| máx 2.146 pp; desviación entre sorteos máx 1.454 pp; error jackknife FEFI máx 1.072 pp
+   A/B por departamento (33): |FHDI − FEFI| máx 0.0000 pp; |sorteo 42 − FEFI| máx 2.146 pp; desviación entre sorteos máx 1.454 pp; error jackknife FEFI máx 1.072 pp; error total FEFI (GEIH + Sisbén) máx 1.845 pp
 
 3. Contraste placebo (efectos fijos de celda):
               outcome  fhdi  fhdi_error  rubin_100_sorteos  rubin_ic_lo  rubin_ic_hi  rubin_fraccion_imputacion

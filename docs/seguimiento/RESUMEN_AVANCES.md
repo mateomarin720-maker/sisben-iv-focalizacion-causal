@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 325 pruebas; 88 de 88 errores documentados detectados por mutación (2026-11-21); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 326 pruebas; 89 de 89 errores documentados detectados por mutación (2026-11-21); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -148,12 +148,11 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
 
 ## 4. Pendientes, en orden
 
-- **Varianza del lado del Sisbén en la FHDI (abierto el 2026-11-21).** El
-  error jackknife supone que la estimación de P(A/B | celda) en el Sisbén
-  aporta varianza despreciable porque hay 3,09 millones de donantes. Con
-  el `fex` el tamaño efectivo (Kish) es ≈151.000, menor que los 290.968
-  hogares de la GEIH. Medirlo con un bootstrap de los donantes y, si no es
-  despreciable, sumarlo al error de la FHDI (`RESULTADOS_FHDI.md` §2).
+- **Varianza del lado del Sisbén en la FHDI: hecho el 2026-11-22.** No es
+  despreciable (tamaño efectivo del Sisbén ≈151.000 por el `fex`): explica
+  el 67-93 % de la varianza de la proporción de grupos y el 48 % de la
+  exclusión monetaria. El error de la FHDI ahora suma el jackknife de la
+  GEIH y un bootstrap de los donantes (`RESULTADOS_FHDI.md` §2).
 
 0. **Variabilidad de la imputación del Hot-Deck hecha el 2026-11-04**
    (prioridad 1 de la guía; `docs/resultados/1_datos_y_enlace/RESULTADOS_VARIABILIDAD_HOTDECK.md`):

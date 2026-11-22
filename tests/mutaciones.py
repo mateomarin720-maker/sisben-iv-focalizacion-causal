@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-21: 88 de 88 mutaciones detectadas.
+Resultado del 2026-11-22: 89 de 89 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -251,7 +251,9 @@ MUTACIONES = [
      "    return pd.Series(np.asarray(indicador, float)).groupby(c).mean()",
      "tests/test_errores_focalizacion_frechet.py tests/test_cotas_frechet_manski.py"),
     ("FHDI: π de la celda sin ponderar por fex", "src/emparejamiento/fhdi/reglas.py",
-     "        np.add.at(tabla, (codigos, g), w)", "        np.add.at(tabla, (codigos, g), 1.0)", "tests/test_fhdi.py"),
+     "weights=w, minlength=(total + 1) * k)", "minlength=(total + 1) * k)", "tests/test_fhdi.py"),
+    ("FHDI: bootstrap de los donantes sin perturbar sus pesos", "src/emparejamiento/fhdi/varianza.py",
+     "w * np.where(fijos, 1.0, rng.exponential(size=len(w)))", "w * np.where(fijos, 1.0, 1.0)", "tests/test_fhdi.py"),
     ("Representatividad: registrados del Sisbén contados sin expandir",
      "src/validacion/verificar_representatividad_sisben.py",
      "pd.Series(peso_donante(sisben), index=sisben.index)", "pd.Series(1.0, index=sisben.index)",

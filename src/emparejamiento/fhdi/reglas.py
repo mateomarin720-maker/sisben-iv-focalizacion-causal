@@ -93,13 +93,21 @@ def probabilidades(receptor: pd.DataFrame, donante: pd.DataFrame, receptor_en_co
     g = _codigo_grupo(donante)
     w = peso_donante(donante)
     nivel, celda, celdas_donante, total = asignar_nivel(receptor, donante, receptor_en_codigos)
-    tabla = np.zeros((total + 1, len(GRUPOS)))
+    return tabla_probabilidades(g, w, celdas_donante, total)[celda], nivel
+
+
+def tabla_probabilidades(g: np.ndarray, w: np.ndarray, celdas_donante: list, total: int) -> np.ndarray:
+    """π_g de cada celda de todos los niveles (fila `total`: todo el registro),
+    con los donantes ponderados por `w`. La usa también el bootstrap de los
+    donantes (`varianza.bootstrap_donantes`), que solo cambia `w`."""
+    k = len(GRUPOS)
+    tabla = np.zeros((total + 1) * k)
     for codigos in celdas_donante:
-        np.add.at(tabla, (codigos, g), w)
-    tabla[total] = np.bincount(g, weights=w, minlength=len(GRUPOS))
+        tabla += np.bincount(codigos * k + g, weights=w, minlength=(total + 1) * k)
+    tabla = tabla.reshape(total + 1, k)
+    tabla[total] = np.bincount(g, weights=w, minlength=k)
     suma = tabla.sum(axis=1, keepdims=True)
-    tabla = np.divide(tabla, suma, out=np.zeros_like(tabla), where=suma > 0)
-    return tabla[celda], nivel
+    return np.divide(tabla, suma, out=np.zeros_like(tabla), where=suma > 0)
 
 
 def _sin_repetir(rng, n: int, filas: int, m: int) -> np.ndarray:

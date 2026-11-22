@@ -6,7 +6,7 @@ import pytest
 
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celda, hotdeck
 from src.emparejamiento.fhdi import reglas, validacion
-from src.emparejamiento.fhdi.varianza import asignar_grupos, razon_jackknife
+from src.emparejamiento.fhdi.varianza import asignar_grupos, bootstrap_donantes, razon_jackknife
 
 
 def _hogares(n, rng, sisben):
@@ -155,3 +155,19 @@ def test_tabla_de_enlace_por_hogar(datos):
     exactos = t["fhdi_nivel"] == "celda_exacta"
     tam = construir_celda(don, edad_en_codigos=True).value_counts()
     assert (t.loc[exactos, "fhdi_donantes_celda"].to_numpy() == tam.loc[t.loc[exactos, "_hotdeck_celda"]].to_numpy()).all()
+
+
+def test_bootstrap_de_los_donantes_mide_la_varianza_del_sisben(datos):
+    """El error de π(A/B) de una celda por bootstrap de los donantes se acerca
+    al analítico √(p(1 − p)/n); con todos los donantes fijos (registro
+    completo) es 0."""
+    rec, don = datos
+    pi, nivel = reglas.probabilidades(rec, don)
+    i = int(np.flatnonzero(nivel == "celda_exacta")[0])
+    celda_d = construir_celda(don, edad_en_codigos=True)
+    n = int((celda_d == construir_celda(rec).iloc[i]).sum())
+    p = pi[i, :2].sum()
+    ab = lambda q: np.array([q[i, :2].sum()])
+    se = bootstrap_donantes(rec, don, ab, b=400)[0]
+    assert 0.7 < se / np.sqrt(p * (1 - p) / n) < 1.3
+    assert bootstrap_donantes(rec, don, ab, b=20, fijos=np.ones(len(don), bool))[0] < 1e-12

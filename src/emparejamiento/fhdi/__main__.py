@@ -5,7 +5,8 @@ compara con el Hot-Deck.
    por celda con el sorteo, la moda, la FHDI y FEFI.
 2. FHDI (M = 10, pesos calibrados) y FEFI sobre los 290.968 hogares de la
    GEIH: proporción por grupo, A/B por departamento, pobreza dentro de
-   A/B y errores de exclusión e inclusión, con error estándar jackknife.
+   A/B y errores de exclusión e inclusión, con error estándar jackknife
+   (GEIH) y bootstrap de los donantes (Sisbén, `varianza.py`).
    Se comparan con el sorteo guardado (semilla 42) y con la media y la
    desviación entre los 100 sorteos (`variabilidad_hotdeck`). FEFI debe
    coincidir con el valor «con independencia» de
@@ -32,7 +33,7 @@ import pandas as pd
 
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, construir_celda
 from src.emparejamiento.fhdi import reglas, validacion
-from src.emparejamiento.fhdi.varianza import asignar_grupos, razon_jackknife
+from src.emparejamiento.fhdi.varianza import asignar_grupos, bootstrap_donantes, razon_jackknife
 from src.utils.azure_storage import leer_bytes
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -125,7 +126,15 @@ def main() -> None:
         "fhdi_error_jackknife": tablas["fhdi"]["error_jackknife"],
         "fefi": tablas["fefi"]["valor"],
         "fefi_error_jackknife": tablas["fefi"]["error_jackknife"],
-    }).reset_index()
+    })
+    # Lado del Sisbén: bootstrap de los donantes (Bogotá, registro completo, fijo).
+    bogota = sisben["geo_depto"].astype(str).str.zfill(2).to_numpy() == "11"
+    nombres = tablas["fefi"].index
+    error_sisben = bootstrap_donantes(geih, sisben, lambda q: pd.DataFrame(cantidades(q, geih, grupos_jk))
+                                      .set_index("cantidad").loc[nombres, "valor"].to_numpy(), fijos=bogota)
+    comp["fefi_error_sisben"] = error_sisben
+    comp["fefi_error_total"] = np.sqrt(comp["fefi_error_jackknife"] ** 2 + comp["fefi_error_sisben"] ** 2)
+    comp = comp.reset_index()
     comp = comp.merge(referencia_hotdeck(), on="cantidad", how="left")
 
     # FEFI = valor con independencia de errores_focalizacion_frechet.
@@ -173,7 +182,8 @@ def main() -> None:
     print(f"\n   A/B por departamento ({len(dep)}): |FHDI − FEFI| máx {(dep['fhdi'] - dep['fefi']).abs().max():.4f} pp; "
           f"|sorteo 42 − FEFI| máx {(dep['hotdeck_semilla_42'] - dep['fefi']).abs().max():.3f} pp; "
           f"desviación entre sorteos máx {dep['hotdeck_100_sd_entre_sorteos'].max():.3f} pp; "
-          f"error jackknife FEFI máx {dep['fefi_error_jackknife'].max():.3f} pp")
+          f"error jackknife FEFI máx {dep['fefi_error_jackknife'].max():.3f} pp; "
+          f"error total FEFI (GEIH + Sisbén) máx {dep['fefi_error_total'].max():.3f} pp")
     print("\n3. Contraste placebo (efectos fijos de celda):")
     print(placebo.round(5).to_string(index=False))
     print(f"\nGuardado: {OUT_VALIDACION}\nGuardado: {OUT_COMPARACION}\nGuardado: {OUT_PLACEBO}")

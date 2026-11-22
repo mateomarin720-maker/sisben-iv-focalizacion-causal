@@ -2,6 +2,23 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-22 (60) — Varianza del lado del Sisbén en la FHDI; catálogo de candidatas y Figura A1
+
+### Corregido
+- **El error de la FHDI suponía despreciable la varianza del Sisbén** por sus 3,1 millones de
+  donantes. Con el `fex` de cola larga el tamaño efectivo (Kish) es ≈151.000, menor que la GEIH.
+  `fhdi.varianza.bootstrap_donantes` (bootstrap bayesiano de los donantes, Bogotá fijo) lo mide:
+  explica el 67-93 % de la varianza de la proporción de grupos y el 48 % de la exclusión monetaria.
+  El reporte trae ahora el error de la GEIH, el del Sisbén y el total (A/B: 0,10, 0,14 y 0,17 pp).
+- `candidatas_celda_catalogo.py` pondera por `fex` la distribución por fuente y el puntaje; sobre
+  la celda final (Δ 0,149) ninguna variable descartada aporta, como antes.
+
+### Agregado
+- Figura A1 (arquitectura del repositorio) en `figuras_tesis.py`, con celdas, pruebas y
+  mutaciones leídas del repositorio.
+- 326 pruebas y 89 mutaciones (bootstrap sin perturbar los pesos; distribución del catálogo sin
+  expandir).
+
 ## 2026-11-21 (59) — Factor de expansión del Sisbén en el enlace
 
 ### Corregido

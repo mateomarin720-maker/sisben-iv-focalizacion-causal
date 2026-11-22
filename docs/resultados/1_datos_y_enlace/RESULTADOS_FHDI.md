@@ -62,26 +62,39 @@ Lectura:
 
 ## 2. Cantidades sobre la GEIH
 
-| Cantidad | Hot-Deck (semilla 42) | Hot-Deck (media de 100 sorteos) | FHDI = FEFI | Error jackknife | Desviación entre sorteos |
-|---|---|---|---|---|---|
-| Grupo A | 13,62 % | 13,64 % | 13,64 % | 0,06 | 0,07 |
-| Grupo B | 28,63 % | 28,77 % | 28,76 % | 0,05 | 0,14 |
-| Grupo C | 36,35 % | 36,06 % | 36,08 % | 0,05 | 0,16 |
-| Grupo D | 21,40 % | 21,53 % | 21,53 % | 0,07 | 0,11 |
-| A/B | 42,25 % | | 42,39 % | 0,10 | |
-| Exclusión (pobreza monetaria) | 36,38 % | | **36,06 %** | 0,17 | |
-| Inclusión (pobreza monetaria) | 59,30 % | | **59,23 %** | 0,17 | |
-| Exclusión (IPM-GEIH) | 31,17 % | | 30,80 % | 0,22 | |
-| Inclusión (IPM-GEIH) | 76,40 % | | 76,36 % | 0,16 | |
-| Pobreza monetaria en A/B | 40,70 % | | 40,77 % | 0,17 | |
-| Pobreza monetaria en C/D | 17,03 % | | 16,92 % | 0,13 | |
+| Cantidad | Hot-Deck (semilla 42) | Hot-Deck (media de 100 sorteos) | FHDI = FEFI | Error GEIH (jackknife) | Error Sisbén (bootstrap) | Error total | Desviación entre sorteos |
+|---|---|---|---|---|---|---|---|
+| Grupo A | 13,62 % | 13,64 % | 13,64 % | 0,06 | 0,08 | 0,10 | 0,07 |
+| Grupo B | 28,63 % | 28,77 % | 28,76 % | 0,05 | 0,14 | 0,15 | 0,14 |
+| Grupo C | 36,35 % | 36,06 % | 36,08 % | 0,05 | 0,19 | 0,20 | 0,16 |
+| Grupo D | 21,40 % | 21,53 % | 21,53 % | 0,07 | 0,15 | 0,17 | 0,11 |
+| A/B | 42,25 % | | 42,39 % | 0,10 | 0,14 | 0,17 | |
+| Exclusión (pobreza monetaria) | 36,38 % | | **36,06 %** | 0,17 | 0,16 | 0,23 | |
+| Inclusión (pobreza monetaria) | 59,30 % | | **59,23 %** | 0,17 | 0,07 | 0,18 | |
+| Exclusión (IPM-GEIH) | 31,17 % | | 30,80 % | 0,22 | 0,11 | 0,25 | |
+| Inclusión (IPM-GEIH) | 76,40 % | | 76,36 % | 0,16 | 0,06 | 0,17 | |
+| Pobreza monetaria en A/B | 40,70 % | | 40,77 % | 0,17 | 0,07 | 0,18 | |
+| Pobreza monetaria en C/D | 17,03 % | | 16,92 % | 0,13 | 0,05 | 0,13 | |
+
+El error del Sisbén es un bootstrap bayesiano de los donantes (500
+réplicas: el `fex` por pesos Exp(1), recalculando la probabilidad de la
+celda en toda la cadena de respaldos; Bogotá, registro completo, fijo).
+Hasta el 2026-11-22 se suponía despreciable por los 3,1 millones de
+donantes, pero el Sisbén nacional es una muestra con `fex` de cola larga:
+su tamaño efectivo (Kish) es ≈151.000, menor que los 290.968 hogares de la
+GEIH. En la proporción de grupos explica entre el 67 % y el 93 % de la
+varianza; en la exclusión monetaria, el 48 %; en el resto, entre el 11 % y
+el 19 %. El bootstrap trata los hogares de la muestra de ANDA como
+independientes; si su diseño tiene conglomerados, el error real es mayor.
 
 Lectura:
 
 - **La FHDI reproduce la media de los 100 sorteos** (diferencias de 0,02
   pp o menos) en una sola corrida, y su error estándar ya no tiene la
-  parte del sorteo: la desviación entre sorteos (0,07 a 0,16 pp en los
-  grupos) era mayor que el error muestral de la GEIH (0,05 a 0,07 pp).
+  parte del sorteo, que se sumaba a las otras dos: la desviación entre
+  sorteos (0,07 a 0,16 pp en los grupos) es del mismo orden que el error
+  total de la FHDI (0,10 a 0,20 pp), y el Hot-Deck la agrega encima de
+  ese error.
 - **Por departamento**, el sorteo guardado se aleja hasta 2,1 pp de FEFI
   en la proporción de A/B, y la desviación entre sorteos llega a 1,5 pp;
   la FHDI coincide con FEFI (diferencia máxima 0,00 pp).
