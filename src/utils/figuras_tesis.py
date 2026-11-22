@@ -431,8 +431,8 @@ def dag_ignorabilidad_hotdeck() -> Path:
                 "C": "C\nCelda del Hot-Deck\n(departamento, ciclo de vida,\ncuartos, pisos,\npersonas, menores)",
                 "T": "T\nElegibilidad A/B\nverdadera del hogar",
                 "Y": "Y\nPobreza y bienestar\n(GEIH)",
-                "Td": "T$_d$\nGrupo del donante\n(misma celda, Sisbén)",
-                "Ti": "T̃\nGrupo imputado\npor el Hot-Deck"}
+                "Td": "T$_d$\nGrupo del donante\n(misma celda, Sisbén,\nponderado por su fex)",
+                "Ti": "T̃\nGrupo imputado\n(Hot-Deck o FHDI)"}
     return _dibujar_dag(g, pos, etiqueta, "fig_dag_ignorabilidad_hotdeck.png", no_observado={"U", "T"},
                         abiertos={("U", "T"), ("U", "Y")}, etiqueta_abiertos="Puerta trasera de T que C no bloquea",
                         bloqueados={("C", "Td"), ("Td", "Ti"), ("C", "Y")},
