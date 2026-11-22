@@ -9,6 +9,8 @@
                                 empírica: indicadoras de celda y la celda como
                                 número (el error corregido el 2026-11-02)
   fig_arquitectura.png          flujo de datos y componentes del repositorio
+  fig_arquitectura_repositorio  Figura A1: los cinco niveles del repositorio, con
+                                los conteos vigentes de celdas, pruebas y mutaciones
   fig_estabilidad_hotdeck.png   el Hot-Deck es estable por celda e inestable por
                                 hogar (100 sorteos)
   fig_importancia_variables_oe1 importancia de las variables en el grupo del
@@ -570,9 +572,152 @@ def dml_tres_pasos() -> Path:
     return ruta
 
 
+def _conteo_pruebas() -> tuple[int, int, int]:
+    """(archivos de prueba, pruebas recolectadas por pytest, mutaciones)."""
+    import re
+    import subprocess
+    archivos = len(list(Path("tests").glob("test_*.py")))
+    salida = subprocess.run([sys.executable, "-m", "pytest", "tests", "--collect-only", "-q", "-p", "no:cacheprovider"],
+                            capture_output=True, text=True).stdout
+    pruebas = int(re.search(r"(\d+) tests? collected", salida).group(1))
+    import ast
+    arbol = ast.parse(Path("tests/mutaciones.py").read_text(encoding="utf-8"))
+    mutaciones = next(len(n.value.elts) for n in arbol.body if isinstance(n, ast.Assign)
+                      and getattr(n.targets[0], "id", "") == "MUTACIONES")
+    return archivos, pruebas, mutaciones
+
+
+def arquitectura_repositorio() -> Path:
+    """Figura A1: los cinco niveles del repositorio (fuentes, datos, código,
+    salidas y calidad), con los conteos vigentes de celdas, pruebas y
+    mutaciones."""
+    archivos, pruebas, mutaciones = _conteo_pruebas()
+    celdas = pd.read_csv(R / "comparacion_celdas_hotdeck_vivienda.csv", index_col=0)
+    n_celdas = int(celdas.loc["celdas_con_receptores"].iloc[-1]) if "celdas_con_receptores" in celdas.index \
+        else int(celdas["celdas_con_receptores"].iloc[-1])
+    miles = lambda n: f"{n:,}".replace(",", ".")
+    BEIGE, BORDE, NARANJA_SUAVE = "#e3ded3", "#3d3c39", "#df9f84"
+
+    fig, ax = plt.subplots(figsize=(15.5, 9.6))
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 100)
+    ax.axis("off")
+
+    def caja(x, y, w, h, titulo, detalle="", relleno="#ffffff", borde=BORDE, lw=1.0):
+        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.25,rounding_size=0.8", linewidth=lw,
+                                    edgecolor=borde, facecolor=relleno))
+        ax.text(x + w / 2, y + h - 1.3, titulo, ha="center", va="top", fontsize=7.6, color=TINTA, weight="bold")
+        if detalle:
+            ax.text(x + w / 2, y + h - 3.6, detalle, ha="center", va="top", fontsize=6.3, color=TINTA_2,
+                    linespacing=1.3)
+
+    def banda(y, h, titulo, sub):
+        ax.add_patch(FancyBboxPatch((0.2, y), 99.6, h, boxstyle="round,pad=0.2,rounding_size=0.6", linewidth=0.7,
+                                    edgecolor=TENUE, facecolor="none"))
+        ax.text(1.0, y + h - 1.0, titulo, ha="left", va="top", fontsize=7.4, color=TINTA, weight="bold")
+        ax.text(1.0, y + h - 4.6, sub, ha="left", va="top", fontsize=6.0, color=TENUE)
+
+    def flecha(x0, y0, x1, y1, texto="", color=TINTA_2, estilo="-"):
+        ax.annotate("", (x1, y1), (x0, y0), arrowprops=dict(arrowstyle="-|>", color=color, linewidth=1,
+                                                             linestyle=estilo))
+        if texto:
+            ax.text((x0 + x1) / 2 + 0.8, (y0 + y1) / 2, texto, fontsize=6, color=TINTA_2, va="center")
+
+    col = [11.5, 29.3, 47.1, 64.9, 82.7]
+    w = 16.3
+
+    # 1. Fuentes externas
+    banda(88.5, 11, "1. Fuentes", "externas")
+    fuentes = [("DANE · microdatos", "GEIH 2024, IPM 2024 y pobreza\nmonetaria 2024 (con registro)"),
+               ("DNP · ANDA", "Sisbén IV nacional, muestra\ncon factor de expansión\n(solicitud institucional)"),
+               ("SDP · Bogotá", "Sisbén IV Bogotá, registro\ncompleto (entrega institucional)"),
+               ("Portales Socrata", "datos abiertos\n(ingesta opcional)"),
+               ("data/catalogo.yaml", "acceso, estado y llaves\nde cada fuente")]
+    for x, (t, d) in zip(col, fuentes):
+        caja(x, 89.5, w, 9, t, d)
+
+    # 2. Infraestructura de datos
+    banda(64.5, 22.5, "2. Infraestructura", "de datos\nfuera de git")
+    ax.add_patch(FancyBboxPatch((col[0], 65.5), col[2] + w - col[0], 19.5, boxstyle="round,pad=0.25,rounding_size=0.8",
+                                linewidth=1.0, edgecolor=BORDE, facecolor="#f4f2ed"))
+    ax.text(col[0] + 0.6, 84.3, "Azure Blob Storage: banco de datos compartido", fontsize=7.4, weight="bold", color=TINTA,
+            va="top")
+    capas = [("Bronce · data/0_raw", "280 archivos · 43,2 GB\ntal como llegan; solo lectura"),
+             ("Plata · data/1_processed", "102 archivos · 0,96 GB\nParquet por fuente y módulo"),
+             ("Oro · data/2_models", "15 archivos · 0,20 GB\nesquema canónico y estimación")]
+    for x, (t, d) in zip(col[:3], capas):
+        caja(x + 0.6, 67, w - 1.2, 12.5, t, d, relleno=BEIGE)
+    caja(col[3], 67, w, 17.5, "Equipo local · data/",
+         "misma estructura que Azure;\nen .gitignore: no se versiona\n\npublicar_banco_datos_azure\nrestaurar_banco_datos_azure")
+    caja(col[4], 67, w, 17.5, "Acceso y secretos",
+         ".env (no versionado):\ncadena de conexión o URL SAS\nde solo lectura con vencimiento\n\ngenerar_acceso_lectura_azure")
+    flecha(col[1] + w / 2, 89.3, col[1] + w / 2, 85.4, "descarga manual")
+    flecha(col[3] + w / 2, 89.3, col[3] + w / 2, 84.9)
+
+    # 3. Código
+    banda(27.5, 35.5, "3. Código", "src/\nscripts y paquetes")
+    codigo = [("Ingesta y limpieza", "1_integracion.py · ingesta/\n2_limpieza.py\nbronce → plata", BEIGE),
+              ("Armonización", "armonizacion/ (GEIH, Sisbén,\nSisbén Bogotá)\ncontrato de variables canónicas", BEIGE),
+              ("Emparejamiento", f"emparejamiento/ (Hot-Deck y FHDI)\n{miles(n_celdas)} celdas · 100 sorteos\n"
+                                 "donantes ponderados por fex\nGEIH ← Sisbén", NARANJA_SUAVE),
+              ("Resultados y preprocesamiento", "3_preprocesamiento.py · 3b_\nindicadores/ (pobreza\nmonetaria, privaciones)",
+               BEIGE),
+              ("Identificación y estimación", "4_dag_identificacion.py\n5_estimacion.py (DML, Forest)\n"
+                                              "diagnostico/ (cotas, errores)", BEIGE)]
+    for x, (t, d, r) in zip(col, codigo):
+        caja(x, 47, w, 13.5, t, d, relleno=r)
+    for x0, x1 in zip(col[:-1], col[1:]):
+        flecha(x0 + w + 0.3, 53.7, x1 - 0.3, 53.7)
+    modulos = [("Simulación semisintética", "simulacion/ (módulo independiente)\nmodo simulado y modo con datos\n"
+                                           "propios · contrato.py"),
+               ("Focalización", "focalizacion/\nreglas de focalización\ny heterogeneidad ampliada"),
+               ("Diagnóstico", "variabilidad del Hot-Deck\nvariables candidatas\nincidencia de transferencias"),
+               ("Validación", "validacion/: filtros del SDP,\npobreza monetaria oficial,\nIPM-GEIH frente a la ECV"),
+               ("Utilidades", "utils/: variables_canonicas,\nazure_storage, anexo_trazabilidad,\nfiguras_tesis")]
+    for x, (t, d) in zip(col, modulos):
+        caja(x, 29, w, 13.5, t, d)
+    flecha(col[1] + w / 2, 66.8, col[1] + w / 2, 61.0, "lee y escribe")
+
+    # 4. Salidas y documentación
+    banda(13.5, 12.5, "4. Salidas y", "documentación\ndocs/")
+    salidas = [("docs/reports", "reportes crudos (.txt, .csv)\ngenerados por cada paso"),
+               ("docs/resultados", "interpretación: datos y enlace,\ndiagnóstico, simulación, focalización"),
+               ("docs/anexos_tesis", "trazabilidad, contrato de datos,\nfiguras, bibliografía"),
+               ("docs/metodologia e insumos", "arquitectura, diseño, diccionarios\ny fichas oficiales"),
+               ("docs/seguimiento e institucional", "estado, pendientes y bitácora;\nanteproyecto")]
+    for x, (t, d) in zip(col, salidas):
+        caja(x, 14.5, w, 9.5, t, d)
+    flecha(col[2] + w / 2, 28.8, col[2] + w / 2, 24.4, "escriben reportes")
+
+    # 5. Calidad, versiones y entrega
+    banda(0.3, 12, "5. Calidad,", "versiones y\nentrega")
+    calidad = [("tests/", f"{archivos} archivos · {miles(pruebas)} pruebas\nmutaciones.py: {mutaciones} errores\n"
+                          "reintroducidos y detectados", BEIGE),
+               ("Git y GitHub", "ramas main y ediciones-hotdeck-sdp\n(sincronizadas)\nhook commit-msg: autoría\n"
+                                "a nombre de quien commitea", BEIGE),
+               ("GitHub Actions", "pruebas.yml en cada push y PR:\nPython 3.11 · Poetry\npytest · mutaciones\n"
+                                  "revisión de autoría", BEIGE),
+               ("Poetry", "pyproject.toml\npoetry.lock\núnica fuente de dependencias,\ntambién para las pruebas", BEIGE),
+               ("Metadatos", "README.md\nCITATION.cff\nCLAUDE.md (contexto y reglas)\n.env.example", BEIGE)]
+    for x, (t, d, r) in zip(col, calidad):
+        caja(x, 0.9, w, 10.6, t, d, relleno=r)
+    ax.plot([col[0] - 1.2, col[0] - 1.2], [6, 53.7], color=NARANJA, linewidth=1, linestyle="--")
+    flecha(col[0] - 1.2, 53.7, col[0] - 0.3, 53.7, color=NARANJA)
+    flecha(col[0] - 1.2, 35.7, col[0] - 0.3, 35.7, color=NARANJA)
+    ax.text(col[0] - 2.0, 30, "verifican", fontsize=6, color=NARANJA, rotation=90, va="center", ha="center")
+    ax.plot([col[0] - 1.2, col[0] - 0.3], [6, 6], color=NARANJA, linewidth=1, linestyle="--")
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    ruta = OUT / "fig_arquitectura_repositorio.png"
+    fig.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    return ruta
+
+
 def main(con_datos: bool = True) -> None:
     _estilo()
-    rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), estabilidad_hotdeck(),
+    rutas = [cotas_por_celda(), errores_por_departamento(), atenuacion(), arquitectura(), arquitectura_repositorio(),
+             estabilidad_hotdeck(),
              importancia_oe1(), dag_ignorabilidad_marco(),
              dag_ignorabilidad_hotdeck(), dag_simulacion(), nubes_celda(), dml_tres_pasos()]
     if con_datos:

@@ -12,6 +12,7 @@ nota.
 | Figura 2 | Sección 2.2, junto al párrafo del DML (comentario del director: «una figura con los tres pasos ayuda más que este párrafo») | [`fig_dml_tres_pasos.png`](figuras/fig_dml_tres_pasos.png) |
 | Figura N | Metodología, junto a la Proposición 1 (el párrafo de la «propiedad de independencia condicional») | [`fig_dag_ignorabilidad_hotdeck.png`](figuras/fig_dag_ignorabilidad_hotdeck.png) |
 | Figura N + 1 | Inmediatamente después, la ilustración que dibujó el director (las dos nubes de la celda) | [`fig_nubes_celda_placebo.png`](figuras/fig_nubes_celda_placebo.png) |
+| Figura A1 | Apéndice A, arquitectura del repositorio (celdas, pruebas y mutaciones se leen del repositorio al generarla) | [`fig_arquitectura_repositorio.png`](figuras/fig_arquitectura_repositorio.png) |
 
 La Figura 1 usa la notación de la sección 2.2 (T, Y, X, W) y no menciona
 el enlace. Las dos de la metodología usan su notación (C, T, T̃, Y); el número se
