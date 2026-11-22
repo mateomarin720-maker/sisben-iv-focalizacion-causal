@@ -25,7 +25,8 @@ da también el valor con independencia dentro de la celda, p·(1 − e), que
 es lo que produce un Hot-Deck que sortea el grupo al azar en la celda.
 
 Supuesto que sí se mantiene: e es la proporción de elegibles entre los
-hogares de la celda registrados en el Sisbén, y se toma como la de la
+hogares de la celda registrados en el Sisbén (ponderada por `fex` desde
+el 2026-11-21: el nacional de ANDA es una muestra expandible), y se toma como la de la
 celda en la GEIH (el mismo supuesto del Hot-Deck; ver
 `RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`). Celdas de la GEIH sin hogares
 del Sisbén: e del primer nivel de la cadena de respaldos del Hot-Deck que
@@ -46,7 +47,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, claves_por_nivel
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import (CELDA_COLUMNAS, claves_por_nivel, peso_donante,
+                                                             proporcion_por_celda)
 from src.diagnostico.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -62,16 +64,17 @@ def elegibles_por_hogar(geih: pd.DataFrame, sisben: pd.DataFrame, grupos: list[s
     """e de la celda de cada hogar GEIH, con la cadena de respaldos, y el
     nivel usado (0 = celda exacta)."""
     elegible = sisben["Grupo"].isin(grupos).astype(float)
+    peso = peso_donante(sisben)
     e = np.full(len(geih), np.nan)
     nivel = np.full(len(geih), -1)
     for i, ((_, clave_g), (_, clave_s)) in enumerate(zip(claves_por_nivel(geih, edad_en_codigos=False),
                                                          claves_por_nivel(sisben, edad_en_codigos=True))):
-        tasa = elegible.groupby(clave_s.to_numpy()).mean()
+        tasa = proporcion_por_celda(elegible, clave_s, peso)
         valores = clave_g.map(tasa).to_numpy(float)
         llena = np.isnan(e) & ~np.isnan(valores)
         e[llena], nivel[llena] = valores[llena], i
     sin_celda = np.isnan(e)  # como el Hot-Deck: al final, todo el registro
-    e[sin_celda], nivel[sin_celda] = float(elegible.mean()), i + 1
+    e[sin_celda], nivel[sin_celda] = float(np.average(elegible, weights=peso)), i + 1
     return e, nivel
 
 
@@ -117,7 +120,7 @@ def cargar() -> tuple[pd.DataFrame, pd.DataFrame]:
     geih["fex"] = pd.to_numeric(geih["fex"], errors="coerce").fillna(0)
     for c in POBREZA:
         geih[c] = pd.to_numeric(geih[c], errors="coerce").astype(float)
-    sisben = pd.read_parquet(SISBEN_PATH, columns=[*CELDA, "Grupo", "Clasificacion"])
+    sisben = pd.read_parquet(SISBEN_PATH, columns=[*CELDA, "Grupo", "Clasificacion", "fex"])
     return geih, sisben[sisben["Clasificacion"].notna()].reset_index(drop=True)
 
 

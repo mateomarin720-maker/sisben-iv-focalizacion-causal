@@ -37,7 +37,7 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
 
 | | Estimador | Rango |
 |---|---|---|
-| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[−0,2595 ; +0,3082]** |
+| **Fréchet-Manski** (sin CIA) | Cota, no punto | **[−0,2531 ; +0,3434]** |
 | **DML con Hot-Deck** (con CIA) | Punto + IC95% | ver `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_DML_ATE_ATT_ATU.md` (el número no se hardcodea aquí para que no quede desactualizado si cambia el outcome o la celda) |
 
 - Cobertura: 3.217 celdas con información de las dos fuentes y P(T | celda)
@@ -45,19 +45,21 @@ el peso poblacional de GEIH (`FEX_C18`) por celda.
   99,8 % del peso poblacional de GEIH. El 0,2 % restante está en celdas
   donde todos los donantes son A/B o ninguno lo es: ahí el contraste no
   está definido.
-- Ancho de la cota Fréchet-Manski: **0,5677**. Historia: 0,986 antes de
+- Ancho de la cota Fréchet-Manski: **0,5964**. Historia: 0,986 antes de
   corregir `viv_cuartos`; 0,7267 con la celda correcta y 10 privaciones;
   0,7163 con 8 privaciones; 0,7344 tras corregir el bug de agosto; 0,6409
   con pisos en la celda (la celda más fina separa mejor hogares con y sin
   privaciones); 0,5340 con la vivienda del IPM-GEIH corregida por zona
   (2026-11-12: la tasa de pobres baja de 20,4 % a 14,5 %); 0,5677 con
-  personas y menores en la celda (2026-11-14). En `POBRE_GEIH` el
+  personas y menores en la celda (2026-11-14); 0,5964 con P(T | celda)
+  ponderada por el `fex` del Sisbén (2026-11-21: el archivo nacional es
+  una muestra que sobrerrepresenta A y B). En `POBRE_GEIH` el
   contraste se abre un poco porque la celda más fina tiene más celdas con
   P(Y) cerca de 0,5 frente a P(T), pero la cota del ATE sin supuestos se
   cierra (1,19 → 1,16; ver la tabla de monotonía). Sigue cubriendo buena
   parte del rango posible de una diferencia de proporciones (de −1 a +1).
 - Ancho del IC95 % del DML con celda exacta (`POBRE_GEIH`, ver
-  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0055 — **~100 veces más angosto**
+  `DIAGNOSTICO_W_CELDA_EXACTA.md`): 0,0056 — **~100 veces más angosto**
   que la cota Fréchet-Manski. Ese punto ≈0 es la prueba placebo del
   emparejamiento, no una estimación del efecto.
 - **Ninguna celda tiene una cota que excluya el 0.** Las 907 celdas con
@@ -73,14 +75,15 @@ regenerado al reemplazar el outcome anterior, que daba [−0,5817; +0,6877]).
 
 | Outcome | P(Y=1) | Cota Fréchet-Manski (sin CIA) | Ancho | ATE DML, celda exacta (con CIA) |
 |---|---|---|---|---|
-| `POBRE_GEIH` | 0,144 | [−0,2595 ; +0,3082] | 0,5677 | +0,0009 [−0,0018 ; +0,0037] |
-| `POBRE_MONETARIO` | 0,270 | **[−0,3605 ; +0,6365]** | **0,9970** | +0,0017 [−0,0021 ; +0,0055] |
+| `POBRE_GEIH` | 0,144 | [−0,2531 ; +0,3434] | 0,5964 | +0,0003 [−0,0025 ; +0,0031] |
+| `POBRE_MONETARIO` | 0,270 | **[−0,3532 ; +0,6679]** | **1,0211** | +0,0002 [−0,0036 ; +0,0040] |
 
 - Cobertura: las mismas 3.217 celdas, 99,8 % del peso de GEIH.
 - Con personas y menores la cota de `POBRE_MONETARIO` se cierra de 1,07
-  (921 celdas) a 1,00, sobre todo por abajo (−0,418 → −0,361).
-- La cota de `POBRE_MONETARIO` es más ancha que la de `POBRE_GEIH` (1,00
-  frente a 0,57, de un máximo posible de 2; 0,64 antes de corregir la
+  (921 celdas) a 1,00, sobre todo por abajo (−0,418 → −0,361); con el
+  `fex` del Sisbén es 1,02 ([−0,353; +0,668]).
+- La cota de `POBRE_MONETARIO` es más ancha que la de `POBRE_GEIH` (1,02
+  frente a 0,60, de un máximo posible de 2; 0,64 antes de corregir la
   vivienda del IPM-GEIH por zona): las cotas de
   Fréchet-Hoeffding se ensanchan cuanto más cerca de 0,5 están las dos
   marginales.
@@ -94,9 +97,9 @@ regenerado al reemplazar el outcome anterior, que daba [−0,5817; +0,6877]).
 **Robustez con la clasificación oficial del DANE
 (`POBRE_MONETARIO_OFICIAL`, 2026-11-02).** Solo existe para 24
 departamentos y Bogotá (2.666 celdas, 98,9 % del peso de GEIH; 712 con
-la celda del 2026-11-02). La cota oficial es [−0,359 ; +0,619] (ancho
-0,978), casi la misma que la de la reconstrucción en todo el país
-([−0,361 ; +0,637]): tampoco identifica el signo. Detalle: `docs/reports/cotas_frechet_manski_pobre_monetario_oficial.csv`.
+la celda del 2026-11-02). La cota oficial es [−0,352 ; +0,652] (ancho
+1,005), casi la misma que la de la reconstrucción en todo el país
+([−0,353 ; +0,668]): tampoco identifica el signo. Detalle: `docs/reports/cotas_frechet_manski_pobre_monetario_oficial.csv`.
 
 ## Cómo leerlo
 
@@ -166,16 +169,20 @@ factibles se alcanza en los extremos de Fréchet.
 
 | Cota del ATE (3.217 celdas) | `POBRE_GEIH` | Ancho | `POBRE_MONETARIO` | Ancho |
 |---|---|---|---|---|
-| Contraste (la de arriba) | [−0,260; +0,308] | 0,57 | [−0,361; +0,637] | 1,00 |
-| Contraste + dependencia positiva | [0; +0,308] | 0,31 | [0; +0,637] | 0,64 |
-| ATE sin supuestos | [−0,465; +0,695] | 1,16 | [−0,489; +0,808] | 1,30 |
-| ATE con MTS | [−0,465; +0,308] | 0,77 | [−0,489; +0,637] | 1,13 |
-| ATE con MTR | [−0,465; 0] | 0,46 | [−0,489; 0] | 0,49 |
-| ATE con MTS y MTR | [−0,465; 0] | 0,46 | [−0,489; 0] | 0,49 |
-| ATE con MTS, MTR y dependencia positiva | **[−0,384; 0]** | 0,38 | **[−0,359; 0]** | 0,36 |
+| Contraste (la de arriba) | [−0,253; +0,343] | 0,60 | [−0,353; +0,668] | 1,02 |
+| Contraste + dependencia positiva | [0; +0,343] | 0,34 | [0; +0,668] | 0,67 |
+| ATE sin supuestos | [−0,448; +0,715] | 1,16 | [−0,475; +0,823] | 1,30 |
+| ATE con MTS | [−0,448; +0,343] | 0,79 | [−0,475; +0,668] | 1,14 |
+| ATE con MTR | [−0,448; 0] | 0,45 | [−0,475; 0] | 0,48 |
+| ATE con MTS y MTR | [−0,448; 0] | 0,45 | [−0,475; 0] | 0,48 |
+| ATE con MTS, MTR y dependencia positiva | **[−0,368; 0]** | 0,37 | **[−0,349; 0]** | 0,35 |
+
+Con P(T | celda) ponderada por el `fex` del Sisbén (2026-11-21). Sin
+ponderar, las cotas de `POBRE_MONETARIO` eran [−0,489; +0,808] sin
+supuestos y [−0,359; 0] con los tres: el cambio es de 0,01 a 0,03.
 
 Con la clasificación oficial del DANE (2.666 celdas), la última fila da
-[−0,362; 0], casi igual que la reconstrucción. Con la celda del
+[−0,350; 0], casi igual que la reconstrucción. Con la celda del
 2026-11-02 (921 celdas), la cota sin supuestos de `POBRE_MONETARIO` era
 [−0,571; +0,829] (ancho 1,40) y la de los tres supuestos [−0,405; 0]:
 personas y menores cierran 0,10 la primera y 0,05 la segunda.
@@ -183,8 +190,8 @@ personas y menores cierran 0,10 la primera y 0,05 la segunda.
 **Lectura.**
 
 1. **Con los tres supuestos, la cota se reduce a menos de un tercio**
-   (de 1,30 a 0,36 en pobreza monetaria), pero el efecto puede seguir
-   siendo cualquier cosa entre 0 y 36 puntos menos de pobreza. Los
+   (de 1,30 a 0,35 en pobreza monetaria), pero el efecto puede seguir
+   siendo cualquier cosa entre 0 y 35 puntos menos de pobreza. Los
    supuestos acotan, no identifican.
 2. **El signo lo pone el MTR, no los datos.** Sin MTR, ninguna
    combinación excluye efectos positivos (que el programa aumente la
@@ -192,10 +199,10 @@ personas y menores cierran 0,10 la primera y 0,05 la segunda.
 3. **El MTS no agrega nada si ya se supone MTR**: solo baja la cota
    superior, y el MTR ya la deja en 0. Ninguno de los dos sube la cota
    inferior.
-4. **Solo la dependencia positiva sube la cota inferior** (de −0,489 a
-   −0,359), y es el supuesto más fácil de defender con datos: la
+4. **Solo la dependencia positiva sube la cota inferior** (de −0,475 a
+   −0,349), y es el supuesto más fácil de defender con datos: la
    focalización funciona entre celdas.
-5. **El contraste con dependencia positiva es [0; +0,637]**: los A/B son
+5. **El contraste con dependencia positiva es [0; +0,668]**: los A/B son
    al menos tan pobres como el resto, y el Hot-Deck (contraste ≈0 dentro
    de la celda) está en el borde de lo que permiten los datos.
 
@@ -245,19 +252,19 @@ reproducen exactamente las de las secciones anteriores.
 
 | Resultado | Parámetro | DML [IC 95 %] | Cota de Fréchet | Ancho de la cota / ancho del IC |
 |---|---|---|---|---|
-| `ipm_geih_score` (0-8) | ATE | +0,004 [−0,004; +0,012] | [−1,33; +1,48] | ≈180 |
-| | ATT | +0,005 | [−1,63; +1,49] | |
-| | ATU | +0,003 | [−1,10; +1,47] | |
-| `POBRE_GEIH` | ATE | +0,001 [−0,002; +0,004] | [−0,26; +0,31] | ≈100 |
-| | ATT | +0,001 | [−0,42; +0,31] | |
-| | ATU | +0,001 | [−0,13; +0,31] | |
-| `log_ingreso_percapita` | ATE | +0,001 [−0,013; +0,016] | [−2,55; +1,82] | ≈150 |
-| | ATT | +0,003 | [−1,58; +1,84] | |
-| | ATU | −0,000 | [−3,33; +1,81] | |
-| `POBRE_MONETARIO` | ATE | +0,002 [−0,002; +0,006] | [−0,36; +0,64] | ≈130 |
-| | ATT | +0,002 | [−0,49; +0,58] | |
-| | ATU | +0,001 | [−0,25; +0,69] | |
-| `POBRE_MONETARIO_OFICIAL` | ATE | +0,001 [−0,003; +0,005] | [−0,36; +0,62] | ≈130 |
+| `ipm_geih_score` (0-8) | ATE | +0,006 [−0,002; +0,014] | [−1,33; +1,52] | ≈180 |
+| | ATT | +0,007 | [−1,63; +1,49] | |
+| | ATU | +0,005 | [−1,10; +1,53] | |
+| `POBRE_GEIH` | ATE | +0,000 [−0,003; +0,003] | [−0,25; +0,34] | ≈110 |
+| | ATT | +0,001 | [−0,42; +0,32] | |
+| | ATU | +0,000 | [−0,13; +0,36] | |
+| `log_ingreso_percapita` | ATE | −0,001 [−0,016; +0,013] | [−2,81; +1,84] | ≈160 |
+| | ATT | −0,006 | [−1,59; +1,83] | |
+| | ATU | +0,002 | [−3,71; +1,85] | |
+| `POBRE_MONETARIO` | ATE | +0,000 [−0,004; +0,004] | [−0,35; +0,67] | ≈130 |
+| | ATT | +0,001 | [−0,49; +0,60] | |
+| | ATU | −0,001 | [−0,25; +0,72] | |
+| `POBRE_MONETARIO_OFICIAL` | ATE | +0,001 [−0,003; +0,005] | [−0,35; +0,65] | ≈130 |
 
 Cifras del DML: `RESULTADOS_DML_ATE_ATT_ATU.md`; sus IC no incluyen la
 varianza del sorteo del Hot-Deck (`RESULTADOS_VARIABILIDAD_HOTDECK.md`).
@@ -266,13 +273,13 @@ varianza del sorteo del Hot-Deck (`RESULTADOS_VARIABILIDAD_HOTDECK.md`).
 
 | Subgrupo | `POBRE_GEIH` | `POBRE_MONETARIO` | `ipm_geih_score` | `log_ingreso_percapita` |
 |---|---|---|---|---|
-| Urbana | [−0,18; +0,25] | [−0,32; +0,68] | [−1,19; +1,41] | [−2,91; +1,80] |
-| Rural | [−0,50; +0,50] | [−0,46; +0,46] | [−1,69; +1,51] | [−1,47; +1,73] |
-| Jefe hombre | [−0,24; +0,34] | [−0,34; +0,61] | [−1,28; +1,55] | [−2,54; +1,71] |
-| Jefe mujer | [−0,27; +0,28] | [−0,37; +0,66] | [−1,27; +1,36] | [−2,59; +1,88] |
-| Paredes de ladrillo | [−0,23; +0,28] | [−0,35; +0,65] | [−1,25; +1,44] | [−2,69; +1,76] |
-| Tapia o bahareque | [−0,42; +0,48] | [−0,41; +0,50] | [−1,41; +1,34] | [−1,22; +1,86] |
-| Paredes precarias | [−0,37; +0,56] | [−0,42; +0,50] | [−1,68; +1,57] | [−1,36; +2,13] |
+| Urbana | [−0,17; +0,28] | [−0,31; +0,71] | [−1,17; +1,45] | [−3,19; +1,83] |
+| Rural | [−0,50; +0,51] | [−0,46; +0,48] | [−1,67; +1,51] | [−1,50; +1,70] |
+| Jefe hombre | [−0,23; +0,38] | [−0,33; +0,65] | [−1,28; +1,59] | [−2,90; +1,75] |
+| Jefe mujer | [−0,26; +0,31] | [−0,36; +0,69] | [−1,26; +1,38] | [−2,83; +1,89] |
+| Paredes de ladrillo | [−0,22; +0,32] | [−0,34; +0,68] | [−1,24; +1,48] | [−2,97; +1,78] |
+| Tapia o bahareque | [−0,42; +0,49] | [−0,41; +0,51] | [−1,41; +1,34] | [−1,22; +1,87] |
+| Paredes precarias | [−0,37; +0,56] | [−0,42; +0,50] | [−1,67; +1,57] | [−1,36; +2,13] |
 
 El Causal Forest da CATE de ±0,01 en todos estos subgrupos
 (`RESULTADOS_CAUSALFOREST_CATE.md`).
@@ -281,9 +288,9 @@ El Causal Forest da CATE de ±0,01 en todos estos subgrupos
 la cota se cierra en [0; 0] por azar de muestreo. Repetido solo con
 celdas de al menos 30 hogares en cada fuente (1.096 de 3.217 celdas,
 92,7 % del peso; con la celda del 2026-11-02 eran 547 de 921 y 98,5 %),
-las cotas del ATE en pobreza cambian menos de 0,01 (pobreza monetaria
-[−0,353; +0,645] frente a [−0,361; +0,637]); en el log-ingreso, el
-límite inferior sube 0,09. Las cotas no se angostan de forma artificial:
+las cotas del ATE en pobreza cambian 0,01 o menos (pobreza monetaria
+[−0,346; +0,679] frente a [−0,353; +0,668]); en el log-ingreso, el
+límite inferior baja 0,11. Las cotas no se angostan de forma artificial:
 la celda más fina cierra la cota por información, no por celdas
 pequeñas que caen en [0; 0].
 
@@ -296,12 +303,12 @@ pequeñas que caen en [0; 0].
 2. **Toda la precisión de los modelos viene del supuesto del vínculo.**
    Las cotas son entre 100 y 180 veces más anchas que los IC del DML. En
    el IPM, el efecto puede ir de 1,3 privaciones menos a 1,5 más; en el
-   ingreso per cápita, de dividirlo por casi 13 a multiplicarlo por 6.
+   ingreso per cápita, de dividirlo por casi 17 a multiplicarlo por 6.
 3. **El ATT tiene la cota más ancha en pobreza** porque pesa más las
    celdas con muchos A/B, donde P(A/B) está más cerca de 0,5 y el acople
    es más libre.
 4. **Lo urbano es lo menos incierto:** en `POBRE_GEIH` la cota urbana
-   mide 0,43 y la rural 1,00. La incertidumbre del vínculo se concentra
+   mide 0,45 y la rural 1,01. La incertidumbre del vínculo se concentra
    en lo rural.
 5. **El CATE del Causal Forest no informa sobre heterogeneidad real.**
    Sus diferencias entre subgrupos (±0,01) son del orden de 1 % del ancho

@@ -9,7 +9,11 @@ no todos los hogares de la encuesta necesariamente están inscritos").
 Este script compara, por departamento:
   - los hogares de la GEIH en un mes promedio (expandidos por `FEX_C18`)
   - los hogares efectivamente registrados en el Sisbén (con `Clasificacion`
-    observada, el pool donante real del Hot-Deck)
+    observada, el pool donante real del Hot-Deck), expandidos con su `fex`:
+    el archivo nacional de ANDA es una muestra (1,83 millones de hogares,
+    11,4 millones expandidos); Bogotá (SDP) es el registro completo
+    (`fex` = 1). Hasta el 2026-11-21 se contaban las filas y la cobertura
+    nacional salía 11,7 % en vez de ≈74 %
 y calcula la razón de cobertura sobre el mismo marco. En los 9
 departamentos de la Orinoquía, la Amazonía y San Andrés la GEIH solo
 encuesta la cabecera de la capital (todos sus hogares son urbanos); ahí
@@ -34,6 +38,8 @@ import logging
 from pathlib import Path
 
 import pandas as pd
+
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import peso_donante
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -65,7 +71,7 @@ def calcular_cobertura(geih: pd.DataFrame | None = None, sisben: pd.DataFrame | 
     if geih is None:
         geih = pd.read_parquet(GEIH_PATH, columns=["geo_depto", "geo_zona", "fex", "mes"])
     if sisben is None:
-        sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "cod_mpio", "geo_zona", "Clasificacion"])
+        sisben = pd.read_parquet(SISBEN_PATH, columns=["geo_depto", "cod_mpio", "geo_zona", "Clasificacion", "fex"])
     geih = geih.assign(fex=pd.to_numeric(geih["fex"], errors="coerce").fillna(0))
     meses = geih["mes"].nunique()
     geih_pop = (geih.groupby("geo_depto")["fex"].sum() / meses).rename("geih_hogares_expandidos")
@@ -76,7 +82,8 @@ def calcular_cobertura(geih: pd.DataFrame | None = None, sisben: pd.DataFrame | 
         en_capital = (sisben["cod_mpio"].astype(str).str[-3:].eq("001")
                       & sisben["geo_zona"].astype(str).eq("1"))
         sisben = sisben[~sisben["geo_depto"].isin(capital) | en_capital]
-    sisben_n = sisben.groupby("geo_depto").size().rename("sisben_hogares_registrados")
+    sisben_n = (pd.Series(peso_donante(sisben), index=sisben.index).groupby(sisben["geo_depto"]).sum()
+                .rename("sisben_hogares_registrados"))
 
     df = pd.concat([geih_pop, sisben_n], axis=1).dropna()
     df["razon_cobertura"] = df["sisben_hogares_registrados"] / df["geih_hogares_expandidos"]

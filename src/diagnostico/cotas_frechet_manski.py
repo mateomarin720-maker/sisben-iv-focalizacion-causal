@@ -45,7 +45,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, construir_celda
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import (CELDA_COLUMNAS, construir_celda, peso_donante,
+                                                             proporcion_por_celda)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -80,15 +81,14 @@ def _p_y_por_celda(geih: pd.DataFrame, y_col: str) -> pd.DataFrame:
 
 
 def _p_t_por_celda(sisben: pd.DataFrame) -> pd.DataFrame:
-    """P(T=1|X) en Sisbén — sin ponderar: el Sisbén no es una encuesta con
-    diseño muestral (es administrativo/censal de los hogares registrados),
-    así que el conteo simple por celda es lo que hay."""
-    s = sisben[sisben["Clasificacion"].notna()].copy()
-    s["celda"] = construir_celda(s, edad_en_codigos=True)
-    s["t1"] = s["Grupo"].isin(["A", "B"]).astype(float)
-
-    agg = s.groupby("celda").agg(n_sisben=("t1", "size"), p_t=("t1", "mean"))
-    return agg
+    """P(T=1|X) en el Sisbén, ponderada por `fex`: el archivo nacional de
+    ANDA es una muestra expandible que sobrerrepresenta A y B (Bogotá trae
+    `fex` = 1). Hasta el 2026-11-21 se contaba sin ponderar."""
+    s = sisben[sisben["Clasificacion"].notna()].reset_index(drop=True)
+    celda = construir_celda(s, edad_en_codigos=True)
+    t1 = s["Grupo"].isin(["A", "B"]).astype(float)
+    return pd.DataFrame({"n_sisben": t1.groupby(celda.to_numpy()).size(),
+                         "p_t": proporcion_por_celda(t1, celda, peso_donante(s))}).rename_axis("celda")
 
 
 def cotas_frechet(p_y, p_t) -> pd.DataFrame:
@@ -186,7 +186,7 @@ def cotas_por_celda(geih: pd.DataFrame, sisben: pd.DataFrame, y_col: str = "POBR
 def main() -> None:
     logger.info("Cargando %s y %s", GEIH_PATH, SISBEN_PATH)
     geih = pd.read_parquet(GEIH_PATH, columns=[*CELDA_COLUMNAS, "fex", *OUTCOMES])
-    sisben = pd.read_parquet(SISBEN_PATH, columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion"])
+    sisben = pd.read_parquet(SISBEN_PATH, columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion", "fex"])
     total_geih = pd.to_numeric(geih["fex"], errors="coerce").fillna(0).sum()
     filas_monotonia = []
 

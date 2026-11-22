@@ -1,6 +1,6 @@
 # ¿Sirve el CATE para focalizar si el efecto varía más? (heterogeneidad ampliada)
 
-Generado el 2026-11-09 y vuelto a correr el 2026-11-14 (IPM-GEIH corregido y dos reglas de control) y el 2026-11-15 (celda del Hot-Deck con personas y menores, 3.721 celdas) por `src/focalizacion/heterogeneidad_ampliada.py`.
+Generado el 2026-11-09 y vuelto a correr el 2026-11-14 (IPM-GEIH corregido y dos reglas de control) el 2026-11-15 (celda del Hot-Deck con personas y menores, 3.721 celdas) y el 2026-11-21 (presupuesto de 13.567 hogares por muestra, con los donantes del Sisbén ponderados por `fex`) por `src/focalizacion/heterogeneidad_ampliada.py`.
 Salidas: `docs/reports/heterogeneidad_{ampliado,complejo}{.csv,_resumen.csv,_config.json}`
 y `docs/reports/heterogeneidad_ampliada.txt`. **Todas las cifras de esta
 página son simuladas (\*).**
@@ -60,43 +60,43 @@ era +0,083 a +0,088\*.
 | Regla | Básico | Ampliado | Complejo |
 |---|---|---|---|
 | *Proporcional, mismos hogares* | | | |
-| PMT por ingreso | 84,2\* | 88,0\* | 86,7\* |
-| PMT por brecha | 81,7\* | 85,8\* | 84,5\* |
-| PMT + CATE (vínculo) | 68,3\* | 72,9\* | 75,3\* |
-| *Control: efecto verdadero* | 84,6\* | 89,3\* | 89,6\* |
-| *Control: CATE con LinearDML* | 69,8\* | 72,2\* | 68,8\* |
-| PMT + CATE (Hot-Deck) | 34,0\* | 37,4\* | 39,0\* |
-| Vigente (Hot-Deck) | 74,6\* | 75,7\* | 75,0\* |
-| Aleatoria | 46,9\* | 46,9\* | 46,9\* |
+| PMT por ingreso | 83,1\* | 87,0\* | 85,7\* |
+| PMT por brecha | 80,4\* | 84,5\* | 83,3\* |
+| PMT + CATE (vínculo) | 67,2\* | 71,8\* | 74,1\* |
+| *Control: efecto verdadero* | 83,5\* | 88,4\* | 88,7\* |
+| *Control: CATE con LinearDML* | 68,7\* | 71,3\* | 68,0\* |
+| PMT + CATE (Hot-Deck) | 33,2\* | 36,9\* | 38,4\* |
+| Vigente (Hot-Deck) | 71,7\* | 73,2\* | 72,3\* |
+| Aleatoria | 45,2\* | 45,2\* | 45,2\* |
 | *Monto fijo, mismo dinero* | | | |
-| PMT por ingreso | 86,8\* | 85,1\* | 85,9\* |
-| PMT por brecha | 78,0\* | 80,2\* | 82,5\* |
-| PMT + CATE (vínculo) | 62,9\* | 67,8\* | 69,4\* |
-| *Control: efecto verdadero* | 86,7\* | 84,7\* | 85,5\* |
-| *Control: CATE con LinearDML* | 64,0\* | 67,1\* | 65,0\* |
-| PMT + CATE (Hot-Deck) | 31,7\* | 48,6\* | 47,8\* |
-| Vigente (Hot-Deck) | 75,4\* | 76,6\* | 75,9\* |
+| PMT por ingreso | 85,1\* | 83,4\* | 83,9\* |
+| PMT por brecha | 75,9\* | 78,1\* | 80,1\* |
+| PMT + CATE (vínculo) | 61,7\* | 66,2\* | 67,6\* |
+| *Control: efecto verdadero* | 84,8\* | 82,9\* | 83,4\* |
+| *Control: CATE con LinearDML* | 62,7\* | 65,7\* | 63,6\* |
+| PMT + CATE (Hot-Deck) | 30,0\* | 46,8\* | 45,9\* |
+| Vigente (Hot-Deck) | 72,9\* | 74,4\* | 73,4\* |
 
 **Diferencia pareada PMT + CATE (vínculo) menos PMT por brecha** (misma
 repetición; puntos del % del ideal, error estándar ≈0,4-1,2)
 
 | | Básico | Ampliado | Complejo |
 |---|---|---|---|
-| Proporcional, mismos hogares | −13,4\* | −12,9\* | −9,2\* |
-| Monto fijo, mismos hogares | −15,2\* | −15,5\* | −15,3\* |
-| Monto fijo, mismo dinero | −15,1\* | −12,4\* | −13,1\* |
+| Proporcional, mismos hogares | −13,2\* | −12,8\* | −9,2\* |
+| Monto fijo, mismos hogares | −14,9\* | −15,3\* | −15,0\* |
+| Monto fijo, mismo dinero | −14,3\* | −11,9\* | −12,5\* |
 
 **Controles (2026-11-14), diferencias pareadas** (puntos del % del ideal;
 error estándar entre paréntesis)
 
 | | Básico | Ampliado | Complejo |
 |---|---|---|---|
-| Efecto verdadero − PMT por ingreso, proporcional | +0,4\* (0,03) | +1,3\* (0,03) | +3,0\* (0,03) |
-| Efecto verdadero − PMT por ingreso, monto fijo | +0,6\* (0,02) | +1,4\* (0,02) | +2,8\* (0,03) |
-| Efecto verdadero − PMT por ingreso, mismo dinero | −0,2\* (0,02) | −0,5\* (0,02) | −0,4\* (0,02) |
-| LinearDML − Causal Forest, proporcional | +1,5\* (0,34) | −0,7\* (0,45) | −6,5\* (0,35) |
-| LinearDML − Causal Forest, monto fijo | +1,0\* (0,50) | −0,5\* (0,58) | −5,2\* (0,47) |
-| LinearDML − Causal Forest, mismo dinero | +1,1\* (0,49) | −0,7\* (0,45) | −4,4\* (0,36) |
+| Efecto verdadero − PMT por ingreso, proporcional | +0,3\* (0,03) | +1,4\* (0,03) | +3,0\* (0,03) |
+| Efecto verdadero − PMT por ingreso, monto fijo | +0,4\* (0,02) | +1,4\* (0,02) | +2,8\* (0,03) |
+| Efecto verdadero − PMT por ingreso, mismo dinero | −0,2\* (0,02) | −0,6\* (0,02) | −0,4\* (0,02) |
+| LinearDML − Causal Forest, proporcional | +1,5\* (0,34) | −0,5\* (0,45) | −6,1\* (0,35) |
+| LinearDML − Causal Forest, monto fijo | +1,0\* (0,49) | −0,5\* (0,58) | −5,0\* (0,47) |
+| LinearDML − Causal Forest, mismo dinero | +1,0\* (0,47) | −0,6\* (0,44) | −4,0\* (0,35) |
 
 ### Causal Forest dentro de la celda y enlace fraccional (2026-11-20)
 
@@ -106,7 +106,8 @@ controles sin la media de la celda, como en
 enlace fraccional (fase 3 de `METODOLOGIA_FHDI.md`). Son los mismos
 sorteos: las reglas vigentes recalculadas reproducen la corrida anterior
 (diferencia máxima 1,4·10⁻¹⁴). Las tablas de arriba no cambian; estas
-filas se suman a ellas. El nivel básico es la corrida de
+filas se suman a ellas. Cifras del 2026-11-21, con el presupuesto de 13.567
+hogares por muestra (donantes del Sisbén ponderados por `fex`). El nivel básico es la corrida de
 `reglas_ampliadas.py` (`RESULTADOS_REGLAS_FOCALIZACION.md`).
 
 | Nivel | ATE dentro de la celda, T verdadero | ATE dentro de la celda, T por Hot-Deck | PEHE, T verdadero | Desviación de tau | PEHE / desviación |
@@ -120,17 +121,17 @@ filas se suman a ellas. El nivel básico es la corrida de
 | Regla | Básico | Ampliado | Complejo |
 |---|---|---|---|
 | *Proporcional, mismos hogares* | | | |
-| PMT + CATE dentro de la celda (vínculo) | 76,1\* | 77,1\* | 78,6\* |
-| PMT + CATE dentro de la celda (Hot-Deck) | 49,1\* | 48,8\* | 48,7\* |
-| Vigente con enlace fraccional | 74,2\* | 75,5\* | 74,7\* |
+| PMT + CATE dentro de la celda (vínculo) | 74,8\* | 75,9\* | 77,4\* |
+| PMT + CATE dentro de la celda (Hot-Deck) | 48,5\* | 48,3\* | 48,1\* |
+| Vigente con enlace fraccional | 72,0\* | 73,5\* | 72,5\* |
 | *Monto fijo, mismos hogares* | | | |
-| PMT + CATE dentro de la celda (vínculo) | 74,3\* | 74,8\* | 76,2\* |
-| PMT + CATE dentro de la celda (Hot-Deck) | 49,2\* | 49,9\* | 49,7\* |
-| Vigente con enlace fraccional | 75,2\* | 76,5\* | 75,8\* |
+| PMT + CATE dentro de la celda (vínculo) | 73,2\* | 74,0\* | 75,3\* |
+| PMT + CATE dentro de la celda (Hot-Deck) | 48,5\* | 49,2\* | 49,0\* |
+| Vigente con enlace fraccional | 73,2\* | 74,6\* | 73,7\* |
 | *Monto fijo, mismo dinero* | | | |
-| PMT + CATE dentro de la celda (vínculo) | 75,5\* | 71,3\* | 73,7\* |
-| PMT + CATE dentro de la celda (Hot-Deck) | 51,3\* | 54,8\* | 54,1\* |
-| Vigente con enlace fraccional | 75,2\* | 76,5\* | 75,8\* |
+| PMT + CATE dentro de la celda (vínculo) | 73,8\* | 69,7\* | 71,8\* |
+| PMT + CATE dentro de la celda (Hot-Deck) | 50,3\* | 53,2\* | 52,3\* |
+| Vigente con enlace fraccional | 73,2\* | 74,6\* | 73,7\* |
 
 PMT + CATE con el enlace fraccional y sin vínculo: no identificable (el
 tratamiento es función de la celda).
@@ -140,24 +141,24 @@ paréntesis)
 
 | | Básico | Ampliado | Complejo |
 |---|---|---|---|
-| CATE dentro − PMT por brecha, proporcional | −5,7\* (0,55) | −8,7\* (0,31) | −5,9\* (0,35) |
-| CATE dentro − PMT por brecha, monto fijo | −2,4\* (1,36) | −11,0\* (0,72) | −9,7\* (0,58) |
-| CATE dentro − PMT por brecha, mismo dinero | −2,5\* (1,23) | −8,9\* (0,47) | −8,8\* (0,43) |
-| CATE dentro − CATE vigente, proporcional | +7,7\* (0,47) | +4,2\* (0,29) | +3,3\* (0,25) |
-| CATE dentro − CATE vigente, monto fijo | +12,8\* (0,61) | +4,5\* (0,40) | +5,6\* (0,35) |
-| CATE dentro − CATE vigente, mismo dinero | +12,6\* (0,62) | +3,5\* (0,29) | +4,3\* (0,27) |
-| CATE dentro (Hot-Deck) − aleatoria, mismos hogares | +2,2 a +2,3\* | +1,9 a +3,0\* | +1,8 a +2,8\* |
-| CATE dentro (Hot-Deck) − aleatoria, mismo dinero | −1,2\* (0,81) | −1,4\* (0,40) | −1,1\* (0,43) |
+| CATE dentro − PMT por brecha, proporcional | −5,5\* (0,55) | −8,6\* (0,31) | −5,9\* (0,36) |
+| CATE dentro − PMT por brecha, monto fijo | −2,3\* (1,36) | −10,8\* (0,72) | −9,5\* (0,58) |
+| CATE dentro − PMT por brecha, mismo dinero | −2,1\* (1,23) | −8,4\* (0,47) | −8,3\* (0,43) |
+| CATE dentro − CATE vigente, proporcional | +7,7\* (0,46) | +4,1\* (0,29) | +3,3\* (0,25) |
+| CATE dentro − CATE vigente, monto fijo | +12,6\* (0,60) | +4,5\* (0,40) | +5,5\* (0,34) |
+| CATE dentro − CATE vigente, mismo dinero | +12,2\* (0,60) | +3,5\* (0,29) | +4,2\* (0,26) |
+| CATE dentro (Hot-Deck) − aleatoria, mismos hogares | +3,2 a +3,4\* | +3,0 a +4,1\* | +2,9 a +3,8\* |
+| CATE dentro (Hot-Deck) − aleatoria, mismo dinero | +0,4\* (0,82) | −0,6\* (0,41) | 0,0\* (0,44) |
 
 ## Lectura
 
 1. **Con el doble de heterogeneidad, el CATE sigue empeorando la
    focalización.** En todos los niveles y presupuestos, la regla con el
    CATE queda por debajo de la misma regla con un efecto constante (9 a
-   16 puntos\*) y del PMT por ingreso (11 a 25 puntos\*). Las diferencias
-   son de 13 a 50 errores estándar.
+   15 puntos\*) y del PMT por ingreso (12 a 25 puntos\*). Las diferencias
+   son de 13 a 32 errores estándar.
 2. **La brecha se cierra, pero despacio.** Con efecto proporcional, la
-   desventaja del CATE frente al efecto constante pasa de 13,4\* a 9,2\*
+   desventaja del CATE frente al efecto constante pasa de 13,2\* a 9,2\*
    puntos del nivel básico al complejo. Con una heterogeneidad todavía
    mayor el CATE podría llegar a servir; este diseño no muestra en qué
    punto.
@@ -177,28 +178,28 @@ paréntesis)
    La conclusión 1 se mantiene, con distancias menores.
 4. **Con el tratamiento del Hot-Deck no hay nada que estimar.** El ATE
    estimado es negativo (−0,02 a −0,06\*) en todos los niveles y la regla
-   con ese CATE queda por debajo del azar (32-49 %\* frente a 47-56 %\*).
+   con ese CATE queda por debajo del azar (27-47 %\* frente a 45-54 %\*).
    *Actualización 2026-11-20:* el ATE negativo y el quedar bajo el azar
    eran el sesgo de estimar la celda. Dentro de la celda el ATE es ≈0\* y
-   la regla queda en el azar (49-55 %\*, entre −1,4 y +3,0 puntos\* de la
+   la regla queda en el azar (48-53 %\*, entre −0,6 y +4,1 puntos\* de la
    aleatoria). La lectura es la misma: sin vínculo, el CATE no aporta.
    Con el enlace fraccional ni siquiera se puede estimar (no
    identificable), y la vigente con ese enlace da lo mismo que con el
-   sorteo (74-77 %\*).
+   sorteo (72-75 %\*).
 5. **El orden de las reglas no cambia** con ninguno de los dos
-   presupuestos. La vigente imputada queda en 75-77 %\* en los tres
+   presupuestos. La vigente imputada queda en 72-74 %\* en los tres
    niveles, entre el PMT y las reglas con CATE.
 6. **Conocer el efecto vale más cuanto más varía, pero poco** (control
-   positivo). Con el efecto verdadero, la regla supera al PMT por 0,4-0,6\*
-   puntos en el nivel básico, 1,3-1,4\* en el ampliado y 2,8-3,0\* en el
+   positivo). Con el efecto verdadero, la regla supera al PMT por 0,3-0,4\*
+   puntos en el nivel básico, 1,4\* en el ampliado y 2,8-3,0\* en el
    complejo. Es el techo de lo que podría aportar un CATE perfecto; el
-   estimado queda 14 a 26 puntos\* por debajo de ese techo. Con el mismo
-   dinero, ni el efecto verdadero supera al PMT (−0,2 a −0,5\*).
+   estimado queda 15 a 25 puntos\* por debajo de ese techo. Con el mismo
+   dinero, ni el efecto verdadero supera al PMT (−0,2 a −0,6\*).
 7. **El modelo importa según la forma del efecto** (modelo base lineal).
    En el nivel básico, el LinearDML, que tiene la forma correcta, queda 1
    a 1,5 puntos\* sobre el bosque; en el ampliado empatan; cuando el
    efecto tiene interacciones y no linealidades (complejo), el bosque
-   queda 4 a 7 puntos\* arriba. Ninguno de los dos se acerca al PMT: la
+   queda 4 a 6 puntos\* arriba. Ninguno de los dos se acerca al PMT: la
    conclusión no depende de haber usado un Causal Forest.
 
 Con la celda del 2026-11-02 (993 celdas), las conclusiones eran las

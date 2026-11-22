@@ -1,48 +1,48 @@
-2026-11-15 16:18:00,593 INFO Receptor 290,968 hogares | donante 3,106,489 | 100 sorteos
-2026-11-15 16:52:05,735 INFO Sorteos listos en 2045 s
+2026-11-21 14:52:28,009 INFO Receptor 290,968 hogares | donante 3,106,489 | 100 sorteos
+2026-11-21 15:48:48,698 INFO Sorteos listos en 3381 s
 
 === Variabilidad de la imputación del Hot-Deck: 100 sorteos ===
 La semilla 42 reproduce el grupo guardado en el 100.00 % de los hogares
 
 1. Por hogar (ponderado por fex):
    reproduce_semilla_42: 1.0000
-   concordancia_grupo: 0.4120
-   concordancia_grupo_teorica: 0.4121
-   concordancia_ab: 0.7029
-   concordancia_ab_teorica: 0.7031
-   pct_mismo_grupo_en_todos: 0.0735
-   pct_mismo_ab_en_todos: 0.8524
-   pct_ab_casi_seguro: 31.5675
-   pct_ab_incierto: 28.8952
+   concordancia_grupo: 0.4245
+   concordancia_grupo_teorica: 0.4244
+   concordancia_ab: 0.7117
+   concordancia_ab_teorica: 0.7117
+   pct_mismo_grupo_en_todos: 0.0769
+   pct_mismo_ab_en_todos: 1.5376
+   pct_ab_casi_seguro: 34.0689
+   pct_ab_incierto: 29.2272
    correlacion_empirica_teorica: 0.9344
 
 2. Por celda (proporción A/B de los hogares GEIH de la celda):
-   celdas: 3623 | CV mediano 0.149, ponderado 0.106, p90 0.484
-   error relativo medio frente a la proporción de donantes: mediano 0.114, ponderado 0.085
-   celdas con CV > 0.1: 2330 (41.9 % de la población)
-   celdas con CV > 0.2: 1423 (10.7 % de la población)
-   celdas con CV > 0.3: 844 (3.8 % de la población)
+   celdas: 3623 | CV mediano 0.150, ponderado 0.120, p90 0.549
+   error relativo medio frente a la proporción de donantes: mediano 0.116, ponderado 0.095
+   celdas con CV > 0.1: 2343 (43.0 % de la población)
+   celdas con CV > 0.2: 1439 (12.9 % de la población)
+   celdas con CV > 0.3: 888 (5.1 % de la población)
          celdas  cv_mediano  error_relativo_mediano
 hogares                                            
-<30        2473       0.200                   0.147
-30-99       567       0.109                   0.087
-100-299     354       0.082                   0.065
-300-999     169       0.073                   0.059
-1000+        60       0.068                   0.053
+<30        2473       0.197                   0.148
+30-99       567       0.112                   0.089
+100-299     354       0.088                   0.070
+300-999     169       0.079                   0.062
+1000+        60       0.069                   0.055
 
 3. Agregados:
    nivel unidad  media_pct  sd_pct    cv  min_pct  max_pct  semilla_42_pct  hogares
-nacional      A     14.957   0.095 0.006   14.674   15.216          14.926      NaN
-nacional      B     29.747   0.135 0.005   29.484   30.070          29.708      NaN
-nacional      C     33.861   0.159 0.005   33.433   34.162          33.752      NaN
-nacional      D     21.435   0.130 0.006   21.174   21.798          21.615      NaN
-   A/B por departamento: CV de 0.0059 a 0.0409; rango máximo entre sorteos 5.96 puntos
+nacional      A     13.639   0.075 0.005   13.436   13.803          13.621      NaN
+nacional      B     28.769   0.138 0.005   28.435   29.156          28.630      NaN
+nacional      C     36.062   0.159 0.004   35.683   36.478          36.353      NaN
+nacional      D     21.530   0.110 0.005   21.307   21.756          21.396      NaN
+   A/B por departamento: CV de 0.0063 a 0.0382; rango máximo entre sorteos 7.81 puntos
 
 4. Contraste placebo (efectos fijos de celda) combinado con reglas de Rubin:
               outcome  semilla_42  error_semilla_42   m  estimacion  var_dentro  var_entre  var_total  error_total  fraccion_info_imputacion    ic_lo   ic_hi  pct_sorteos_ic_sin_cero
-      POBRE_MONETARIO    -0.00018           0.00192 100     0.00000     0.00000    0.00000    0.00001      0.00279                   0.53169 -0.00548 0.00548                      4.0
-           POBRE_GEIH    -0.00027           0.00138 100     0.00014     0.00000    0.00000    0.00000      0.00188                   0.46748 -0.00354 0.00382                      4.0
-log_ingreso_percapita     0.00290           0.00727 100    -0.00131     0.00005    0.00005    0.00010      0.01006                   0.48563 -0.02103 0.01841                      7.0
+      POBRE_MONETARIO    -0.00066           0.00194 100     0.00021     0.00000    0.00000    0.00001      0.00269                   0.47820 -0.00506 0.00548                      5.0
+           POBRE_GEIH    -0.00074           0.00140 100     0.00021     0.00000    0.00000    0.00000      0.00199                   0.50755 -0.00370 0.00412                      6.0
+log_ingreso_percapita     0.00114           0.00726 100     0.00010     0.00005    0.00005    0.00010      0.00990                   0.46678 -0.01931 0.01951                      6.0
 
 Guardado: docs\reports\variabilidad_hotdeck_celdas.csv
 Guardado: docs\reports\variabilidad_hotdeck_agregados.csv

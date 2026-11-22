@@ -152,7 +152,7 @@ base.
 |---|---|---|
 | Hogares pobres (fex), mismos 275.057 hogares | 27,0 % | 25,8 % |
 | Misma clasificación hogar por hogar | 93,9 % | |
-| ATE DML, W = celda exacta | +0,0017 [−0,0021; +0,0055] (33 deptos.) | +0,0009 [−0,0029; +0,0048] |
+| ATE DML, W = celda exacta | +0,0002 [−0,0036; +0,0040] (33 deptos.) | +0,0007 [−0,0032; +0,0046] |
 | Cotas Fréchet-Manski, mismos 23 deptos. y Bogotá (2.666 celdas) | [−0,361; +0,638] | [−0,359; +0,619] |
 | Cotas Fréchet-Manski, todo el país (3.217 celdas) | [−0,361; +0,637] | — |
 

@@ -160,6 +160,18 @@ abierta y recomendación, no como conclusión causal). Reglas del tutor:
   compara el MD5 del contenido. Después de publicar, comprobar que Azure
   coincide con lo local antes de correr algo desde Azure.
 
+- **El Sisbén nacional de ANDA es una muestra con factor de expansión
+  (`fex`), no el registro completo.** Hasta el 2026-11-21 el Hot-Deck, la
+  FHDI, las cotas de Fréchet y la cobertura contaban donantes sin
+  ponderar: 1,83 millones de hogares que expandidos son 11,4 millones, con
+  A y B sobrerrepresentados (factor medio 4,75 en A y 9,02 en D). El A/B
+  imputado salía 44,7 % en vez de 42,2 % y la cobertura nacional 11,7 % en
+  vez de ≈74 %. No da error. Ahora `peso_donante` exige `fex` (Bogotá, que
+  es el registro completo, trae 1) y toda proporción por celda del
+  Sisbén pasa por `proporcion_por_celda`. La excepción es el mundo
+  semisintético (`simulacion.evaluacion.p_t_por_celda`), que conserva su
+  calibración sin ponderar como parámetro de diseño.
+
 ## Diccionarios oficiales de variables
 
 `docs/insumos/DICCIONARIO_GEIH_2024.xlsx` (761 filas: ID/Nombre/Etiqueta/
@@ -286,7 +298,7 @@ de forma explicable, no silenciosa). Reportes crudos van a
 Pruebas: mapa de qué cubre cada archivo en `tests/README.md`. Si se
 encuentra un error nuevo, agregar la prueba que lo habría detectado y su
 mutación en `tests/mutaciones.py` (que comprueba que las pruebas fallan
-cuando el error vuelve; 83 de 83 el 2026-11-20). Antes de mapear una
+cuando el error vuelve; 87 de 87 el 2026-11-21). Antes de mapear una
 columna nueva de GEIH o del Sisbén, agregar su etiqueta esperada en
 `tests/test_armonizacion.py`.
 

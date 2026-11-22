@@ -45,7 +45,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import CELDA_COLUMNAS, construir_celda
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import (CELDA_COLUMNAS, construir_celda, peso_donante,
+                                                             proporcion_por_celda)
 from src.diagnostico.cotas_frechet_manski import GEIH_PATH, SISBEN_PATH
 from src.validacion.comparar_celdas_hotdeck_vivienda import PAREDES
 
@@ -103,8 +104,11 @@ def cotas_contraste(geih: pd.DataFrame, p_t: pd.Series, y_col: str) -> pd.DataFr
 
 
 def p_t_por_celda(sisben: pd.DataFrame) -> pd.DataFrame:
-    t1 = sisben["Grupo"].isin(["A", "B"]).astype(float)
-    return t1.groupby(sisben["celda"]).agg(["mean", "size"]).rename(columns={"mean": "p_t", "size": "n_sisben"})
+    """P(T = 1 | celda) ponderada por `fex` (hasta el 2026-11-21, sin ponderar)."""
+    t1 = sisben["Grupo"].isin(["A", "B"]).astype(float).reset_index(drop=True)
+    celda = sisben["celda"].reset_index(drop=True)
+    return pd.DataFrame({"p_t": proporcion_por_celda(t1, celda, peso_donante(sisben)),
+                         "n_sisben": t1.groupby(celda.to_numpy()).size()})
 
 
 def agregar(g: pd.DataFrame, parametro: str) -> tuple[float, float]:
@@ -120,8 +124,8 @@ def cargar() -> tuple[pd.DataFrame, pd.DataFrame]:
     geih["fex"] = pd.to_numeric(geih["fex"], errors="coerce").fillna(0)
     for o in OUTCOMES:
         geih[o] = pd.to_numeric(geih[o], errors="coerce").astype(float)
-    sisben = pd.read_parquet(SISBEN_PATH, columns=[*COLUMNAS, "Grupo", "Clasificacion"])
-    sisben = sisben[sisben["Clasificacion"].notna()]
+    sisben = pd.read_parquet(SISBEN_PATH, columns=[*COLUMNAS, "Grupo", "Clasificacion", "fex"])
+    sisben = sisben[sisben["Clasificacion"].notna()].reset_index(drop=True)
     geih["celda"] = construir_celda(geih, edad_en_codigos=False).to_numpy()
     sisben["celda"] = construir_celda(sisben, edad_en_codigos=True).to_numpy()
     return (pd.concat([geih, subgrupos(geih, "geih")], axis=1),

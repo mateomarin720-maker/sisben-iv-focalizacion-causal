@@ -13,7 +13,7 @@ El Hot-Deck le asigna a cada hogar de la GEIH el grupo del Sisbén de **un**
 donante sorteado en su celda. Eso tiene dos costos ya medidos en el
 proyecto:
 
-- **Ruido de la imputación.** Entre el 47 % y el 53 % de la varianza de un
+- **Ruido de la imputación.** Entre el 47 % y el 51 % de la varianza de un
   contraste viene del sorteo; hay que repetirlo 100 veces y combinar con
   las reglas de Rubin (`RESULTADOS_VARIABILIDAD_HOTDECK.md`).
 - **Atenuación con vínculo parcial.** El sorteo mete en el tratamiento una
@@ -95,9 +95,9 @@ de imputación, que R3 elimina.
 **P1. No hace más exacto el enlace hogar por hogar.** Sin llave común, la
 única información sobre el grupo de un hogar de la GEIH es su celda. El
 techo de acierto de cualquier método que la use es la moda de la celda:
-80,5 % en A/B y 55,2 % en el grupo (validación dentro del Sisbén; 78,4 %
-ponderado por la GEIH), frente a 73,0 % y 44,0 % del sorteo. La moda
-distorsiona las incidencias (13,5 pp por departamento); la FHDI no acierta
+78,2 % en A/B y 53,6 % en el grupo (validación dentro del Sisbén; 79,0 %
+ponderado por la GEIH), frente a 70,9 % y 43,1 % del sorteo. La moda
+distorsiona las incidencias (11,2 pp por departamento); la FHDI no acierta
 más por hogar pero está calibrada.
 
 **P2. Quita el ruido de la imputación.** Las cantidades que dependen del

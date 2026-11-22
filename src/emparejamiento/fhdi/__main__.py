@@ -55,7 +55,7 @@ def cargar() -> tuple[pd.DataFrame, pd.DataFrame]:
     geih["fex"] = pd.to_numeric(geih["fex"], errors="coerce").fillna(0).astype(float)
     for c in [*POBREZA, "ingreso_percapita"]:
         geih[c] = pd.to_numeric(geih[c], errors="coerce").astype(float)
-    sisben = pd.read_parquet(io.BytesIO(leer_bytes(AZ_SISBEN)), columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion"])
+    sisben = pd.read_parquet(io.BytesIO(leer_bytes(AZ_SISBEN)), columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion", "fex"])
     sisben = sisben[sisben["Clasificacion"].notna()].reset_index(drop=True)
     return geih, sisben
 

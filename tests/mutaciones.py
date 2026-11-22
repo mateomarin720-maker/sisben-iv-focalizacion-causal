@@ -7,7 +7,7 @@ No lo recoge pytest (el nombre no empieza por `test_`).
 
 Uso:
     PYTHONIOENCODING=utf-8 ./.venv/Scripts/python.exe tests/mutaciones.py
-Resultado del 2026-11-20: 83 de 83 mutaciones detectadas.
+Resultado del 2026-11-21: 87 de 87 mutaciones detectadas.
 Al agregar una prueba por un error nuevo, agregar aquí su mutación.
 """
 import shutil
@@ -243,6 +243,19 @@ MUTACIONES = [
     ("Reglas ampliadas: el Causal Forest dentro de la celda ignora las X de la heterogeneidad",
      "src/focalizacion/reglas_ampliadas.py",
      "    if not x_cols or list(x_cols) == list(est5.X_COLS):", "    if True:", "tests/test_reglas_ampliadas.py"),
+    ("Hot-Deck: el donante se sortea sin su factor de expansión (error hasta 2026-11-21)",
+     "src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py",
+     "acum = np.cumsum(peso[donantes])", "acum = np.cumsum(np.ones(len(donantes)))", "tests/test_hotdeck_celda.py"),
+    ("Proporción por celda del Sisbén sin ponderar por fex", "src/emparejamiento/emparejamiento_hotdeck_geih_sisben.py",
+     "    return x.groupby(c).sum() / w.groupby(c).sum()",
+     "    return pd.Series(np.asarray(indicador, float)).groupby(c).mean()",
+     "tests/test_errores_focalizacion_frechet.py tests/test_cotas_frechet_manski.py"),
+    ("FHDI: π de la celda sin ponderar por fex", "src/emparejamiento/fhdi/reglas.py",
+     "        np.add.at(tabla, (codigos, g), w)", "        np.add.at(tabla, (codigos, g), 1.0)", "tests/test_fhdi.py"),
+    ("Representatividad: registrados del Sisbén contados sin expandir",
+     "src/validacion/verificar_representatividad_sisben.py",
+     "pd.Series(peso_donante(sisben), index=sisben.index)", "pd.Series(1.0, index=sisben.index)",
+     "tests/test_ingesta_y_validacion.py"),
     ("DML dentro de la celda: no se quita la media de la celda", "src/5_estimacion.py",
      "    return v - (np.bincount(grupo, v) / cuenta)[grupo]", "    return v", "tests/test_estimacion_fhdi.py"),
     ("DML con FHDI: se pega el tratamiento sin comprobar el orden de los hogares", "src/5_estimacion.py",

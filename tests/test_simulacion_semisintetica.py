@@ -135,7 +135,7 @@ def test_respaldos_iguales_al_hotdeck_del_pipeline():
     donante = pd.DataFrame({  # Sisbén: ciclo de vida y pisos con códigos del Sisbén
         "geo_depto": ["05", "76"], "jefe_edad": ["5", "5"], "viv_cuartos": [2, 2], "viv_pisos": ["5", "5"],
         "hog_num_personas": ["3", "3"], "hog_num_menores": ["1", "1"],
-        "Grupo": ["A", "D"], "Nivel": ["A1", "D1"], "Clasificacion": ["A1", "D1"]})
+        "Grupo": ["A", "D"], "Nivel": ["A1", "D1"], "Clasificacion": ["A1", "D1"], "fex": 1.0})
     esperado = ["celda_exacta", "sin_menores", "sin_personas", "sin_pisos", "solo_depto_edad", "solo_depto",
                 "pool_nacional"]
     assert hotdeck(receptor, donante)["_hotdeck_nivel"].tolist() == esperado

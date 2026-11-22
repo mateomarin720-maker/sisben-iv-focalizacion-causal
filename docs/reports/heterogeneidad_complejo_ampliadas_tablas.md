@@ -4,52 +4,52 @@
 
 | Regla | Inclusión | Exclusión | Reducción FGT1 | % del ideal | Gasto / vigente |
 |---|---|---|---|---|---|
-| vigente_hotdeck | 0,548\* | 0,278\* | 0,0179\* | 75,0\* | 1,000\* |
-| aleatoria | 0,669\* | 0,531\* | 0,0112\* | 46,9\* | 1,194\* |
-| pmt_ingreso | 0,483\* | 0,163\* | 0,0207\* | 86,7\* | 0,891\* |
-| pmt_brecha | 0,482\* | 0,173\* | 0,0202\* | 84,5\* | 0,880\* |
-| pmt_brecha_cate | 0,553\* | 0,293\* | 0,0180\* | 75,3\* | 1,084\* |
-| pmt_brecha_cate_hd | 0,706\* | 0,599\* | 0,0093\* | 39,0\* | 1,216\* |
-| ideal | 0,346\* | 0,000\* | 0,0239\* | 100,0\* | 0,858\* |
-| pmt_brecha_tau | 0,502\* | 0,155\* | 0,0214\* | 89,6\* | 1,060\* |
-| pmt_brecha_cate_lineal | 0,579\* | 0,345\* | 0,0164\* | 68,8\* | 1,120\* |
-| **pmt_brecha_cate_intra** (nueva) | 0,535\* | 0,259\* | 0,0188\* | 78,6\* | 1,048\* |
-| **pmt_brecha_cate_hd_intra** (nueva) | 0,655\* | 0,514\* | 0,0116\* | 48,7\* | 1,157\* |
-| **vigente_fhdi** (nueva) | 0,549\* | 0,279\* | 0,0179\* | 74,7\* | 1,005\* |
+| vigente_hotdeck | 0,543\* | 0,305\* | 0,0173\* | 72,3\* | 1,000\* |
+| aleatoria | 0,669\* | 0,548\* | 0,0108\* | 45,2\* | 1,249\* |
+| pmt_ingreso | 0,475\* | 0,174\* | 0,0205\* | 85,7\* | 0,931\* |
+| pmt_brecha | 0,474\* | 0,186\* | 0,0199\* | 83,3\* | 0,916\* |
+| pmt_brecha_cate | 0,546\* | 0,306\* | 0,0177\* | 74,1\* | 1,121\* |
+| pmt_brecha_cate_hd | 0,699\* | 0,605\* | 0,0092\* | 38,4\* | 1,258\* |
+| ideal | 0,325\* | 0,000\* | 0,0239\* | 100,0\* | 0,873\* |
+| pmt_brecha_tau | 0,496\* | 0,168\* | 0,0212\* | 88,7\* | 1,109\* |
+| pmt_brecha_cate_lineal | 0,571\* | 0,355\* | 0,0162\* | 68,0\* | 1,160\* |
+| **pmt_brecha_cate_intra** (nueva) | 0,528\* | 0,272\* | 0,0185\* | 77,4\* | 1,086\* |
+| **pmt_brecha_cate_hd_intra** (nueva) | 0,647\* | 0,520\* | 0,0115\* | 48,1\* | 1,195\* |
+| **vigente_fhdi** (nueva) | 0,542\* | 0,302\* | 0,0173\* | 72,5\* | 1,015\* |
 | **pmt_brecha_cate_fhdi** (nueva) | no identificable | no identificable | no identificable | no identificable | no identificable |
 
 ### Efecto monto fijo, presupuesto en hogares
 
 | Regla | Inclusión | Exclusión | Reducción FGT1 | % del ideal | Gasto / vigente |
 |---|---|---|---|---|---|
-| vigente_hotdeck | 0,548\* | 0,278\* | 0,0306\* | 75,9\* | 1,000\* |
-| aleatoria | 0,668\* | 0,531\* | 0,0189\* | 46,9\* | 0,850\* |
-| pmt_ingreso | 0,483\* | 0,163\* | 0,0356\* | 88,4\* | 1,075\* |
-| pmt_brecha | 0,482\* | 0,174\* | 0,0346\* | 86,0\* | 1,062\* |
-| pmt_brecha_cate | 0,567\* | 0,343\* | 0,0285\* | 70,7\* | 1,024\* |
-| pmt_brecha_cate_hd | 0,699\* | 0,594\* | 0,0164\* | 40,7\* | 0,803\* |
-| ideal | 0,346\* | 0,000\* | 0,0403\* | 100,0\* | 0,966\* |
-| pmt_brecha_tau | 0,499\* | 0,150\* | 0,0367\* | 91,2\* | 1,194\* |
-| pmt_brecha_cate_lineal | 0,584\* | 0,381\* | 0,0263\* | 65,5\* | 1,004\* |
-| **pmt_brecha_cate_intra** (nueva) | 0,545\* | 0,286\* | 0,0307\* | 76,2\* | 1,058\* |
-| **pmt_brecha_cate_hd_intra** (nueva) | 0,655\* | 0,507\* | 0,0200\* | 49,7\* | 0,866\* |
-| **vigente_fhdi** (nueva) | 0,549\* | 0,279\* | 0,0305\* | 75,8\* | 1,003\* |
+| vigente_hotdeck | 0,543\* | 0,305\* | 0,0296\* | 73,4\* | 1,000\* |
+| aleatoria | 0,669\* | 0,548\* | 0,0182\* | 45,2\* | 0,864\* |
+| pmt_ingreso | 0,475\* | 0,174\* | 0,0353\* | 87,6\* | 1,106\* |
+| pmt_brecha | 0,474\* | 0,186\* | 0,0341\* | 84,8\* | 1,089\* |
+| pmt_brecha_cate | 0,560\* | 0,353\* | 0,0281\* | 69,8\* | 1,050\* |
+| pmt_brecha_cate_hd | 0,694\* | 0,602\* | 0,0161\* | 39,9\* | 0,819\* |
+| ideal | 0,325\* | 0,000\* | 0,0403\* | 100,0\* | 0,990\* |
+| pmt_brecha_tau | 0,492\* | 0,162\* | 0,0364\* | 90,4\* | 1,230\* |
+| pmt_brecha_cate_lineal | 0,576\* | 0,390\* | 0,0261\* | 64,8\* | 1,030\* |
+| **pmt_brecha_cate_intra** (nueva) | 0,537\* | 0,297\* | 0,0303\* | 75,3\* | 1,086\* |
+| **pmt_brecha_cate_hd_intra** (nueva) | 0,648\* | 0,515\* | 0,0197\* | 49,0\* | 0,885\* |
+| **vigente_fhdi** (nueva) | 0,542\* | 0,302\* | 0,0297\* | 73,7\* | 1,005\* |
 | **pmt_brecha_cate_fhdi** (nueva) | no identificable | no identificable | no identificable | no identificable | no identificable |
 
 ### Efecto monto fijo, presupuesto en dinero
 
 | Regla | Inclusión | Exclusión | Reducción FGT1 | % del ideal | Gasto / vigente |
 |---|---|---|---|---|---|
-| vigente_hotdeck | 0,548\* | 0,278\* | 0,0306\* | 75,9\* | 1,000\* |
-| aleatoria | 0,668\* | 0,448\* | 0,0222\* | 55,2\* | 1,000\* |
-| pmt_ingreso | 0,462\* | 0,195\* | 0,0346\* | 85,9\* | 1,000\* |
-| pmt_brecha | 0,509\* | 0,179\* | 0,0332\* | 82,5\* | 1,000\* |
-| pmt_brecha_cate | 0,584\* | 0,344\* | 0,0279\* | 69,4\* | 1,000\* |
-| pmt_brecha_cate_hd | 0,711\* | 0,529\* | 0,0193\* | 47,8\* | 1,000\* |
-| ideal | 0,371\* | 0,000\* | 0,0403\* | 100,0\* | 1,000\* |
-| pmt_brecha_tau | 0,460\* | 0,188\* | 0,0344\* | 85,5\* | 1,000\* |
-| pmt_brecha_cate_lineal | 0,601\* | 0,379\* | 0,0262\* | 65,0\* | 1,000\* |
-| **pmt_brecha_cate_intra** (nueva) | 0,558\* | 0,298\* | 0,0297\* | 73,7\* | 1,000\* |
-| **pmt_brecha_cate_hd_intra** (nueva) | 0,674\* | 0,465\* | 0,0218\* | 54,1\* | 1,000\* |
-| **vigente_fhdi** (nueva) | 0,549\* | 0,279\* | 0,0305\* | 75,8\* | 1,003\* |
+| vigente_hotdeck | 0,543\* | 0,305\* | 0,0296\* | 73,4\* | 1,000\* |
+| aleatoria | 0,668\* | 0,477\* | 0,0211\* | 52,3\* | 1,000\* |
+| pmt_ingreso | 0,448\* | 0,219\* | 0,0338\* | 83,9\* | 1,000\* |
+| pmt_brecha | 0,498\* | 0,201\* | 0,0322\* | 80,1\* | 1,000\* |
+| pmt_brecha_cate | 0,573\* | 0,362\* | 0,0272\* | 67,6\* | 1,000\* |
+| pmt_brecha_cate_hd | 0,707\* | 0,547\* | 0,0185\* | 45,9\* | 1,000\* |
+| ideal | 0,332\* | 0,000\* | 0,0403\* | 100,0\* | 1,000\* |
+| pmt_brecha_tau | 0,446\* | 0,212\* | 0,0336\* | 83,4\* | 1,000\* |
+| pmt_brecha_cate_lineal | 0,588\* | 0,394\* | 0,0256\* | 63,6\* | 1,000\* |
+| **pmt_brecha_cate_intra** (nueva) | 0,547\* | 0,317\* | 0,0289\* | 71,8\* | 1,000\* |
+| **pmt_brecha_cate_hd_intra** (nueva) | 0,668\* | 0,481\* | 0,0211\* | 52,3\* | 1,000\* |
+| **vigente_fhdi** (nueva) | 0,542\* | 0,302\* | 0,0297\* | 73,7\* | 1,005\* |
 | **pmt_brecha_cate_fhdi** (nueva) | no identificable | no identificable | no identificable | no identificable | no identificable |

@@ -17,17 +17,19 @@ Causal Forest (Wager y Athey, 2018), `CausalForestDML` de `econml` (400
 por tipo de hogar. Misma especificación que
 `RESULTADOS_DML_ATE_ATT_ATU.md`; submuestra de 80.000 hogares.
 
-## Resultado (W = celda exacta con pisos, 2026-11-02)
+## Resultado (W = celda exacta; donantes ponderados por `fex`, 2026-11-21)
 
 | Outcome | CATE medio | sd | Rural / urbana | Hombre / mujer |
 |---|---|---|---|---|
-| `ipm_geih_score` | −0,0052 | 0,034 | −0,0071 / −0,0049 | −0,0155 / +0,0054 |
-| `POBRE_GEIH` | −0,0021 | 0,011 | −0,0086 / −0,0012 | −0,0049 / +0,0006 |
-| `log_ingreso_percapita` | +0,0084 | 0,042 | +0,0014 / +0,0094 | +0,0015 / +0,0154 |
-| `POBRE_MONETARIO` | +0,0003 | 0,008 | −0,0020 / +0,0006 | −0,0006 / +0,0012 |
+| `ipm_geih_score` | +0,0132 | 0,032 | +0,0076 / +0,0141 | +0,0283 / −0,0022 |
+| `POBRE_GEIH` | +0,0032 | 0,016 | −0,0003 / +0,0037 | +0,0087 / −0,0024 |
+| `log_ingreso_percapita` | −0,0194 | 0,044 | −0,0486 / −0,0150 | −0,0147 / −0,0241 |
+| `POBRE_MONETARIO` | +0,0039 | 0,012 | +0,0022 / +0,0042 | +0,0010 / +0,0070 |
 
 `X` = zona, sexo del jefe y paredes; pisos salió de `X` al entrar a la
-celda. Cifras del IPM-GEIH con la vivienda corregida por zona (2026-11-12).
+celda. Celda con personas y menores (2026-11-14), IPM-GEIH con la vivienda
+corregida por zona (2026-11-12) y donantes del Hot-Deck sorteados según su
+`fex` (2026-11-21).
 
 Con W = proxy los valores son del mismo orden (ver la salida completa).
 
@@ -53,12 +55,12 @@ modelos"):
 
 | Subgrupo | CATE del bosque, `POBRE_MONETARIO` | Cota de Fréchet, `POBRE_MONETARIO` |
 |---|---|---|
-| Urbana | +0,0006 | [−0,36; +0,69] |
-| Rural | −0,0020 | [−0,58; +0,51] |
-| Jefe hombre | −0,0006 | [−0,38; +0,66] |
-| Jefe mujer | +0,0012 | [−0,45; +0,68] |
+| Urbana | +0,0042 | [−0,31; +0,71] |
+| Rural | +0,0022 | [−0,46; +0,48] |
+| Jefe hombre | +0,0010 | [−0,33; +0,65] |
+| Jefe mujer | +0,0070 | [−0,36; +0,69] |
 
-Las diferencias del bosque son cerca del 1 % del ancho de esas cotas.
+Las diferencias del bosque son menos del 1 % del ancho de esas cotas.
 Los datos son compatibles tanto con un efecto igual en todos los
 subgrupos como con diferencias de decenas de puntos entre ellos.
 

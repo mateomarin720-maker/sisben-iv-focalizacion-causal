@@ -23,6 +23,10 @@ Medidas:
       probabilidad (ponderada por hogares)
   error_depto_ab  diferencia absoluta media, en puntos, entre la
       proporción de A/B imputada y la verdadera por departamento
+
+Todas las medidas se ponderan por el `fex` de los hogares de prueba, y
+los donantes por el suyo (desde el 2026-11-21): el Sisbén nacional de
+ANDA es una muestra expandible.
 """
 from __future__ import annotations
 
@@ -34,20 +38,20 @@ from src.emparejamiento.fhdi import reglas
 FRACCION_PRUEBA = 0.2
 
 
-def _medidas(nombre: str, q: np.ndarray, verdad: np.ndarray, depto: np.ndarray) -> dict:
-    """q: probabilidad por grupo asignada a cada hogar (n × 4)."""
+def _medidas(nombre: str, q: np.ndarray, verdad: np.ndarray, depto: np.ndarray, w: np.ndarray) -> dict:
+    """q: probabilidad por grupo asignada a cada hogar (n × 4); w: su `fex`."""
     p_ab = q[:, list(reglas.ELEGIBLE)].sum(axis=1)
     t = np.isin(verdad, reglas.ELEGIBLE).astype(float)
     tramo = np.minimum((p_ab * 10).astype(int), 9)
-    cal = pd.DataFrame({"tramo": tramo, "p": p_ab, "t": t}).groupby("tramo").agg(n=("t", "size"), p=("p", "mean"),
-                                                                                 t=("t", "mean"))
-    por_depto = pd.DataFrame({"d": depto, "p": p_ab, "t": t}).groupby("d")[["p", "t"]].mean()
+    d = pd.DataFrame({"tramo": tramo, "d": depto, "w": w, "wp": w * p_ab, "wt": w * t})
+    cal = d.groupby("tramo")[["w", "wp", "wt"]].sum()
+    por_depto = d.groupby("d")[["w", "wp", "wt"]].sum()
     return dict(metodo=nombre,
-                acierto_ab=float(np.mean(t * p_ab + (1 - t) * (1 - p_ab))),
-                acierto_grupo=float(np.mean(q[np.arange(len(q)), verdad])),
-                brier_ab=float(np.mean((p_ab - t) ** 2)),
-                calibracion_ab=float(np.average((cal["p"] - cal["t"]).abs(), weights=cal["n"])),
-                error_depto_ab=float((por_depto["p"] - por_depto["t"]).abs().mean() * 100))
+                acierto_ab=float(np.average(t * p_ab + (1 - t) * (1 - p_ab), weights=w)),
+                acierto_grupo=float(np.average(q[np.arange(len(q)), verdad], weights=w)),
+                brier_ab=float(np.average((p_ab - t) ** 2, weights=w)),
+                calibracion_ab=float(np.average(((cal["wp"] - cal["wt"]) / cal["w"]).abs(), weights=cal["w"])),
+                error_depto_ab=float(((por_depto["wp"] - por_depto["wt"]) / por_depto["w"]).abs().mean() * 100))
 
 
 def validar(sisben: pd.DataFrame, m: int = reglas.M_DONANTES, seed: int = 7) -> pd.DataFrame:
@@ -58,6 +62,7 @@ def validar(sisben: pd.DataFrame, m: int = reglas.M_DONANTES, seed: int = 7) -> 
     don = sisben[~prueba].reset_index(drop=True)
     verdad = reglas._codigo_grupo(rec)
     depto = rec["geo_depto"].astype(str).str.zfill(2).to_numpy()
+    w = reglas.peso_donante(rec)
     n = len(rec)
 
     pi, nivel = reglas.probabilidades(rec, don, receptor_en_codigos=True)
@@ -69,14 +74,15 @@ def validar(sisben: pd.DataFrame, m: int = reglas.M_DONANTES, seed: int = 7) -> 
     moda = pi.argmax(axis=1)
     uno = np.eye(len(reglas.GRUPOS))
 
-    filas = [_medidas("sorteo (Hot-Deck)", uno[sorteo], verdad, depto),
-             _medidas("moda de la celda", uno[moda], verdad, depto),
-             _medidas(f"fhdi (M = {m})", q_fhdi, verdad, depto),
-             _medidas("fefi", pi, verdad, depto)]
-    sin_celda = np.bincount(reglas._codigo_grupo(don), minlength=4) / len(don)
-    filas.append(_medidas("sin celda (todo el registro)", np.tile(sin_celda, (n, 1)), verdad, depto))
+    filas = [_medidas("sorteo (Hot-Deck)", uno[sorteo], verdad, depto, w),
+             _medidas("moda de la celda", uno[moda], verdad, depto, w),
+             _medidas(f"fhdi (M = {m})", q_fhdi, verdad, depto, w),
+             _medidas("fefi", pi, verdad, depto, w)]
+    w_don = reglas.peso_donante(don)
+    sin_celda = np.bincount(reglas._codigo_grupo(don), weights=w_don, minlength=4) / w_don.sum()
+    filas.append(_medidas("sin celda (todo el registro)", np.tile(sin_celda, (n, 1)), verdad, depto, w))
     out = pd.DataFrame(filas)
     out["hogares_prueba"] = n
-    out["celda_exacta_pct"] = float(np.mean(nivel == "celda_exacta") * 100)
+    out["celda_exacta_pct"] = float(np.average(nivel == "celda_exacta", weights=w) * 100)
     out["fhdi_calibrado_pct"] = float(exp.groupby("receptor")["calibrado"].first().mean() * 100)
     return out

@@ -1,11 +1,11 @@
-2026-11-14 18:35:56,215 INFO Receptor GEIH: 290,968 hogares | Donante Sisbén: 3,093,411 hogares
-2026-11-14 18:36:19,672 INFO 1_depto_edad_cuartos: delta 0.2055 | exacta 100.00 % | pequeñas 0.06 %
-2026-11-14 18:36:23,596 INFO 2_mas_pisos: delta 0.2002 | exacta 99.98 % | pequeñas 0.83 %
-2026-11-14 18:36:28,565 INFO 3_mas_pisos_paredes: delta 0.1994 | exacta 99.95 % | pequeñas 1.38 %
-2026-11-14 18:36:38,778 INFO 4_mas_personas4: delta 0.1667 | exacta 99.92 % | pequeñas 2.93 %
-2026-11-14 18:36:50,704 INFO 5_mas_personas4_menores: delta 0.1453 | exacta 99.83 % | pequeñas 6.27 %
-2026-11-14 18:37:05,393 INFO 6_mas_personas3_menores: delta 0.1476 | exacta 99.86 % | pequeñas 5.11 %
-2026-11-14 18:37:19,676 INFO 7_mas_personas2_menores: delta 0.1482 | exacta 99.92 % | pequeñas 3.75 %
+2026-11-21 14:46:19,309 INFO Receptor GEIH: 290,968 hogares | Donante Sisbén: 3,093,411 hogares
+2026-11-21 14:46:40,503 INFO 1_depto_edad_cuartos: delta 0.2210 | exacta 100.00 % | pequeñas 0.06 %
+2026-11-21 14:46:45,938 INFO 2_mas_pisos: delta 0.2048 | exacta 99.98 % | pequeñas 0.83 %
+2026-11-21 14:46:51,481 INFO 3_mas_pisos_paredes: delta 0.2032 | exacta 99.95 % | pequeñas 1.38 %
+2026-11-21 14:47:02,351 INFO 4_mas_personas4: delta 0.1694 | exacta 99.92 % | pequeñas 2.93 %
+2026-11-21 14:47:26,417 INFO 5_mas_personas4_menores: delta 0.1456 | exacta 99.83 % | pequeñas 6.27 %
+2026-11-21 14:47:57,863 INFO 6_mas_personas3_menores: delta 0.1475 | exacta 99.86 % | pequeñas 5.11 %
+2026-11-21 14:48:29,486 INFO 7_mas_personas2_menores: delta 0.1489 | exacta 99.92 % | pequeñas 3.75 %
 
 === Celdas del Hot-Deck: vivienda homologada, personas y menores ===
                                                         0            1                    2                3                        4                        5                        6
@@ -15,18 +15,18 @@ pct_hogares_celda_exacta                          99.9993      99.9763          
 donantes_mediana                                   9437.0       2353.0               1898.0            717.0                    402.0                    560.0                    670.0
 donantes_p5                                        1301.0        183.0                140.0             49.0                     24.0                     30.0                     41.0
 pct_hogares_celda_menos_30_donantes                0.0636       0.8327               1.3843           2.9288                   6.2656                   5.1126                   3.7489
-sd_p_t_celda                                       0.1702       0.2235               0.2239           0.2818                   0.3049                   0.3047                   0.3039
-p_t_p5                                             0.3554       0.1506               0.1448           0.0402                   0.0401                    0.056                    0.056
-p_t_p95                                            0.8634       0.8435               0.8489           0.9143                   0.9479                   0.9479                   0.9375
-corr_p_t_celda_pobre_monetario                      0.201       0.2899               0.2924           0.3716                    0.411                   0.4106                   0.4098
-dif_pobreza_T1_menos_T0                            0.0897       0.1335               0.1359           0.2012                   0.2358                   0.2363                   0.2384
-pct_grupo_A                                       21.9977      14.1873              13.9689          14.4455                  14.8375                  14.9112                  14.9301
-pct_grupo_B                                       33.7786      29.4415              29.0013          29.7905                  29.9362                  29.4542                  29.7062
-pct_grupo_C                                       28.6552      34.3583              34.5451          34.6966                  34.1656                  33.8272                  33.7497
-pct_grupo_D                                       15.5685      22.0128              22.4847          21.0674                  21.0607                  21.8074                  21.6141
-delta_frechet                                      0.2055       0.2002               0.1994           0.1667                   0.1453                   0.1476                   0.1482
+sd_p_t_celda                                        0.183       0.2219               0.2229           0.2808                   0.3081                    0.308                    0.306
+p_t_p5                                             0.2212       0.1444               0.1426            0.035                   0.0295                   0.0404                   0.0424
+p_t_p95                                            0.8356       0.8233               0.8378           0.9058                   0.9477                   0.9459                   0.9397
+corr_p_t_celda_pobre_monetario                     0.2052       0.2886               0.2902           0.3682                   0.4068                   0.4072                   0.4072
+dif_pobreza_T1_menos_T0                            0.0918       0.1353               0.1298           0.1964                   0.2391                     0.24                   0.2367
+pct_grupo_A                                       17.2486      12.5038              12.3599          13.1043                  13.8372                  13.6516                   13.623
+pct_grupo_B                                       30.8479      27.9154              27.5055          29.1476                  28.8945                  28.7922                   28.629
+pct_grupo_C                                       33.1411      36.7235              37.2192          36.7922                  36.4309                  36.0851                  36.3514
+pct_grupo_D                                       18.7624      22.8573              22.9154          20.9559                  20.8374                  21.4711                  21.3966
+delta_frechet                                       0.221       0.2048               0.2032           0.1694                   0.1456                   0.1475                   0.1489
 cumple_umbrales                                      True         True                 True             True                    False                    False                     True
-delta_frechet_placebo                                 NaN          NaN                  NaN           0.1982                   0.1646                   0.1964                   0.1976
+delta_frechet_placebo                                 NaN          NaN                  NaN            0.201                   0.1652                   0.1981                   0.2001
 
 Lectura: la celda 7 es la oficial desde el 2026-11-14 (cumple los umbrales y cierra más las cotas);
 la 5 y la 6 cierran igual o un poco más, pero dejan más del 5 % de los hogares en celdas pequeñas.

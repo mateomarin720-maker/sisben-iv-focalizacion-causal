@@ -69,9 +69,11 @@ focalización (`RESULTADOS_ERRORES_FOCALIZACION_FRECHET.md`) toman la
 proporción de A/B de los registrados como la de toda la celda. El grafo
 dice cuándo vale: solo si lo que lleva a un hogar a registrarse no está
 relacionado con su elegibilidad más allá de X y Z. La cobertura del
-registro varía 5,6 veces entre los departamentos del archivo nacional
-(`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`), así que es un supuesto que se
-declara, no que se verifica.
+registro va de 41,5 % a 97,3 % entre departamentos, sube con la pobreza
+de la celda, y en Bogotá los inscritos difieren de la población dentro de
+la misma celda (`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`), así que es un
+supuesto que se declara, no que se verifica, y la evidencia indica que no
+se cumple del todo.
 
 ## 4. Generador de la simulación semisintética
 

@@ -34,6 +34,12 @@ Degradación jerárquica (se suelta primero la variable que menos aporta):
     -> sin_personas (la celda del 2026-11-02) -> sin_pisos (depto+edad+cuartos)
     -> solo_depto_edad -> solo_depto -> pool_nacional
 Solo se usan como donantes hogares con tratamiento (Clasificacion) observado.
+El donante se sortea con probabilidad proporcional a su factor de expansión
+(`fex`): el Sisbén nacional de ANDA es una muestra expandible (1,83
+millones de hogares, 11,4 millones expandidos) que sobrerrepresenta los
+grupos A y B; el de Bogotá (SDP) es el registro completo (`fex` = 1).
+Hasta el 2026-11-21 se sorteaba sin ponderar y la proporción de A/B
+imputada salía 44,7 % en vez de 42,2 % (`peso_donante`).
 Valido solo a nivel poblacional: no identifica el mismo hogar (supuesto de
 independencia condicional del matching estadístico).
 
@@ -164,15 +170,37 @@ def claves_por_nivel(df: pd.DataFrame, edad_en_codigos: bool = False, incluir_vi
     return niveles
 
 
-def _sortear(grupos: dict, claves: pd.Series, rng) -> tuple[np.ndarray, np.ndarray]:
-    """Para cada clave devuelve el indice (posicional) de un donante al azar;
-    -1 si la clave no tiene donantes."""
+def peso_donante(donante: pd.DataFrame) -> np.ndarray:
+    """Factor de expansión de cada donante del Sisbén. Se exige: sin él, el
+    sorteo y las proporciones por celda tratarían la muestra de ANDA como si
+    fuera el registro y sobrerrepresentarían A y B, sin dar error."""
+    if "fex" not in donante:
+        raise ValueError("El donante necesita `fex` (factor de expansión del Sisbén; 1 en Bogotá)")
+    w = pd.to_numeric(donante["fex"], errors="coerce").to_numpy(float)
+    if not np.isfinite(w).all() or (w <= 0).any():
+        raise ValueError("`fex` del donante debe ser positivo y sin faltantes")
+    return w
+
+
+def proporcion_por_celda(indicador: pd.Series, clave: pd.Series, peso: np.ndarray) -> pd.Series:
+    """Proporción ponderada por `fex` de un indicador entre los donantes de
+    cada celda (la que usan el Hot-Deck, la FHDI y las cotas de Fréchet)."""
+    x = pd.Series(np.asarray(indicador, float) * peso)
+    w = pd.Series(peso)
+    c = np.asarray(clave)
+    return x.groupby(c).sum() / w.groupby(c).sum()
+
+
+def _sortear(grupos: dict, claves: pd.Series, rng, peso: np.ndarray) -> np.ndarray:
+    """Para cada clave devuelve el indice (posicional) de un donante sorteado
+    con probabilidad proporcional a `peso`; -1 si la clave no tiene donantes."""
     res = np.full(len(claves), -1, dtype=np.int64)
     pos = pd.Series(np.arange(len(claves)))
     for clave, idx in pos.groupby(claves.values).__iter__():
         donantes = grupos.get(clave)
         if donantes is not None and len(donantes):
-            res[idx.values] = donantes[rng.integers(0, len(donantes), size=len(idx))]
+            acum = np.cumsum(peso[donantes])
+            res[idx.values] = donantes[np.searchsorted(acum, rng.random(len(idx)) * acum[-1], side="right")]
     return res
 
 
@@ -187,6 +215,7 @@ def hotdeck(receptor: pd.DataFrame, donante: pd.DataFrame, seed: int = 42, inclu
         raise ValueError(f"La celda requiere {faltan} en receptor y donante")
     rng = np.random.default_rng(seed)
     donante = donante[donante["Clasificacion"].notna()].reset_index(drop=True)
+    peso = peso_donante(donante)
     receptor = receptor.copy().reset_index(drop=True)
 
     # Niveles de celda, de más fina a más gruesa; cada uno solo se usa para
@@ -204,13 +233,14 @@ def hotdeck(receptor: pd.DataFrame, donante: pd.DataFrame, seed: int = 42, inclu
         if not falta.any():
             break
         grupos = {k: v.values for k, v in pd.Series(np.arange(len(donante))).groupby(cd.values)}
-        e = _sortear(grupos, cr[falta].reset_index(drop=True), rng)
+        e = _sortear(grupos, cr[falta].reset_index(drop=True), rng, peso)
         elegido[falta] = e
         nivel[falta] = np.where(e >= 0, nombre, "").astype(object)
 
     falta = elegido < 0
     if falta.any():
-        elegido[falta] = rng.integers(0, len(donante), size=int(falta.sum()))
+        acum = np.cumsum(peso)
+        elegido[falta] = np.searchsorted(acum, rng.random(int(falta.sum())) * acum[-1], side="right")
         nivel[falta] = "pool_nacional"
 
     for c in TRAT:
@@ -228,7 +258,7 @@ def main() -> None:
     sb = SISBEN_BOG if SISBEN_BOG.exists() else SISBEN
     logger.info("Donante: %s", sb)
     rec = pd.read_parquet(GEIH)
-    don = pd.read_parquet(sb, columns=[*CELDA_COLUMNAS, *TRAT])
+    don = pd.read_parquet(sb, columns=[*CELDA_COLUMNAS, *TRAT, "fex"])
     logger.info("Receptor GEIH: %s hogares | Donante Sisbén: %s hogares", f"{len(rec):,}", f"{len(don):,}")
     out = hotdeck(rec, don)
     out.to_parquet(OUT, index=False)

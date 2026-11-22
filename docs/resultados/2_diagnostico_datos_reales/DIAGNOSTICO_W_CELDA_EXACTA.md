@@ -49,18 +49,18 @@ celda exacta, la propensión estimada reproduce la empírica: correlación
 0,996, diferencia absoluta media 0,011 con la celda vigente (0,995 y 0,008
 con la celda del 2026-11-02; 0,998 y 0,004 con la celda sin pisos).
 
-## Resultado (con la corrección y la celda vigente, 2026-11-14)
+## Resultado (con la corrección y la celda vigente; donantes ponderados por `fex` desde el 2026-11-21)
 
 | Outcome | W | ATE [IC 95 %] | ATT | ATU |
 |---|---|---|---|---|
-| `ipm_geih_score` (0-8) | PROXY | +0,0020 [−0,0056; +0,0096] | +0,0021 | +0,0020 |
-| `ipm_geih_score` (0-8) | CELDA EXACTA | +0,0037 [−0,0042; +0,0116] | +0,0050 | +0,0025 |
-| `POBRE_GEIH` | PROXY | +0,0035 [+0,0008; +0,0062] | +0,0034 | +0,0035 |
-| `POBRE_GEIH` | CELDA EXACTA | +0,0009 [−0,0018; +0,0037] | +0,0006 | +0,0012 |
-| `log_ingreso_percapita` | PROXY | −0,0175 [−0,0317; −0,0033] | −0,0162 | −0,0187 |
-| `log_ingreso_percapita` | CELDA EXACTA | +0,0013 [−0,0131; +0,0158] | +0,0029 | −0,0000 |
-| `POBRE_MONETARIO` | PROXY | +0,0038 [+0,0002; +0,0075] | +0,0043 | +0,0035 |
-| `POBRE_MONETARIO` | CELDA EXACTA | +0,0017 [−0,0021; +0,0055] | +0,0021 | +0,0013 |
+| `ipm_geih_score` (0-8) | PROXY | +0,0083 [+0,0007; +0,0160] | +0,0082 | +0,0084 |
+| `ipm_geih_score` (0-8) | CELDA EXACTA | +0,0058 [−0,0022; +0,0137] | +0,0067 | +0,0050 |
+| `POBRE_GEIH` | PROXY | +0,0037 [+0,0010; +0,0064] | +0,0044 | +0,0032 |
+| `POBRE_GEIH` | CELDA EXACTA | +0,0003 [−0,0025; +0,0031] | +0,0006 | +0,0001 |
+| `log_ingreso_percapita` | PROXY | −0,0221 [−0,0360; −0,0082] | −0,0264 | −0,0185 |
+| `log_ingreso_percapita` | CELDA EXACTA | −0,0014 [−0,0157; +0,0129] | −0,0055 | +0,0020 |
+| `POBRE_MONETARIO` | PROXY | +0,0054 [+0,0018; +0,0091] | +0,0066 | +0,0045 |
+| `POBRE_MONETARIO` | CELDA EXACTA | +0,0002 [−0,0036; +0,0040] | +0,0010 | −0,0005 |
 
 `POBRE_MONETARIO` y `log_ingreso_percapita` usan la reconstrucción de
 pobreza monetaria del 2026-11-02 (`RESULTADOS_POBREZA_MONETARIA.md`).
@@ -69,23 +69,25 @@ CATE (`CausalForestDML`, submuestra de 80.000):
 
 | Outcome | W | CATE medio | sd | Rural / urbana |
 |---|---|---|---|---|
-| `ipm_geih_score` | CELDA EXACTA | +0,0131 | 0,020 | +0,0062 / +0,0141 |
-| `POBRE_GEIH` | CELDA EXACTA | +0,0025 | 0,009 | −0,0020 / +0,0032 |
-| `log_ingreso_percapita` | CELDA EXACTA | −0,0200 | 0,045 | +0,0231 / −0,0264 |
-| `POBRE_MONETARIO` | CELDA EXACTA | −0,0013 | 0,008 | +0,0001 / −0,0015 |
+| `ipm_geih_score` | CELDA EXACTA | +0,0132 | 0,032 | +0,0076 / +0,0141 |
+| `POBRE_GEIH` | CELDA EXACTA | +0,0032 | 0,016 | −0,0003 / +0,0037 |
+| `log_ingreso_percapita` | CELDA EXACTA | −0,0194 | 0,044 | −0,0486 / −0,0150 |
+| `POBRE_MONETARIO` | CELDA EXACTA | +0,0039 | 0,012 | +0,0022 / +0,0042 |
 
 ## Cómo leerlo
 
 1. **Con la celda exacta, los cuatro ATE incluyen el cero**, y todos son
-   de una magnitud despreciable (≤ 0,17 puntos porcentuales en las tasas
+   de una magnitud despreciable (≤ 0,03 puntos porcentuales en las tasas
    de pobreza). Es lo que predice la simulación para un sorteo aleatorio
    dentro de la celda: el contraste es una **prueba placebo** del
    emparejamiento, no una estimación del efecto del Sisbén. Con la celda
    del 2026-11-02, `POBRE_GEIH` llegó a quedar al borde (−0,0026
    [−0,0049; −0,0002]), algo esperable por azar con ocho pruebas.
-2. **El proxy ya no basta** con la celda del 2026-11-14: tres de sus
-   cuatro ATE excluyen el cero (`POBRE_GEIH` +0,35 puntos,
-   `log_ingreso_percapita` −0,0175, `POBRE_MONETARIO` +0,38 puntos). El
+2. **El proxy ya no basta** con la celda del 2026-11-14: con los donantes
+   ponderados por `fex` sus cuatro ATE excluyen el cero
+   (`ipm_geih_score` +0,0083, `POBRE_GEIH` +0,37 puntos,
+   `log_ingreso_percapita` −0,0221, `POBRE_MONETARIO` +0,54 puntos; sin
+   ponderar eran tres). El
    proxy suma personas y menores como términos aditivos y la celda los
    cruza con departamento, edad, cuartos y pisos; la parte de P(T | celda)
    que el proxy no reproduce se correlaciona con el resultado y aparece

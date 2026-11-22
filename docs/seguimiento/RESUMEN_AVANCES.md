@@ -56,7 +56,7 @@ el efecto cuando hay confusión no observada
 | Simulación de identificación | `src/simulacion/simulacion_identificacion.py` | ✅ (datos sintéticos) |
 | **Evaluación semisintética** | `src/simulacion/` (módulo del framework; antes `src/validacion/simulacion_semisintetica.py`) | ✅ 2026-11-03, hasta la convergencia |
 | **Reglas de focalización (OE3)** | `src/focalizacion/reglas_focalizacion.py` | ✅ 2026-11-04 (simulado) |
-| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 320 pruebas; 83 de 83 errores documentados detectados por mutación (2026-11-20); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
+| Pruebas | `tests/` (`pytest`; mapa en `tests/README.md`) | ✅ 324 pruebas; 87 de 87 errores documentados detectados por mutación (2026-11-21); corren solas en GitHub Actions en cada push y PR (2026-11-04) |
 
 ## 3. Resultados vigentes
 
@@ -66,9 +66,11 @@ el efecto cuando hay confusión no observada
 vida del jefe + tramo de cuartos + nivel de pisos homologado
 (`docs/insumos/HOMOLOGACION_VIVIENDA_GEIH_SISBEN.md`) + personas del hogar
 (1-2 / 3+) + menores de 18 años (0 / 1 / 2+); 99,92 % en celda exacta
-(3.721 celdas). Grupo asignado (ponderado): **A 14,9 · B 29,7 · C 33,8 ·
-D 21,6 %**. Personas y menores entraron el 2026-11-14 (Δ de Fréchet por
-celda 0,200 → 0,148; correlación con la pobreza monetaria 0,29 → 0,41;
+(3.721 celdas). Grupo asignado (ponderado): **A 13,6 · B 28,6 · C 36,4 ·
+D 21,4 %**, con los donantes sorteados según su factor de expansión
+(2026-11-21; el Sisbén nacional de ANDA es una muestra). Personas y
+menores entraron el 2026-11-14 (Δ de Fréchet por
+celda 0,200 → 0,149; correlación con la pobreza monetaria 0,29 → 0,41;
 `RESULTADOS_HOTDECK.md`). Refleja a los hogares registrados en el Sisbén, no a
 la población; válido solo a nivel poblacional.
 
@@ -129,9 +131,11 @@ decir. `docs/resultados/2_diagnostico_datos_reales/RESULTADOS_FRECHET_MANSKI.md`
 
 ### 3e. Representatividad
 
-La cobertura del Sisbén frente a GEIH, sobre el mismo marco, va de 4,8 % (Valle)
-a 26,9 % (Boyacá) en el archivo nacional; 16,8 % en el agregado (corregido el
-2026-11-11: en 9 departamentos la GEIH solo cubre la capital). `docs/resultados/1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
+La cobertura del Sisbén frente a GEIH, sobre el mismo marco y con el archivo
+nacional expandido por su `fex`, va de 55,3 % (Chocó) a 97,3 % (Norte de
+Santander) en el archivo nacional y es 41,5 % en Bogotá; 68,3 % en el agregado
+(corregido el 2026-11-11: en 9 departamentos la GEIH solo cubre la capital; y
+el 2026-11-21: antes se contaban filas de una muestra y salía 16,8 %). `docs/resultados/1_datos_y_enlace/RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`.
 
 ### 3f. Selección de variables (OE1)
 
@@ -151,9 +155,9 @@ asignado, no la pobreza real. `docs/resultados/2_diagnostico_datos_reales/RESULT
    un contraste viene del sorteo: las estimaciones con el grupo imputado
    deberían repetir el sorteo y combinar con Rubin.
 0. **OE3 hecho el 2026-11-04** (`docs/resultados/4_focalizacion/RESULTADOS_REGLAS_FOCALIZACION.md`):
-   un proxy de medios logra 84-87 % de la reducción ideal de la brecha,
-   frente a 75 % de la vigente imputada (60 % con la celda anterior); las
-   reglas con CATE estimado son peores (61-68 % con vínculo, 27-34 % con
+   un proxy de medios logra 83-86 % de la reducción ideal de la brecha,
+   frente a 72-73 % de la vigente imputada (60 % con la celda anterior); las
+   reglas con CATE estimado son peores (61-67 % con vínculo, 27-33 % con
    Hot-Deck). Siguiente: presupuestos menores que la población pobre y
    heterogeneidad más fuerte.
 

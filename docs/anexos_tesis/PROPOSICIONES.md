@@ -55,8 +55,9 @@ efecto. Es lo que pasaba con la celda como código numérico antes del
 | Sin confusión en la celda | 0,115 | −0,0005 (error MC 0,0011) |
 | Con confusión en la celda | 0,774 | −0,0005 (error MC 0,0011) |
 
-Con datos reales, el contraste combinado de 100 sorteos es +0,0001 para
-`POBRE_GEIH` (IC [−0,0035; +0,0038]; con la celda del 2026-11-02,
+Con datos reales, el contraste combinado de 100 sorteos es +0,0002 para
+`POBRE_GEIH` (IC [−0,0037; +0,0041], con los donantes según su `fex`;
+sin ponderar, +0,0001 [−0,0035; +0,0038]; con la celda del 2026-11-02,
 −0,000004 [−0,0033; +0,0033]).
 
 ## Proposición 2: la señal cae en proporción al enlace

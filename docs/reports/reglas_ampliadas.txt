@@ -1,29 +1,29 @@
-2026-11-19 17:41:38,881 INFO Base: 290,968 hogares reales | A/B vigente 47.0 % de los hogares
-2026-11-19 17:43:33,013 INFO Lote reps 0-11 en 112 s | métricas sin converger: 69
-2026-11-19 17:45:06,061 INFO Lote reps 12-23 en 93 s | métricas sin converger: 52
-2026-11-19 17:46:45,272 INFO Lote reps 24-35 en 99 s | métricas sin converger: 38
-2026-11-19 17:48:17,424 INFO Lote reps 36-47 en 92 s | métricas sin converger: 37
-2026-11-19 17:49:48,954 INFO Lote reps 48-59 en 92 s | métricas sin converger: 32
-2026-11-19 17:51:19,053 INFO Lote reps 60-71 en 90 s | métricas sin converger: 30
-2026-11-19 17:52:50,781 INFO Lote reps 72-83 en 92 s | métricas sin converger: 30
-2026-11-19 17:53:59,205 INFO Lote reps 84-95 en 68 s | métricas sin converger: 30
-2026-11-19 17:55:02,643 INFO Lote reps 96-107 en 63 s | métricas sin converger: 29
-2026-11-19 17:55:54,659 INFO Lote reps 108-119 en 52 s | métricas sin converger: 29
-2026-11-19 17:57:07,616 INFO Lote reps 120-131 en 73 s | métricas sin converger: 27
-2026-11-19 17:58:23,140 INFO Lote reps 132-143 en 76 s | métricas sin converger: 27
-2026-11-19 17:59:23,370 INFO Lote reps 144-155 en 60 s | métricas sin converger: 27
-2026-11-19 18:00:11,882 INFO Lote reps 156-167 en 48 s | métricas sin converger: 27
-2026-11-19 18:00:59,724 INFO Lote reps 168-179 en 48 s | métricas sin converger: 26
-2026-11-19 18:01:48,488 INFO Lote reps 180-191 en 49 s | métricas sin converger: 24
-2026-11-19 18:02:36,144 INFO Lote reps 192-203 en 48 s | métricas sin converger: 24
-2026-11-19 18:03:23,767 INFO Lote reps 204-215 en 48 s | métricas sin converger: 23
-2026-11-19 18:04:11,063 INFO Lote reps 216-227 en 47 s | métricas sin converger: 23
-2026-11-19 18:04:58,908 INFO Lote reps 228-239 en 48 s | métricas sin converger: 23
-2026-11-19 18:05:46,957 INFO Lote reps 240-251 en 48 s | métricas sin converger: 22
-2026-11-19 18:06:34,183 INFO Lote reps 252-263 en 47 s | métricas sin converger: 21
-2026-11-19 18:07:22,175 INFO Lote reps 264-275 en 48 s | métricas sin converger: 20
-2026-11-19 18:08:11,871 INFO Lote reps 276-287 en 50 s | métricas sin converger: 19
-2026-11-19 18:09:01,422 INFO Lote reps 288-299 en 50 s | métricas sin converger: 19
+2026-11-21 15:45:54,612 INFO Base: 290,968 hogares reales | A/B vigente 45.2 % de los hogares
+2026-11-21 15:47:14,493 INFO Lote reps 0-11 en 77 s | métricas sin converger: 76
+2026-11-21 15:48:20,176 INFO Lote reps 12-23 en 66 s | métricas sin converger: 49
+2026-11-21 15:49:15,734 INFO Lote reps 24-35 en 56 s | métricas sin converger: 38
+2026-11-21 15:50:07,874 INFO Lote reps 36-47 en 52 s | métricas sin converger: 37
+2026-11-21 15:51:20,126 INFO Lote reps 48-59 en 72 s | métricas sin converger: 31
+2026-11-21 15:52:32,958 INFO Lote reps 60-71 en 73 s | métricas sin converger: 30
+2026-11-21 15:53:39,418 INFO Lote reps 72-83 en 66 s | métricas sin converger: 30
+2026-11-21 15:54:52,192 INFO Lote reps 84-95 en 73 s | métricas sin converger: 30
+2026-11-21 15:55:56,488 INFO Lote reps 96-107 en 64 s | métricas sin converger: 29
+2026-11-21 15:56:48,826 INFO Lote reps 108-119 en 52 s | métricas sin converger: 29
+2026-11-21 15:57:41,829 INFO Lote reps 120-131 en 53 s | métricas sin converger: 27
+2026-11-21 15:58:35,295 INFO Lote reps 132-143 en 53 s | métricas sin converger: 27
+2026-11-21 15:59:30,391 INFO Lote reps 144-155 en 55 s | métricas sin converger: 27
+2026-11-21 16:00:24,789 INFO Lote reps 156-167 en 54 s | métricas sin converger: 26
+2026-11-21 16:01:13,820 INFO Lote reps 168-179 en 49 s | métricas sin converger: 25
+2026-11-21 16:02:04,125 INFO Lote reps 180-191 en 50 s | métricas sin converger: 24
+2026-11-21 16:03:04,286 INFO Lote reps 192-203 en 60 s | métricas sin converger: 23
+2026-11-21 16:03:57,950 INFO Lote reps 204-215 en 54 s | métricas sin converger: 23
+2026-11-21 16:04:53,799 INFO Lote reps 216-227 en 56 s | métricas sin converger: 23
+2026-11-21 16:05:48,019 INFO Lote reps 228-239 en 54 s | métricas sin converger: 22
+2026-11-21 16:06:42,116 INFO Lote reps 240-251 en 54 s | métricas sin converger: 22
+2026-11-21 16:07:38,962 INFO Lote reps 252-263 en 57 s | métricas sin converger: 20
+2026-11-21 16:08:33,704 INFO Lote reps 264-275 en 55 s | métricas sin converger: 20
+2026-11-21 16:09:27,644 INFO Lote reps 276-287 en 54 s | métricas sin converger: 20
+2026-11-21 16:10:22,443 INFO Lote reps 288-299 en 55 s | métricas sin converger: 19
 
 \* Resultado simulado (semisintético): efecto verdadero fijado por el investigador; no es una estimación con datos reales.
 
@@ -39,54 +39,54 @@ Causal Forest dentro de la celda (monto_fijo): ATE con T verdadero +0.0909, con 
 
 | Regla | Inclusión | Exclusión | Reducción FGT1 | % del ideal | Gasto / vigente |
 |---|---|---|---|---|---|
-| vigente_hotdeck | 0,548\* | 0,278\* | 0,0145\* | 74,6\* | 1,000\* |
-| aleatoria | 0,669\* | 0,531\* | 0,0091\* | 46,9\* | 1,314\* |
-| pmt_ingreso | 0,483\* | 0,163\* | 0,0164\* | 84,2\* | 0,752\* |
-| pmt_brecha | 0,485\* | 0,178\* | 0,0159\* | 81,7\* | 0,758\* |
-| pmt_brecha_cate | 0,549\* | 0,302\* | 0,0133\* | 68,3\* | 0,939\* |
-| pmt_brecha_cate_hd | 0,757\* | 0,666\* | 0,0066\* | 34,0\* | 1,581\* |
-| ideal | 0,346\* | 0,000\* | 0,0194\* | 100,0\* | 0,896\* |
-| pmt_brecha_tau | 0,485\* | 0,161\* | 0,0164\* | 84,6\* | 0,786\* |
-| pmt_brecha_cate_lineal | 0,546\* | 0,290\* | 0,0136\* | 69,8\* | 0,936\* |
-| **pmt_brecha_cate_intra** (nueva) | 0,510\* | 0,228\* | 0,0148\* | 76,1\* | 0,821\* |
-| **pmt_brecha_cate_hd_intra** (nueva) | 0,656\* | 0,508\* | 0,0095\* | 49,1\* | 1,264\* |
-| **vigente_fhdi** (nueva) | 0,549\* | 0,279\* | 0,0144\* | 74,2\* | 1,002\* |
+| vigente_hotdeck | 0,543\* | 0,305\* | 0,0139\* | 71,7\* | 1,000\* |
+| aleatoria | 0,669\* | 0,548\* | 0,0088\* | 45,2\* | 1,368\* |
+| pmt_ingreso | 0,475\* | 0,174\* | 0,0162\* | 83,1\* | 0,779\* |
+| pmt_brecha | 0,477\* | 0,191\* | 0,0156\* | 80,4\* | 0,782\* |
+| pmt_brecha_cate | 0,543\* | 0,315\* | 0,0131\* | 67,2\* | 0,966\* |
+| pmt_brecha_cate_hd | 0,755\* | 0,674\* | 0,0065\* | 33,2\* | 1,647\* |
+| ideal | 0,325\* | 0,000\* | 0,0194\* | 100,0\* | 0,902\* |
+| pmt_brecha_tau | 0,478\* | 0,173\* | 0,0162\* | 83,5\* | 0,815\* |
+| pmt_brecha_cate_lineal | 0,540\* | 0,302\* | 0,0133\* | 68,7\* | 0,964\* |
+| **pmt_brecha_cate_intra** (nueva) | 0,504\* | 0,241\* | 0,0145\* | 74,8\* | 0,848\* |
+| **pmt_brecha_cate_hd_intra** (nueva) | 0,650\* | 0,515\* | 0,0094\* | 48,5\* | 1,298\* |
+| **vigente_fhdi** (nueva) | 0,542\* | 0,302\* | 0,0140\* | 72,0\* | 1,014\* |
 | **pmt_brecha_cate_fhdi** (nueva) | no identificable | no identificable | no identificable | no identificable | no identificable |
 
 ### Efecto monto fijo, presupuesto en hogares
 
 | Regla | Inclusión | Exclusión | Reducción FGT1 | % del ideal | Gasto / vigente |
 |---|---|---|---|---|---|
-| vigente_hotdeck | 0,548\* | 0,278\* | 0,0246\* | 75,4\* | 1,000\* |
-| aleatoria | 0,668\* | 0,531\* | 0,0153\* | 46,9\* | 0,894\* |
-| pmt_ingreso | 0,483\* | 0,163\* | 0,0282\* | 86,4\* | 0,988\* |
-| pmt_brecha | 0,524\* | 0,245\* | 0,0250\* | 76,7\* | 0,965\* |
-| pmt_brecha_cate | 0,587\* | 0,378\* | 0,0201\* | 61,4\* | 0,962\* |
-| pmt_brecha_cate_hd | 0,795\* | 0,724\* | 0,0089\* | 27,4\* | 0,860\* |
-| ideal | 0,346\* | 0,000\* | 0,0327\* | 100,0\* | 0,959\* |
-| pmt_brecha_tau | 0,481\* | 0,155\* | 0,0284\* | 87,0\* | 1,017\* |
-| pmt_brecha_cate_lineal | 0,585\* | 0,370\* | 0,0204\* | 62,4\* | 0,965\* |
-| **pmt_brecha_cate_intra** (nueva) | 0,520\* | 0,255\* | 0,0242\* | 74,3\* | 0,974\* |
-| **pmt_brecha_cate_hd_intra** (nueva) | 0,662\* | 0,514\* | 0,0161\* | 49,2\* | 0,908\* |
-| **vigente_fhdi** (nueva) | 0,549\* | 0,279\* | 0,0246\* | 75,2\* | 1,001\* |
+| vigente_hotdeck | 0,543\* | 0,305\* | 0,0238\* | 72,9\* | 1,000\* |
+| aleatoria | 0,669\* | 0,548\* | 0,0147\* | 45,2\* | 0,906\* |
+| pmt_ingreso | 0,475\* | 0,174\* | 0,0279\* | 85,5\* | 1,012\* |
+| pmt_brecha | 0,518\* | 0,257\* | 0,0246\* | 75,5\* | 0,984\* |
+| pmt_brecha_cate | 0,580\* | 0,388\* | 0,0198\* | 60,6\* | 0,981\* |
+| pmt_brecha_cate_hd | 0,795\* | 0,733\* | 0,0087\* | 26,6\* | 0,875\* |
+| ideal | 0,325\* | 0,000\* | 0,0327\* | 100,0\* | 0,977\* |
+| pmt_brecha_tau | 0,474\* | 0,168\* | 0,0280\* | 85,9\* | 1,040\* |
+| pmt_brecha_cate_lineal | 0,577\* | 0,379\* | 0,0201\* | 61,6\* | 0,984\* |
+| **pmt_brecha_cate_intra** (nueva) | 0,513\* | 0,267\* | 0,0239\* | 73,2\* | 0,995\* |
+| **pmt_brecha_cate_hd_intra** (nueva) | 0,656\* | 0,522\* | 0,0159\* | 48,5\* | 0,926\* |
+| **vigente_fhdi** (nueva) | 0,542\* | 0,302\* | 0,0239\* | 73,2\* | 1,005\* |
 | **pmt_brecha_cate_fhdi** (nueva) | no identificable | no identificable | no identificable | no identificable | no identificable |
 
 ### Efecto monto fijo, presupuesto en dinero
 
 | Regla | Inclusión | Exclusión | Reducción FGT1 | % del ideal | Gasto / vigente |
 |---|---|---|---|---|---|
-| vigente_hotdeck | 0,548\* | 0,278\* | 0,0246\* | 75,4\* | 1,000\* |
-| aleatoria | 0,668\* | 0,475\* | 0,0171\* | 52,5\* | 1,000\* |
-| pmt_ingreso | 0,486\* | 0,158\* | 0,0283\* | 86,8\* | 1,000\* |
-| pmt_brecha | 0,530\* | 0,227\* | 0,0255\* | 78,0\* | 1,000\* |
-| pmt_brecha_cate | 0,599\* | 0,360\* | 0,0205\* | 62,9\* | 1,000\* |
-| pmt_brecha_cate_hd | 0,792\* | 0,679\* | 0,0103\* | 31,7\* | 1,000\* |
-| ideal | 0,373\* | 0,000\* | 0,0327\* | 100,0\* | 1,000\* |
-| pmt_brecha_tau | 0,482\* | 0,154\* | 0,0283\* | 86,7\* | 1,000\* |
-| pmt_brecha_cate_lineal | 0,595\* | 0,352\* | 0,0209\* | 64,0\* | 1,000\* |
-| **pmt_brecha_cate_intra** (nueva) | 0,531\* | 0,237\* | 0,0247\* | 75,5\* | 1,000\* |
-| **pmt_brecha_cate_hd_intra** (nueva) | 0,678\* | 0,490\* | 0,0168\* | 51,3\* | 1,000\* |
-| **vigente_fhdi** (nueva) | 0,549\* | 0,279\* | 0,0246\* | 75,2\* | 1,001\* |
+| vigente_hotdeck | 0,543\* | 0,305\* | 0,0238\* | 72,9\* | 1,000\* |
+| aleatoria | 0,669\* | 0,502\* | 0,0163\* | 49,9\* | 1,000\* |
+| pmt_ingreso | 0,473\* | 0,179\* | 0,0278\* | 85,1\* | 1,000\* |
+| pmt_brecha | 0,520\* | 0,248\* | 0,0248\* | 75,9\* | 1,000\* |
+| pmt_brecha_cate | 0,588\* | 0,374\* | 0,0201\* | 61,7\* | 1,000\* |
+| pmt_brecha_cate_hd | 0,794\* | 0,697\* | 0,0098\* | 30,0\* | 1,000\* |
+| ideal | 0,340\* | 0,000\* | 0,0327\* | 100,0\* | 1,000\* |
+| pmt_brecha_tau | 0,468\* | 0,175\* | 0,0277\* | 84,8\* | 1,000\* |
+| pmt_brecha_cate_lineal | 0,584\* | 0,366\* | 0,0205\* | 62,7\* | 1,000\* |
+| **pmt_brecha_cate_intra** (nueva) | 0,519\* | 0,256\* | 0,0241\* | 73,8\* | 1,000\* |
+| **pmt_brecha_cate_hd_intra** (nueva) | 0,670\* | 0,502\* | 0,0164\* | 50,3\* | 1,000\* |
+| **vigente_fhdi** (nueva) | 0,542\* | 0,302\* | 0,0239\* | 73,2\* | 1,005\* |
 | **pmt_brecha_cate_fhdi** (nueva) | no identificable | no identificable | no identificable | no identificable | no identificable |
 
 Guardado: docs\reports\reglas_ampliadas.csv

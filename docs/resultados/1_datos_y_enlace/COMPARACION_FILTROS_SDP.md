@@ -19,12 +19,17 @@ administrativo continuo. Hay dos formas razonables de filtrarlo a "2024":
   subestima el universo vigente y sesga la muestra hacia actualizaciones
   recientes.
 
-## Resultado lado a lado (celda vigente del Hot-Deck, con personas y menores, 2026-11-14)
+## Resultado lado a lado (celda vigente del Hot-Deck, con personas y menores; donantes según su `fex`, 2026-11-21)
 
 | Filtro | Hogares Bogotá | Donante total (con nacional) | Grupo nacional (A/B/C/D, %) | Grupo Bogotá (A/B/C/D, %) |
 |---|---|---|---|---|
-| Vigencia ≤31-dic-2024 | 1.274.578 (87,4 %) | 3.106.489 | 14,9 / 29,7 / 33,8 / 21,6 | 2,9 / 17,0 / 46,6 / 33,6 |
-| Año exacto 2024 | 75.488 (5,2 %) | 1.907.399 | 15,1 / 30,5 / 34,8 / 19,6 | 3,8 / 21,7 / 52,6 / 21,9 |
+| Vigencia ≤31-dic-2024 | 1.274.578 (87,4 %) | 3.106.489 | 13,6 / 28,6 / 36,4 / 21,4 | 2,6 / 16,9 / 47,8 / 32,7 |
+| Año exacto 2024 | 75.488 (5,2 %) | 1.907.399 | 13,8 / 29,6 / 36,9 / 19,6 | 3,9 / 22,7 / 51,0 / 22,4 |
+
+Sin ponderar los donantes del nacional por `fex` (hasta el 2026-11-21) el
+grupo nacional era 14,9 / 29,7 / 33,8 / 21,6 con la vigencia. En Bogotá el
+`fex` es 1, y lo poco que cambia viene de los hogares de Bogotá que caen a
+un respaldo con donantes del nacional.
 
 Con los dos filtros, 99,92 % de los hogares GEIH quedan en celda exacta.
 (Con la celda del 2026-10-28, sin pisos, personas ni menores, los grupos

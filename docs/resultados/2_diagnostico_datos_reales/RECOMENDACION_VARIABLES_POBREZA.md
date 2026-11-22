@@ -1,15 +1,16 @@
 # Recomendación de variables para ampliar la medición de pobreza
 
 Generado 2026-11-06 por `src/diagnostico/variables_candidatas_pobreza.py`;
-regenerado el 2026-11-14. Salidas en `docs/reports/variables_candidatas*`.
+regenerado el 2026-11-14 y el 2026-11-21. Salidas en `docs/reports/variables_candidatas*`.
 
-**Cambio del 2026-11-14: el estrato pasa de "recomendar" a "considerar".** El
-presupuesto del ejercicio es la proporción de hogares A/B imputada por el
-Hot-Deck, que con la celda nueva (personas y menores) pasa de 43,6 % a 44,6 %.
-Con un presupuesto mayor, cualquier variable reduce algo menos la exclusión: el
-estrato baja de −0,52 a −0,49 puntos, por debajo del mínimo de −0,50. Su
-asociación con la pobreza no cambia (misma Wald, mismo AUC); estaba en el borde
-del umbral con los dos presupuestos.
+**Cambio del 2026-11-21: el estrato vuelve a "recomendar".** El presupuesto
+del ejercicio es la proporción de hogares A/B imputada por el Hot-Deck. Con los
+donantes del Sisbén ponderados por su factor de expansión pasa de 44,6 % a
+42,3 % (el 2026-11-14 había pasado de 43,6 % a 44,6 % con la celda nueva, y el
+estrato había bajado a "considerar" con −0,49). Con un presupuesto menor,
+cualquier variable reduce algo más la exclusión: el estrato queda en −0,55
+puntos, por encima del mínimo de −0,50. Su asociación con la pobreza no cambia
+(misma Wald, mismo AUC); la decisión depende del presupuesto.
 
 ## Qué pregunta responde
 
@@ -27,22 +28,22 @@ no usan el Hot-Deck ni la simulación.
 1. **Lo que más mejora la identificación no es una variable nueva.** Calcular
    la composición del hogar con lo que el Sisbén ya recoge (dependencia,
    monoparentalidad, ocupados, educación superior de los adultos) reduce el error
-   de exclusión en 5,23 puntos. Todas las variables nuevas juntas lo reducen en
-   1,34. No sabemos si la fórmula del DNP ya los usa.
-2. **Tener cuenta de ahorros es la única variable nueva con un aporte claro:**
-   −0,81 puntos por sí sola. Cumple el criterio dentro del grupo de inclusión
-   financiera (−0,94), estable en todas las pruebas. Los productos de crédito
-   aportan poco (−0,23).
-3. **El estrato queda justo por debajo del criterio** (−0,49 frente al mínimo de
-   −0,50; −0,52 con el presupuesto anterior) y baja en varias pruebas de
-   robustez. Queda en "considerar".
+   de exclusión en 5,64 puntos. Todas las variables nuevas juntas lo reducen en
+   1,37. No sabemos si la fórmula del DNP ya los usa.
+2. **Tener cuenta de ahorros es la variable nueva con el aporte más claro:**
+   −0,84 puntos por sí sola. Cumple el criterio dentro del grupo de inclusión
+   financiera (−1,07), estable en todas las pruebas. Los productos de crédito
+   aportan poco (−0,16).
+3. **El estrato cumple el criterio por poco** (−0,55 frente al mínimo de −0,50)
+   y baja en varias pruebas de robustez. Es la decisión más sensible al
+   presupuesto: con 44,6 % quedaba en −0,49 y en "considerar".
 4. **Discapacidad, desplazamiento, migración, etnia y condición campesina casi no
    mejoran la identificación.** Eso no significa que esos hogares no sean más
    pobres: en bruto lo son, pero lo que el Sisbén ya recoge captura la diferencia.
 
 5. **En cantidades:** con el mismo presupuesto, la composición del hogar identifica
-   252.900 hogares pobres más (764.200 personas), y la cuenta de ahorros 39.300
-   (109.400 personas). Ver [Población involucrada](#población-involucrada).
+   273.000 hogares pobres más (828.300 personas), y la cuenta de ahorros 40.500
+   (103.900 personas). Ver [Población involucrada](#población-involucrada).
 6. **Las ayudas declaradas llegan a 2,8 millones de hogares (9,4 millones de personas);**
    el 78,5 % del dinero va a los dos quintiles más pobres, y 3,4 millones de hogares pobres
    no declaran ninguna. Ver [A quién llegan las ayudas](#a-quién-llegan-las-ayudas-declaradas).
@@ -74,7 +75,7 @@ cuota, ingresos, subsidios), que entran en el ingreso o lo miden, e `I1`-`I15` y
 referencia sus componentes; si no, el modelo reconstruiría la fórmula.
 
 **Medidas.** Las predicciones son siempre fuera de muestra (5 pliegues por vivienda):
-- **Error de exclusión:** pobres que quedan fuera al elegir el 44,6 % de hogares
+- **Error de exclusión:** pobres que quedan fuera al elegir el 42,3 % de hogares
   con mayor predicción. Ese presupuesto es el peso de los grupos A y B, igual para
   todos los modelos.
 - **Área bajo la curva (AUC):** capacidad de ordenar pobres por encima de no pobres.
@@ -95,13 +96,13 @@ referencia sus componentes; si no, el modelo reconstruiría la fórmula.
 
 | Modelo | Exclusión (logística) | AUC (logística) | Exclusión (boosting) | AUC (boosting) |
 |---|---|---|---|---|
-| `canonico` | 25,49 % | 0,775 | 23,19 % | 0,794 |
-| `ficha` | 17,17 % | 0,847 | 13,70 % | 0,873 |
-| `ficha_derivadas` | 11,94 % | 0,891 | 9,71 % | 0,907 |
-| Referencia + todos los candidatos | 10,60 % | 0,900 | 8,64 % | 0,914 |
+| `canonico` | 27,63 % | 0,775 | 25,26 % | 0,794 |
+| `ficha` | 19,40 % | 0,847 | 15,83 % | 0,873 |
+| `ficha_derivadas` | 13,75 % | 0,891 | 11,32 % | 0,907 |
+| Referencia + todos los candidatos | 12,38 % | 0,900 | 10,26 % | 0,914 |
 
-Las derivadas mejoran 5,23 puntos [4,89; 5,59] sobre la ficha; todos los candidatos
-juntos, 1,34 [1,12; 1,59] sobre la referencia.
+Las derivadas mejoran 5,64 puntos [5,29; 6,02] sobre la ficha; todos los candidatos
+juntos, 1,37 [1,11; 1,58] sobre la referencia.
 
 Esta comparación favorece en parte a la composición del hogar: la pobreza se mide
 con ingreso **per cápita**, así que el número de menores entra de forma casi
@@ -115,24 +116,28 @@ Diferencias en puntos porcentuales de error de exclusión frente a la referencia
 
 | Grupo | Exclusión [IC 95 %] | Meses no vistos | Deptos. no vistos | Urbano / rural | Con los demás | Holm (Wald) | Decisión |
 |---|---|---|---|---|---|---|---|
-| Inclusión financiera | **−0,94** [−1,18; −0,71] | −0,83 | −1,21 | −1,07 / −0,60 | −0,73 | <0,001 | **Recomendar** |
-| Estrato | −0,49 [−0,66; −0,30] | −0,19 | −0,71 | −0,50 / −0,46 | −0,17 | <0,001 | Considerar (con 43,6 % de presupuesto, −0,52: recomendar) |
-| Víctimas | −0,09 [−0,20; +0,00] | −0,01 | −0,13 | −0,17 / +0,13 | +0,01 | 0,005 | Considerar |
-| Discapacidad | −0,08 [−0,22; +0,01] | −0,02 | −0,07 | −0,04 / −0,16 | −0,02 | <0,001 | Considerar |
-| Autoconsumo | −0,04 [−0,11; +0,04] | +0,02 | −0,08 | 0,00 / −0,15 | −0,03 | 0,003 | Considerar |
-| Campesino | −0,05 [−0,15; +0,03] | −0,09 | −0,04 | −0,08 / +0,01 | −0,03 | 1,00 | No recomendar |
-| Migración | −0,02 [−0,12; +0,06] | +0,02 | −0,02 | −0,08 / +0,13 | −0,01 | <0,001 | No recomendar |
-| Etnia | +0,03 [−0,03; +0,06] | +0,02 | 0,00 | +0,03 / +0,02 | +0,01 | 1,00 | No recomendar |
+| Inclusión financiera | **−1,07** [−1,26; −0,79] | −1,02 | −1,27 | −1,10 / −1,00 | −0,73 | <0,001 | **Recomendar** |
+| Estrato | **−0,55** [−0,71; −0,34] | −0,32 | −0,72 | −0,53 / −0,60 | −0,27 | <0,001 | **Recomendar** (con 44,6 % de presupuesto, −0,49: considerar) |
+| Discapacidad | −0,14 [−0,26; −0,03] | −0,18 | −0,08 | −0,07 / −0,30 | −0,04 | <0,001 | Considerar |
+| Autoconsumo | −0,06 [−0,14; +0,03] | −0,04 | −0,07 | −0,02 / −0,15 | −0,05 | 0,003 | Considerar |
+| Víctimas | −0,04 [−0,14; +0,05] | −0,10 | −0,18 | 0,00 / −0,11 | −0,07 | 0,005 | Considerar |
+| Campesino | −0,14 [−0,23; −0,05] | −0,12 | −0,11 | −0,12 / −0,20 | −0,02 | 1,00 | No recomendar |
+| Etnia | −0,02 [−0,06; +0,05] | +0,02 | −0,01 | −0,01 / −0,04 | −0,02 | 1,00 | No recomendar |
+| Migración | +0,03 [−0,05; +0,14] | 0,00 | +0,07 | +0,04 / +0,02 | −0,02 | <0,001 | No recomendar |
 
-Con el presupuesto fijo, −0,94 puntos equivalen a unos 45.000 hogares pobres más
+Con el presupuesto fijo, −1,07 puntos equivalen a unos 52.000 hogares pobres más
 identificados, de 4,84 millones. Es una comparación entre modelos, no una
 proyección de lo que lograría el Sisbén.
 
-**El estrato es la decisión más frágil.** Queda una centésima por debajo del
-umbral (con el presupuesto anterior lo pasaba por dos), su IC va de −0,30 a −0,66,
-y baja a −0,29 con boosting, −0,19 con meses no vistos y −0,17 con los demás grupos
-presentes. Con cualquiera de los dos presupuestos está en el borde: es la variable
-que más depende de una elección del ejercicio, y por eso queda en "considerar".
+**El estrato es la decisión más frágil.** Pasa el umbral por cinco centésimas
+(con el presupuesto de 44,6 % quedaba una por debajo), su IC va de −0,34 a −0,71,
+y baja a −0,31 con boosting, −0,32 con meses no vistos y −0,27 con los demás grupos
+presentes. Con los tres presupuestos que ha tenido el ejercicio (43,6 %, 44,6 % y
+42,3 %) está en el borde: es la variable que más depende de una elección del
+ejercicio. Se recomienda con esa advertencia.
+
+**Campesino** reduce la exclusión con IC sin el cero (−0,14), pero su Wald no es
+significativa con Holm, así que el criterio lo deja en "no recomendar".
 
 ### Por otros resultados
 
@@ -140,12 +145,12 @@ Exclusión frente a la referencia, en puntos.
 
 | Grupo | Monetaria | Boosting | Oficial DANE | Extrema | IPM-GEIH |
 |---|---|---|---|---|---|
-| Inclusión financiera | −0,94 | −0,98 | −0,94 | −0,36 | −0,76 |
-| Estrato | −0,49 | −0,29 | −0,60 | −0,12 (el IC incluye el cero) | −0,83 |
-| Migración | −0,02 | −0,04 | +0,01 | −0,04 | **−0,26** [−0,36; −0,10] |
-| Campesino | −0,05 | −0,07 | −0,01 | +0,07 | **−0,38** [−0,54; −0,20] |
-| Discapacidad | −0,08 | −0,02 | 0,00 | −0,07 | −0,04 |
-| Víctimas | −0,09 | −0,07 | −0,10 | 0,00 | −0,09 |
+| Inclusión financiera | −1,07 | −0,88 | −1,11 | −0,41 | −0,95 |
+| Estrato | −0,55 | −0,31 | −0,57 | −0,26 | −0,88 |
+| Migración | +0,03 | −0,08 | +0,06 | −0,03 | **−0,28** [−0,42; −0,15] |
+| Campesino | −0,14 | −0,09 | −0,06 | 0,00 | **−0,52** [−0,67; −0,33] |
+| Discapacidad | −0,14 | −0,08 | −0,13 | −0,09 | −0,07 |
+| Víctimas | −0,04 | −0,10 | −0,08 | −0,12 | −0,12 |
 
 Inclusión financiera es consistente en todos. Migración y condición campesina solo
 aportan en el IPM-GEIH, donde se quitaron de la referencia componentes como el
@@ -205,10 +210,10 @@ Estas tres revisiones no formaban parte del criterio y no cambian la decisión.
 
 | Modelo | Exclusión [IC 95 %] | Meses no vistos | Urbano / rural |
 |---|---|---|---|
-| Referencia + cuenta de ahorros o ninguno | −0,81 [−1,03; −0,60] | −0,64 | −0,87 / −0,66 |
-| Referencia + productos de crédito y CDT | −0,23 [−0,34; −0,11] | −0,17 | −0,32 / +0,01 |
-| Referencia + crédito + estrato | −0,67 [−0,86; −0,50] | −0,31 | −0,73 / −0,53 |
-| Referencia + inclusión financiera + estrato | −1,32 [−1,54; −1,08] | −0,87 | −1,47 / −0,91 |
+| Referencia + cuenta de ahorros o ninguno | −0,84 [−1,03; −0,60] | −0,97 | −0,78 / −0,98 |
+| Referencia + productos de crédito y CDT | −0,16 [−0,29; −0,01] | −0,20 | −0,21 / −0,01 |
+| Referencia + crédito + estrato | −0,62 [−0,82; −0,41] | −0,44 | −0,67 / −0,51 |
+| Referencia + inclusión financiera + estrato | −1,25 [−1,46; −1,00] | −1,07 | −1,24 / −1,26 |
 
 **2. ¿La cuenta es consecuencia de las transferencias?** Era la objeción más seria:
 si los subsidios se pagan por cuenta, tenerla marcaría a los ya focalizados. Los datos
@@ -238,27 +243,27 @@ le cause algo a esa población.
 
 ### Cuántos hogares cambian de situación con cada modelo
 
-Con el mismo presupuesto (44,6 % de los hogares), cada modelo saca a unos hogares pobres
+Con el mismo presupuesto (42,3 % de los hogares), cada modelo saca a unos hogares pobres
 de la selección y mete a otros. "Neto" son los pobres adicionales identificados. El IC
 95 % es el del neto en hogares.
 
 | Información agregada | Hogares pobres que entran | Hogares pobres que salen | **Neto hogares** [IC 95 %] | Neto personas |
 |---|---|---|---|---|
-| Composición del hogar (sobre la ficha) | 427.400 | 174.500 | **252.900** [236.700; 270.700] | 764.200 |
-| Todos los candidatos | 157.100 | 92.300 | **64.900** [54.300; 76.800] | 184.500 |
-| Inclusión financiera + estrato | 151.800 | 88.100 | **63.700** [52.500; 74.300] | 184.600 |
-| Inclusión financiera | 126.800 | 81.500 | **45.400** [34.600; 57.300] | 133.200 |
-| Solo cuenta de ahorros | 118.800 | 79.400 | **39.300** [29.300; 49.600] | 109.400 |
-| Estrato | 86.500 | 62.900 | **23.600** [14.500; 31.900] | 72.200 |
-| Víctimas | 22.100 | 17.800 | 4.300 [−200; 9.600] | 16.700 |
-| Discapacidad | 28.400 | 24.600 | 3.800 [−400; 10.700] | 17.700 |
-| Campesino | 15.700 | 13.200 | 2.500 [−1.400; 7.300] | 5.200 |
-| Autoconsumo | 12.800 | 10.800 | 2.000 [−1.900; 5.500] | 6.600 |
-| Migración | 15.100 | 14.000 | 1.100 [−2.900; 5.900] | −3.300 |
-| Etnia | 3.900 | 5.400 | −1.500 [−3.100; 1.500] | −4.400 |
+| Composición del hogar (sobre la ficha) | 465.400 | 192.400 | **273.000** [255.900; 291.500] | 828.300 |
+| Todos los candidatos | 169.700 | 103.200 | **66.500** [53.600; 76.300] | 192.700 |
+| Inclusión financiera + estrato | 161.400 | 101.100 | **60.300** [48.300; 70.600] | 168.700 |
+| Inclusión financiera | 140.300 | 88.700 | **51.700** [38.400; 60.900] | 141.300 |
+| Solo cuenta de ahorros | 134.300 | 93.800 | **40.500** [29.100; 49.800] | 103.900 |
+| Estrato | 97.700 | 71.100 | **26.600** [16.300; 34.300] | 79.100 |
+| Campesino | 20.500 | 13.700 | 6.800 [2.200; 11.000] | 16.900 |
+| Discapacidad | 31.700 | 25.000 | 6.700 [1.300; 12.800] | 17.100 |
+| Autoconsumo | 15.500 | 12.800 | 2.700 [−1.600; 6.600] | 4.200 |
+| Víctimas | 21.800 | 20.100 | 1.700 [−2.200; 6.600] | 4.200 |
+| Etnia | 5.600 | 4.600 | 900 [−2.300; 2.800] | 1.500 |
+| Migración | 15.500 | 17.200 | −1.700 [−6.600; 2.600] | −8.100 |
 
 El neto esconde que hay ganadores y perdedores: al agregar la cuenta de ahorros, entran
-118.800 hogares pobres, pero salen 79.400. Son comparaciones entre modelos, no una
+134.300 hogares pobres, pero salen 93.800. Son comparaciones entre modelos, no una
 proyección de lo que lograría el Sisbén.
 
 ### A cuánta gente corresponde cada condición
@@ -358,9 +363,9 @@ política.
 
 | Prioridad | Propuesta | Respaldo con datos | Qué falta resolver |
 |---|---|---|---|
-| 1 | Revisar si la fórmula aprovecha la composición del hogar: dependencia, monoparentalidad, tasa de ocupados, educación superior de algún adulto | Fuerte (−5,23), con la salvedad del ingreso per cápita | Confirmar con el DNP si ya las usa. No requiere recoger nada nuevo |
-| 2 | Evaluar la tenencia de cuenta de ahorros | Clara y estable (−0,81) | Se puede ocultar si reduce la probabilidad de recibir ayudas, y penalizarla puede ir contra la inclusión financiera. Conviene una fuente verificable, no solo declarada |
-| 3 | Considerar el estrato | Débil (−0,49, en el borde del umbral e inestable) | Se asigna a la vivienda, no al hogar, y falta en quienes tienen conexión pirata o no lo saben |
+| 1 | Revisar si la fórmula aprovecha la composición del hogar: dependencia, monoparentalidad, tasa de ocupados, educación superior de algún adulto | Fuerte (−5,64), con la salvedad del ingreso per cápita | Confirmar con el DNP si ya las usa. No requiere recoger nada nuevo |
+| 2 | Evaluar la tenencia de cuenta de ahorros | Clara y estable (−0,84) | Se puede ocultar si reduce la probabilidad de recibir ayudas, y penalizarla puede ir contra la inclusión financiera. Conviene una fuente verificable, no solo declarada |
+| 3 | Evaluar el estrato | Moderada pero frágil (−0,55; pasa el umbral por poco, baja en varias pruebas y con un presupuesto de 44,6 % quedaba en −0,49) | Se asigna a la vivienda, no al hogar, y falta en quienes tienen conexión pirata o no lo saben |
 | — | No incorporar por focalización: etnia, condición campesina, migración | Sin aporte a la identificación | Pueden importar por otras razones |
 | — | Discapacidad, desplazamiento y autoconsumo: asociación clara, aporte mínimo | Identifican poco | Pueden justificar criterios propios en un programa: por ejemplo, la pobreza monetaria no mide los gastos adicionales por discapacidad. Eso es una decisión normativa, no un resultado de este análisis |
 

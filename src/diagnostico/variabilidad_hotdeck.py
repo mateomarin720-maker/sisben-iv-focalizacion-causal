@@ -65,7 +65,7 @@ def cargar() -> tuple[pd.DataFrame, pd.DataFrame]:
     global _DATOS
     if _DATOS is None:
         _DATOS = (pd.read_parquet(hd.GEIH),
-                  pd.read_parquet(hd.SISBEN_BOG, columns=[*hd.CELDA_COLUMNAS, *hd.TRAT]))
+                  pd.read_parquet(hd.SISBEN_BOG, columns=[*hd.CELDA_COLUMNAS, *hd.TRAT, "fex"]))
     return _DATOS
 
 
@@ -86,10 +86,13 @@ def concordancia_por_hogar(sorteos: np.ndarray, n_categorias: int) -> np.ndarray
 
 
 def concordancia_teorica(celda_receptor: pd.Series, celda_donante: pd.Series, grupo_donante: pd.Series,
-                         categorias) -> pd.Series:
+                         categorias, peso_donante: np.ndarray | None = None) -> pd.Series:
     """Σ_g π_g² de la celda de cada receptor, con π_g la proporción de
-    donantes de la celda en cada categoría."""
-    pi = pd.crosstab(celda_donante, grupo_donante, normalize="index").reindex(columns=categorias, fill_value=0)
+    donantes de la celda en cada categoría, ponderada por `fex` (el sorteo
+    del Hot-Deck lo es desde el 2026-11-21)."""
+    w = np.ones(len(grupo_donante)) if peso_donante is None else peso_donante
+    pi = pd.crosstab(np.asarray(celda_donante), np.asarray(grupo_donante), values=w, aggfunc="sum",
+                     normalize="index").reindex(columns=categorias, fill_value=0)
     return celda_receptor.map((pi ** 2).sum(axis=1))
 
 
@@ -148,7 +151,8 @@ def main(n_jobs: int = 3) -> None:
 
     # Celdas del receptor y del donante (la exacta; el 0,02 % que cae a un
     # respaldo se cuenta con su celda exacta, que no tiene donantes).
-    don = donante[donante["Clasificacion"].notna()]
+    don = donante[donante["Clasificacion"].notna()].reset_index(drop=True)
+    w_don = hd.peso_donante(don)
     celda_r = hd.construir_celda(receptor)
     celda_d = hd.construir_celda(don, edad_en_codigos=True)
     peso = pd.to_numeric(receptor["fex"], errors="coerce").fillna(0).to_numpy(float)
@@ -156,8 +160,8 @@ def main(n_jobs: int = 3) -> None:
     # 1. Por hogar
     conc_g = concordancia_por_hogar(sorteos, 4)
     conc_t = concordancia_por_hogar(t.astype(np.int8), 2)
-    teo_g = concordancia_teorica(celda_r, celda_d, don["Grupo"], list(GRUPOS)).to_numpy()
-    teo_t = concordancia_teorica(celda_r, celda_d, don["Grupo"].isin(["A", "B"]), [False, True]).to_numpy()
+    teo_g = concordancia_teorica(celda_r, celda_d, don["Grupo"], list(GRUPOS), w_don).to_numpy()
+    teo_t = concordancia_teorica(celda_r, celda_d, don["Grupo"].isin(["A", "B"]), [False, True], w_don).to_numpy()
     p_ab = t.mean(axis=1)
     hogar = dict(
         reproduce_semilla_42=reproduce,
@@ -173,7 +177,7 @@ def main(n_jobs: int = 3) -> None:
     )
 
     # 2. Por celda
-    pi_ab = don["Grupo"].isin(["A", "B"]).groupby(celda_d.to_numpy()).mean()
+    pi_ab = hd.proporcion_por_celda(don["Grupo"].isin(["A", "B"]), celda_d, w_don)
     celdas = por_celda(celda_r.to_numpy(), peso, t, pi_ab)
     celdas.to_csv(OUT_CELDAS, index=False)
     c = celdas.dropna(subset=["cv"])

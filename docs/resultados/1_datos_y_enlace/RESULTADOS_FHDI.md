@@ -1,6 +1,6 @@
 # Imputación fraccional (FHDI) frente al Hot-Deck
 
-Generado el 2026-11-18 por `src/emparejamiento/fhdi/` (reglas en su
+Generado el 2026-11-18 y actualizado el 2026-11-21 (donantes ponderados por el `fex` del Sisbén) por `src/emparejamiento/fhdi/` (reglas en su
 `README.md`), con los datos del banco de Azure leídos en memoria. Salidas
 en `docs/reports/`: `fhdi.txt` (consola), `fhdi_validacion.csv`,
 `fhdi_comparacion.csv` y `fhdi_placebo.csv`. Son datos reales, no
@@ -25,30 +25,38 @@ verdadero.
 
 | Método | Acierta A/B | Acierta el grupo A-D | Error cuadrático A/B (Brier) | Descalibración | Error en A/B por departamento (pp) |
 |---|---|---|---|---|---|
-| Sin celda (todo el registro) | 50,3 % | 26,2 % | 0,249 | 0,001 | 21,0 |
-| Sorteo (Hot-Deck) | 73,0 % | 44,0 % | 0,270 | 0,270 | 0,92 |
-| **Moda de la celda** | **80,5 %** | **55,2 %** | 0,195 | 0,195 | **13,5** |
-| **FHDI (M = 10)** | 73,0 % (esperado) | 44,1 % (esperado) | **0,136** | **0,002** | **0,58** |
-| FEFI | 73,0 % (esperado) | 44,1 % (esperado) | 0,136 | 0,002 | 0,58 |
+| Sin celda (todo el registro) | 51,9 % | 27,0 % | 0,240 | 0,006 | 14,8 |
+| Sorteo (Hot-Deck) | 70,9 % | 43,1 % | 0,291 | 0,291 | 1,27 |
+| **Moda de la celda** | **78,2 %** | **53,6 %** | 0,218 | 0,218 | **11,2** |
+| **FHDI (M = 10)** | 70,9 % (esperado) | 43,1 % (esperado) | **0,148** | **0,012** | **0,93** |
+| FEFI | 70,9 % (esperado) | 43,1 % (esperado) | 0,148 | 0,012 | 0,93 |
+
+Las medidas se ponderan por el `fex` de los hogares de prueba. El `fex`
+del Sisbén nacional tiene cola larga (mediana 1,7, máximo 922): los
+3,09 millones de donantes equivalen a unos 151.000 efectivos (Kish), y
+la proporción de A/B ponderada difiere 0,6 pp entre la muestra de prueba
+y la de entrenamiento por puro muestreo. Por eso la descalibración de la
+FHDI sube de 0,002 (sin ponderar) a 0,012; sigue siendo la menor de los
+métodos con celda.
 
 Lectura:
 
-- **El techo del enlace por celda es la moda: 80,5 % en A/B y 55,2 % en
+- **El techo del enlace por celda es la moda: 78,2 % en A/B y 53,6 % en
   el grupo.** Ningún método que use solo la celda acierta más hogar por
-  hogar. Ponderado por los hogares de la GEIH el techo es 78,4 % y el
-  sorteo 70,3 % (la cifra de «dos sorteos coinciden en A/B» de
+  hogar. Ponderado por los hogares de la GEIH el techo es 79,0 % y el
+  sorteo 71,2 % (la cifra de «dos sorteos coinciden en A/B» de
   `RESULTADOS_VARIABILIDAD_HOTDECK.md`). Agregar zona, paredes o sexo del
-  jefe sube el techo entre 0,1 y 0,3 pp: lo que limita el enlace es la
+  jefe subía el techo entre 0,1 y 0,3 pp (medido antes de ponderar por `fex`): lo que limita el enlace es la
   información común entre las fuentes, no el método.
 - **La moda acierta más por hogar pero distorsiona la distribución:**
   le da a todos los hogares de una celda su grupo más frecuente, y la
-  proporción de A/B por departamento se aleja 13,5 pp de la verdadera.
+  proporción de A/B por departamento se aleja 11,2 pp de la verdadera.
   Para la tesis, que estima incidencias y errores de focalización, es el
   peor de los métodos con celda.
 - **La FHDI no acierta más que el sorteo, pero dice exactamente cuánto se
   sabe:** su probabilidad está calibrada (cuando dice 60 % de A/B, el 60 %
-  lo es; descalibración 0,002), tiene el menor error cuadrático (0,136,
-  la mitad del sorteo) y el menor error por departamento (0,58 pp).
+  lo es; descalibración 0,012), tiene el menor error cuadrático (0,148,
+  la mitad del sorteo) y el menor error por departamento (0,93 pp).
 - **FHDI y FEFI coinciden** en todas las medidas: con la calibración, 10
   donantes bastan.
 
@@ -56,42 +64,42 @@ Lectura:
 
 | Cantidad | Hot-Deck (semilla 42) | Hot-Deck (media de 100 sorteos) | FHDI = FEFI | Error jackknife | Desviación entre sorteos |
 |---|---|---|---|---|---|
-| Grupo A | 14,93 % | 14,96 % | 14,95 % | 0,06 | 0,09 |
-| Grupo B | 29,71 % | 29,75 % | 29,75 % | 0,05 | 0,14 |
-| Grupo C | 33,75 % | 33,86 % | 33,88 % | 0,05 | 0,16 |
-| Grupo D | 21,61 % | 21,43 % | 21,43 % | 0,06 | 0,13 |
-| A/B | 44,63 % | | 44,70 % | 0,10 | |
-| Exclusión (pobreza monetaria) | 33,57 % | | **33,76 %** | 0,17 | |
-| Inclusión (pobreza monetaria) | 59,77 % | | **59,94 %** | 0,17 | |
-| Exclusión (IPM-GEIH) | 28,49 % | | 28,35 % | 0,21 | |
-| Inclusión (IPM-GEIH) | 76,79 % | | 76,78 % | 0,16 | |
-| Pobreza monetaria en A/B | 40,23 % | | 40,06 % | 0,17 | |
-| Pobreza monetaria en C/D | 16,39 % | | 16,50 % | 0,13 | |
+| Grupo A | 13,62 % | 13,64 % | 13,64 % | 0,06 | 0,07 |
+| Grupo B | 28,63 % | 28,77 % | 28,76 % | 0,05 | 0,14 |
+| Grupo C | 36,35 % | 36,06 % | 36,08 % | 0,05 | 0,16 |
+| Grupo D | 21,40 % | 21,53 % | 21,53 % | 0,07 | 0,11 |
+| A/B | 42,25 % | | 42,39 % | 0,10 | |
+| Exclusión (pobreza monetaria) | 36,38 % | | **36,06 %** | 0,17 | |
+| Inclusión (pobreza monetaria) | 59,30 % | | **59,23 %** | 0,17 | |
+| Exclusión (IPM-GEIH) | 31,17 % | | 30,80 % | 0,22 | |
+| Inclusión (IPM-GEIH) | 76,40 % | | 76,36 % | 0,16 | |
+| Pobreza monetaria en A/B | 40,70 % | | 40,77 % | 0,17 | |
+| Pobreza monetaria en C/D | 17,03 % | | 16,92 % | 0,13 | |
 
 Lectura:
 
 - **La FHDI reproduce la media de los 100 sorteos** (diferencias de 0,02
   pp o menos) en una sola corrida, y su error estándar ya no tiene la
-  parte del sorteo: la desviación entre sorteos (0,09 a 0,16 pp en los
-  grupos) era mayor que el error muestral de la GEIH (0,05 a 0,06 pp).
-- **Por departamento**, el sorteo guardado se aleja hasta 1,8 pp de FEFI
-  en la proporción de A/B, y la desviación entre sorteos llega a 1,3 pp;
+  parte del sorteo: la desviación entre sorteos (0,07 a 0,16 pp en los
+  grupos) era mayor que el error muestral de la GEIH (0,05 a 0,07 pp).
+- **Por departamento**, el sorteo guardado se aleja hasta 2,1 pp de FEFI
+  en la proporción de A/B, y la desviación entre sorteos llega a 1,5 pp;
   la FHDI coincide con FEFI (diferencia máxima 0,00 pp).
 - **Los errores de exclusión e inclusión de FEFI son exactamente el valor
-  «con independencia» de `errores_focalizacion_frechet.py`** (33,76 % y
-  59,94 % en pobreza monetaria), calculado por otro camino: es el punto
+  «con independencia» de `errores_focalizacion_frechet.py`** (36,06 % y
+  59,23 % en pobreza monetaria), calculado por otro camino: es el punto
   que corresponde a suponer que, dentro de la celda, pobreza y grupo no
   se relacionan. Sigue dentro de las cotas de Fréchet, que no cambian
-  (exclusión [2,8 %; 57,7 %], inclusión [41,2 %; 74,4 %]). La FHDI da un
+  (exclusión [4,4 %; 59,5 %], inclusión [39,0 %; 74,2 %]). La FHDI da un
   punto con su error, no estrecha la cota.
 
 ## 3. Contraste placebo: cero exacto
 
 | Outcome | FHDI | Hot-Deck: 100 sorteos con Rubin | IC 95 % | Varianza por imputación |
 |---|---|---|---|---|
-| Pobreza monetaria | 0 | 0,0000 | [−0,0055; 0,0055] | 53 % |
-| Pobreza IPM-GEIH | 0 | +0,0001 | [−0,0035; +0,0038] | 47 % |
-| Log del ingreso per cápita | 0 | −0,0013 | [−0,0210; +0,0184] | 49 % |
+| Pobreza monetaria | 0 | +0,0002 | [−0,0051; +0,0055] | 48 % |
+| Pobreza IPM-GEIH | 0 | +0,0002 | [−0,0037; +0,0041] | 51 % |
+| Log del ingreso per cápita | 0 | +0,0001 | [−0,0193; +0,0195] | 47 % |
 
 Con los pesos calibrados, todos los hogares de una celda tienen la misma
 proporción ponderada de A/B, así que el grupo imputado no varía entre
@@ -279,7 +287,7 @@ de la tesis** y quita el ruido de la imputación: reproduce en una
 corrida la media de los 100 sorteos, con un error estándar que solo mide
 la muestra de la GEIH, y da el contraste placebo como 0 exacto. **No hace
 más exacto el enlace hogar por hogar:** el techo con la celda actual es la
-moda (80,5 % en A/B dentro del Sisbén; 78,4 % ponderado por la GEIH), y
+moda (78,2 % en A/B dentro del Sisbén; 79,0 % ponderado por la GEIH), y
 asignarla distorsiona las incidencias. Subir ese techo exige más
 información común entre las fuentes o una llave, no otro método de
 imputación.

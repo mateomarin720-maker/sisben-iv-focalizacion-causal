@@ -26,7 +26,8 @@ reduce hoy la pobreza el Sisbén.
 
 - **Presupuesto igual para todas las reglas:** cada una trata el mismo
   número de hogares, los que la clasificación vigente imputada deja en A/B
-  (14.085 de 30.000 por muestra, 47,0 %).
+  (13.567 de 30.000 por muestra, 45,2 %; 14.085 antes de ponderar los
+  donantes del Sisbén por su `fex`, 2026-11-21).
 - **Efecto del programa**, dos modelos (cambian qué hogares conviene
   tratar):
   - *proporcional*: +tau(X) en log-ingreso, el de P2 (≈ +10 % del
@@ -64,15 +65,19 @@ Sin programa (datos reales): FGT0 = 33,2 %, FGT1 = 0,1350. \* Resultado simulado
 
 | Regla | Error de inclusión | Error de exclusión | Reducción de FGT1, proporcional | % del ideal | Reducción de FGT1, monto fijo | % del ideal |
 |---|---|---|---|---|---|---|
-| Vigente (Hot-Deck) | 54,8 %\* | 27,8 %\* | 0,0145\* | 74,6\* | 0,0246\* | 75,4\* |
-| Aleatoria | 66,9 %\* | 53,1 %\* | 0,0091\* | 46,9\* | 0,0153\* | 46,9\* |
-| PMT por ingreso | 48,3 %\* | 16,3 %\* | 0,0164\* | 84,2\* | 0,0282\* | 86,4\* |
-| PMT por brecha | 48,5 %\* | 17,8 %\* | 0,0159\* | 81,7\* | 0,0250\* | 76,7\* |
-| PMT + CATE (vínculo) | 54,9 %\* | 30,2 %\* | 0,0133\* | 68,3\* | 0,0201\* | 61,4\* |
-| PMT + CATE (Hot-Deck) | 75,7 %\* | 66,6 %\* | 0,0066\* | 34,0\* | 0,0089\* | 27,4\* |
-| Ideal | 34,6 %\* | 0 %\* | 0,0194\* | 100\* | 0,0327\* | 100\* |
-| *Control positivo* | 48,5 %\* | 16,1 %\* | 0,0164\* | 84,6\* | 0,0284\* | 87,0\* |
-| *Modelo base lineal* | 54,6 %\* | 29,0 %\* | 0,0136\* | 69,8\* | 0,0204\* | 62,4\* |
+| Vigente (Hot-Deck) | 54,3 %\* | 30,5 %\* | 0,0139\* | 71,7\* | 0,0238\* | 72,9\* |
+| Aleatoria | 66,9 %\* | 54,8 %\* | 0,0088\* | 45,2\* | 0,0147\* | 45,2\* |
+| PMT por ingreso | 47,6 %\* | 17,4 %\* | 0,0162\* | 83,1\* | 0,0279\* | 85,5\* |
+| PMT por brecha | 47,7 %\* | 19,1 %\* | 0,0156\* | 80,4\* | 0,0246\* | 75,5\* |
+| PMT + CATE (vínculo) | 54,3 %\* | 31,5 %\* | 0,0131\* | 67,2\* | 0,0198\* | 60,6\* |
+| PMT + CATE (Hot-Deck) | 75,5 %\* | 67,4 %\* | 0,0065\* | 33,2\* | 0,0087\* | 26,6\* |
+| Ideal | 32,5 %\* | 0 %\* | 0,0194\* | 100\* | 0,0327\* | 100\* |
+| *Control positivo* | 47,8 %\* | 17,3 %\* | 0,0162\* | 83,5\* | 0,0280\* | 85,9\* |
+| *Modelo base lineal* | 54,0 %\* | 30,2 %\* | 0,0133\* | 68,7\* | 0,0201\* | 61,6\* |
+
+Con 14.085 hogares por muestra (antes de ponderar los donantes por `fex`)
+la vigente lograba 74,6-75,4 % del ideal y el PMT por ingreso 84,2-86,4;
+el orden de las reglas es el mismo.
 
 Con la celda del 2026-11-02 (993 celdas), la vigente lograba 59,7-60,8 %
 del ideal, con exclusión 43,5 %\* e inclusión 58,1 %\*; el PMT por
@@ -81,8 +86,8 @@ ingreso, 82,2-84,6; las reglas con CATE y vínculo, 72-73.
 Los errores de inclusión y exclusión son los del efecto proporcional.
 Con monto fijo son iguales en la vigente, la aleatoria y el proxy por
 ingreso, que no dependen del modelo del efecto. Cambian en las que
-ordenan por la reducción esperada de la brecha: exclusión 24,5 % en el
-proxy por brecha y 37,8 % con CATE y vínculo.
+ordenan por la reducción esperada de la brecha: exclusión 25,7 % en el
+proxy por brecha y 38,8 % con CATE y vínculo.
 
 **Error de simulación.** Las reglas que no usan una estimación del
 efecto convergieron: el error estándar Monte Carlo es ≤ 0,0006 en las
@@ -96,7 +101,7 @@ hallazgo (punto 3).
 
 **Piso del error de inclusión.** El presupuesto es mayor que la
 población pobre (33,2 % de las personas), así que incluso la regla ideal
-trata a no pobres: el error de inclusión mínimo posible es ≈ 35 %. Los
+trata a no pobres: el error de inclusión mínimo posible es ≈ 33 %. Los
 errores de inclusión se leen frente a ese piso.
 
 ### Mismo dinero (2026-11-09)
@@ -112,23 +117,23 @@ gasto de cada regla frente al de la vigente.
 
 | Regla (monto fijo) | Gasto con los mismos hogares | % del ideal, mismos hogares | % del ideal, mismo dinero |
 |---|---|---|---|
-| Vigente (Hot-Deck) | 1,00\* | 75,4\* | 75,4\* |
-| Aleatoria | 0,89\* | 46,9\* | 52,5\* |
-| PMT por ingreso | 0,99\* | 86,4\* | 86,8\* |
-| PMT por brecha | 0,97\* | 76,7\* | 78,0\* |
-| PMT + CATE (vínculo) | 0,96\* | 61,4\* | 62,9\* |
-| PMT + CATE (Hot-Deck) | 0,86\* | 27,4\* | 31,7\* |
-| *Control positivo* | 1,02\* | 87,0\* | 86,7\* |
-| *Modelo base lineal* | 0,96\* | 62,4\* | 64,0\* |
+| Vigente (Hot-Deck) | 1,00\* | 72,9\* | 72,9\* |
+| Aleatoria | 0,91\* | 45,2\* | 49,9\* |
+| PMT por ingreso | 1,01\* | 85,5\* | 85,1\* |
+| PMT por brecha | 0,98\* | 75,5\* | 75,9\* |
+| PMT + CATE (vínculo) | 0,98\* | 60,6\* | 61,7\* |
+| PMT + CATE (Hot-Deck) | 0,88\* | 26,6\* | 30,0\* |
+| *Control positivo* | 1,04\* | 85,9\* | 84,8\* |
+| *Modelo base lineal* | 0,98\* | 61,6\* | 62,7\* |
 
 Con la celda nueva, la vigente elige hogares más grandes (el número de
 personas entra a la celda) y el PMT por ingreso gasta lo mismo que ella
-(0,99\*; con la celda anterior gastaba 13 %\* más). Con el mismo dinero,
-el PMT queda en 86,8\*, 11 puntos sobre la vigente, con exclusión de
-15,8 %\*. **El orden de las reglas no cambia:** la ventaja del proxy de
+(1,01\*; con la celda anterior gastaba 13 %\* más). Con el mismo dinero,
+el PMT queda en 85,1\*, 12 puntos sobre la vigente, con exclusión de
+17,9 %\*. **El orden de las reglas no cambia:** la ventaja del proxy de
 medios no viene de gastar más. Con efecto proporcional no se repite,
 porque el costo (lo que sube el ingreso) solo se conoce después de
-transferir; ahí el PMT gasta 25 %\* menos que la vigente y aun así reduce
+transferir; ahí el PMT gasta 22 %\* menos que la vigente y aun así reduce
 más la brecha.
 
 Las filas con el mismo número de hogares no cambian al agregar este
@@ -145,16 +150,16 @@ que las demás cifras no cambian por agregarlas.
 
 | | Proporcional | Monto fijo | Monto fijo, mismo dinero | Error del CATE por hogar (PEHE): mediana; percentil 90 |
 |---|---|---|---|---|
-| PMT por ingreso (sin CATE) | 84,2\* | 86,4\* | 86,8\* | — |
-| Control positivo (efecto verdadero) | 84,6\* | 87,0\* | 86,7\* | 0 |
-| CATE con LinearDML | 69,8\* | 62,4\* | 64,0\* | 0,12\*; 0,22-0,33\* |
-| CATE con Causal Forest | 68,3\* | 61,4\* | 62,9\* | 0,08-0,10\*; 0,11-0,13\* |
+| PMT por ingreso (sin CATE) | 83,1\* | 85,5\* | 85,1\* | — |
+| Control positivo (efecto verdadero) | 83,5\* | 85,9\* | 84,8\* | 0 |
+| CATE con LinearDML | 68,7\* | 61,6\* | 62,7\* | 0,12\*; 0,22-0,33\* |
+| CATE con Causal Forest | 67,2\* | 60,6\* | 61,7\* | 0,08-0,10\*; 0,11-0,13\* |
 
 % de la reducción ideal de FGT1. La desviación del efecto verdadero entre
 hogares es 0,028\*.
 
 - **Conocer el efecto exacto casi no ayuda.** Con el efecto verdadero, la
-  regla queda a 0,4-0,6 puntos del PMT por ingreso, y con el mismo dinero
+  regla queda a 0,4 puntos del PMT por ingreso, y con el mismo dinero
   queda por debajo. Con esta heterogeneidad, lo que decide la
   focalización es el ingreso predicho, no el efecto.
 - **El problema no es el bosque.** En este diseño el efecto es lineal en
@@ -170,8 +175,8 @@ hogares es 0,028\*.
   `SIMULACION_SEMISINTETICA.md` (punto 8): se entrenan con 30.000
   hogares y la celda de 3.721 valores en los modelos auxiliares, ≈8 por
   celda. Con la celda anterior el CATE ya empeoraba la focalización
-  (72-73 % frente a 82-85 %); ahora la pérdida es mayor (61-70 % frente a
-  84-87 %) por ese sesgo, que se suma al ruido.
+  (72-73 % frente a 82-85 %); ahora la pérdida es mayor (61-69 % frente a
+  83-86 %) por ese sesgo, que se suma al ruido.
 - Responde a la pregunta del modelo base (`docs/anexos_tesis/METODO_PREDICTIVO.md`):
   la conclusión de la lectura 3 no depende de usar un Causal Forest.
 
@@ -179,13 +184,13 @@ hogares es 0,028\*.
 
 1. **Un proxy de medios con las variables del hogar focaliza mejor que
    la clasificación imputada por celda.** Frente a la vigente (Hot-Deck),
-   el PMT por ingreso baja el error de exclusión de 27,8 % a 16,3 % y el
-   de inclusión de 54,8 % a 48,3 %, y reduce la brecha un 13 % más
-   (0,0164 frente a 0,0145; 15 % más con monto fijo). Logra 84-87 % de lo
+   el PMT por ingreso baja el error de exclusión de 30,5 % a 17,4 % y el
+   de inclusión de 54,3 % a 47,6 %, y reduce la brecha un 17 % más
+   (0,0162 frente a 0,0139; también 17 % más con monto fijo). Logra 83-86 % de lo
    que lograría una regla con información perfecta.
 
-2. **La clasificación vigente imputada supera claramente al azar** (75 %
-   frente a 47 % del ideal). Con la celda del 2026-11-02 apenas lo
+2. **La clasificación vigente imputada supera claramente al azar** (72-73 %
+   frente a 45 % del ideal). Con la celda del 2026-11-02 apenas lo
    superaba (60 %): personas y menores llevan información sobre la
    pobreza del hogar, y el grupo imputado ahora la recoge. No es una
    evaluación del Sisbén real: el grupo imputado solo lleva la
@@ -195,31 +200,31 @@ hogares es 0,028\*.
 
 3. **Usar los efectos heterogéneos estimados empeora la focalización.**
    Con el CATE de un Causal Forest entrenado con el tratamiento verdadero,
-   la regla baja a 61-68 % del ideal, por debajo de la vigente (75 %) y
-   del PMT sin CATE (84-87 %). Dos razones: el error del CATE por hogar
+   la regla baja a 61-67 % del ideal, por debajo de la vigente (72-73 %) y
+   del PMT sin CATE (83-86 %). Dos razones: el error del CATE por hogar
    (PEHE 0,08-0,10) es mayor que la variación real del efecto (0,028),
    así que agrega más ruido que información, y el nivel del efecto sale
    sesgado hacia cero (ATE +0,061 frente a +0,095) por las celdas con
    pocos hogares en la muestra de entrenamiento. Un LinearDML con la forma
-   correcta del efecto da casi lo mismo (62-70 %), y el efecto verdadero
+   correcta del efecto da casi lo mismo (62-69 %), y el efecto verdadero
    apenas supera al PMT: ver los controles. *Actualización 2026-11-19:*
    con el Causal Forest dentro de la celda el sesgo del nivel desaparece y
-   la regla sube a 74-76 %; sigue por debajo del PMT (ver «Causal Forest
+   la regla sube a 73-75 %; sigue por debajo del PMT (ver «Causal Forest
    dentro de la celda y enlace fraccional»).
 
 4. **Con el CATE estimado desde el Hot-Deck, la regla es mucho peor que
-   el azar** (27-34 % frente a 47 % del ideal, exclusión 67 %). Ese CATE
+   el azar** (27-33 % frente a 45 % del ideal, exclusión 67 %). Ese CATE
    es ruido alrededor de un valor negativo (ATE estimado −0,034 a −0,057
    frente a +0,095), lo que invierte el orden de los hogares. Es la
    consecuencia práctica de P2: con las fuentes actuales no hay efectos
    heterogéneos utilizables para focalizar. *Actualización 2026-11-19:*
    el «peor que el azar» venía del sesgo del Causal Forest; dentro de la
-   celda el ATE con Hot-Deck es ≈0 y la regla queda en el azar (49-51 %).
+   celda el ATE con Hot-Deck es ≈0 y la regla queda en el azar (49-50 %).
    La conclusión práctica no cambia: con Hot-Deck no hay heterogeneidad
    utilizable.
 
 5. **Ordenar por la reducción esperada de la brecha no mejora sobre
-   ordenar por ingreso predicho** (77-82 % frente a 84-86 %). Con este
+   ordenar por ingreso predicho** (76-80 % frente a 83-86 %). Con este
    presupuesto, mayor que la población pobre, lo que importa es no dejar
    pobres por fuera, y el ingreso predicho ya lo hace bien. Además, esa
    regla usa el ATE estimado como efecto constante y hereda su
@@ -234,12 +239,12 @@ hogares es 0,028\*.
 
 - **Errores de inclusión y exclusión:** pasar de la clasificación
   observable con Hot-Deck a un proxy de medios con variables del hogar
-  los reduciría en 6 y 12 puntos. Informar la regla con efectos
+  los reduciría en 7 y 13 puntos. Informar la regla con efectos
   heterogéneos estimados no los reduce más: los aumenta (7-14 puntos con
-  vínculo hogar por hogar, 27-50 puntos con Hot-Deck).
+  vínculo hogar por hogar, 28-50 puntos con Hot-Deck).
 - **Brecha de pobreza (FGT1):** la mejor regla factible (PMT por
-  ingreso) logra 84-87 % de la reducción ideal; la vigente imputada
-  75 %; las informadas por CATE 61-68 % (con vínculo) y 27-34 % (con
+  ingreso) logra 83-86 % de la reducción ideal; la vigente imputada
+  72-73 %; las informadas por CATE 61-67 % (con vínculo) y 27-33 % (con
   Hot-Deck).
 - **Condición para que los efectos heterogéneos sirvan:** un CATE cuyo
   error sea menor que la variación real del efecto, y que no esté
@@ -262,35 +267,36 @@ Porcentaje de la reducción ideal de FGT1:
 
 | Regla | Proporcional | Monto fijo | Monto fijo, mismo dinero |
 |---|---|---|---|
-| Vigente (Hot-Deck, un sorteo) | 74,6\* | 75,4\* | 75,4\* |
-| **Vigente con FHDI** (probabilidad A/B de la celda) | **74,2\*** | **75,2\*** | **75,2\*** |
-| PMT por ingreso | 84,2\* | 86,4\* | 86,8\* |
-| PMT por brecha | 81,7\* | 76,7\* | 78,0\* |
-| PMT + CATE (vínculo), Causal Forest vigente | 68,3\* | 61,4\* | 62,9\* |
-| **PMT + CATE (vínculo), Causal Forest dentro de la celda** | **76,1\*** | **74,3\*** | **75,5\*** |
-| PMT + CATE (Hot-Deck), Causal Forest vigente | 34,0\* | 27,4\* | 31,7\* |
-| **PMT + CATE (Hot-Deck), Causal Forest dentro de la celda** | **49,1\*** | **49,2\*** | **51,3\*** |
+| Vigente (Hot-Deck, un sorteo) | 71,7\* | 72,9\* | 72,9\* |
+| **Vigente con FHDI** (probabilidad A/B de la celda) | **72,0\*** | **73,2\*** | **73,2\*** |
+| PMT por ingreso | 83,1\* | 85,5\* | 85,1\* |
+| PMT por brecha | 80,4\* | 75,5\* | 75,9\* |
+| PMT + CATE (vínculo), Causal Forest vigente | 67,2\* | 60,6\* | 61,7\* |
+| **PMT + CATE (vínculo), Causal Forest dentro de la celda** | **74,8\*** | **73,2\*** | **73,8\*** |
+| PMT + CATE (Hot-Deck), Causal Forest vigente | 33,2\* | 26,6\* | 30,0\* |
+| **PMT + CATE (Hot-Deck), Causal Forest dentro de la celda** | **48,5\*** | **48,5\*** | **50,3\*** |
 | PMT + CATE con FHDI sin vínculo | no identificable | no identificable | no identificable |
-| Aleatoria | 46,9\* | 46,9\* | 52,5\* |
-| Control positivo (efecto verdadero) | 84,6\* | 87,0\* | 86,7\* |
+| Aleatoria | 45,2\* | 45,2\* | 49,9\* |
+| Control positivo (efecto verdadero) | 83,5\* | 85,9\* | 84,8\* |
 
 - **El Causal Forest dentro de la celda corrige el nivel del efecto y
   mejora la regla con CATE.** ATE +0,093\* (proporcional) y +0,091\*
   (monto fijo) frente a +0,061\* y +0,038\* del vigente, con τ = 0,095\*;
   PEHE 0,066\*-0,080\* frente a 0,084\*-0,098\*. La regla con CATE sube
-  de 61-68 % a 74-76 % del ideal, al nivel de la vigente y cerca del PMT
+  de 61-67 % a 73-75 % del ideal, al nivel de la vigente y cerca del PMT
   por brecha.
 - **No cambia la respuesta al OE3.** Sigue por debajo del PMT por ingreso
-  (84-87 %): el error del CATE por hogar (0,066\*-0,080\*) sigue siendo más
+  (83-86 %): el error del CATE por hogar (0,066\*-0,080\*) sigue siendo más
   del doble de la variación real del efecto (0,028\*). La desventaja frente
   al PMT baja de 16-25 puntos a 8-12.
 - **Con Hot-Deck, el CATE ya no es peor que el azar: es el azar.** Dentro
   de la celda el ATE con T imputado es ≈0 (+0,001\* y −0,001\*), como
-  predice P2, y la regla queda en 49-51 % (la aleatoria, 47-53 %). El
+  predice P2, y la regla queda en 49-50 % (la aleatoria, 45-50 %). El
   «peor que el azar» de la corrida vigente venía de un efecto estimado
   negativo por el sesgo, no del enlace.
-- **La vigente con FHDI da lo mismo que la vigente** (0,2-0,4 puntos
-  menos; errores de inclusión y exclusión 0,1 puntos más altos). Es el
+- **La vigente con FHDI da lo mismo que la vigente** (0,3 puntos
+  más; errores de inclusión y exclusión 0,1-0,3 puntos más bajos; antes
+  de ponderar los donantes por `fex` quedaba 0,2-0,4 puntos por debajo). Es el
   valor esperado sobre los sorteos del Hot-Deck: el sorteo único que usa
   la vigente no la favorece ni la perjudica.
 - **Con FHDI y sin vínculo, la regla con CATE no existe:** con T =
@@ -301,7 +307,7 @@ Porcentaje de la reducción ideal de FGT1:
   (300 repeticiones; también le pasa a la corrida vigente). El mayor error
   Monte Carlo es 0,009 en la exclusión y 0,9 puntos en el % del ideal,
   menor que todas las diferencias que se leen arriba.
-- **Costo:** 27 minutos con 3 procesos.
+- **Costo:** 25-27 minutos con 3 procesos.
 
 ### ¿Qué representa el CATE con monto fijo?
 

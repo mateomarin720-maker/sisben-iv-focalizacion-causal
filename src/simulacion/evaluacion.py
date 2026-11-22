@@ -161,11 +161,20 @@ def _previas(n: int, r: dict[str, Path], firma: str) -> pd.DataFrame | None:
 
 
 def p_t_por_celda(registro: pd.DataFrame) -> pd.Series:
-    """P(T = A o B | celda) en el registro, con la celda del pipeline."""
-    from src.diagnostico.cotas_frechet_manski import _p_t_por_celda
+    """P(T = A o B | celda) del mundo semisintético: proporción sin ponderar
+    entre los hogares clasificados del registro, con la celda del pipeline.
+
+    Es un parámetro del diseño de la simulación, no una estimación. Desde
+    el 2026-11-21 el Hot-Deck y las cotas con datos reales ponderan los
+    donantes por `fex` (`peso_donante`); el mundo simulado conserva su
+    calibración para que sus resultados (\\*) no cambien: cualquier P(T |
+    celda) plausible sirve para evaluar los estimadores."""
+    from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import construir_celda
 
     contrato.validar(registro, "registro")
-    return _p_t_por_celda(registro)["p_t"]
+    s = registro[registro["Clasificacion"].notna()]
+    celda = construir_celda(s, edad_en_codigos=True).to_numpy()
+    return s["Grupo"].isin(["A", "B"]).astype(float).groupby(celda).mean().rename_axis("celda").rename("p_t")
 
 
 def cargar_base(hogares: Path = HOGARES, registro: Path = REGISTRO) -> pd.DataFrame:

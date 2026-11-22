@@ -48,7 +48,7 @@ import numpy as np
 import pandas as pd
 
 from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import (
-    CELDA_COLUMNAS, SISBEN, SISBEN_BOG, _sortear, construir_celda, nivel_pisos, tramo_menores, tramo_personas,
+    CELDA_COLUMNAS, SISBEN, SISBEN_BOG, _sortear, construir_celda, peso_donante, proporcion_por_celda, nivel_pisos, tramo_menores, tramo_personas,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -117,7 +117,7 @@ def delta_frechet(cr: pd.Series, cd: pd.Series, rec: pd.DataFrame, don: pd.DataF
     w = pd.to_numeric(rec["fex"], errors="coerce").fillna(0).to_numpy()
     g = pd.DataFrame({"c": cr.to_numpy(), "w": w, "yw": y * w}).dropna().groupby("c")[["w", "yw"]].sum()
     p = (g["yw"] / g["w"]).where(g["w"] > 0)
-    e = don["Grupo"].isin(["A", "B"]).astype(float).groupby(cd.to_numpy()).mean()
+    e = proporcion_por_celda(don["Grupo"].isin(["A", "B"]), cd, peso_donante(don))
     m = pd.DataFrame({"p": p, "e": e, "w": g["w"]}).dropna()
     return float(np.average(np.minimum(m["p"], m["e"]) - np.maximum(0, m["p"] + m["e"] - 1), weights=m["w"]))
 
@@ -142,8 +142,9 @@ def delta_placebo(base_r: pd.Series, bloque_r: pd.Series, base_d: pd.Series, blo
 
 def _evaluar(nombre: str, cr: pd.Series, cd: pd.Series, rec: pd.DataFrame, don: pd.DataFrame) -> dict:
     rng = np.random.default_rng(SEED)
+    peso = peso_donante(don)
     grupos = {k: v.values for k, v in pd.Series(np.arange(len(don))).groupby(cd.values)}
-    elegido = _sortear(grupos, cr, rng)
+    elegido = _sortear(grupos, cr, rng, peso)
     exacta = elegido >= 0
     # Respaldo igual al del Hot-Deck: depto + edad, luego depto.
     respaldos = [
@@ -155,15 +156,16 @@ def _evaluar(nombre: str, cr: pd.Series, cd: pd.Series, rec: pd.DataFrame, don: 
         if not falta.any():
             break
         g = {k: v.values for k, v in pd.Series(np.arange(len(don))).groupby(clave_don.values)}
-        elegido[falta] = _sortear(g, clave_rec.reset_index(drop=True)[falta].reset_index(drop=True), rng)
-    elegido[elegido < 0] = rng.integers(0, len(don), size=int((elegido < 0).sum()))
+        elegido[falta] = _sortear(g, clave_rec.reset_index(drop=True)[falta].reset_index(drop=True), rng, peso)
+    acum = np.cumsum(peso)
+    elegido[elegido < 0] = np.searchsorted(acum, rng.random(int((elegido < 0).sum())) * acum[-1], side="right")
 
     grupo = pd.Series(don["Grupo"].values[elegido])
     t = grupo.isin(["A", "B"]).astype(float)
     w = pd.to_numeric(rec["fex"], errors="coerce").fillna(0).to_numpy()
     n_don = cr.map(pd.Series({k: len(v) for k, v in grupos.items()})).fillna(0)
     celdas_rec = cr.nunique()
-    p_celda = cd.to_frame("c").assign(T=don["Grupo"].isin(["A", "B"]).values).groupby("c")["T"].mean()
+    p_celda = proporcion_por_celda(don["Grupo"].isin(["A", "B"]), cd, peso)
     p_rec = cr.map(p_celda)
     pobre = pd.to_numeric(rec["POBRE_MONETARIO"], errors="coerce").to_numpy()
     ok = ~np.isnan(pobre)
@@ -189,7 +191,7 @@ def _evaluar(nombre: str, cr: pd.Series, cd: pd.Series, rec: pd.DataFrame, don: 
 def main() -> None:
     rec = pd.read_parquet(RECEPTOR).reset_index(drop=True)
     sb = SISBEN_BOG if SISBEN_BOG.exists() else SISBEN
-    don = pd.read_parquet(sb, columns=[*CELDA_COLUMNAS, "viv_paredes", "Grupo", "Clasificacion"])
+    don = pd.read_parquet(sb, columns=[*CELDA_COLUMNAS, "viv_paredes", "Grupo", "Clasificacion", "fex"])
     don = don[don["Clasificacion"].notna()].reset_index(drop=True)
     logger.info("Receptor GEIH: %s hogares | Donante Sisbén: %s hogares", f"{len(rec):,}", f"{len(don):,}")
 

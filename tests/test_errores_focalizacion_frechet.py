@@ -64,8 +64,9 @@ def test_e_con_la_cadena_de_respaldos():
                          "hog_num_personas": ["2", "2", "2"], "hog_num_menores": ["0", "0", "0"]})
     sis = pd.DataFrame({"geo_depto": ["05", "05", "08"], "jefe_edad": ["5", "5", "5"], "viv_cuartos": ["3", "3", "3"],
                         "viv_pisos": ["1", "1", "1"], "hog_num_personas": ["2", "2", "2"],
-                        "hog_num_menores": ["0", "0", "0"], "Grupo": ["A", "D", "B"]})
+                        "hog_num_menores": ["0", "0", "0"], "Grupo": ["A", "D", "B"], "fex": [3.0, 1.0, 1.0]})
     e, nivel = ef.elegibles_por_hogar(geih, sis, ["A", "B"])
-    assert e[0] == 0.5 and nivel[0] == 0           # celda exacta
-    assert e[1] == 0.5 and nivel[1] > 0            # otro tramo de cuartos: respaldo en depto + edad
-    assert e[2] == pytest.approx(2 / 3)            # depto sin registro: todo el Sisbén
+    # Ponderado por fex (sin ponderar daría 0,5 y 2/3, el error hasta el 2026-11-21).
+    assert e[0] == 0.75 and nivel[0] == 0          # celda exacta
+    assert e[1] == 0.75 and nivel[1] > 0           # otro tramo de cuartos: respaldo en depto + edad
+    assert e[2] == pytest.approx(0.8)              # depto sin registro: todo el Sisbén

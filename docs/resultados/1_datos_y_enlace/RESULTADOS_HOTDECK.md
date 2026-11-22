@@ -1,6 +1,6 @@
 # Resultados del Hot-Deck GEIH ← Sisbén IV
 
-*Actualizado el 2026-11-14: la celda oficial suma personas del hogar y menores de 18 años (ver "Sumar personas y menores"); el 2026-11-02 había sumado el nivel de pisos. Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../../insumos/DESCRIPCION_TABLAS.md).*
+*Actualizado el 2026-11-21: el donante se sortea según su factor de expansión (ver "Factor de expansión del Sisbén"). El 2026-11-14 la celda oficial suma personas del hogar y menores de 18 años (ver "Sumar personas y menores"); el 2026-11-02 había sumado el nivel de pisos. Descripción de variables y llaves en [`DICCIONARIO_HOTDECK.md`](../../insumos/DICCIONARIO_HOTDECK.md); de las tablas, en [`DESCRIPCION_TABLAS.md`](../../insumos/DESCRIPCION_TABLAS.md).*
 
 ## Resultado
 
@@ -19,7 +19,8 @@ Grupo asignado, ponderado por el factor de expansión de GEIH:
 
 | Grupo | A | B | C | D |
 |---|---|---|---|---|
-| % de hogares (celda con personas y menores, oficial desde 2026-11-14) | **14,9** | 29,7 | 33,8 | **21,6** |
+| % de hogares (donantes según su `fex`, oficial desde 2026-11-21) | **13,6** | 28,6 | 36,4 | **21,4** |
+| % de hogares (celda con personas y menores, donantes sin ponderar, 2026-11-14 a 2026-11-21) | 14,9 | 29,7 | 33,8 | 21,6 |
 | % de hogares (celda con pisos, 2026-11-02 a 2026-11-14) | 14,2 | 29,4 | 34,4 | 22,0 |
 | % de hogares (sin pisos, `viv_cuartos` corregido, 2026-10-28 a 2026-11-02) | 22,0 | 33,8 | 28,7 | 15,6 |
 | % de hogares (`viv_cuartos` con el código equivocado, hasta 2026-10-27) | 31,2 | 35,2 | 23,2 | 10,3 |
@@ -107,6 +108,12 @@ con la variable agregada barajada dentro de la celda anterior: lo que se
 | Δ placebo (lo agregado, barajado dentro de la celda anterior) | — | 0,198 | 0,165 | 0,196 | 0,198 |
 | Cumple los umbrales | sí | sí | no | no | sí |
 
+Cifras con los donantes sin ponderar (2026-11-14). Con el `fex`
+(2026-11-21) cambian en la tercera decimal y la elección no cambia: en la
+celda 7, Δ 0,149, placebo 0,200 y correlación 0,41; la 5 y la 6 siguen
+incumpliendo el umbral de celdas pequeñas
+(`docs/reports/comparacion_celdas_hotdeck_vivienda.csv`).
+
 **Lectura:**
 - **Personas y menores aportan; casi todo lo que aportan es información,
   no fragmentación.** Con personas, Δ baja de 0,200 a 0,167 (el placebo da
@@ -138,6 +145,36 @@ con la variable agregada barajada dentro de la celda anterior: lo que se
 - **Decisión (2026-11-14): la celda 7 es la oficial.** Las anteriores
   quedan como sensibilidad (`incluir_menores=False`,
   `incluir_personas=False`, `incluir_pisos=False`).
+
+## Factor de expansión del Sisbén (2026-11-21)
+
+El archivo nacional del Sisbén IV de ANDA no es el registro completo sino
+una muestra: trae 1.831.911 hogares con un factor de expansión (`fex`,
+"Factor de expansión" en `docs/insumos/DICCIONARIO_SISBEN_2024.xlsx`) que
+suma 11,4 millones de hogares y 29,4 millones de personas. La muestra
+sobrerrepresenta a los grupos pobres: el factor medio es 4,75 en el grupo
+A, 5,88 en el B, 8,66 en el C y 9,02 en el D, y el A/B del archivo pasa de
+74,2 % contando filas a 63,5 % expandido. El registro de Bogotá (SDP) es
+completo y trae `fex` = 1.
+
+Hasta esta fecha el Hot-Deck sorteaba el donante con igual probabilidad
+dentro de la celda, como si el archivo fuera el registro. Ahora lo sortea
+con probabilidad proporcional a su `fex` (`peso_donante` y `_sortear` en
+`emparejamiento_hotdeck_geih_sisben.py`), y toda proporción por celda del
+Sisbén (FHDI, cotas de Fréchet, errores de focalización, variabilidad,
+cobertura) usa la misma ponderación (`proporcion_por_celda`).
+
+| | Sin ponderar (hasta 2026-11-21) | Con `fex` |
+|---|---|---|
+| Grupos A / B / C / D (%) | 15,0 / 29,7 / 33,9 / 21,4 | 13,6 / 28,6 / 36,4 / 21,4 |
+| A/B | 44,7 % | 42,2 % |
+| Antioquia (A/B) | 32,5 % | 24,6 % |
+| Atlántico (A/B) | 52,9 % | 46,0 % |
+| Bogotá (A/B) | 19,7 % | 19,7 % |
+
+Por hogar, la proporción de A/B de su celda cambia entre −8,8 y +4,7
+puntos (percentiles 10 y 90). Pruebas: `tests/test_hotdeck_celda.py`
+(el sorteo sigue el `fex`; sin `fex` el Hot-Deck falla) y su mutación.
 
 ## Historial de la cobertura
 

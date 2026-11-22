@@ -162,10 +162,20 @@ def test_representatividad_con_los_hogares_de_un_mes_promedio():
     from src.validacion.verificar_representatividad_sisben import calcular_cobertura
     geih = pd.DataFrame({"geo_depto": ["05", "05", "05", "05"], "mes": ["01", "01", "02", "02"],
                          "fex": [600.0, 400.0, 500.0, 500.0]})          # 1.000 hogares cada mes
-    sisben = pd.DataFrame({"geo_depto": ["05"] * 250, "Clasificacion": ["A1"] * 250})
+    sisben = pd.DataFrame({"geo_depto": ["05"] * 250, "Clasificacion": ["A1"] * 250, "fex": 1.0})
     r = calcular_cobertura(geih, sisben)
     assert r.loc[0, "geih_hogares_expandidos"] == 1000
     assert r.loc[0, "razon_cobertura"] == pytest.approx(0.25)
+
+
+def test_representatividad_expande_el_sisben_con_su_factor():
+    """El Sisbén nacional es una muestra: 250 hogares con fex 2 son 500
+    registrados. Contando filas (hasta el 2026-11-21) la cobertura nacional
+    salía 11,7 % en vez de ≈74 %."""
+    from src.validacion.verificar_representatividad_sisben import calcular_cobertura
+    geih = pd.DataFrame({"geo_depto": ["05", "05"], "mes": ["01", "02"], "fex": [1000.0, 1000.0]})
+    sisben = pd.DataFrame({"geo_depto": ["05"] * 250, "Clasificacion": ["A1"] * 250, "fex": 2.0})
+    assert calcular_cobertura(geih, sisben).loc[0, "razon_cobertura"] == pytest.approx(0.5)
 
 
 def test_representatividad_compara_la_capital_con_la_capital():
@@ -178,7 +188,7 @@ def test_representatividad_compara_la_capital_con_la_capital():
     sisben = pd.DataFrame({"geo_depto": ["86"] * 150 + ["05"] * 100,
                            "cod_mpio": ["86001"] * 60 + ["86568"] * 90 + ["05001"] * 100,
                            "geo_zona": ["1"] * 40 + ["3"] * 20 + ["1"] * 90 + ["1"] * 100,
-                           "Clasificacion": ["A1"] * 250})
+                           "Clasificacion": ["A1"] * 250, "fex": 1.0})
     r = calcular_cobertura(geih, sisben).set_index("geo_depto")
     assert r.loc["86", "marco"] == "cabecera de la capital"
     assert r.loc["86", "razon_cobertura"] == pytest.approx(0.40)    # 40 en la cabecera de Mocoa / 100

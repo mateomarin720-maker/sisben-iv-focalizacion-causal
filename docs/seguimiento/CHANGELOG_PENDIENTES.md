@@ -2,6 +2,34 @@
 
 Formato: más reciente primero. Rama de trabajo: `main`.
 
+## 2026-11-21 (59) — Factor de expansión del Sisbén en el enlace
+
+### Corregido
+- **El Sisbén nacional de ANDA es una muestra con `fex`** (1,83 millones de hogares que expandidos
+  son 11,4 millones; A y B sobrerrepresentados, factor medio 4,75 en A y 9,02 en D). El Hot-Deck,
+  la FHDI, las cotas de Fréchet, los errores de focalización y la cobertura contaban donantes sin
+  ponderar. Ahora `peso_donante` exige `fex` (Bogotá trae 1) y toda proporción por celda pasa por
+  `proporcion_por_celda`. El mundo semisintético conserva su calibración sin ponderar como
+  parámetro de diseño (`simulacion.evaluacion.p_t_por_celda`).
+- Pipeline regenerado y publicado a Azure (`geih_sisben_fusionado`, muestras de estimación, enlace
+  FHDI).
+
+### Cambios en los resultados
+- A/B imputado 44,7 % → 42,2 % (Antioquia 32,5 % → 24,6 %; Bogotá igual).
+- Cobertura nacional del Sisbén 11,7 % → 68,3 % (sin Bogotá 73,9 %).
+- Errores A/B frente a pobreza monetaria: exclusión [4,4; 59,5] % (independencia 36,1 %),
+  inclusión [39,0; 74,2] % (59,2 %).
+- DML con la celda exacta: los cinco ATE siguen con el cero en el IC; Rubin en POBRE_GEIH
+  +0,0002 [−0,0037; +0,0041], 47-51 % de la varianza por imputación.
+- FHDI: validación con techo (moda) 78,2 % en A/B y sorteo 70,9 %; descalibración 0,012 por la cola
+  larga del `fex` (n efectivo ≈151.000 de 3,09 millones).
+- Recomendación de variables: presupuesto 42,3 %; **el estrato vuelve a "recomendar"** (−0,55).
+- Reglas de focalización\*: vigente 72-73 % del ideal, PMT por ingreso 83-86 %; el orden no cambia.
+
+### Pruebas
+- 324 pruebas (4 nuevas) y 4 mutaciones nuevas (sorteo y proporción sin ponderar, π de la FHDI sin
+  ponderar, cobertura sin expandir).
+
 ## 2026-11-20 (58) — Estimación con datos reales con FHDI y dentro de la celda (fase 4)
 
 ### Agregado

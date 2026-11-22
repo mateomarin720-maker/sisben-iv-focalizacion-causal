@@ -19,7 +19,7 @@ def _geih(**kw):
 
 def _sisben(**kw):
     base = dict(geo_depto=["05"], jefe_edad=["5"], viv_cuartos=[2], viv_pisos=["5"], hog_num_personas=[3],
-                hog_num_menores=["1"], Grupo=["A"], Nivel=["A1"], Clasificacion=["A1"])
+                hog_num_menores=["1"], Grupo=["A"], Nivel=["A1"], Clasificacion=["A1"], fex=[1.0])
     base.update(kw)
     return pd.DataFrame(base)
 
@@ -89,3 +89,24 @@ def test_hotdeck_celda_anterior():
     out = hotdeck(_geih(viv_pisos=["4"]), _sisben(), incluir_pisos=False)
     assert out["_hotdeck_nivel"].iloc[0] == "celda_exacta"
     assert out["_hotdeck_celda"].iloc[0] == "05|ciclo5|2cuartos"
+
+
+def test_hotdeck_sortea_los_donantes_por_su_factor_de_expansion():
+    """El Sisbén nacional es una muestra expandible: un donante con fex 9
+    representa 9 hogares. Sin ponderar (el error hasta el 2026-11-21) los
+    dos donantes saldrían la mitad de las veces cada uno."""
+    import numpy as np
+    don = pd.concat([_sisben(), _sisben(Grupo=["D"], Nivel=["D1"], Clasificacion=["D1"], fex=[1.0])],
+                    ignore_index=True)
+    don.loc[0, "fex"] = 9.0
+    rec = pd.concat([_geih()] * 4000, ignore_index=True)
+    out = hotdeck(rec, don)
+    assert (out["_hotdeck_nivel"] == "celda_exacta").all()
+    assert np.mean(out["Grupo_hotdeck"] == "A") == pytest.approx(0.9, abs=0.02)
+
+
+def test_hotdeck_exige_el_factor_de_expansion_del_donante():
+    with pytest.raises(ValueError, match="fex"):
+        hotdeck(_geih(), _sisben().drop(columns="fex"))
+    with pytest.raises(ValueError, match="fex"):
+        hotdeck(_geih(), _sisben(fex=[0.0]))

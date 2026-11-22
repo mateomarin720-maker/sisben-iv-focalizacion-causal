@@ -38,8 +38,8 @@ módulo adicional que lo reutiliza.
 
 La FHDI no hace más exacto el enlace hogar por hogar: sin llave común, la
 única información sobre el grupo de un hogar de la GEIH es su celda, y
-ningún método que la use acierta más que la moda de la celda (80,5 % en
-A/B dentro del Sisbén, frente a 73,0 % del sorteo). Tampoco cambia la
+ningún método que la use acierta más que la moda de la celda (78,2 % en
+A/B dentro del Sisbén, frente a 70,9 % del sorteo). Tampoco cambia la
 identificación: el contraste de grupos con efectos fijos de celda es 0
 exacto (Proposición 1) y las cotas de Fréchet son las mismas. Lo que
 cambia es que cada hogar lleva cuánto se sabe de su grupo, sin ruido.

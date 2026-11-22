@@ -33,7 +33,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import claves_por_nivel
+from src.emparejamiento.emparejamiento_hotdeck_geih_sisben import claves_por_nivel, peso_donante
 
 M_DONANTES = 10
 GRUPOS = np.array(["A", "B", "C", "D"])
@@ -87,14 +87,18 @@ def asignar_nivel(receptor: pd.DataFrame, donante: pd.DataFrame, receptor_en_cod
 
 
 def probabilidades(receptor: pd.DataFrame, donante: pd.DataFrame, receptor_en_codigos: bool = False):
-    """FEFI: π_g de la celda de cada receptor (n × 4, columnas A-D) y su nivel."""
+    """FEFI: π_g de la celda de cada receptor (n × 4, columnas A-D) y su nivel.
+    π se pondera por el `fex` de los donantes (hasta el 2026-11-21, conteo
+    simple; el nacional de ANDA es una muestra expandible)."""
     g = _codigo_grupo(donante)
+    w = peso_donante(donante)
     nivel, celda, celdas_donante, total = asignar_nivel(receptor, donante, receptor_en_codigos)
     tabla = np.zeros((total + 1, len(GRUPOS)))
     for codigos in celdas_donante:
-        np.add.at(tabla, (codigos, g), 1.0)
-    tabla[total] = np.bincount(g, minlength=len(GRUPOS))
-    tabla = tabla / np.maximum(tabla.sum(axis=1, keepdims=True), 1)
+        np.add.at(tabla, (codigos, g), w)
+    tabla[total] = np.bincount(g, weights=w, minlength=len(GRUPOS))
+    suma = tabla.sum(axis=1, keepdims=True)
+    tabla = np.divide(tabla, suma, out=np.zeros_like(tabla), where=suma > 0)
     return tabla[celda], nivel
 
 

@@ -49,8 +49,8 @@ observable, y ninguno si no lo es; solo la discontinuidad en el corte
 resiste la confusión no observada, y necesita vínculo hogar por hogar.
 
 **Componente 3: reglas de focalización\*.** Un proxy de medios con
-variables del hogar logra 84-87 %\* de la reducción ideal de la brecha
-(FGT1), frente a 75 %\* de la clasificación imputada, también con el mismo
+variables del hogar logra 83-86 %\* de la reducción ideal de la brecha
+(FGT1), frente a 72-73 %\* de la clasificación imputada, también con el mismo
 dinero. Ordenar por el CATE estimado empeora la focalización, aun con el
 doble de heterogeneidad del efecto.
 
@@ -71,9 +71,13 @@ doble de heterogeneidad del efecto.
 (nacional y Bogotá vigente). Celda: departamento, ciclo de vida del jefe,
 tramo de cuartos, nivel de pisos homologado, personas del hogar (1-2 / 3+)
 y menores de 18 años (0 / 1 / 2+); 99,92 % en celda exacta (3.721
-celdas). Grupo asignado (ponderado): **A 14,9 · B 29,7 · C 33,8 · D
-21,6 %**. Personas y menores entraron el 2026-11-14: cierran el ancho de
-la cota de Fréchet por celda de 0,200 a 0,148 y suben la correlación de
+celdas). Grupo asignado (ponderado): **A 13,6 · B 28,6 · C 36,4 · D
+21,4 %**. El donante se sortea según su factor de expansión: el Sisbén
+nacional de ANDA es una muestra (1,83 millones de hogares, 11,4 millones
+expandidos) que sobrerrepresenta A y B; sin ponderar (hasta el
+2026-11-21) salía A/B 44,7 % en vez de 42,2 %. Personas y menores
+entraron el 2026-11-14: cierran el ancho de
+la cota de Fréchet por celda de 0,200 a 0,149 y suben la correlación de
 P(T | celda) con la pobreza monetaria de 0,29 a 0,41; el resto del
 catálogo no aporta, no homologa o es una privación del IPM. Bogotá se filtra por vigencia al 31 de diciembre de 2024.
 Pisos entró a la celda el 2026-11-02: sube la correlación entre
@@ -109,19 +113,23 @@ es el resultado principal (cubre los 33 departamentos); la clasificación
 oficial, la prueba de robustez.
 
 **Representatividad.** Sobre el mismo marco (en 9 departamentos la GEIH solo
-cubre la capital), la cobertura del Sisbén frente a la GEIH va de 4,8 % (Valle) a
-26,9 % (Boyacá) en los departamentos del archivo nacional, y 16,8 % en el agregado:
-el registro no es una muestra uniforme.
+cubre la capital), con el Sisbén nacional expandido por su `fex`, la
+cobertura frente a la GEIH va de 55,3 % (Chocó) a 97,3 % (Norte de
+Santander) en los departamentos del archivo nacional y es 41,5 % en Bogotá;
+68,3 % en el agregado (16,8 % contando filas, hasta el 2026-11-21). Sube con
+la pobreza de la celda, y dentro de la celda los inscritos no se parecen
+del todo a la población: el registro no es una muestra uniforme, y el grupo
+imputado es la clasificación que el hogar tendría si se inscribiera.
 
 **Variabilidad de la imputación** (100 semillas; la 42 reproduce el
 pipeline).
 
 | Nivel | Resultado |
 |---|---|
-| Hogar | Dos sorteos coinciden en el grupo el 41,2 % de las veces y en A/B el 70,3 % |
-| Celda | CV mediano de la proporción A/B 0,149 (0,106 ponderado): la celda más fina tiene menos hogares por celda |
-| Nacional | Desviación de 0,10 a 0,16 puntos por grupo (CV ≤ 0,006) |
-| Contraste placebo | Con Rubin, `POBRE_GEIH` da +0,0001 [−0,0035; +0,0038] (semilla 42: −0,0003); 47-53 % de la varianza viene de la imputación |
+| Hogar | Dos sorteos coinciden en el grupo el 42,5 % de las veces y en A/B el 71,2 % |
+| Celda | CV mediano de la proporción A/B 0,150 (0,120 ponderado): la celda más fina tiene menos hogares por celda |
+| Nacional | Desviación de 0,08 a 0,16 puntos por grupo (CV ≤ 0,005) |
+| Contraste placebo | Con Rubin, `POBRE_GEIH` da +0,0002 [−0,0037; +0,0041] (semilla 42: −0,0007); 47-51 % de la varianza viene de la imputación |
 
 ## Componente 1: diagnóstico con datos reales
 
@@ -151,17 +159,17 @@ datos del proyecto.
 
 | Outcome | ATE, controles = celda exacta [IC 95 %] |
 |---|---|
-| `ipm_geih_score` | +0,0037 [−0,0042; +0,0116] |
-| `POBRE_GEIH` | +0,0009 [−0,0018; +0,0037] |
-| `log_ingreso_percapita` | +0,0013 [−0,0131; +0,0158] |
-| `POBRE_MONETARIO` | +0,0017 [−0,0021; +0,0055] |
-| `POBRE_MONETARIO_OFICIAL` (robustez, 23 deptos. y Bogotá) | +0,0009 [−0,0029; +0,0048] |
+| `ipm_geih_score` | +0,0058 [−0,0022; +0,0137] |
+| `POBRE_GEIH` | +0,0003 [−0,0025; +0,0031] |
+| `log_ingreso_percapita` | −0,0014 [−0,0157; +0,0129] |
+| `POBRE_MONETARIO` | +0,0002 [−0,0036; +0,0040] |
+| `POBRE_MONETARIO_OFICIAL` (robustez, 23 deptos. y Bogotá) | +0,0007 [−0,0032; +0,0046] |
 
-Con la celda exacta los cinco ATE incluyen el cero. Con el proxy, tres
-lo excluyen porque el proxy no cruza las variables de la celda
+Con la celda exacta los cinco ATE incluyen el cero. Con el proxy, los
+cinco lo excluyen porque el proxy no cruza las variables de la celda
 (`RESULTADOS_DML_ATE_ATT_ATU.md`); no es un efecto. Un sorteo subestima
-la incertidumbre: con 100 sorteos y Rubin, `POBRE_GEIH` da [−0,0035;
-+0,0038]. El CATE medio también es ≈0.
+la incertidumbre: con 100 sorteos y Rubin, `POBRE_GEIH` da [−0,0037;
++0,0041]. El CATE medio también es ≈0.
 
 - **Dentro de la celda (2026-11-20):** la regresión con efectos fijos de
   celda y el LinearDML con Y y T sin la media de la celda dan lo mismo
@@ -207,7 +215,7 @@ focalización:
 | Modelo | Objetivo | Resultado |
 |---|---|---|
 | Clasificación (OE1) | Grupo del Sisbén (A-D) | LASSO, Ridge y SHAP sobre 150.000 hogares: exactitud ≈53 % (línea base 30 %); `viv_pisos` es la variable más importante; sensibilidad 0,64 en A y 0,22-0,39 en D; con partición por municipio el F1 macro cae de 0,50 a 0,44 |
-| Pobreza | Pobreza monetaria de la GEIH, independiente del Sisbén | Calcular la composición del hogar con lo que ya se recoge reduce el error de exclusión 5,23 puntos; todas las variables nuevas, 1,34. Solo la cuenta de ahorros (−0,81) tiene un aporte claro y estable; el estrato queda en el borde del umbral (−0,49, "considerar") |
+| Pobreza | Pobreza monetaria de la GEIH, independiente del Sisbén | Calcular la composición del hogar con lo que ya se recoge reduce el error de exclusión 5,64 puntos; todas las variables nuevas, 1,37. La cuenta de ahorros (−0,84) tiene el aporte más claro y estable; el estrato pasa el umbral por poco (−0,55, "recomendar"; con el presupuesto anterior, −0,49, "considerar") |
 
 La concordancia entre el grupo y la pobreza de un mismo hogar no se puede
 medir: el grupo en la GEIH es imputado por celda. Por eso los errores de

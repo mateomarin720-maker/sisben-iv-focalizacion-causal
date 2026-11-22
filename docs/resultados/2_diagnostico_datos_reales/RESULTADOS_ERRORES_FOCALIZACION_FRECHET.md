@@ -2,8 +2,10 @@
 
 Generado el 2026-11-10 por `src/diagnostico/errores_focalizacion_frechet.py`;
 regenerado el 2026-11-14 con la celda que suma personas del hogar y
-menores de 18 años (las cifras con la celda anterior, entre paréntesis
-donde ayudan a comparar).
+menores de 18 años, y el 2026-11-21 con la proporción de elegibles de
+cada celda ponderada por el factor de expansión del Sisbén (`fex`; el
+archivo nacional de ANDA es una muestra que sobrerrepresenta A y B). Las
+cifras anteriores, entre paréntesis donde ayudan a comparar.
 Detalle nacional y por departamento: `docs/reports/errores_focalizacion_frechet.csv`;
 salida de consola: `docs/reports/errores_focalizacion_frechet.txt`.
 
@@ -47,19 +49,24 @@ robustez, A, B y C. Unidad: hogares.
 
 | Elegible | Pobreza | Error de exclusión | Con independencia | Error de inclusión | Con independencia |
 |---|---|---|---|---|---|
-| A-B | Monetaria | **[2,8 %; 57,7 %]** | 33,8 % | **[41,2 %; 74,4 %]** | 59,9 % |
-| A-B | IPM-GEIH | [1,0 %; 56,0 %] | 28,3 % | [67,9 %; 85,7 %] | 76,8 % |
-| A-B | Monetaria oficial (23 deptos. y Bogotá) | [2,4 %; 58,2 %] | 33,4 % | [43,6 %; 75,9 %] | 61,6 % |
-| A-B-C | Monetaria | [0,0 %; 27,5 %] | 9,3 % | [65,6 %; 75,1 %] | 68,8 % |
-| A-B-C | IPM-GEIH | [0,0 %; 28,0 %] | 8,4 % | [81,6 %; 86,7 %] | 83,1 % |
+| A-B | Monetaria | **[4,4 %; 59,5 %]** | 36,1 % | **[39,0 %; 74,2 %]** | 59,2 % |
+| A-B | IPM-GEIH | [2,2 %; 58,2 %] | 30,8 % | [66,6 %; 85,7 %] | 76,4 % |
+| A-B | Monetaria oficial (23 deptos. y Bogotá) | [3,8 %; 60,0 %] | 35,6 % | [41,4 %; 75,7 %] | 60,8 % |
+| A-B-C | Monetaria | [0,0 %; 26,7 %] | 9,3 % | [65,6 %; 74,8 %] | 68,7 % |
+| A-B-C | IPM-GEIH | [0,0 %; 27,4 %] | 8,5 % | [81,5 %; 86,6 %] | 83,1 % |
+
+Sin ponderar el Sisbén por `fex` (hasta el 2026-11-21), A-B y pobreza
+monetaria daban exclusión [2,8 %; 57,7 %] (33,8 % con independencia) e
+inclusión [41,2 %; 74,4 %] (59,9 %): con el registro bien expandido hay
+menos elegibles por celda, y la exclusión sube unos 2 puntos.
 
 Con la celda del 2026-11-02 (993 celdas), A-B y pobreza monetaria daban
 exclusión [0,9 %; 75,0 %] e inclusión [38,6 %; 84,5 %]: personas y
 menores cierran la exclusión 19 puntos (17 por arriba) y la inclusión 13.
 
-Pobreza monetaria: 27,0 % de los hogares; IPM-GEIH: 14,5 % (20,4 % antes de corregir la vivienda por zona, 2026-11-12); A/B: 44,7 % de los hogares
-registrados, con el peso de la GEIH en cada celda (43,6 % con la celda
-anterior). Las 3.721 celdas tienen hogares de las dos fuentes (100 % del
+Pobreza monetaria: 27,0 % de los hogares; IPM-GEIH: 14,5 % (20,4 % antes de corregir la vivienda por zona, 2026-11-12); A/B: 42,4 % de los hogares
+registrados, con el peso de la GEIH en cada celda (44,7 % sin ponderar el
+Sisbén; 43,6 % con la celda anterior). Las 3.721 celdas tienen hogares de las dos fuentes (100 % del
 peso de la GEIH).
 
 ## Por departamento (pobreza monetaria, A-B)
@@ -69,45 +76,48 @@ Detalle completo en el CSV. Los casos que más se apartan:
 | Departamento | Pobreza | A/B | Error de exclusión | Error de inclusión |
 |---|---|---|---|---|
 | 11 Bogotá | 15,2 % | 19,7 % | **[11,5 %; 87,8 %]** | [31,5 %; 90,6 %] |
-| 25 Cundinamarca | 18,8 % | 29,7 % | [8,0 %; 85,5 %] | [41,7 %; 90,8 %] |
-| 27 Chocó | 55,8 % | 76,8 % | [1,2 %; 26,4 %] | [28,2 %; 46,5 %] |
-| 44 La Guajira | 61,2 % | 74,3 % | [2,0 %; 27,3 %] | [19,3 %; 40,1 %] |
-| 86 Putumayo | 50,8 % | 43,9 % | **[26,0 %; 67,2 %]** | [14,4 %; 62,1 %] |
-| 88 San Andrés | 12,8 % | 13,2 % | **[35,0 %; 96,8 %]** | [37,0 %; 96,9 %] |
-| 95 Guaviare | 28,0 % | 44,8 % | [8,1 %; 66,2 %] | [42,6 %; 78,9 %] |
+| 25 Cundinamarca | 18,8 % | 26,5 % | **[10,5 %; 87,5 %]** | [36,2 %; 91,1 %] |
+| 27 Chocó | 55,8 % | 76,2 % | [1,2 %; 27,2 %] | [27,6 %; 46,7 %] |
+| 44 La Guajira | 61,2 % | 75,2 % | [2,0 %; 26,1 %] | [20,3 %; 39,9 %] |
+| 86 Putumayo | 50,8 % | 43,0 % | **[26,8 %; 67,5 %]** | [13,6 %; 61,6 %] |
+| 88 San Andrés | 12,8 % | 14,3 % | **[34,5 %; 97,0 %]** | [41,1 %; 97,3 %] |
+| 95 Guaviare | 28,0 % | 39,9 % | **[11,2 %; 70,3 %]** | [37,7 %; 79,2 %] |
 
 ## Cómo leerlo
 
 1. **El error de inclusión tiene un piso que no depende de ningún
-   supuesto dentro de la celda: al menos 41 % de los hogares A/B no son
-   pobres monetarios** (al menos 68 % no son pobres por IPM). La razón es
-   aritmética: el Sisbén clasifica como A/B a más hogares (44,7 %) de los
-   que son pobres (27,0 %), y pasa lo mismo en el 77 % de las celdas (83 %
+   supuesto dentro de la celda: al menos 39 % de los hogares A/B no son
+   pobres monetarios** (al menos 67 % no son pobres por IPM). La razón es
+   aritmética: el Sisbén clasifica como A/B a más hogares (42,4 %) de los
+   que son pobres (27,0 %), y pasa lo mismo en el 74 % de las celdas (75 %
    del peso de la GEIH). Ninguna forma de acoplar las dos fuentes elimina
    ese exceso.
 2. **El error de exclusión no se puede acotar lejos de cero a nivel
    nacional.** Los datos son compatibles con que casi todos los pobres
-   estén en A/B (2,8 % excluidos) o con que más de la mitad quede fuera
-   (57,7 %). Con la celda más fina el techo baja de 75,0 % a 57,7 %: la
+   estén en A/B (4,4 % excluidos) o con que más de la mitad quede fuera
+   (59,5 %). Con la celda más fina el techo bajó de 75,0 % a 57,7 % (59,5 %
+   con el `fex`): la
    celda separa mejor a los hogares pobres y a los A/B, y ya no es
    compatible con los datos que tres de cada cuatro pobres queden fuera. Es el mismo problema de identificación de las cotas
    del efecto (`RESULTADOS_FRECHET_MANSKI.md`), aplicado a la
    focalización.
 3. **Donde hay menos A/B que pobres, la exclusión sí tiene piso.** En
-   Putumayo al menos 26,0 % de los pobres quedan fuera de A/B, en San
-   Andrés al menos 35,0 %, en Bogotá al menos 11,5 % y en Cundinamarca y
-   Guaviare al menos 8 %. Son los únicos resultados de exclusión con datos
-   reales que no dependen del emparejamiento. El piso sale de las celdas
-   con más pobres que A/B (672); el 92 % de su peso está en celdas con al
-   menos 10 hogares GEIH, así que no es un efecto de celdas diminutas.
+   Putumayo al menos 26,8 % de los pobres quedan fuera de A/B, en San
+   Andrés al menos 34,5 %, en Bogotá al menos 11,5 % y en Cundinamarca y
+   Guaviare al menos 10,5 % y 11,2 %. Son los únicos resultados de
+   exclusión con datos reales que no dependen del emparejamiento. El piso
+   sale de las celdas con más pobres que A/B (765); el 98 % de su peso está
+   en celdas con al menos 10 hogares GEIH, así que no es un efecto de
+   celdas diminutas.
 4. **El Hot-Deck es un punto dentro de la cota, no la respuesta.** Con
-   independencia dentro de la celda, la exclusión sería 33,8 % y la
-   inclusión 59,9 % (44,3 % y 65,5 % con la celda anterior). Se parece a
+   independencia dentro de la celda, la exclusión sería 36,1 % y la
+   inclusión 59,2 % (33,8 % y 59,9 % sin ponderar el Sisbén; 44,3 % y
+   65,5 % con la celda anterior). Se parece a
    lo que da la regla vigente en la simulación (27,8 %\* y 54,8 %\*,
    sobre personas y no sobre hogares), porque esa regla también sortea el
    grupo en la celda.
 5. **Ampliar a A-B-C cambia una tasa por la otra:** la exclusión baja a
-   lo sumo a 27,5 % y el piso de inclusión sube a 66 %.
+   lo sumo a 26,7 % y el piso de inclusión sube a 66 %.
 
 \* Resultado simulado (semisintético).
 
@@ -116,10 +126,11 @@ Detalle completo en el CSV. Los casos que más se apartan:
 - **e es la proporción de A/B entre los hogares registrados en el
   Sisbén** y se toma como la de toda la celda en la GEIH. Es el mismo
   supuesto del Hot-Deck. La cobertura del registro varía entre
-  departamentos (`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`). Si los
+  departamentos (`RESULTADOS_REPRESENTATIVIDAD_SISBEN.md`: 68 % nacional
+  con el `fex`, 41,5 % en Bogotá) y sube con la pobreza de la celda. Si los
   hogares no registrados se contaran como no elegibles, habría menos
-  elegibles en cada celda, y la exclusión sería mayor y la inclusión
-  menor que en estas cotas.
+  elegibles en cada celda, y la exclusión sería mayor que en estas cotas:
+  el error de exclusión estimado es un piso del real.
 - Las tasas son de hogares. Las de las reglas simuladas son de personas,
   así que la comparación del punto 4 es aproximada.
 - Las cotas son de las proporciones poblacionales. No incluyen el error

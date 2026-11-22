@@ -1,109 +1,109 @@
-2026-11-14 17:04:24,377 INFO GEIH 290,968 hogares | Sisbén 3,093,411 hogares clasificados
+2026-11-21 14:41:55,117 INFO GEIH 290,968 hogares | Sisbén 3,093,411 hogares clasificados
 
 === Cotas de Fréchet por parámetro de los modelos (celdas: todas) ===
                 outcome parametro  subgrupo           nivel  cota_lo  cota_hi  ancho  excluye_0  celdas  cobertura
-         ipm_geih_score       ATE     todos           todos  -1.3344   1.4805 2.8150      False    3217     0.9976
-         ipm_geih_score       ATT     todos           todos  -1.6315   1.4892 3.1207      False    3217     0.9976
-         ipm_geih_score       ATU     todos           todos  -1.0951   1.4736 2.5687      False    3217     0.9976
-             POBRE_GEIH       ATE     todos           todos  -0.2595   0.3082 0.5677      False    3217     0.9976
-             POBRE_GEIH       ATT     todos           todos  -0.4168   0.3084 0.7252      False    3217     0.9976
-             POBRE_GEIH       ATU     todos           todos  -0.1329   0.3079 0.4408      False    3217     0.9976
-  log_ingreso_percapita       ATE     todos           todos  -2.5476   1.8241 4.3717      False    3217     0.9976
-  log_ingreso_percapita       ATT     todos           todos  -1.5796   1.8363 3.4159      False    3217     0.9976
-  log_ingreso_percapita       ATU     todos           todos  -3.3273   1.8142 5.1415      False    3217     0.9976
-        POBRE_MONETARIO       ATE     todos           todos  -0.3605   0.6365 0.9970      False    3217     0.9976
-        POBRE_MONETARIO       ATT     todos           todos  -0.4943   0.5758 1.0701      False    3217     0.9976
-        POBRE_MONETARIO       ATU     todos           todos  -0.2527   0.6854 0.9381      False    3217     0.9976
-POBRE_MONETARIO_OFICIAL       ATE     todos           todos  -0.3594   0.6190 0.9784      False    2666     0.9888
-POBRE_MONETARIO_OFICIAL       ATT     todos           todos  -0.5001   0.5534 1.0536      False    2666     0.9888
-POBRE_MONETARIO_OFICIAL       ATU     todos           todos  -0.2460   0.6719 0.9179      False    2666     0.9888
-         ipm_geih_score      CATE      zona           rural  -1.6871   1.5081 3.1952      False    2063     0.9910
-             POBRE_GEIH      CATE      zona           rural  -0.4998   0.5005 1.0004      False    2063     0.9910
-  log_ingreso_percapita      CATE      zona           rural  -1.4704   1.7254 3.1958      False    2063     0.9910
-        POBRE_MONETARIO      CATE      zona           rural  -0.4650   0.4597 0.9247      False    2063     0.9910
-POBRE_MONETARIO_OFICIAL      CATE      zona           rural  -0.4640   0.4753 0.9393      False    2063     0.9910
-         ipm_geih_score      CATE      zona          urbana  -1.1867   1.4063 2.5930      False    2880     0.9970
-             POBRE_GEIH      CATE      zona          urbana  -0.1787   0.2471 0.4258      False    2880     0.9970
-  log_ingreso_percapita      CATE      zona          urbana  -2.9129   1.8016 4.7145      False    2880     0.9970
-        POBRE_MONETARIO      CATE      zona          urbana  -0.3206   0.6825 1.0031      False    2880     0.9970
-POBRE_MONETARIO_OFICIAL      CATE      zona          urbana  -0.3188   0.6597 0.9785      False    2363     0.9859
-         ipm_geih_score      CATE sexo_jefe          hombre  -1.2841   1.5466 2.8307      False    2604     0.9944
-             POBRE_GEIH      CATE sexo_jefe          hombre  -0.2410   0.3395 0.5804      False    2604     0.9944
-  log_ingreso_percapita      CATE sexo_jefe          hombre  -2.5370   1.7150 4.2520      False    2604     0.9944
-        POBRE_MONETARIO      CATE sexo_jefe          hombre  -0.3364   0.6149 0.9514      False    2604     0.9944
-POBRE_MONETARIO_OFICIAL      CATE sexo_jefe          hombre  -0.3315   0.6055 0.9370      False    2234     0.9866
-         ipm_geih_score      CATE sexo_jefe           mujer  -1.2716   1.3632 2.6348      False    2824     0.9946
-             POBRE_GEIH      CATE sexo_jefe           mujer  -0.2695   0.2835 0.5531      False    2824     0.9946
-  log_ingreso_percapita      CATE sexo_jefe           mujer  -2.5899   1.8761 4.4660      False    2824     0.9946
-        POBRE_MONETARIO      CATE sexo_jefe           mujer  -0.3705   0.6600 1.0304      False    2824     0.9946
-POBRE_MONETARIO_OFICIAL      CATE sexo_jefe           mujer  -0.3702   0.6321 1.0024      False    2395     0.9857
-         ipm_geih_score      CATE   paredes        ladrillo  -1.2503   1.4439 2.6942      False    2786     0.9973
-             POBRE_GEIH      CATE   paredes        ladrillo  -0.2306   0.2842 0.5147      False    2786     0.9973
-  log_ingreso_percapita      CATE   paredes        ladrillo  -2.6924   1.7557 4.4481      False    2786     0.9973
-        POBRE_MONETARIO      CATE   paredes        ladrillo  -0.3451   0.6514 0.9965      False    2786     0.9973
-POBRE_MONETARIO_OFICIAL      CATE   paredes        ladrillo  -0.3430   0.6320 0.9749      False    2353     0.9887
-         ipm_geih_score      CATE   paredes        precaria  -1.6764   1.5671 3.2435      False    1538     0.9576
-             POBRE_GEIH      CATE   paredes        precaria  -0.3711   0.5557 0.9267      False    1538     0.9576
-  log_ingreso_percapita      CATE   paredes        precaria  -1.3570   2.1264 3.4834      False    1538     0.9576
-        POBRE_MONETARIO      CATE   paredes        precaria  -0.4203   0.4975 0.9178      False    1538     0.9576
-POBRE_MONETARIO_OFICIAL      CATE   paredes        precaria  -0.4270   0.5054 0.9324      False    1272     0.9445
-         ipm_geih_score      CATE   paredes tapia_bahareque  -1.4141   1.3379 2.7520      False     989     0.9762
-             POBRE_GEIH      CATE   paredes tapia_bahareque  -0.4241   0.4827 0.9068      False     989     0.9762
-  log_ingreso_percapita      CATE   paredes tapia_bahareque  -1.2206   1.8576 3.0782      False     989     0.9762
-        POBRE_MONETARIO      CATE   paredes tapia_bahareque  -0.4076   0.5049 0.9126      False     989     0.9762
-POBRE_MONETARIO_OFICIAL      CATE   paredes tapia_bahareque  -0.3919   0.4979 0.8899      False     989     0.9762
+         ipm_geih_score       ATE     todos           todos  -1.3250   1.5160 2.8410      False    3217     0.9976
+         ipm_geih_score       ATT     todos           todos  -1.6281   1.4906 3.1187      False    3217     0.9976
+         ipm_geih_score       ATU     todos           todos  -1.1028   1.5346 2.6374      False    3217     0.9976
+             POBRE_GEIH       ATE     todos           todos  -0.2531   0.3434 0.5964      False    3217     0.9976
+             POBRE_GEIH       ATT     todos           todos  -0.4169   0.3206 0.7374      False    3217     0.9976
+             POBRE_GEIH       ATU     todos           todos  -0.1330   0.3601 0.4931      False    3217     0.9976
+  log_ingreso_percapita       ATE     todos           todos  -2.8109   1.8396 4.6505      False    3217     0.9976
+  log_ingreso_percapita       ATT     todos           todos  -1.5883   1.8321 3.4204      False    3217     0.9976
+  log_ingreso_percapita       ATU     todos           todos  -3.7074   1.8451 5.5526      False    3217     0.9976
+        POBRE_MONETARIO       ATE     todos           todos  -0.3532   0.6679 1.0211      False    3217     0.9976
+        POBRE_MONETARIO       ATT     todos           todos  -0.4934   0.5961 1.0895      False    3217     0.9976
+        POBRE_MONETARIO       ATU     todos           todos  -0.2505   0.7204 0.9709      False    3217     0.9976
+POBRE_MONETARIO_OFICIAL       ATE     todos           todos  -0.3523   0.6523 1.0047      False    2666     0.9888
+POBRE_MONETARIO_OFICIAL       ATT     todos           todos  -0.5002   0.5742 1.0745      False    2666     0.9888
+POBRE_MONETARIO_OFICIAL       ATU     todos           todos  -0.2439   0.7096 0.9535      False    2666     0.9888
+         ipm_geih_score      CATE      zona           rural  -1.6704   1.5094 3.1797      False    2063     0.9910
+             POBRE_GEIH      CATE      zona           rural  -0.4955   0.5136 1.0091      False    2063     0.9910
+  log_ingreso_percapita      CATE      zona           rural  -1.4964   1.7046 3.2009      False    2063     0.9910
+        POBRE_MONETARIO      CATE      zona           rural  -0.4602   0.4753 0.9355      False    2063     0.9910
+POBRE_MONETARIO_OFICIAL      CATE      zona           rural  -0.4580   0.4908 0.9487      False    2063     0.9910
+         ipm_geih_score      CATE      zona          urbana  -1.1731   1.4468 2.6200      False    2880     0.9970
+             POBRE_GEIH      CATE      zona          urbana  -0.1720   0.2754 0.4474      False    2880     0.9970
+  log_ingreso_percapita      CATE      zona          urbana  -3.1853   1.8260 5.0112      False    2880     0.9970
+        POBRE_MONETARIO      CATE      zona          urbana  -0.3138   0.7091 1.0229      False    2880     0.9970
+POBRE_MONETARIO_OFICIAL      CATE      zona          urbana  -0.3129   0.6851 0.9980      False    2363     0.9859
+         ipm_geih_score      CATE sexo_jefe          hombre  -1.2793   1.5886 2.8679      False    2604     0.9944
+             POBRE_GEIH      CATE sexo_jefe          hombre  -0.2342   0.3754 0.6096      False    2604     0.9944
+  log_ingreso_percapita      CATE sexo_jefe          hombre  -2.9000   1.7499 4.6500      False    2604     0.9944
+        POBRE_MONETARIO      CATE sexo_jefe          hombre  -0.3284   0.6524 0.9809      False    2604     0.9944
+POBRE_MONETARIO_OFICIAL      CATE sexo_jefe          hombre  -0.3220   0.6431 0.9651      False    2234     0.9866
+         ipm_geih_score      CATE sexo_jefe           mujer  -1.2619   1.3845 2.6463      False    2824     0.9946
+             POBRE_GEIH      CATE sexo_jefe           mujer  -0.2600   0.3089 0.5689      False    2824     0.9946
+  log_ingreso_percapita      CATE sexo_jefe           mujer  -2.8278   1.8853 4.7131      False    2824     0.9946
+        POBRE_MONETARIO      CATE sexo_jefe           mujer  -0.3624   0.6871 1.0495      False    2824     0.9946
+POBRE_MONETARIO_OFICIAL      CATE sexo_jefe           mujer  -0.3618   0.6592 1.0210      False    2395     0.9857
+         ipm_geih_score      CATE   paredes        ladrillo  -1.2402   1.4841 2.7244      False    2786     0.9973
+             POBRE_GEIH      CATE   paredes        ladrillo  -0.2233   0.3175 0.5408      False    2786     0.9973
+  log_ingreso_percapita      CATE   paredes        ladrillo  -2.9680   1.7814 4.7494      False    2786     0.9973
+        POBRE_MONETARIO      CATE   paredes        ladrillo  -0.3385   0.6800 1.0185      False    2786     0.9973
+POBRE_MONETARIO_OFICIAL      CATE   paredes        ladrillo  -0.3373   0.6620 0.9993      False    2353     0.9887
+         ipm_geih_score      CATE   paredes        precaria  -1.6740   1.5685 3.2426      False    1538     0.9576
+             POBRE_GEIH      CATE   paredes        precaria  -0.3716   0.5564 0.9280      False    1538     0.9576
+  log_ingreso_percapita      CATE   paredes        precaria  -1.3615   2.1276 3.4890      False    1538     0.9576
+        POBRE_MONETARIO      CATE   paredes        precaria  -0.4242   0.4993 0.9236      False    1538     0.9576
+POBRE_MONETARIO_OFICIAL      CATE   paredes        precaria  -0.4316   0.5053 0.9369      False    1272     0.9445
+         ipm_geih_score      CATE   paredes tapia_bahareque  -1.4113   1.3414 2.7527      False     989     0.9762
+             POBRE_GEIH      CATE   paredes tapia_bahareque  -0.4235   0.4850 0.9085      False     989     0.9762
+  log_ingreso_percapita      CATE   paredes tapia_bahareque  -1.2233   1.8723 3.0956      False     989     0.9762
+        POBRE_MONETARIO      CATE   paredes tapia_bahareque  -0.4076   0.5072 0.9148      False     989     0.9762
+POBRE_MONETARIO_OFICIAL      CATE   paredes tapia_bahareque  -0.3932   0.4999 0.8931      False     989     0.9762
 
 === Cotas de Fréchet por parámetro de los modelos (celdas: n>=30) ===
                 outcome parametro  subgrupo           nivel  cota_lo  cota_hi  ancho  excluye_0  celdas  cobertura
-         ipm_geih_score       ATE     todos           todos  -1.3283   1.4925 2.8208      False    1096     0.9271
-         ipm_geih_score       ATT     todos           todos  -1.6537   1.5095 3.1632      False    1096     0.9271
-         ipm_geih_score       ATU     todos           todos  -1.0896   1.4800 2.5697      False    1096     0.9271
-             POBRE_GEIH       ATE     todos           todos  -0.2468   0.3021 0.5489      False    1096     0.9271
-             POBRE_GEIH       ATT     todos           todos  -0.4115   0.2949 0.7064      False    1096     0.9271
-             POBRE_GEIH       ATU     todos           todos  -0.1261   0.3073 0.4334      False    1096     0.9271
-  log_ingreso_percapita       ATE     todos           todos  -2.6408   1.8270 4.4678      False    1096     0.9271
-  log_ingreso_percapita       ATT     todos           todos  -1.6236   1.8337 3.4573      False    1096     0.9271
-  log_ingreso_percapita       ATU     todos           todos  -3.3869   1.8220 5.2089      False    1096     0.9271
-        POBRE_MONETARIO       ATE     todos           todos  -0.3532   0.6453 0.9985      False    1096     0.9271
-        POBRE_MONETARIO       ATT     todos           todos  -0.4987   0.5827 1.0814      False    1096     0.9271
-        POBRE_MONETARIO       ATU     todos           todos  -0.2465   0.6912 0.9377      False    1096     0.9271
-POBRE_MONETARIO_OFICIAL       ATE     todos           todos  -0.3513   0.6267 0.9780      False    1006     0.9211
-POBRE_MONETARIO_OFICIAL       ATT     todos           todos  -0.5034   0.5582 1.0616      False    1006     0.9211
-POBRE_MONETARIO_OFICIAL       ATU     todos           todos  -0.2396   0.6771 0.9167      False    1006     0.9211
-         ipm_geih_score      CATE      zona           rural  -1.7908   1.6002 3.3910      False     344     0.6471
-             POBRE_GEIH      CATE      zona           rural  -0.5329   0.5363 1.0692      False     344     0.6471
-  log_ingreso_percapita      CATE      zona           rural  -1.6243   1.8117 3.4360      False     344     0.6471
-        POBRE_MONETARIO      CATE      zona           rural  -0.4736   0.4748 0.9485      False     344     0.6471
-POBRE_MONETARIO_OFICIAL      CATE      zona           rural  -0.4729   0.4954 0.9683      False     344     0.6471
-         ipm_geih_score      CATE      zona          urbana  -1.1795   1.4217 2.6012      False     905     0.9313
-             POBRE_GEIH      CATE      zona          urbana  -0.1644   0.2437 0.4081      False     905     0.9313
-  log_ingreso_percapita      CATE      zona          urbana  -3.0245   1.8153 4.8398      False     905     0.9313
-        POBRE_MONETARIO      CATE      zona          urbana  -0.3143   0.6909 1.0052      False     905     0.9313
-POBRE_MONETARIO_OFICIAL      CATE      zona          urbana  -0.3112   0.6674 0.9786      False     826     0.9240
-         ipm_geih_score      CATE sexo_jefe          hombre  -1.2632   1.5656 2.8288      False     696     0.8785
-             POBRE_GEIH      CATE sexo_jefe          hombre  -0.2214   0.3320 0.5534      False     696     0.8785
-  log_ingreso_percapita      CATE sexo_jefe          hombre  -2.6982   1.7339 4.4321      False     696     0.8785
-        POBRE_MONETARIO      CATE sexo_jefe          hombre  -0.3228   0.6324 0.9552      False     696     0.8785
-POBRE_MONETARIO_OFICIAL      CATE sexo_jefe          hombre  -0.3177   0.6213 0.9390      False     663     0.8746
-         ipm_geih_score      CATE sexo_jefe           mujer  -1.2696   1.3963 2.6659      False     725     0.8636
-             POBRE_GEIH      CATE sexo_jefe           mujer  -0.2512   0.2802 0.5314      False     725     0.8636
-  log_ingreso_percapita      CATE sexo_jefe           mujer  -2.7727   1.8987 4.6714      False     725     0.8636
-        POBRE_MONETARIO      CATE sexo_jefe           mujer  -0.3611   0.6762 1.0373      False     725     0.8636
-POBRE_MONETARIO_OFICIAL      CATE sexo_jefe           mujer  -0.3590   0.6459 1.0049      False     684     0.8588
-         ipm_geih_score      CATE   paredes        ladrillo  -1.2449   1.4581 2.7030      False     946     0.9358
-             POBRE_GEIH      CATE   paredes        ladrillo  -0.2178   0.2823 0.5001      False     946     0.9358
-  log_ingreso_percapita      CATE   paredes        ladrillo  -2.7840   1.7648 4.5488      False     946     0.9358
-        POBRE_MONETARIO      CATE   paredes        ladrillo  -0.3382   0.6601 0.9983      False     946     0.9358
-POBRE_MONETARIO_OFICIAL      CATE   paredes        ladrillo  -0.3353   0.6400 0.9753      False     880     0.9300
-         ipm_geih_score      CATE   paredes        precaria  -2.1543   1.9129 4.0672      False      87     0.3529
-             POBRE_GEIH      CATE   paredes        precaria  -0.3564   0.6043 0.9607      False      87     0.3529
-  log_ingreso_percapita      CATE   paredes        precaria  -1.7542   2.9468 4.7010      False      87     0.3529
-        POBRE_MONETARIO      CATE   paredes        precaria  -0.4302   0.5787 1.0088      False      87     0.3529
-POBRE_MONETARIO_OFICIAL      CATE   paredes        precaria  -0.4407   0.5712 1.0119      False      83     0.3522
-         ipm_geih_score      CATE   paredes tapia_bahareque  -1.9412   1.7776 3.7188      False      39     0.2845
-             POBRE_GEIH      CATE   paredes tapia_bahareque  -0.4692   0.6104 1.0796      False      39     0.2845
-  log_ingreso_percapita      CATE   paredes tapia_bahareque  -1.6520   3.1775 4.8295      False      39     0.2845
-        POBRE_MONETARIO      CATE   paredes tapia_bahareque  -0.4283   0.6507 1.0789      False      39     0.2845
-POBRE_MONETARIO_OFICIAL      CATE   paredes tapia_bahareque  -0.3985   0.6502 1.0487      False      39     0.2845
+         ipm_geih_score       ATE     todos           todos  -1.3189   1.5295 2.8484      False    1096     0.9271
+         ipm_geih_score       ATT     todos           todos  -1.6512   1.5108 3.1620      False    1096     0.9271
+         ipm_geih_score       ATU     todos           todos  -1.0977   1.5419 2.6396      False    1096     0.9271
+             POBRE_GEIH       ATE     todos           todos  -0.2403   0.3391 0.5794      False    1096     0.9271
+             POBRE_GEIH       ATT     todos           todos  -0.4116   0.3076 0.7192      False    1096     0.9271
+             POBRE_GEIH       ATU     todos           todos  -0.1263   0.3601 0.4864      False    1096     0.9271
+  log_ingreso_percapita       ATE     todos           todos  -2.9220   1.8438 4.7658      False    1096     0.9271
+  log_ingreso_percapita       ATT     todos           todos  -1.6336   1.8266 3.4602      False    1096     0.9271
+  log_ingreso_percapita       ATU     todos           todos  -3.7796   1.8553 5.6349      False    1096     0.9271
+        POBRE_MONETARIO       ATE     todos           todos  -0.3457   0.6785 1.0241      False    1096     0.9271
+        POBRE_MONETARIO       ATT     todos           todos  -0.4980   0.6058 1.1038      False    1096     0.9271
+        POBRE_MONETARIO       ATU     todos           todos  -0.2443   0.7268 0.9711      False    1096     0.9271
+POBRE_MONETARIO_OFICIAL       ATE     todos           todos  -0.3441   0.6620 1.0061      False    1006     0.9211
+POBRE_MONETARIO_OFICIAL       ATT     todos           todos  -0.5040   0.5818 1.0858      False    1006     0.9211
+POBRE_MONETARIO_OFICIAL       ATU     todos           todos  -0.2376   0.7154 0.9530      False    1006     0.9211
+         ipm_geih_score      CATE      zona           rural  -1.7721   1.6012 3.3733      False     344     0.6471
+             POBRE_GEIH      CATE      zona           rural  -0.5291   0.5510 1.0800      False     344     0.6471
+  log_ingreso_percapita      CATE      zona           rural  -1.6614   1.7957 3.4571      False     344     0.6471
+        POBRE_MONETARIO      CATE      zona           rural  -0.4675   0.4931 0.9606      False     344     0.6471
+POBRE_MONETARIO_OFICIAL      CATE      zona           rural  -0.4657   0.5129 0.9787      False     344     0.6471
+         ipm_geih_score      CATE      zona          urbana  -1.1658   1.4631 2.6289      False     905     0.9313
+             POBRE_GEIH      CATE      zona          urbana  -0.1575   0.2730 0.4305      False     905     0.9313
+  log_ingreso_percapita      CATE      zona          urbana  -3.3115   1.8388 5.1503      False     905     0.9313
+        POBRE_MONETARIO      CATE      zona          urbana  -0.3075   0.7193 1.0268      False     905     0.9313
+POBRE_MONETARIO_OFICIAL      CATE      zona          urbana  -0.3056   0.6942 0.9998      False     826     0.9240
+         ipm_geih_score      CATE sexo_jefe          hombre  -1.2595   1.6110 2.8706      False     696     0.8785
+             POBRE_GEIH      CATE sexo_jefe          hombre  -0.2150   0.3703 0.5853      False     696     0.8785
+  log_ingreso_percapita      CATE sexo_jefe          hombre  -3.1031   1.7749 4.8780      False     696     0.8785
+        POBRE_MONETARIO      CATE sexo_jefe          hombre  -0.3150   0.6722 0.9872      False     696     0.8785
+POBRE_MONETARIO_OFICIAL      CATE sexo_jefe          hombre  -0.3081   0.6610 0.9692      False     663     0.8746
+         ipm_geih_score      CATE sexo_jefe           mujer  -1.2593   1.4187 2.6780      False     725     0.8636
+             POBRE_GEIH      CATE sexo_jefe           mujer  -0.2416   0.3077 0.5494      False     725     0.8636
+  log_ingreso_percapita      CATE sexo_jefe           mujer  -3.0388   1.9080 4.9468      False     725     0.8636
+        POBRE_MONETARIO      CATE sexo_jefe           mujer  -0.3531   0.7063 1.0594      False     725     0.8636
+POBRE_MONETARIO_OFICIAL      CATE sexo_jefe           mujer  -0.3505   0.6756 1.0261      False     684     0.8588
+         ipm_geih_score      CATE   paredes        ladrillo  -1.2350   1.4997 2.7347      False     946     0.9358
+             POBRE_GEIH      CATE   paredes        ladrillo  -0.2106   0.3169 0.5275      False     946     0.9358
+  log_ingreso_percapita      CATE   paredes        ladrillo  -3.0756   1.7902 4.8658      False     946     0.9358
+        POBRE_MONETARIO      CATE   paredes        ladrillo  -0.3316   0.6904 1.0220      False     946     0.9358
+POBRE_MONETARIO_OFICIAL      CATE   paredes        ladrillo  -0.3298   0.6714 1.0012      False     880     0.9300
+         ipm_geih_score      CATE   paredes        precaria  -2.1471   1.9111 4.0583      False      87     0.3529
+             POBRE_GEIH      CATE   paredes        precaria  -0.3568   0.6080 0.9648      False      87     0.3529
+  log_ingreso_percapita      CATE   paredes        precaria  -1.7609   2.9571 4.7180      False      87     0.3529
+        POBRE_MONETARIO      CATE   paredes        precaria  -0.4410   0.5785 1.0195      False      87     0.3529
+POBRE_MONETARIO_OFICIAL      CATE   paredes        precaria  -0.4512   0.5664 1.0175      False      83     0.3522
+         ipm_geih_score      CATE   paredes tapia_bahareque  -1.9388   1.7976 3.7364      False      39     0.2845
+             POBRE_GEIH      CATE   paredes tapia_bahareque  -0.4659   0.6236 1.0895      False      39     0.2845
+  log_ingreso_percapita      CATE   paredes tapia_bahareque  -1.6606   3.2314 4.8919      False      39     0.2845
+        POBRE_MONETARIO      CATE   paredes tapia_bahareque  -0.4249   0.6527 1.0776      False      39     0.2845
+POBRE_MONETARIO_OFICIAL      CATE   paredes tapia_bahareque  -0.3945   0.6533 1.0477      False      39     0.2845
 
 Guardado: docs\reports\cotas_frechet_modelos.csv

@@ -60,8 +60,10 @@ def test_cotas_por_celda_usa_cada_fuente_por_separado():
                          "hog_num_personas": 4, "hog_num_menores": 2, "fex": [1.0, 1.0, 2.0], "POBRE_GEIH": [1, 0, 0]})
     sisben = pd.DataFrame({"geo_depto": "05", "jefe_edad": ["5"] * 4, "viv_cuartos": 3, "viv_pisos": "1",
                            "hog_num_personas": "4", "hog_num_menores": "3", "Grupo": ["A", "B", "C", "D"],
-                           "Clasificacion": "x"})
+                           "Clasificacion": "x", "fex": 1.0})
     df = cotas_por_celda(geih, sisben, "POBRE_GEIH")
+    # Ponderado por fex: con A pesando 3 la proporción de A/B pasa de 0,5 a 0,667.
+    assert cotas_por_celda(geih, sisben.assign(fex=[3.0, 1.0, 1.0, 1.0]), "POBRE_GEIH")["p_t"].iloc[0] ==         pytest.approx(4 / 6)
     assert len(df) == 1
     fila = df.iloc[0]
     assert fila["celda"] == "05|ciclo5|3omascuartos|acabado|3omaspersonas|2omasmenores"

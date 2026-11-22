@@ -1,69 +1,69 @@
-2026-11-20 15:25:32,165 INFO n=290,968 | T=1 (Grupo A/B): 47.0%
+2026-11-21 14:37:59,376 INFO n=290,968 | T=1 (Grupo A/B): 45.2%
 
 ######################################################################
 # Outcome: ipm_geih_score (continuo, 0-8 privaciones)
 ######################################################################
 LinearDML vigente (W = celda exacta en los modelos auxiliares):
-  Propensión (T=1 | W): min=0.003 p5=0.054 p50=0.464 p95=0.942 max=0.997
-  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0109
-  ATE (toda la muestra): n=290,968 | +0.0037  IC95%=(-0.0042, +0.0116)
-  ATT (efecto en tratados): n=136,651 | +0.0050  IC95%=(-0.0036, +0.0137)
-  ATU (efecto en no tratados): n=154,317 | +0.0025  IC95%=(-0.0052, +0.0103)
+  Propensión (T=1 | W): min=0.001 p5=0.043 p50=0.435 p95=0.941 max=0.999
+  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0092
+  ATE (toda la muestra): n=290,968 | +0.0058  IC95%=(-0.0022, +0.0137)
+  ATT (efecto en tratados): n=131,580 | +0.0067  IC95%=(-0.0020, +0.0154)
+  ATU (efecto en no tratados): n=159,388 | +0.0050  IC95%=(-0.0028, +0.0128)
 Dentro de la celda:
-  Regresión con efectos fijos de celda: -0.0001  IC95%=(-0.0082, +0.0079) | 290,968 hogares en 3,721 celdas (78 por celda)
-  LinearDML dentro de la celda: +0.0001  IC95%=(-0.0079, +0.0081)
+  Regresión con efectos fijos de celda: +0.0032  IC95%=(-0.0049, +0.0113) | 290,968 hogares en 3,721 celdas (78 por celda)
+  LinearDML dentro de la celda: +0.0025  IC95%=(-0.0056, +0.0105)
 
 ######################################################################
 # Outcome: POBRE_GEIH (binario, score >= K_POBRE adoptado en 3_preprocesamiento.py)
 ######################################################################
 LinearDML vigente (W = celda exacta en los modelos auxiliares):
-  Propensión (T=1 | W): min=0.003 p5=0.054 p50=0.464 p95=0.942 max=0.997
-  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0109
-  ATE (toda la muestra): n=290,968 | +0.0009  IC95%=(-0.0018, +0.0037)
-  ATT (efecto en tratados): n=136,651 | +0.0006  IC95%=(-0.0027, +0.0039)
-  ATU (efecto en no tratados): n=154,317 | +0.0012  IC95%=(-0.0013, +0.0038)
+  Propensión (T=1 | W): min=0.001 p5=0.043 p50=0.435 p95=0.941 max=0.999
+  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0092
+  ATE (toda la muestra): n=290,968 | +0.0003  IC95%=(-0.0025, +0.0031)
+  ATT (efecto en tratados): n=131,580 | +0.0006  IC95%=(-0.0027, +0.0039)
+  ATU (efecto en no tratados): n=159,388 | +0.0001  IC95%=(-0.0025, +0.0027)
 Dentro de la celda:
-  Regresión con efectos fijos de celda: -0.0003  IC95%=(-0.0030, +0.0025) | 290,968 hogares en 3,721 celdas (78 por celda)
-  LinearDML dentro de la celda: -0.0005  IC95%=(-0.0032, +0.0023)
+  Regresión con efectos fijos de celda: -0.0007  IC95%=(-0.0035, +0.0020) | 290,968 hogares en 3,721 celdas (78 por celda)
+  LinearDML dentro de la celda: -0.0009  IC95%=(-0.0037, +0.0019)
 
 ######################################################################
 # Outcome: log_ingreso_percapita (continuo, log1p(ingreso_percapita))
 ######################################################################
 LinearDML vigente (W = celda exacta en los modelos auxiliares):
-  Propensión (T=1 | W): min=0.003 p5=0.054 p50=0.464 p95=0.942 max=0.997
-  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0109
-  ATE (toda la muestra): n=290,968 | +0.0013  IC95%=(-0.0131, +0.0158)
-  ATT (efecto en tratados): n=136,651 | +0.0029  IC95%=(-0.0125, +0.0182)
-  ATU (efecto en no tratados): n=154,317 | -0.0000  IC95%=(-0.0145, +0.0145)
+  Propensión (T=1 | W): min=0.001 p5=0.043 p50=0.435 p95=0.941 max=0.999
+  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0092
+  ATE (toda la muestra): n=290,968 | -0.0014  IC95%=(-0.0157, +0.0129)
+  ATT (efecto en tratados): n=131,580 | -0.0055  IC95%=(-0.0206, +0.0096)
+  ATU (efecto en no tratados): n=159,388 | +0.0020  IC95%=(-0.0124, +0.0164)
 Dentro de la celda:
-  Regresión con efectos fijos de celda: +0.0029  IC95%=(-0.0119, +0.0178) | 290,968 hogares en 3,721 celdas (78 por celda)
-  LinearDML dentro de la celda: +0.0034  IC95%=(-0.0110, +0.0178)
+  Regresión con efectos fijos de celda: +0.0011  IC95%=(-0.0138, +0.0161) | 290,968 hogares en 3,721 celdas (78 por celda)
+  LinearDML dentro de la celda: +0.0011  IC95%=(-0.0132, +0.0155)
 
 ######################################################################
 # Outcome: POBRE_MONETARIO (binario, reconstrucción GEIH con líneas DANE 2024 por dominio)
 ######################################################################
 LinearDML vigente (W = celda exacta en los modelos auxiliares):
-  Propensión (T=1 | W): min=0.003 p5=0.054 p50=0.464 p95=0.942 max=0.997
-  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0109
-  ATE (toda la muestra): n=290,968 | +0.0017  IC95%=(-0.0021, +0.0055)
-  ATT (efecto en tratados): n=136,651 | +0.0021  IC95%=(-0.0019, +0.0061)
-  ATU (efecto en no tratados): n=154,317 | +0.0013  IC95%=(-0.0024, +0.0051)
+  Propensión (T=1 | W): min=0.001 p5=0.043 p50=0.435 p95=0.941 max=0.999
+  vs. P(T | W) empírica: corr=0.996 | dif. absoluta media=0.0092
+  ATE (toda la muestra): n=290,968 | +0.0002  IC95%=(-0.0036, +0.0040)
+  ATT (efecto en tratados): n=131,580 | +0.0010  IC95%=(-0.0030, +0.0050)
+  ATU (efecto en no tratados): n=159,388 | -0.0005  IC95%=(-0.0043, +0.0033)
 Dentro de la celda:
-  Regresión con efectos fijos de celda: -0.0002  IC95%=(-0.0038, +0.0035) | 290,968 hogares en 3,721 celdas (78 por celda)
-  LinearDML dentro de la celda: -0.0003  IC95%=(-0.0041, +0.0035)
+  Regresión con efectos fijos de celda: -0.0007  IC95%=(-0.0043, +0.0030) | 290,968 hogares en 3,721 celdas (78 por celda)
+  LinearDML dentro de la celda: -0.0004  IC95%=(-0.0042, +0.0035)
 
 ######################################################################
 # Outcome: POBRE_MONETARIO_OFICIAL (robustez: clasificación oficial DANE, 23 departamentos y Bogotá; sin los 9 que la base no trae)
 ######################################################################
 LinearDML vigente (W = celda exacta en los modelos auxiliares):
-  Propensión (T=1 | W): min=0.015 p5=0.056 p50=0.462 p95=0.943 max=0.998
-  vs. P(T | W) empírica: corr=0.998 | dif. absoluta media=0.0074
-  ATE (toda la muestra): n=275,057 | +0.0009  IC95%=(-0.0029, +0.0048)
-  ATT (efecto en tratados): n=129,795 | +0.0006  IC95%=(-0.0035, +0.0047)
-  ATU (efecto en no tratados): n=145,262 | +0.0013  IC95%=(-0.0026, +0.0051)
+  Propensión (T=1 | W): min=0.003 p5=0.039 p50=0.437 p95=0.939 max=0.998
+  vs. P(T | W) empírica: corr=0.997 | dif. absoluta media=0.0078
+  ATE (toda la muestra): n=275,057 | +0.0007  IC95%=(-0.0032, +0.0046)
+  ATT (efecto en tratados): n=124,980 | +0.0018  IC95%=(-0.0023, +0.0060)
+  ATU (efecto en no tratados): n=150,077 | -0.0002  IC95%=(-0.0041, +0.0037)
 Dentro de la celda:
-  Regresión con efectos fijos de celda: +0.0004  IC95%=(-0.0033, +0.0042) | 275,057 hogares en 2,922 celdas (94 por celda)
-  LinearDML dentro de la celda: +0.0001  IC95%=(-0.0038, +0.0040)
+  Regresión con efectos fijos de celda: -0.0012  IC95%=(-0.0050, +0.0025) | 275,057 hogares en 2,922 celdas (94 por celda)
+  LinearDML dentro de la celda: -0.0008  IC95%=(-0.0047, +0.0031)
 
 ======================================================================
 Placebo del emparejamiento con un sorteo (semilla 42): se espera ≈0 en todos. Si el LinearDML

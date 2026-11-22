@@ -66,7 +66,7 @@ def tabla_enlace(receptor: pd.DataFrame, donante: pd.DataFrame) -> pd.DataFrame:
 
 def cargar() -> tuple[pd.DataFrame, pd.DataFrame]:
     geih = pd.read_parquet(io.BytesIO(leer_bytes(AZ_GEIH)), columns=[*LLAVE, *CELDA_COLUMNAS, "_hotdeck_celda"])
-    sisben = pd.read_parquet(io.BytesIO(leer_bytes(AZ_SISBEN)), columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion"])
+    sisben = pd.read_parquet(io.BytesIO(leer_bytes(AZ_SISBEN)), columns=[*CELDA_COLUMNAS, "Grupo", "Clasificacion", "fex"])
     return geih, sisben[sisben["Clasificacion"].notna()].reset_index(drop=True)
 
 

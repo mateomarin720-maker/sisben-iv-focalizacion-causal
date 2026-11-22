@@ -32,6 +32,7 @@ def datos():
     ab = rng.random(len(don)) < p_ab
     don["Grupo"] = np.where(ab, rng.choice(["A", "B"], len(don)), rng.choice(["C", "D"], len(don)))
     don["Nivel"] = don["Clasificacion"] = don["Grupo"] + "1"
+    don["fex"] = 1.0
     rec = _hogares(1500, rng, sisben=False)
     rec["fex"] = rng.uniform(50, 150, len(rec))
     rec["y"] = (rng.random(len(rec)) < 0.3).astype(float)
@@ -78,6 +79,21 @@ def test_fefi_es_la_proporcion_de_la_celda(datos):
     ok = nivel == "celda_exacta"
     assert np.allclose(pi[ok], esperado.loc[construir_celda(rec)[ok]].to_numpy())
     assert np.allclose(pi.sum(axis=1), 1)
+
+
+def test_fefi_pondera_los_donantes_por_su_factor_de_expansion(datos):
+    """π de la celda es la proporción ponderada por fex (el Sisbén nacional
+    es una muestra expandible); sin ponderar era el error hasta el 2026-11-21."""
+    rec, don = datos
+    don = don.assign(fex=np.where(don["Grupo"].isin(["A", "B"]), 1.0, 4.0))
+    pi, nivel = reglas.probabilidades(rec, don)
+    celda_d = construir_celda(don, edad_en_codigos=True)
+    esperado = pd.crosstab(celda_d, don["Grupo"], values=don["fex"], aggfunc="sum",
+                           normalize="index").reindex(columns=list("ABCD"), fill_value=0)
+    ok = nivel == "celda_exacta"
+    assert np.allclose(pi[ok], esperado.loc[construir_celda(rec)[ok]].to_numpy())
+    sin_ponderar = pd.crosstab(celda_d, don["Grupo"], normalize="index").reindex(columns=list("ABCD"), fill_value=0)
+    assert not np.allclose(pi[ok], sin_ponderar.loc[construir_celda(rec)[ok]].to_numpy(), atol=0.05)
 
 
 def test_mismo_nivel_que_el_hotdeck(datos):
